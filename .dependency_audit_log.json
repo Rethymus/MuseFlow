@@ -1,0 +1,101 @@
+[
+  {
+    "timestamp": "2026-05-28T00:00:00.000Z",
+    "packageName": "cupertino_icons",
+    "oldVersion": "^1.0.6",
+    "newVersion": "1.0.8",
+    "reason": "manual",
+    "author": "system",
+    "notes": "精确化版本控制：从范围版本改为精确版本"
+  },
+  {
+    "timestamp": "2026-05-28T00:00:01.000Z",
+    "packageName": "window_manager",
+    "oldVersion": "^0.3.8",
+    "newVersion": "0.3.8",
+    "reason": "manual",
+    "author": "system",
+    "notes": "精确化版本控制：从范围版本改为精确版本"
+  },
+  {
+    "timestamp": "2026-05-28T00:00:02.000Z",
+    "packageName": "flutter_acrylic",
+    "oldVersion": "^0.1.0",
+    "newVersion": "0.1.1",
+    "reason": "manual",
+    "author": "system",
+    "notes": "精确化版本控制：从范围版本改为精确版本"
+  },
+  {
+    "timestamp": "2026-05-28T00:00:03.000Z",
+    "packageName": "hive",
+    "oldVersion": "^2.2.3",
+    "newVersion": "2.2.3",
+    "reason": "manual",
+    "author": "system",
+    "notes": "精确化版本控制：从范围版本改为精确版本"
+  },
+  {
+    "timestamp": "2026-05-28T00:00:04.000Z",
+    "packageName": "http",
+    "oldVersion": "^1.2.0",
+    "newVersion": "1.2.2",
+    "reason": "security",
+    "author": "system",
+    "notes": "精确化版本控制：升级到最新安全补丁版本"
+  },
+  {
+    "timestamp": "2026-05-28T00:00:05.000Z",
+    "packageName": "dio",
+    "oldVersion": "^5.4.0",
+    "newVersion": "5.7.0",
+    "reason": "feature",
+    "author": "system",
+    "notes": "精确化版本控制：升级到包含最新功能改进的版本"
+  },
+  {
+    "timestamp": "2026-05-28T00:00:06.000Z",
+    "packageName": "flutter_secure_storage",
+    "oldVersion": "^9.0.0",
+    "newVersion": "9.2.2",
+    "reason": "security",
+    "author": "system",
+    "notes": "精确化版本控制：升级到最新安全版本"
+  },
+  {
+    "timestamp": "2026-05-28T00:00:07.000Z",
+    "packageName": "json_annotation",
+    "oldVersion": "^4.8.1",
+    "newVersion": "4.9.0",
+    "reason": "bugfix",
+    "author": "system",
+    "notes": "精确化版本控制：升级到包含bug修复的版本"
+  },
+  {
+    "timestamp": "2026-05-28T00:00:08.000Z",
+    "packageName": "sqflite",
+    "oldVersion": "^2.3.3+2",
+    "newVersion": "2.3.3",
+    "reason": "manual",
+    "author": "system",
+    "notes": "精确化版本控制：规范化版本号格式"
+  },
+  {
+    "timestamp": "2026-05-28T00:00:09.000Z",
+    "packageName": "encrypt",
+    "oldVersion": "^5.0.2",
+    "newVersion": "5.0.3",
+    "reason": "security",
+    "author": "system",
+    "notes": "精确化版本控制：升级到最新安全版本"
+  },
+  {
+    "timestamp": "2026-05-28T00:00:10.000Z",
+    "packageName": "json_serializable",
+    "oldVersion": "^6.7.1",
+    "newVersion": "6.8.0",
+    "reason": "feature",
+    "author": "system",
+    "notes": "精确化版本控制：升级到包含最新功能的版本"
+  }
+]

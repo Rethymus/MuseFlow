@@ -1,0 +1,72 @@
+[
+  {
+    "packageName": "flutter",
+    "constraint": ">=3.0.0 <4.0.0",
+    "reason": "项目最小SDK版本要求",
+    "imposedAt": "2026-05-28T00:00:00.000Z",
+    "source": "pubspec.yaml environment"
+  },
+  {
+    "packageName": "window_manager",
+    "constraint": ">=0.3.0",
+    "reason": "与Flutter SDK 3.0+兼容性要求",
+    "imposedAt": "2026-05-28T00:00:00.000Z",
+    "source": "compatibility_check"
+  },
+  {
+    "packageName": "hive",
+    "constraint": ">=2.2.0",
+    "reason": "数据格式兼容性要求",
+    "imposedAt": "2026-05-28T00:00:00.000Z",
+    "source": "data_migration"
+  },
+  {
+    "packageName": "http",
+    "constraint": ">=1.0.0",
+    "reason": "安全要求：支持TLS 1.3",
+    "imposedAt": "2026-05-28T00:00:00.000Z",
+    "source": "security_policy"
+  },
+  {
+    "packageName": "dio",
+    "constraint": ">=5.0.0",
+    "reason": "拦截器和重试机制要求",
+    "imposedAt": "2026-05-28T00:00:00.000Z",
+    "source": "feature_requirement"
+  },
+  {
+    "packageName": "flutter_secure_storage",
+    "constraint": ">=9.0.0",
+    "reason": "加密算法更新和安全增强",
+    "imposedAt": "2026-05-28T00:00:00.000Z",
+    "source": "security_policy"
+  },
+  {
+    "packageName": "sqflite",
+    "constraint": ">=2.0.0",
+    "reason": "异步操作支持要求",
+    "imposedAt": "2026-05-28T00:00:00.000Z",
+    "source": "async_support"
+  },
+  {
+    "packageName": "provider",
+    "constraint": ">=6.0.0",
+    "reason": "状态管理API要求",
+    "imposedAt": "2026-05-28T00:00:00.000Z",
+    "source": "state_management"
+  },
+  {
+    "packageName": "file_picker",
+    "constraint": ">=8.0.0",
+    "reason": "跨平台文件选择API要求",
+    "imposedAt": "2026-05-28T00:00:00.000Z",
+    "source": "platform_compatibility"
+  },
+  {
+    "packageName": "share_plus",
+    "constraint": ">=10.0.0",
+    "reason": "现代分享API要求",
+    "imposedAt": "2026-05-28T00:00:00.000Z",
+    "source": "sharing_feature"
+  }
+]

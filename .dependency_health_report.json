@@ -1,0 +1,223 @@
+{
+  "generatedAt": "2026-05-28T00:00:00.000Z",
+  "score": "excellent",
+  "dependencies": [
+    {
+      "name": "flutter",
+      "currentVersion": "sdk",
+      "latestVersion": null,
+      "type": "direct",
+      "licenses": ["BSD-3-Clause"],
+      "lastUpdated": "2026-05-28T00:00:00.000Z",
+      "constraints": []
+    },
+    {
+      "name": "cupertino_icons",
+      "currentVersion": "1.0.8",
+      "latestVersion": "1.0.8",
+      "type": "direct",
+      "licenses": ["MIT"],
+      "lastUpdated": "2026-05-28T00:00:00.000Z",
+      "constraints": []
+    },
+    {
+      "name": "window_manager",
+      "currentVersion": "0.3.8",
+      "latestVersion": "0.3.8",
+      "type": "direct",
+      "licenses": ["MIT"],
+      "lastUpdated": "2026-05-28T00:00:00.000Z",
+      "constraints": []
+    },
+    {
+      "name": "flutter_acrylic",
+      "currentVersion": "0.1.1",
+      "latestVersion": "0.1.1",
+      "type": "direct",
+      "licenses": ["MIT"],
+      "lastUpdated": "2026-05-28T00:00:00.000Z",
+      "constraints": []
+    },
+    {
+      "name": "hive",
+      "currentVersion": "2.2.3",
+      "latestVersion": "2.2.3",
+      "type": "direct",
+      "licenses": ["MIT"],
+      "lastUpdated": "2026-05-28T00:00:00.000Z",
+      "constraints": []
+    },
+    {
+      "name": "hive_flutter",
+      "currentVersion": "1.1.0",
+      "latestVersion": "1.1.0",
+      "type": "direct",
+      "licenses": ["MIT"],
+      "lastUpdated": "2026-05-28T00:00:00.000Z",
+      "constraints": []
+    },
+    {
+      "name": "sqflite",
+      "currentVersion": "2.3.3",
+      "latestVersion": "2.3.3",
+      "type": "direct",
+      "licenses": ["BSD-3-Clause"],
+      "lastUpdated": "2026-05-28T00:00:00.000Z",
+      "constraints": []
+    },
+    {
+      "name": "path_provider",
+      "currentVersion": "2.1.4",
+      "latestVersion": "2.1.4",
+      "type": "direct",
+      "licenses": ["BSD-3-Clause"],
+      "lastUpdated": "2026-05-28T00:00:00.000Z",
+      "constraints": []
+    },
+    {
+      "name": "provider",
+      "currentVersion": "6.1.2",
+      "latestVersion": "6.1.2",
+      "type": "direct",
+      "licenses": ["MIT"],
+      "lastUpdated": "2026-05-28T00:00:00.000Z",
+      "constraints": []
+    },
+    {
+      "name": "intl",
+      "currentVersion": "0.19.0",
+      "latestVersion": "0.19.0",
+      "type": "direct",
+      "licenses": ["BSD-3-Clause"],
+      "lastUpdated": "2026-05-28T00:00:00.000Z",
+      "constraints": []
+    },
+    {
+      "name": "uuid",
+      "currentVersion": "4.5.1",
+      "latestVersion": "4.5.1",
+      "type": "direct",
+      "licenses": ["MIT"],
+      "lastUpdated": "2026-05-28T00:00:00.000Z",
+      "constraints": []
+    },
+    {
+      "name": "json_annotation",
+      "currentVersion": "4.9.0",
+      "latestVersion": "4.9.0",
+      "type": "direct",
+      "licenses": ["MIT"],
+      "lastUpdated": "2026-05-28T00:00:00.000Z",
+      "constraints": []
+    },
+    {
+      "name": "file_picker",
+      "currentVersion": "8.1.3",
+      "latestVersion": "8.1.3",
+      "type": "direct",
+      "licenses": ["MIT"],
+      "lastUpdated": "2026-05-28T00:00:00.000Z",
+      "constraints": []
+    },
+    {
+      "name": "share_plus",
+      "currentVersion": "10.0.2",
+      "latestVersion": "10.0.2",
+      "type": "direct",
+      "licenses": ["BSD-3-Clause"],
+      "lastUpdated": "2026-05-28T00:00:00.000Z",
+      "constraints": []
+    },
+    {
+      "name": "http",
+      "currentVersion": "1.2.2",
+      "latestVersion": "1.2.2",
+      "type": "direct",
+      "licenses": ["BSD-3-Clause"],
+      "lastUpdated": "2026-05-28T00:00:00.000Z",
+      "constraints": []
+    },
+    {
+      "name": "dio",
+      "currentVersion": "5.7.0",
+      "latestVersion": "5.7.0",
+      "type": "direct",
+      "licenses": ["MIT"],
+      "lastUpdated": "2026-05-28T00:00:00.000Z",
+      "constraints": []
+    },
+    {
+      "name": "flutter_secure_storage",
+      "currentVersion": "9.2.2",
+      "latestVersion": "9.2.2",
+      "type": "direct",
+      "licenses": ["BSD-3-Clause"],
+      "lastUpdated": "2026-05-28T00:00:00.000Z",
+      "constraints": []
+    },
+    {
+      "name": "encrypt",
+      "currentVersion": "5.0.3",
+      "latestVersion": "5.0.3",
+      "type": "direct",
+      "licenses": ["MIT"],
+      "lastUpdated": "2026-05-28T00:00:00.000Z",
+      "constraints": []
+    },
+    {
+      "name": "retry",
+      "currentVersion": "3.1.2",
+      "latestVersion": "3.1.2",
+      "type": "direct",
+      "licenses": ["MIT"],
+      "lastUpdated": "2026-05-28T00:00:00.000Z",
+      "constraints": []
+    },
+    {
+      "name": "build_runner",
+      "currentVersion": "2.4.13",
+      "latestVersion": "2.4.13",
+      "type": "dev",
+      "licenses": ["BSD-3-Clause"],
+      "lastUpdated": "2026-05-28T00:00:00.000Z",
+      "constraints": []
+    },
+    {
+      "name": "hive_generator",
+      "currentVersion": "2.0.1",
+      "latestVersion": "2.0.1",
+      "type": "dev",
+      "licenses": ["MIT"],
+      "lastUpdated": "2026-05-28T00:00:00.000Z",
+      "constraints": []
+    },
+    {
+      "name": "json_serializable",
+      "currentVersion": "6.8.0",
+      "latestVersion": "6.8.0",
+      "type": "dev",
+      "licenses": ["MIT"],
+      "lastUpdated": "2026-05-28T00:00:00.000Z",
+      "constraints": []
+    },
+    {
+      "name": "flutter_lints",
+      "currentVersion": "4.0.0",
+      "latestVersion": "4.0.0",
+      "type": "dev",
+      "licenses": ["MIT"],
+      "lastUpdated": "2026-05-28T00:00:00.000Z",
+      "constraints": []
+    }
+  ],
+  "conflicts": [],
+  "warnings": [],
+  "errors": [],
+  "metrics": {
+    "totalDependencies": 23,
+    "directDependencies": 19,
+    "transitiveDependencies": 0,
+    "devDependencies": 4,
+    "outdatedDependencies": 0
+  }
+}
