@@ -181,7 +181,7 @@ void main() {
     tearDown(() {
       mockAppState.dispose();
       mockSearchService.dispose();
-    }
+    });
 
     Widget createMainNavigationUnderTest() {
       return MaterialApp(
@@ -452,7 +452,7 @@ void main() {
     tearDown(() {
       mockAppState.dispose();
       mockSearchService.dispose();
-    }
+    });
 
     Widget createMainNavigationUnderTest() {
       return MaterialApp(
@@ -635,7 +635,7 @@ void main() {
     tearDown(() {
       mockAppState.dispose();
       mockSearchService.dispose();
-    }
+    });
 
     Widget createMainNavigationUnderTest() {
       return MaterialApp(
@@ -813,7 +813,7 @@ void main() {
     tearDown(() {
       mockAppState.dispose();
       mockSearchService.dispose();
-    }
+    });
 
     Widget createMainNavigationUnderTest() {
       return MaterialApp(
@@ -993,7 +993,7 @@ void main() {
     tearDown(() {
       mockAppState.dispose();
       mockSearchService.dispose();
-    }
+    });
 
     Widget createMainNavigationUnderTest() {
       return MaterialApp(
@@ -1165,7 +1165,7 @@ void main() {
     tearDown(() {
       mockAppState.dispose();
       mockSearchService.dispose();
-    }
+    });
 
     Widget createMainNavigationUnderTest() {
       return MaterialApp(
