@@ -189,7 +189,7 @@ class WritingAnalyzer {
     };
 
     // 统计词频
-    final wordFreq = <String, int>{';
+    final wordFreq = <String, int>{};
     for (final word in words) {
       if (word.length > 1 && !stopWords.contains(word)) {
         wordFreq[word] = (wordFreq[word] ?? 0) + 1;

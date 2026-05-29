@@ -96,7 +96,7 @@ class AdaptiveUIManager {
 
   /// 跟踪写作会话
   Future<void> _trackWritingSession(int durationMinutes) async {
-    final sessions = _userHabits['writingSessions'] as int + 1;
+    final sessions = (_userHabits['writingSessions'] as int) + 1;
     final avgDuration = _userHabits['avgSessionDuration'] as int;
 
     _userHabits['writingSessions'] = sessions;

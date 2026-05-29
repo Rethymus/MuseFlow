@@ -246,7 +246,7 @@ class EncryptedAppState extends ChangeNotifier {
   Future<void> saveBeforeExit() async {
     await saveAllNotes();
     await _storageService.close();
-    await _performanceMonitor.dispose();
+    _performanceMonitor.dispose();
   }
 
   // Private helper methods

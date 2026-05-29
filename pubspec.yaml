@@ -40,6 +40,7 @@ dependencies:
   # Security
   flutter_secure_storage: 9.2.2
   encrypt: 5.0.3
+  shared_preferences: 2.2.3
 
   # Retry Logic
   retry: 3.1.2

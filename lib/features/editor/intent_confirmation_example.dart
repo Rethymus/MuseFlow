@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import '../models/intent_confirmation.dart';
-import '../services/intent_analyzer.dart';
+import '../../models/intent_confirmation.dart';
+import '../../services/intent_analyzer.dart';
 import 'intent_confirmation_dialog.dart';
 import 'intent_feedback_widget.dart';
 

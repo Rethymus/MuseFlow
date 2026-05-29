@@ -521,22 +521,22 @@ class PerformanceMetrics {
     return {
       'totalMetrics': _statistics.length,
       'totalDataPoints': getTotalDataPointCount(),
-      'recordingStartTime': _statistics.values
-          .map((s) => s.firstRecordTime)
-          .whereType<DateTime>()
-          .toList()
-          ..sort()
-          ..isNotEmpty
-          ? (List<DateTime> list) => list.first
-          : null,
-      'lastRecordingTime': _statistics.values
-          .map((s) => s.lastRecordTime)
-          .whereType<DateTime>()
-          .toList()
-            ..sort()
-            ..isNotEmpty
-            ? (List<DateTime> list) => list.last
-            : null,
+      'recordingStartTime': () {
+        final list = _statistics.values
+            .map((s) => s.firstRecordTime)
+            .whereType<DateTime>()
+            .toList()
+          ..sort();
+        return list.isNotEmpty ? list.first : null;
+      }(),
+      'lastRecordingTime': () {
+        final list = _statistics.values
+            .map((s) => s.lastRecordTime)
+            .whereType<DateTime>()
+            .toList()
+          ..sort();
+        return list.isNotEmpty ? list.last : null;
+      }(),
       'healthStatus': _assessOverallHealth(),
     };
   }

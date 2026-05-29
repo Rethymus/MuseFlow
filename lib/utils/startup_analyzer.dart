@@ -148,7 +148,7 @@ class StartupAnalyzer {
 
     // 总体状态
     buffer.writeln('\n📈 总体状态:');
-    buffer.writeln('  ${_getOverallStatusIcon(analysis['overall_status'])) ${analysis['overall_status']}');
+    buffer.writeln('  ${_getOverallStatusIcon(analysis['overall_status'])} ${analysis['overall_status']}');
 
     // 任务详情
     if (analysis.containsKey('tasks')) {

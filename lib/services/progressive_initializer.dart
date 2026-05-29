@@ -12,7 +12,7 @@ import 'performance/memory_optimizer.dart';
 import 'performance/performance_metrics.dart';
 
 // 导入性能相关的枚举类型
-export 'performance/memory_optimizer.dart show MemoryState, MemoryOptimizationStrategy;
+export 'performance/memory_optimizer.dart' show MemoryState, MemoryOptimizationStrategy;
 
 /// 启动阶段
 enum StartupPhase {

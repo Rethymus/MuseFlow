@@ -1,7 +1,7 @@
 import 'dart:async';
-import '../../models/ai_message.dart';
-import '../../models/ai_config.dart';
-import '../../models/ai_response.dart';
+import '../../../models/ai_message.dart';
+import '../../../models/ai_config.dart';
+import '../../../models/ai_response.dart';
 import 'ai_request_cache.dart';
 import 'ai_cache_stats.dart';
 import 'ai_cache_entry.dart';

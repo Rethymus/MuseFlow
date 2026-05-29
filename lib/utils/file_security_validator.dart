@@ -519,7 +519,7 @@ class FileSecurityValidator {
 
   String _sanitizeFileName(String fileName) {
     // 移除危险字符
-    String sanitized = fileName.replaceAll(RegExp(r[<>:"|?*\\/\x00-\x1f]), '_');
+    String sanitized = fileName.replaceAll(RegExp(r'[<>:"|?*\\/\x00-\x1f]'), '_');
 
     // 限制长度
     if (sanitized.length > maxFileNameLength) {

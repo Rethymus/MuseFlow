@@ -62,7 +62,7 @@ class PerformanceValidator {
     results.add(await _testStartupTime());
 
     // 2. 内存使用测试
-    results.add(await _testMemoryUsage()));
+    results.add(await _testMemoryUsage());
 
     // 3. 预加载效率测试
     results.add(await _testPreloadEfficiency());
