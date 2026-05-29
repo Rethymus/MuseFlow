@@ -4,10 +4,6 @@ import '../utils/user_friendly_error_handler.dart';
 import '../widgets/error_display_widgets.dart';
 import '../services/error_handling_service.dart';
 
-// Type aliases for nested types
-typedef UserFriendlyError = UserFriendlyErrorHandler.UserFriendlyError;
-typedef ErrorSeverity = UserFriendlyErrorHandler.ErrorSeverity;
-typedef ErrorCategory = UserFriendlyErrorHandler.ErrorCategory;
 
 /// 错误处理集成示例
 ///
@@ -43,7 +39,7 @@ class ErrorHandlingDemoScreen extends StatefulWidget {
 }
 
 class _ErrorHandlingDemoScreenState extends State<ErrorHandlingDemoScreen> {
-  final List<UserFriendlyError> _errors = [];
+  final List<UserFriendlyErrorHandler.UserFriendlyError> _errors = [];
 
   @override
   void initState() {
@@ -232,7 +228,7 @@ class _ErrorHandlingDemoScreenState extends State<ErrorHandlingDemoScreen> {
     }
   }
 
-  void _showErrorDetails(UserFriendlyError error) {
+  void _showErrorDetails(UserFriendlyErrorHandler.UserFriendlyError error) {
     errorHandlingService.showError(context, error);
   }
 
