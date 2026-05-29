@@ -181,7 +181,7 @@ class PersonalizedAIService {
       // 根据主题兴趣添加相关指导
       if (preference.topicInterests.isNotEmpty) {
         final systemPrompt = _generatePersonalizedSystemPrompt(preference);
-        if (message.role == 'system') {
+        if (message.role == MessageRole.system) {
           adjustedContent = '$systemPrompt\n\n$adjustedContent';
         }
       }

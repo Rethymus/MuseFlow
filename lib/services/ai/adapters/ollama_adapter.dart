@@ -32,7 +32,7 @@ class OllamaAdapter extends BaseAIAdapterImpl {
         Duration(seconds: 5),
         onTimeout: () {
           throw TimeoutException(
-            message: 'Ollama service not responding',
+            'Ollama service not responding',
           );
         },
       );
@@ -161,7 +161,7 @@ class OllamaAdapter extends BaseAIAdapterImpl {
         Duration(seconds: config.effectiveTimeout),
         onTimeout: () {
           throw TimeoutException(
-            message: 'Request timeout after ${config.effectiveTimeout} seconds',
+            'Request timeout after ${config.effectiveTimeout} seconds',
           );
         },
       ),

@@ -117,7 +117,7 @@ class OpenAIAdapter extends BaseAIAdapterImpl {
         Duration(seconds: config.effectiveTimeout),
         onTimeout: () {
           throw TimeoutException(
-            message: 'Request timeout after ${config.effectiveTimeout} seconds',
+            'Request timeout after ${config.effectiveTimeout} seconds',
           );
         },
       ),
