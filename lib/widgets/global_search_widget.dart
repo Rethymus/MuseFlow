@@ -523,11 +523,7 @@ class GlobalQuickSearch extends StatelessWidget {
         filled: true,
       ),
       onTap: () {
-        GlobalSearchDialog.show(context).then((result) {
-          if (result != null && onResultSelected != null) {
-            onResultSelected!(result as GlobalSearchResult);
-          }
-        });
+        GlobalSearchDialog.show(context);
       },
     );
   }
