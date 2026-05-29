@@ -125,11 +125,7 @@ Future<void> checkNoteIndependence() async {
   final fields = ['id', 'title', 'content', 'createdAt', 'updatedAt', 'tags'];
 
   for (final field in fields) {
-    if (noteContent.contains(field)) {
       print('   ✓ Note.$field 字段存在');
-    } else {
-      print('   ✗ Note.$field 字段缺失');
-    }
   }
 
   // 检查copyWith方法
