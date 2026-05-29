@@ -463,10 +463,11 @@ class CharacterService with ChangeNotifier {
     }
 
     final recommendations = _knowledgeGraph!.generateRecommendations(characterId);
+    final nodesMap = _knowledgeGraph!.nodesMap;
     final List<Map<String, dynamic>> results = [];
 
     for (final rec in recommendations) {
-      final targetNode = _knowledgeGraph!._nodes[rec.targetId];
+      final targetNode = nodesMap[rec.targetId];
       if (targetNode != null) {
         results.add({
           'characterId': rec.targetId,
