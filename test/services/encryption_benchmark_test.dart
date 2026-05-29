@@ -57,7 +57,8 @@ void main() {
 
         print(
             'Large data encryption avg time: ${avgTime.toStringAsFixed(2)}ms');
-        debugPrint('Throughput: ${(throughput / 1024).toStringAsFixed(2)} KB/s');
+        debugPrint(
+            'Throughput: ${(throughput / 1024).toStringAsFixed(2)} KB/s');
 
         expect(avgTime, lessThan(200)); // Should be under 200ms for 10KB
       });
@@ -142,7 +143,8 @@ void main() {
 
         print(
             'Large data decryption avg time: ${avgTime.toStringAsFixed(2)}ms');
-        debugPrint('Throughput: ${(throughput / 1024).toStringAsFixed(2)} KB/s');
+        debugPrint(
+            'Throughput: ${(throughput / 1024).toStringAsFixed(2)} KB/s');
 
         expect(avgTime, lessThan(200));
       });
