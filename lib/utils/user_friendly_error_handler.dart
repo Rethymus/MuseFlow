@@ -1,6 +1,7 @@
 import '../utils/logger.dart';
 import '../config/app_constants.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 import 'dart:io';
 
 /// 错误严重程度
@@ -690,7 +691,7 @@ class UserFriendlyErrorHandler {
     return {
       'operating_system': Platform.operatingSystem,
       'version': Platform.operatingSystemVersion,
-      'locale': Platform.localName,
+      'locale': Platform.localeName,
     };
   }
 }

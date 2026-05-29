@@ -3,13 +3,14 @@ import '../config/app_constants.dart';
 import 'package:flutter/foundation.dart';
 import 'note.dart';
 import '../services/storage_service.dart';
+import '../services/base_storage_service.dart';
 
 class AppState extends ChangeNotifier {
-  final StorageService _storageService;
+  final BaseStorageService _storageService;
   final List<Note> _notes = [];
   Note? _currentNote;
 
-  AppState({StorageService? storageService})
+  AppState({BaseStorageService? storageService})
       : _storageService = storageService ?? StorageService.instance;
 
   List<Note> get notes => _notes;

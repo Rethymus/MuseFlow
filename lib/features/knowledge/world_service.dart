@@ -6,7 +6,6 @@ import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:file_picker/file_picker.dart';
 import 'dart:io';
-import 'package:uuid/uuid.dart.dart' show Uuid;
 
 import 'world_model.dart';
 import '../../utils/file_security_validator.dart';

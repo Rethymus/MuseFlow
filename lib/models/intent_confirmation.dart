@@ -93,7 +93,7 @@ class IntentConfirmation {
   }
 
   /// 创建唯一ID
-  static String _generateId() {
+  static String generateId() {
     return 'intent_${DateTime.now().millisecondsSinceEpoch}_${DateTime.now().microsecond}';
   }
 
@@ -104,7 +104,7 @@ class IntentConfirmation {
   }) {
     final hasContext = context != null && context.isNotEmpty;
     return IntentConfirmation(
-      id: _generateId(),
+      id: generateId(),
       actionType: AIActionType.polish,
       description: '对选中文本进行润色，使其更加通顺、准确、优雅',
       originalText: originalText,
@@ -128,7 +128,7 @@ class IntentConfirmation {
   }) {
     final hasContext = context != null && context.isNotEmpty;
     return IntentConfirmation(
-      id: _generateId(),
+      id: generateId(),
       actionType: AIActionType.expand,
       description: '对选中文本进行扩写，丰富内容和表达',
       originalText: originalText,
@@ -150,7 +150,7 @@ class IntentConfirmation {
     int? maxItems,
   }) {
     return IntentConfirmation(
-      id: _generateId(),
+      id: generateId(),
       actionType: AIActionType.outline,
       description: '为全文生成结构化大纲',
       originalText: originalText,
@@ -170,7 +170,7 @@ class IntentConfirmation {
     int? maxLength,
   }) {
     return IntentConfirmation(
-      id: _generateId(),
+      id: generateId(),
       actionType: AIActionType.summarize,
       description: '为选中文本生成摘要',
       originalText: originalText,
@@ -190,7 +190,7 @@ class IntentConfirmation {
     required String targetStyle,
   }) {
     return IntentConfirmation(
-      id: _generateId(),
+      id: generateId(),
       actionType: AIActionType.changeStyle,
       description: '将选中文本转换为$targetStyle风格',
       originalText: originalText,
@@ -211,7 +211,7 @@ class IntentConfirmation {
     required String replaceWith,
   }) {
     return IntentConfirmation(
-      id: _generateId(),
+      id: generateId(),
       actionType: AIActionType.smartReplace,
       description: '智能替换文本中的"$findText"为"$replaceWith"',
       originalText: originalText,

@@ -246,7 +246,7 @@ class _SettingsPageState extends State<SettingsPage> {
 
   Widget _buildAutoSaveSetting(ThemeData theme) {
     return SwitchListTile(
-      leading: const Icon(Icons.save),
+      secondary: const Icon(Icons.save),
       title: const Text('自动保存'),
       subtitle: const Text('编辑时自动保存笔记'),
       value: true,
@@ -258,7 +258,7 @@ class _SettingsPageState extends State<SettingsPage> {
 
   Widget _buildSpellCheckSetting(ThemeData theme) {
     return SwitchListTile(
-      leading: const Icon(Icons.spellcheck),
+      secondary: const Icon(Icons.spellcheck),
       title: const Text('拼写检查'),
       subtitle: const Text('启用拼写检查功能'),
       value: false,
@@ -270,7 +270,7 @@ class _SettingsPageState extends State<SettingsPage> {
 
   Widget _buildWordCountSetting(ThemeData theme) {
     return SwitchListTile(
-      leading: const Icon(Icons.countertops),
+      secondary: const Icon(Icons.countertops),
       title: const Text('字数统计'),
       subtitle: const Text('显示实时字数统计'),
       value: true,
@@ -320,7 +320,7 @@ class _SettingsPageState extends State<SettingsPage> {
 
   Widget _buildIntentConfirmationSetting(ThemeData theme) {
     return SwitchListTile(
-      leading: const Icon(Iconsverified_user),
+      secondary: const Icon(Icons.verified_user),
       title: const Text('意图确认'),
       subtitle: const Text('AI操作前显示确认对话框'),
       value: true,

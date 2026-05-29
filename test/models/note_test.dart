@@ -72,7 +72,7 @@ void main() {
     });
 
     test('Note长内容处理测试', () {
-      const longContent = 'A' * 10000;
+      final longContent = 'A' * 10000;
       final longNote = note.copyWith(content: longContent);
 
       expect(longNote.content.length, 10000);
@@ -148,7 +148,7 @@ void main() {
     });
 
     test('超长内容处理', () {
-      const longContent = 'A' * 1000000; // 1MB内容
+      final longContent = 'A' * 1000000; // 1MB内容
       final longNote = Note(
         id: 'long-1',
         title: '超长内容',

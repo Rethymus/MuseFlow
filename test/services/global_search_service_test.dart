@@ -42,7 +42,7 @@ void main() {
     });
 
     test('长查询处理', () {
-      const longQuery = 'A' * 1000;
+      final longQuery = 'A' * 1000;
 
       expect(() => searchService.search(longQuery), returnsNormally);
     });

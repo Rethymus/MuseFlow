@@ -155,7 +155,7 @@ class _StartupScreenWrapperState extends State<StartupScreenWrapper> {
     }
 
     if (!_isInitialized) {
-      return StartupPage(onComplete: () {});
+      return StartupPage(onInitializationComplete: () {});
     }
 
     return widget.child;

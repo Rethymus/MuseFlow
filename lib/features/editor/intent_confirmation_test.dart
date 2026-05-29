@@ -55,7 +55,7 @@ void main() {
     });
 
     test('应该正确分析摘要意图', () {
-      const testText = '这是一段较长的文本，需要生成摘要。' * 10;
+      final testText = '这是一段较长的文本，需要生成摘要。' * 10;
 
       final intent = intentAnalyzer.analyzeRequest(
         actionType: AIActionType.summarize,
@@ -228,7 +228,7 @@ void main() {
     });
 
     test('应该正确处理长文本', () {
-      const longText = '这是一段较长的文本。' * 50;
+      final longText = '这是一段较长的文本。' * 50;
 
       final intent = intentAnalyzer.analyzeRequest(
         actionType: AIActionType.summarize,

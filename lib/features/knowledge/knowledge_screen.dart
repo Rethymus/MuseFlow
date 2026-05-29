@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:uuid/uuid.dart.dart' show Uuid;
+import 'package:uuid/uuid.dart' show Uuid;
 
 import 'character_service.dart';
 import 'character_model.dart';

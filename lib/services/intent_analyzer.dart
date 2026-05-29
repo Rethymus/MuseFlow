@@ -12,7 +12,7 @@ class IntentAnalyzer {
   // 反馈历史（用于学习和改进）
   final List<IntentConfirmationFeedback> _feedbackHistory = [];
 
-  IntentAnalyzer({this.config = const IntentAnalyzerConfig()});
+  const IntentAnalyzer({this.config = const IntentAnalyzerConfig()});
 
   /// 分析AI操作请求并生成意图确认
   IntentConfirmation analyzeRequest({
@@ -74,7 +74,7 @@ class IntentAnalyzer {
     expectedOutcome += '。';
 
     return IntentConfirmation(
-      id: IntentConfirmation._generateId(),
+      id: IntentConfirmation.generateId(),
       actionType: AIActionType.polish,
       description: _generatePolishDescription(analysis),
       originalText: text,
@@ -119,7 +119,7 @@ class IntentAnalyzer {
     expectedOutcome += '。';
 
     return IntentConfirmation(
-      id: IntentConfirmation._generateId(),
+      id: IntentConfirmation.generateId(),
       actionType: AIActionType.expand,
       description: '对选中文本进行扩写，目标长度约${targetLength}字',
       originalText: text,
@@ -140,7 +140,7 @@ class IntentAnalyzer {
     final actualSentences = sentences.where((s) => s.trim().isNotEmpty).length;
 
     return IntentConfirmation(
-      id: IntentConfirmation._generateId(),
+      id: IntentConfirmation.generateId(),
       actionType: AIActionType.outline,
       description: '为全文生成结构化大纲，包含主要观点和论据',
       originalText: text,
@@ -161,7 +161,7 @@ class IntentAnalyzer {
     final compressionRatio = (maxLength / textLength * 100).toStringAsFixed(0);
 
     return IntentConfirmation(
-      id: IntentConfirmation._generateId(),
+      id: IntentConfirmation.generateId(),
       actionType: AIActionType.summarize,
       description: '为选中文本生成摘要，压缩至约$maxLength字',
       originalText: text,
@@ -180,7 +180,7 @@ class IntentAnalyzer {
     final targetStyle = params?['targetStyle'] as String? ?? '正式';
 
     return IntentConfirmation(
-      id: IntentConfirmation._generateId(),
+      id: IntentConfirmation.generateId(),
       actionType: AIActionType.changeStyle,
       description: '将选中文本转换为$targetStyle风格',
       originalText: text,
@@ -201,7 +201,7 @@ class IntentAnalyzer {
     final occurrences = (text.toLowerCase().split(findText.toLowerCase()).length - 1).clamp(0, 999);
 
     return IntentConfirmation(
-      id: IntentConfirmation._generateId(),
+      id: IntentConfirmation.generateId(),
       actionType: AIActionType.smartReplace,
       description: '智能替换文本中的"$findText"为"$replaceWith"',
       originalText: text,

@@ -116,7 +116,7 @@ void main() async {
 
     // 测试特殊字符处理
     print('\n测试特殊字符处理...');
-    const specialCases = [
+    final specialCases = [
       '', // 空字符串
       'A' * 10000, // 长文本
       '!@#\$%^&*()_+-=[]{}|;:\'",.<>?/~`', // 特殊字符

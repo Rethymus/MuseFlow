@@ -36,7 +36,7 @@ void main() {
       });
 
       test('should encrypt large data efficiently', () async {
-        const largeData = 'A' * 10000; // 10KB
+        final largeData = 'A' * 10000; // 10KB
         const iterations = 50;
 
         final stopwatch = Stopwatch()..start();
@@ -112,7 +112,7 @@ void main() {
       });
 
       test('should decrypt large data efficiently', () async {
-        const largeData = 'B' * 10000;
+        final largeData = 'B' * 10000;
         const iterations = 50;
 
         // Pre-encrypt data
@@ -255,7 +255,7 @@ void main() {
       });
 
       test('should handle large data without memory issues', () async {
-        const largeData = 'X' * 100000; // 100KB
+        final largeData = 'X' * 100000; // 100KB
         const iterations = 20;
 
         for (int i = 0; i < iterations; i++) {

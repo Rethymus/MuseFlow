@@ -8,7 +8,7 @@ import '../services/security_audit_service.dart' show AlertSeverity;
 ///
 /// 提供安全状态可视化和报告功能
 class SecurityReporter {
-  static const String separator = '\n' + '=' * 60;
+  static final String separator = '\n${'=' * 60}';
 
   /// 生成完整的安全状态报告
   static String generateFullReport() {

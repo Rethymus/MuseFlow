@@ -1,7 +1,8 @@
 import 'package:hive_flutter/hive_flutter.dart';
 import '../models/note.dart';
+import 'base_storage_service.dart';
 
-class StorageService {
+class StorageService implements BaseStorageService {
   static final StorageService instance = StorageService._internal();
   StorageService._internal();
 

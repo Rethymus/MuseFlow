@@ -239,12 +239,12 @@ void completeWorkflowExample() async {
   Logger.debug('当前对话状态：');
   final stats = manager.getStats();
   Logger.debug(stats);
-  Logger.debug();
+  Logger.debug('');
 
   // 5. 获取格式化的上下文
   Logger.debug('当前对话内容：');
   Logger.debug(manager.getFormattedContext());
-  Logger.debug();
+  Logger.debug('');
 
   // 6. 搜索相关内容
   Logger.debug('搜索"技术"相关内容：');
@@ -252,7 +252,7 @@ void completeWorkflowExample() async {
   for (final result in techResults) {
     Logger.debug('  ${result.type}: ${result.content.substring(0, 50)}...');
   }
-  Logger.debug();
+  Logger.debug('');
 
   // 7. 获取最近的对话
   Logger.debug('最近的2条消息：');
@@ -260,7 +260,7 @@ void completeWorkflowExample() async {
   for (final message in recent) {
     Logger.debug('  ${message.type}: ${message.content}');
   }
-  Logger.debug();
+  Logger.debug('');
 
   // 8. 演示长对话的自动管理
   Logger.debug('模拟长对话...');
@@ -273,7 +273,7 @@ void completeWorkflowExample() async {
 
   Logger.debug('长对话后的状态：');
   Logger.debug(manager.getStats());
-  Logger.debug();
+  Logger.debug('');
 
   // 9. 查看是否有摘要被创建
   final summaries = manager.getAllSegments().where((s) => s.isSummary).toList();

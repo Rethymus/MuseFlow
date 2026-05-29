@@ -4,6 +4,7 @@ import '../models/app_state.dart';
 import '../config/app_constants.dart';
 import '../utils/logger.dart';
 import 'secure_data_service.dart';
+import 'base_storage_service.dart';
 import 'package:uuid/uuid.dart';
 import 'package:flutter/foundation.dart';
 
@@ -15,7 +16,7 @@ import 'package:flutter/foundation.dart';
 /// All note content and titles are automatically encrypted before storage
 /// and decrypted upon retrieval, providing a seamless experience while
 /// ensuring data security.
-class SecureStorageService {
+class SecureStorageService implements BaseStorageService {
   static final SecureStorageService instance = SecureStorageService._internal();
   factory SecureStorageService() => instance;
   SecureStorageService._internal() {
@@ -32,12 +33,18 @@ class SecureStorageService {
   static const String _encryptionVersionKey = 'encryption_version';
   static const int _currentEncryptionVersion = 1;
 
+  bool _isInitialized = false;
+
+  @override
+  bool get isInitialized => _isInitialized;
+
   /// Initialize the secure storage service
   ///
   /// Must be called before any other operations. This will:
   /// 1. Initialize the underlying encryption service
   /// 2. Open Hive boxes with proper adapters
   /// 3. Check if data migration is needed
+  @override
   Future<void> initialize() async {
     await _secureService.initialize();
 
@@ -53,6 +60,7 @@ class SecureStorageService {
 
     // Check if migration is needed
     await _checkAndPerformMigration();
+    _isInitialized = true;
   }
 
   /// Check if legacy data migration is needed and perform it
@@ -107,6 +115,7 @@ class SecureStorageService {
   }
 
   /// Get all notes with automatic decryption
+  @override
   Future<List<Note>> getAllNotes() async {
     try {
       final encryptedNotes = _notesBox.values.toList();
@@ -151,6 +160,7 @@ class SecureStorageService {
   }
 
   /// Save a note with automatic encryption
+  @override
   Future<void> saveNote(Note note) async {
     try {
       final encryptedData = _secureService.encryptNoteData(
@@ -190,6 +200,7 @@ class SecureStorageService {
   }
 
   /// Delete a note by ID
+  @override
   Future<void> deleteNote(String noteId) async {
     try {
       await _notesBox.delete(noteId);
@@ -204,13 +215,21 @@ class SecureStorageService {
   }
 
   /// Get a setting value
+  @override
   Future<String> getSetting(String key, {String defaultValue = 'system'}) async {
     return _settingsBox.get(key, defaultValue: defaultValue)!;
   }
 
   /// Set a setting value
+  @override
   Future<void> setSetting(String key, String value) async {
     await _settingsBox.put(key, value);
+  }
+
+  /// Save all notes (delegates to bulkSaveNotes)
+  @override
+  Future<void> saveAllNotes(List<Note> notes) async {
+    await bulkSaveNotes(notes);
   }
 
   /// Search notes with decryption support
@@ -383,6 +402,7 @@ class SecureStorageService {
   }
 
   /// Close all boxes and clean up resources
+  @override
   Future<void> close() async {
     await _notesBox.close();
     await _settingsBox.close();

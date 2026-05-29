@@ -345,7 +345,7 @@ class AICacheExample {
 
     final response2 = await aiService.sendMessage(messages, config: config);
     Logger.debug('  第二次请求: ${response2.metadata?['cached'] ?? false ? "缓存命中 ✓" : "新请求"}');
-    Logger.debug();
+    Logger.debug('');
 
     // 6. 查看统计
     Logger.debug('6. 查看缓存统计...');
@@ -354,7 +354,7 @@ class AICacheExample {
     Logger.debug('  缓存命中: ${stats.cacheHits}');
     Logger.debug('  命中率: ${(stats.hitRate * 100).toStringAsFixed(1)}%');
     Logger.debug('  节省请求: ${stats.requestsSaved}');
-    Logger.debug();
+    Logger.debug('');
 
     // 7. 获取建议
     Logger.debug('7. 获取优化建议...');
@@ -362,13 +362,13 @@ class AICacheExample {
     for (final suggestion in suggestions) {
       Logger.debug('  - $suggestion');
     }
-    Logger.debug();
+    Logger.debug('');
 
     // 8. 生成报告
     Logger.debug('8. 生成性能报告...');
     final report = await aiService.getCachePerformanceReport();
     Logger.debug(report);
-    Logger.debug();
+    Logger.debug('');
 
     Logger.debug('=== 工作流程完成 ===');
   }

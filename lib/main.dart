@@ -49,7 +49,7 @@ class MuseFlowApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => AppState()),
         ChangeNotifierProvider(create: (_) => CharacterService()),
         ChangeNotifierProvider(create: (_) => WorldService()),
-        ChangeNotifierProvider(create: (_) => SecureStorageService()),
+        Provider(create: (_) => SecureStorageService()),
         ChangeNotifierProvider(create: (_) => GlobalSearchService(
           storageService: SecureStorageService.instance,
           characterService: CharacterService(),
