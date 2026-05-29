@@ -70,20 +70,20 @@ class SecurityReporter {
   }
 
   /// 生成安全检查清单
-  static String generateSecurityChecklist() {
+  static Future<String> generateSecurityChecklist() async {
     final buffer = StringBuffer();
 
     buffer.writeln('✅ MuseFlow 安全检查清单');
     buffer.writeln(separator);
 
-    final checks = [
+    final checks = await Future.wait([
       _checkPathTraversalProtection(),
-      _checkFileTypeValidation(),
-      _checkFileSizeLimits(),
-      _checkSafeDirectories(),
-      _checkAuditLogging(),
-      _checkAlertSystem(),
-    ];
+      Future.value(_checkFileTypeValidation()),
+      Future.value(_checkFileSizeLimits()),
+      Future.value(_checkSafeDirectories()),
+      Future.value(_checkAuditLogging()),
+      Future.value(_checkAlertSystem()),
+    ]);
 
     int passed = 0;
     int failed = 0;
