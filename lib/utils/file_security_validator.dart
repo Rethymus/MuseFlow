@@ -98,7 +98,15 @@ class FileSecurityValidator {
   }
 
   FileSecurityValidator._internal() {
-    _initializeSafeDirectories();
+    // 延迟初始化将在第一次使用时执行
+  }
+
+  /// 确保安全目录已初始化
+  Future<void> _ensureInitialized() async {
+    if (!_isInitialized) {
+      await _initializeSafeDirectories();
+      _isInitialized = true;
+    }
   }
 
   // 安全配置
@@ -142,6 +150,7 @@ class FileSecurityValidator {
   final List<String> _safeDirectories = [];
   final List<SecurityAuditLog> _auditLogs = [];
   int _currentSessionSize = 0;
+  bool _isInitialized = false;
 
   /// 初始化安全目录
   Future<void> _initializeSafeDirectories() async {
@@ -455,6 +464,9 @@ class FileSecurityValidator {
 
   Future<bool> _isInSafeDirectory(String filePath) async {
     try {
+      // 确保安全目录已初始化
+      await _ensureInitialized();
+
       final absolutePath = path.absolute(filePath);
 
       for (final safeDir in _safeDirectories) {
