@@ -55,7 +55,7 @@ void main() {
 
         print(
             'Large data encryption avg time: ${avgTime.toStringAsFixed(2)}ms');
-        print('Throughput: ${(throughput / 1024).toStringAsFixed(2)} KB/s');
+        debugPrint('Throughput: ${(throughput / 1024).toStringAsFixed(2)} KB/s');
 
         expect(avgTime, lessThan(200)); // Should be under 200ms for 10KB
       });
@@ -80,7 +80,7 @@ void main() {
           final sizeKey = '${size}B';
           results[sizeKey] = avgTime;
 
-          print('$sizeKey: ${avgTime.toStringAsFixed(2)}ms avg');
+          debugPrint('$sizeKey: ${avgTime.toStringAsFixed(2)}ms avg');
         }
 
         // Performance should scale reasonably with size
@@ -140,7 +140,7 @@ void main() {
 
         print(
             'Large data decryption avg time: ${avgTime.toStringAsFixed(2)}ms');
-        print('Throughput: ${(throughput / 1024).toStringAsFixed(2)} KB/s');
+        debugPrint('Throughput: ${(throughput / 1024).toStringAsFixed(2)} KB/s');
 
         expect(avgTime, lessThan(200));
       });
@@ -177,7 +177,7 @@ void main() {
 
         print(
             'Batch encryption: ${stopwatch.elapsedMilliseconds}ms for $batchSize notes');
-        print('Avg per note: ${avgTime.toStringAsFixed(2)}ms');
+        debugPrint('Avg per note: ${avgTime.toStringAsFixed(2)}ms');
         print(
             'Total throughput: ${(throughput / 1024).toStringAsFixed(2)} KB/s');
 
@@ -211,7 +211,7 @@ void main() {
 
         print(
             'Batch decryption: ${stopwatch.elapsedMilliseconds}ms for $batchSize notes');
-        print('Avg per note: ${avgTime.toStringAsFixed(2)}ms');
+        debugPrint('Avg per note: ${avgTime.toStringAsFixed(2)}ms');
 
         expect(decryptedNotes.length, equals(batchSize));
         expect(avgTime, lessThan(100));
@@ -269,9 +269,9 @@ void main() {
 
         final finalMetrics = performanceMonitor.getStatistics();
 
-        print('Initial operations: ${initialMetrics.totalOperations}');
-        print('Final operations: ${finalMetrics.totalOperations}');
-        print('Operations performed: ${iterations}');
+        debugPrint('Initial operations: ${initialMetrics.totalOperations}');
+        debugPrint('Final operations: ${finalMetrics.totalOperations}');
+        debugPrint('Operations performed: ${iterations}');
 
         expect(finalMetrics.totalOperations - initialMetrics.totalOperations,
             greaterThanOrEqualTo(iterations));
@@ -291,7 +291,7 @@ void main() {
           expect(decrypted, equals(largeData));
         }
 
-        print('Completed $iterations iterations with 100KB data');
+        debugPrint('Completed $iterations iterations with 100KB data');
       });
     });
 
@@ -310,16 +310,16 @@ void main() {
 
         final stats = performanceMonitor.getStatistics();
 
-        print('Performance Statistics:');
-        print('  Total operations: ${stats.totalOperations}');
-        print('  Failed operations: ${stats.failedOperations}');
-        print('  Success rate: ${stats.successRate.toStringAsFixed(1)}%');
+        debugPrint('Performance Statistics:');
+        debugPrint('  Total operations: ${stats.totalOperations}');
+        debugPrint('  Failed operations: ${stats.failedOperations}');
+        debugPrint('  Success rate: ${stats.successRate.toStringAsFixed(1)}%');
         print(
             '  Average operation time: ${stats.averageOperationTime.toStringAsFixed(2)}ms');
-        print('  Total bytes processed: ${stats.totalBytesProcessed}');
+        debugPrint('  Total bytes processed: ${stats.totalBytesProcessed}');
 
         if (stats.encryptStats.count > 0) {
-          print('  Encrypt operations: ${stats.encryptStats.count}');
+          debugPrint('  Encrypt operations: ${stats.encryptStats.count}');
           print(
               '  Avg encrypt time: ${stats.encryptStats.averageTime.toStringAsFixed(2)}ms');
           print(
@@ -350,9 +350,9 @@ void main() {
 
         final slowOps = performanceMonitor.getSlowOperations(thresholdMs: 1);
 
-        print('Slow operations detected: ${slowOps.length}');
+        debugPrint('Slow operations detected: ${slowOps.length}');
         for (final op in slowOps) {
-          print('  ${op.operation}: ${op.durationMs}ms');
+          debugPrint('  ${op.operation}: ${op.durationMs}ms');
         }
 
         expect(slowOps.length, greaterThan(0));
@@ -422,12 +422,12 @@ void main() {
 
         final stats = performanceMonitor.getStatistics();
 
-        print('User Workflow Performance:');
-        print('  Create note: ${createTimer.elapsedMs}ms');
-        print('  Update note: ${updateTimer.elapsedMs}ms');
-        print('  Load note: ${loadTimer.elapsedMs}ms');
-        print('  Search notes: ${searchTimer.elapsedMs}ms');
-        print('  Total operations: ${stats.totalOperations}');
+        debugPrint('User Workflow Performance:');
+        debugPrint('  Create note: ${createTimer.elapsedMs}ms');
+        debugPrint('  Update note: ${updateTimer.elapsedMs}ms');
+        debugPrint('  Load note: ${loadTimer.elapsedMs}ms');
+        debugPrint('  Search notes: ${searchTimer.elapsedMs}ms');
+        debugPrint('  Total operations: ${stats.totalOperations}');
         print(
             '  Average time: ${stats.averageOperationTime.toStringAsFixed(2)}ms');
 
