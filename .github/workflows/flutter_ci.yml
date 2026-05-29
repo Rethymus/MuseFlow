@@ -37,6 +37,9 @@ jobs:
       - name: Verify dependencies
         run: flutter pub deps
 
+      - name: Generate code
+        run: dart run build_runner build --delete-conflicting-outputs
+
       - name: Analyze code
         run: dart analyze lib test
 
@@ -57,6 +60,9 @@ jobs:
 
       - name: Get dependencies
         run: flutter pub get
+
+      - name: Generate code
+        run: dart run build_runner build --delete-conflicting-outputs
 
       - name: Run unit tests
         run: flutter test --coverage --test-randomize-ordering-seed random

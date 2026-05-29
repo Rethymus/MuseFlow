@@ -351,7 +351,7 @@ class WritingAnalyzer {
   TextChangeAnalysis analyzeTextChange(String original, String modified) {
     final similarity = calculateSimilarity(original, modified);
     final originalWords = _extractWords(original);
-    const modifiedWords = _extractWords(modified);
+    final modifiedWords = _extractWords(modified);
 
     final addedWords = modifiedWords.toSet().difference(originalWords.toSet());
     final removedWords =
