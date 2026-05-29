@@ -231,7 +231,8 @@ class AICacheSystem {
     buffer.writeln('📊 健康状态:');
     buffer.writeln('  总体状态: ${health['is_healthy'] ? "✓ 健康" : "⚠ 需要关注"}');
     buffer.writeln('  命中率: ${(health['hit_rate'] * 100).toStringAsFixed(1)}%');
-    buffer.writeln('  请求节省率: ${(health['requests_saved_rate'] * 100).toStringAsFixed(1)}%');
+    buffer.writeln(
+        '  请求节省率: ${(health['requests_saved_rate'] * 100).toStringAsFixed(1)}%');
     buffer.writeln();
 
     // 性能指标
@@ -240,8 +241,10 @@ class AICacheSystem {
     buffer.writeln('  缓存命中: ${metrics.cacheHits}');
     buffer.writeln('  缓存未命中: ${metrics.cacheMisses}');
     buffer.writeln('  命中率: ${(metrics.hitRate * 100).toStringAsFixed(1)}%');
-    buffer.writeln('  请求节省: ${(metrics.requestsSavedRate * 100).toStringAsFixed(1)}%');
-    buffer.writeln('  Token节省: ${(metrics.tokensSavedRate * 100).toStringAsFixed(1)}%');
+    buffer.writeln(
+        '  请求节省: ${(metrics.requestsSavedRate * 100).toStringAsFixed(1)}%');
+    buffer.writeln(
+        '  Token节省: ${(metrics.tokensSavedRate * 100).toStringAsFixed(1)}%');
     buffer.writeln('  平均响应时间: ${metrics.avgResponseTime.toStringAsFixed(0)}ms');
     buffer.writeln('  效率状态: ${metrics.isEfficient ? "✓ 良好" : "⚠ 需要改进"}');
     buffer.writeln();
@@ -249,16 +252,20 @@ class AICacheSystem {
     // 缓存大小
     buffer.writeln('💾 缓存使用:');
     buffer.writeln('  内存缓存: ${cacheSize['memory_entries']} / 1000 条目');
-    buffer.writeln('  内存大小: ${(cacheSize['memory_size_bytes']! / 1024).toStringAsFixed(1)} KB');
+    buffer.writeln(
+        '  内存大小: ${(cacheSize['memory_size_bytes']! / 1024).toStringAsFixed(1)} KB');
     buffer.writeln('  磁盘缓存: ${cacheSize['disk_entries']} / 500 条目');
-    buffer.writeln('  磁盘大小: ${(cacheSize['disk_size_bytes']! / 1024 / 1024).toStringAsFixed(1)} MB');
+    buffer.writeln(
+        '  磁盘大小: ${(cacheSize['disk_size_bytes']! / 1024 / 1024).toStringAsFixed(1)} MB');
     buffer.writeln();
 
     // 目标达成情况
     buffer.writeln('🎯 目标达成:');
     buffer.writeln('  命中率≥45%: ${metrics.hitRate >= 0.45 ? "✓ 已达成" : "✗ 未达成"}');
-    buffer.writeln('  请求节省≥30%: ${metrics.requestsSavedRate >= 0.30 ? "✓ 已达成" : "✗ 未达成"}');
-    buffer.writeln('  响应时间<500ms: ${metrics.avgResponseTime < 500 ? "✓ 已达成" : "✗ 未达成"}');
+    buffer.writeln(
+        '  请求节省≥30%: ${metrics.requestsSavedRate >= 0.30 ? "✓ 已达成" : "✗ 未达成"}');
+    buffer.writeln(
+        '  响应时间<500ms: ${metrics.avgResponseTime < 500 ? "✓ 已达成" : "✗ 未达成"}');
     buffer.writeln();
 
     // 优化建议
@@ -285,12 +292,15 @@ class AICacheSystem {
 
     if (health['is_healthy'] as bool) {
       buffer.writeln('✓ 系统运行正常');
-      buffer.writeln('  命中率: ${(health['hit_rate'] * 100).toStringAsFixed(1)}%');
+      buffer
+          .writeln('  命中率: ${(health['hit_rate'] * 100).toStringAsFixed(1)}%');
       buffer.writeln('  节省请求: ${stats.requestsSaved}');
     } else {
       buffer.writeln('⚠ 系统需要关注');
-      buffer.writeln('  命中率: ${(health['hit_rate'] * 100).toStringAsFixed(1)}% (目标: 45%)');
-      buffer.writeln('  请求节省率: ${(health['requests_saved_rate'] * 100).toStringAsFixed(1)}% (目标: 30%)');
+      buffer.writeln(
+          '  命中率: ${(health['hit_rate'] * 100).toStringAsFixed(1)}% (目标: 45%)');
+      buffer.writeln(
+          '  请求节省率: ${(health['requests_saved_rate'] * 100).toStringAsFixed(1)}% (目标: 30%)');
     }
 
     return buffer.toString();
@@ -373,7 +383,8 @@ class AICacheUtils {
     AICacheConfig config2,
   ) {
     return {
-      'memory_entries_diff': config2.memoryMaxEntries - config1.memoryMaxEntries,
+      'memory_entries_diff':
+          config2.memoryMaxEntries - config1.memoryMaxEntries,
       'disk_entries_diff': config2.diskMaxEntries - config1.diskMaxEntries,
       'disk_size_diff': config2.diskMaxSizeBytes - config1.diskMaxSizeBytes,
       'system_prompt_cache_diff': config2.systemPromptCacheDuration.inHours -

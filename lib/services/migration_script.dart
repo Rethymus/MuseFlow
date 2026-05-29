@@ -44,7 +44,8 @@ class DataMigrationScript {
       final isNeeded = await _migrationService.isMigrationNeeded();
 
       if (!isNeeded) {
-        onProgress?.call('No migration needed - data already encrypted or no data found');
+        onProgress?.call(
+            'No migration needed - data already encrypted or no data found');
         return MigrationResult(
           success: true,
           message: 'No migration needed',
@@ -69,7 +70,8 @@ class DataMigrationScript {
 
           if (progress.state == EncryptionMigrationService.STATE_COMPLETED) {
             notesMigrated = progress.totalMigrated ?? 0;
-          } else if (progress.state == EncryptionMigrationService.STATE_FAILED) {
+          } else if (progress.state ==
+              EncryptionMigrationService.STATE_FAILED) {
             onError?.call('Migration failed: ${progress.message}');
           }
         },
@@ -185,7 +187,8 @@ class DataMigrationScript {
       final retrieved = await _secureStorage.getAllNotes();
       await _secureStorage.deleteNote('verification-test');
 
-      final foundTest = retrieved.any((n) => n.id == 'verification-test' && n.content == 'Content');
+      final foundTest = retrieved
+          .any((n) => n.id == 'verification-test' && n.content == 'Content');
 
       return VerificationResult(
         success: true,
@@ -248,9 +251,12 @@ class DataMigrationScript {
     buffer.writeln('STORAGE STATISTICS:');
     buffer.writeln('  Total Notes: ${storageStats['total_notes']}');
     buffer.writeln('  Settings Count: ${storageStats['settings_count']}');
-    buffer.writeln('  Encryption Enabled: ${storageStats['encryption_enabled']}');
-    buffer.writeln('  Migration Completed: ${storageStats['migration_completed']}');
-    buffer.writeln('  Encryption Version: ${storageStats['encryption_version']}');
+    buffer
+        .writeln('  Encryption Enabled: ${storageStats['encryption_enabled']}');
+    buffer.writeln(
+        '  Migration Completed: ${storageStats['migration_completed']}');
+    buffer
+        .writeln('  Encryption Version: ${storageStats['encryption_version']}');
     buffer.writeln();
 
     buffer.writeln('ENCRYPTION SERVICE STATUS:');
@@ -353,7 +359,8 @@ class MigrationCLI {
           break;
         default:
           Logger.info('Unknown command: $command');
-          Logger.info('Available commands: status, migrate, rollback, verify, report');
+          Logger.info(
+              'Available commands: status, migrate, rollback, verify, report');
       }
     } catch (e) {
       Logger.info('Error: $e');

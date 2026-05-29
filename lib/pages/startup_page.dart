@@ -42,8 +42,8 @@ class _StartupPageState extends State<StartupPage>
           _progress = state.progress;
           _message = state.message ?? '正在启动...';
           _hasError = !state.isLoading &&
-                       state.currentPhase != StartupPhase.completed &&
-                       _progress < 1.0;
+              state.currentPhase != StartupPhase.completed &&
+              _progress < 1.0;
 
           // 如果初始化完成
           if (state.currentPhase == StartupPhase.completed && !_hasError) {

@@ -307,7 +307,8 @@ class IntentStatisticsWidget extends StatelessWidget {
     );
   }
 
-  Widget _buildStatItem(String label, String value, {bool isHighlighted = false}) {
+  Widget _buildStatItem(String label, String value,
+      {bool isHighlighted = false}) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 4),
       child: Row(

@@ -90,8 +90,11 @@ class _PrivacyControlPanelState extends State<PrivacyControlPanel> {
         Row(
           children: [
             Icon(
-              widget.dataStoredInSecureStorage ? Icons.check_circle : Icons.circle,
-              color: widget.dataStoredInSecureStorage ? Colors.green : Colors.grey,
+              widget.dataStoredInSecureStorage
+                  ? Icons.check_circle
+                  : Icons.circle,
+              color:
+                  widget.dataStoredInSecureStorage ? Colors.green : Colors.grey,
               size: 16,
             ),
             const SizedBox(width: 8),
@@ -148,7 +151,8 @@ class _PrivacyControlPanelState extends State<PrivacyControlPanel> {
             setState(() {
               _dataRetentionDays = value.toInt();
             });
-            widget.onPrivacyChanged?.call(dataRetentionDays: _dataRetentionDays);
+            widget.onPrivacyChanged
+                ?.call(dataRetentionDays: _dataRetentionDays);
           },
         ),
         const SizedBox(height: 8),

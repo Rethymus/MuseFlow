@@ -112,7 +112,8 @@ class CompressionConfig {
   }) {
     return CompressionConfig(
       enabled: enabled ?? this.enabled,
-      targetSizeReductionPercentage: targetSizeReductionPercentage ?? this.targetSizeReductionPercentage,
+      targetSizeReductionPercentage:
+          targetSizeReductionPercentage ?? this.targetSizeReductionPercentage,
       qualityLevel: qualityLevel ?? this.qualityLevel,
       compressibleTypes: compressibleTypes ?? this.compressibleTypes,
     );
@@ -311,16 +312,18 @@ class MemoryOptimizer {
         if (_compressionConfig.compressibleTypes.contains(type)) {
           // 模拟压缩
           final originalSize = _estimateResourceSize(type);
-          final compressedSize = (originalSize * (_compressionConfig.targetSizeReductionPercentage / 100)).toInt();
+          final compressedSize = (originalSize *
+                  (_compressionConfig.targetSizeReductionPercentage / 100))
+              .toInt();
           compressedSize += (originalSize - compressedSize);
 
-          Logger.debug('压缩资源类型: $type, 预计节省: ${originalSize - compressedSize}MB');
+          Logger.debug(
+              '压缩资源类型: $type, 预计节省: ${originalSize - compressedSize}MB');
         }
       }
 
       _totalRecoveredMemoryMB += compressedSize;
       Logger.debug('资源压缩完成，总计节省: ${compressedSize}MB');
-
     } catch (e) {
       Logger.debug('资源压缩失败: $e');
     }
@@ -336,7 +339,8 @@ class MemoryOptimizer {
 
     // 限制记录数量
     if (_resourceCreationTimes[key]!.length > 100) {
-      _resourceCreationTimes[key]!.removeRange(0, _resourceCreationTimes[key]!.length - 100);
+      _resourceCreationTimes[key]!
+          .removeRange(0, _resourceCreationTimes[key]!.length - 100);
     }
   }
 
@@ -367,7 +371,8 @@ class MemoryOptimizer {
     final recentStats = _historyStats.take(10).toList();
     final avgUsagePercentage = recentStats.isEmpty
         ? 0.0
-        : recentStats.map((s) => s.usagePercentage).reduce((a, b) => a + b) / recentStats.length;
+        : recentStats.map((s) => s.usagePercentage).reduce((a, b) => a + b) /
+            recentStats.length;
 
     return {
       'currentStats': _currentStats.toJson(),
@@ -386,7 +391,8 @@ class MemoryOptimizer {
       },
       'compressionConfig': {
         'enabled': _compressionConfig.enabled,
-        'targetSizeReductionPercentage': _compressionConfig.targetSizeReductionPercentage,
+        'targetSizeReductionPercentage':
+            _compressionConfig.targetSizeReductionPercentage,
         'qualityLevel': _compressionConfig.qualityLevel,
       },
     };
@@ -398,9 +404,11 @@ class MemoryOptimizer {
 
     // 基于当前状态的建议
     if (_currentStats.state == MemoryState.critical) {
-      suggestions.add('内存使用危险 (${_currentStats.usagePercentage.toStringAsFixed(1)}%)，建议立即执行清理或重启应用');
+      suggestions.add(
+          '内存使用危险 (${_currentStats.usagePercentage.toStringAsFixed(1)}%)，建议立即执行清理或重启应用');
     } else if (_currentStats.state == MemoryState.warning) {
-      suggestions.add('内存使用较高 (${_currentStats.usagePercentage.toStringAsFixed(1)}%)，建议执行资源清理');
+      suggestions.add(
+          '内存使用较高 (${_currentStats.usagePercentage.toStringAsFixed(1)}%)，建议执行资源清理');
     }
 
     // 基于泄漏检测的建议
@@ -409,11 +417,13 @@ class MemoryOptimizer {
     }
 
     // 基于策略的建议
-    if (!_strategy.enableAggressiveCleanup && _currentStats.usagePercentage > 70) {
+    if (!_strategy.enableAggressiveCleanup &&
+        _currentStats.usagePercentage > 70) {
       suggestions.add('建议启用激进清理模式以降低内存使用');
     }
 
-    if (!_strategy.enableResourceCompression && _currentStats.usagePercentage > 60) {
+    if (!_strategy.enableResourceCompression &&
+        _currentStats.usagePercentage > 60) {
       suggestions.add('建议启用资源压缩以减少内存占用');
     }
 
@@ -424,7 +434,8 @@ class MemoryOptimizer {
     // 基于历史数据的建议
     if (_historyStats.length >= 10) {
       final recentStats = _historyStats.take(10).toList();
-      final increasingCount = recentStats.where((s) => s.usagePercentage > 60).length;
+      final increasingCount =
+          recentStats.where((s) => s.usagePercentage > 60).length;
 
       if (increasingCount >= 7) {
         suggestions.add('内存使用持续较高，建议检查是否有内存泄漏或优化资源管理');
@@ -476,7 +487,6 @@ class MemoryOptimizer {
 
       // 根据状态采取行动
       _handleMemoryState(stats);
-
     } catch (e) {
       Logger.debug('更新内存状态失败: $e');
     }
@@ -509,7 +519,6 @@ class MemoryOptimizer {
         state: _determineMemoryState(estimatedUsage['percentage'] ?? 10.0),
         timestamp: DateTime.now(),
       );
-
     } catch (e) {
       Logger.debug('获取内存状态失败: $e');
       return MemoryUsageStats.empty();
@@ -601,7 +610,8 @@ class MemoryOptimizer {
 
       // 1. 如果启用资源压缩，执行压缩
       if (_strategy.enableResourceCompression) {
-        final compressedSize = await compressResources(_compressionConfig.compressibleTypes);
+        final compressedSize =
+            await compressResources(_compressionConfig.compressibleTypes);
         recoveredMemory += compressedSize;
       }
 
@@ -623,7 +633,6 @@ class MemoryOptimizer {
 
       // 更新内存状态
       _updateMemoryStats();
-
     } catch (e) {
       Logger.debug('内存清理失败: $e');
     }
@@ -649,8 +658,10 @@ class MemoryOptimizer {
         final creationTimes = _resourceCreationTimes[resourceName];
         if (creationTimes != null && creationTimes.length > 10) {
           // 检查最近创建的资源是否都被释放
-          final recentCreations = creationTimes.where((time) =>
-              currentTime.difference(time) < const Duration(minutes: 5)).length;
+          final recentCreations = creationTimes
+              .where((time) =>
+                  currentTime.difference(time) < const Duration(minutes: 5))
+              .length;
 
           if (recentCreations > 20) {
             suspiciousResources.add(resourceName);
@@ -665,7 +676,8 @@ class MemoryOptimizer {
           description: '资源实例数量异常: ${_resourceCounts[resourceName]}',
           suspectedLeakCount: _resourceCounts[resourceName] ?? 0,
           detectedTime: currentTime,
-          stackTrace: StackTrace.current.toString().split('\n').take(10).toList(),
+          stackTrace:
+              StackTrace.current.toString().split('\n').take(10).toList(),
         );
 
         _leakResults.add(leakResult);
@@ -676,7 +688,6 @@ class MemoryOptimizer {
       if (_leakResults.length > 50) {
         _leakResults.removeRange(0, _leakResults.length - 50);
       }
-
     } catch (e) {
       Logger.debug('内存泄漏检测失败: $e');
     }

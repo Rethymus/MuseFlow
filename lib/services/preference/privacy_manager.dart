@@ -20,8 +20,8 @@ class PrivacyManager {
   PrivacyManager._({
     FlutterSecureStorage? secureStorage,
     required SharedPreferences preferences,
-  }) : _secureStorage = secureStorage ?? const FlutterSecureStorage(),
-       _preferences = preferences;
+  })  : _secureStorage = secureStorage ?? const FlutterSecureStorage(),
+        _preferences = preferences;
 
   /// 获取单例实例
   static Future<PrivacyManager> initialize({
@@ -41,7 +41,8 @@ class PrivacyManager {
   /// 获取实例
   static PrivacyManager get instance {
     if (_instance == null) {
-      throw StateError('PrivacyManager not initialized. Call initialize() first.');
+      throw StateError(
+          'PrivacyManager not initialized. Call initialize() first.');
     }
     return _instance!;
   }
@@ -64,7 +65,8 @@ class PrivacyManager {
 
   /// 执行定时清理
   Future<void> _performScheduledCleanup() async {
-    final deletionScheduled = _preferences.getBool(_dataDeletionScheduledKey) ?? false;
+    final deletionScheduled =
+        _preferences.getBool(_dataDeletionScheduledKey) ?? false;
     if (deletionScheduled) {
       await clearExpiredData();
       await _preferences.setBool(_dataDeletionScheduledKey, false);
@@ -148,7 +150,8 @@ class PrivacyManager {
       if (analyticsJson != null) {
         final List<dynamic> data = jsonDecode(analyticsJson);
         final validAnalytics = data.where((item) {
-          final analysis = WritingAnalysis.fromJson(item as Map<String, dynamic>);
+          final analysis =
+              WritingAnalysis.fromJson(item as Map<String, dynamic>);
           return analysis.timestamp.isAfter(cutoffDate);
         }).toList();
 
@@ -174,7 +177,8 @@ class PrivacyManager {
     // 移除时间戳的具体信息
     if (anonymized.containsKey('timestamp')) {
       final timestamp = DateTime.parse(anonymized['timestamp']);
-      anonymized['timestamp'] = '${timestamp.year}-${timestamp.month.toString().padLeft(2, '0')}-${timestamp.day.toString().padLeft(2, '0')}';
+      anonymized['timestamp'] =
+          '${timestamp.year}-${timestamp.month.toString().padLeft(2, '0')}-${timestamp.day.toString().padLeft(2, '0')}';
     }
 
     return anonymized;
@@ -225,7 +229,8 @@ class PrivacyManager {
         'consentGiven': _preferences.getBool(_consentKey) ?? false,
         'privacyVersion': _preferences.getInt(_privacyVersionKey) ?? 0,
         'currentPrivacyVersion': _currentPrivacyVersion,
-        'deletionScheduled': _preferences.getBool(_dataDeletionScheduledKey) ?? false,
+        'deletionScheduled':
+            _preferences.getBool(_dataDeletionScheduledKey) ?? false,
       };
     } catch (e) {
       throw PrivacyException('Failed to generate privacy report: $e');
@@ -240,7 +245,8 @@ class PrivacyManager {
       Map<String, dynamic> userData = {};
 
       // 导出偏好数据
-      final preferenceData = await _secureStorage.read(key: 'user_preference_data');
+      final preferenceData =
+          await _secureStorage.read(key: 'user_preference_data');
       if (preferenceData != null) {
         userData['preference'] = jsonDecode(preferenceData);
       }
@@ -251,7 +257,8 @@ class PrivacyManager {
         final feedbacks = jsonDecode(feedbackData);
         userData['feedbackHistory'] = anonymize
             ? await Future.wait(
-                (feedbacks as List).map((f) => anonymizeData(f as Map<String, dynamic>)),
+                (feedbacks as List)
+                    .map((f) => anonymizeData(f as Map<String, dynamic>)),
               )
             : feedbacks;
       }
@@ -262,7 +269,8 @@ class PrivacyManager {
         final analytics = jsonDecode(analyticsData);
         userData['writingAnalytics'] = anonymize
             ? await Future.wait(
-                (analytics as List).map((a) => anonymizeData(a as Map<String, dynamic>)),
+                (analytics as List)
+                    .map((a) => anonymizeData(a as Map<String, dynamic>)),
               )
             : analytics;
       }
@@ -317,7 +325,8 @@ class PrivacyManager {
     int analyticsSize = 0;
 
     try {
-      final preferenceData = await _secureStorage.read(key: 'user_preference_data');
+      final preferenceData =
+          await _secureStorage.read(key: 'user_preference_data');
       preferenceSize = preferenceData?.length ?? 0;
 
       final feedbackData = _preferences.getString('user_feedback_history');

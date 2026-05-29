@@ -194,7 +194,8 @@ class AIUsageExample {
     // 获取活跃配置
     await aiService.setActiveConfig(config.id);
     final activeConfig = await aiService.getActiveConfig();
-    Logger.debug('Active config: ${AIConfigManager.getDescription(activeConfig!)}');
+    Logger.debug(
+        'Active config: ${AIConfigManager.getDescription(activeConfig!)}');
 
     // 删除配置
     await aiService.deleteConfig(config.id);
@@ -263,7 +264,8 @@ class AIUsageExample {
       AIProvider.anthropic,
     );
 
-    Logger.debug('Creative config: ${AIConfigManager.getDescription(creativeConfig)}');
+    Logger.debug(
+        'Creative config: ${AIConfigManager.getDescription(creativeConfig)}');
     Logger.debug('Code config: ${AIConfigManager.getDescription(codeConfig)}');
   }
 

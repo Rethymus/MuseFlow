@@ -4,7 +4,11 @@ import 'package:flutter/material.dart';
 /// 提供各种页面切换动画效果
 class PageTransitions {
   /// 淡入淡出过渡
-  static Widget fadeTransition(BuildContext context, Animation<double> animation, Animation<double> secondaryAnimation, Widget child) {
+  static Widget fadeTransition(
+      BuildContext context,
+      Animation<double> animation,
+      Animation<double> secondaryAnimation,
+      Widget child) {
     return FadeTransition(
       opacity: animation,
       child: child,
@@ -12,7 +16,11 @@ class PageTransitions {
   }
 
   /// 缩放淡入过渡
-  static Widget scaleFadeTransition(BuildContext context, Animation<double> animation, Animation<double> secondaryAnimation, Widget child) {
+  static Widget scaleFadeTransition(
+      BuildContext context,
+      Animation<double> animation,
+      Animation<double> secondaryAnimation,
+      Widget child) {
     return ScaleTransition(
       scale: Tween<double>(begin: 0.9, end: 1.0).animate(
         CurvedAnimation(
@@ -28,7 +36,11 @@ class PageTransitions {
   }
 
   /// 滑动淡入过渡
-  static Widget slideFadeTransition(BuildContext context, Animation<double> animation, Animation<double> secondaryAnimation, Widget child) {
+  static Widget slideFadeTransition(
+      BuildContext context,
+      Animation<double> animation,
+      Animation<double> secondaryAnimation,
+      Widget child) {
     const begin = Offset(0.0, 0.05); // 从下方轻微滑入
     const end = Offset.zero;
     final tween = Tween(begin: begin, end: end);
@@ -62,15 +74,19 @@ class CustomPageTransition extends PageRouteBuilder {
         );
 
   @override
-  Widget buildTransitions(BuildContext context, Animation<double> animation, Animation<double> secondaryAnimation, Widget child) {
+  Widget buildTransitions(BuildContext context, Animation<double> animation,
+      Animation<double> secondaryAnimation, Widget child) {
     switch (transitionType) {
       case 'scale':
-        return PageTransitions.scaleFadeTransition(context, animation, secondaryAnimation, child);
+        return PageTransitions.scaleFadeTransition(
+            context, animation, secondaryAnimation, child);
       case 'slide':
-        return PageTransitions.slideFadeTransition(context, animation, secondaryAnimation, child);
+        return PageTransitions.slideFadeTransition(
+            context, animation, secondaryAnimation, child);
       case 'fade':
       default:
-        return PageTransitions.fadeTransition(context, animation, secondaryAnimation, child);
+        return PageTransitions.fadeTransition(
+            context, animation, secondaryAnimation, child);
     }
   }
 }

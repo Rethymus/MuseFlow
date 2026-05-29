@@ -24,9 +24,11 @@ class OllamaAdapter extends BaseAIAdapterImpl {
   Future<bool> validateApiKey() async {
     try {
       // Ollama不需要API Key，检查服务是否可用
-      final response = await client.get(
+      final response = await client
+          .get(
         Uri.parse('${config.effectiveBaseUrl}/tags'),
-      ).timeout(
+      )
+          .timeout(
         Duration(seconds: 5),
         onTimeout: () {
           throw TimeoutException(
@@ -47,11 +49,13 @@ class OllamaAdapter extends BaseAIAdapterImpl {
   @override
   Future<List<String>> getAvailableModels() async {
     try {
-      final response = await client.get(
-        Uri.parse('${config.effectiveBaseUrl}/tags'),
-      ).timeout(
-        Duration(seconds: config.effectiveTimeout),
-      );
+      final response = await client
+          .get(
+            Uri.parse('${config.effectiveBaseUrl}/tags'),
+          )
+          .timeout(
+            Duration(seconds: config.effectiveTimeout),
+          );
 
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
@@ -91,7 +95,8 @@ class OllamaAdapter extends BaseAIAdapterImpl {
     final effectiveConfig = config ?? this.config;
 
     try {
-      final response = await _makeRequest(messages, effectiveConfig, stream: false);
+      final response =
+          await _makeRequest(messages, effectiveConfig, stream: false);
       return _parseResponse(response, effectiveConfig);
     } catch (e) {
       handleError(e);
@@ -107,8 +112,10 @@ class OllamaAdapter extends BaseAIAdapterImpl {
     final effectiveConfig = config ?? this.config;
 
     try {
-      final response = await _makeRequest(messages, effectiveConfig, stream: true);
-      await for (final chunk in _parseStreamResponse(response, effectiveConfig)) {
+      final response =
+          await _makeRequest(messages, effectiveConfig, stream: true);
+      await for (final chunk
+          in _parseStreamResponse(response, effectiveConfig)) {
         onChunk?.call(chunk);
         yield chunk;
       }
@@ -144,11 +151,13 @@ class OllamaAdapter extends BaseAIAdapterImpl {
     }
 
     final response = await executeRequest(
-      () => client.post(
+      () => client
+          .post(
         url,
         headers: _buildHeaders(),
         body: jsonEncode(body),
-      ).timeout(
+      )
+          .timeout(
         Duration(seconds: config.effectiveTimeout),
         onTimeout: () {
           throw TimeoutException(
@@ -188,7 +197,8 @@ class OllamaAdapter extends BaseAIAdapterImpl {
     if (message.contains('model') && message.contains('not found')) {
       handleError('Model not found. Please pull the model first.', statusCode);
     } else if (message.contains('connection')) {
-      handleError('Ollama service not available. Make sure Ollama is running.', statusCode);
+      handleError('Ollama service not available. Make sure Ollama is running.',
+          statusCode);
     } else {
       handleError(message, statusCode);
     }

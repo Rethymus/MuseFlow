@@ -66,7 +66,7 @@ class SecurityAuditLog {
   @override
   String toString() {
     return '[${timestamp.toIso8601String()}] $operation: $filePath - '
-           'Allowed: $allowed, Reason: $reason, Size: $fileSize';
+        'Allowed: $allowed, Reason: $reason, Size: $fileSize';
   }
 
   factory SecurityAuditLog.fromJson(Map<String, dynamic> json) {
@@ -116,34 +116,91 @@ class FileSecurityValidator {
 
   // 允许的文件扩展名白名单
   static const Set<String> allowedExtensions = {
-    '.txt', '.md', '.json', '.csv', '.xml', '.yaml', '.yml',
-    '.html', '.css', '.js', '.ts', '.dart', '.py', '.java',
-    '.pdf', '.png', '.jpg', '.jpeg', '.gif', '.svg', '.webp',
-    '.mp3', '.mp4', '.wav', '.m4a', '.mov', '.avi',
-    '.zip', '.tar', '.gz', '.7z', '.rar',
-    '.doc', '.docx', '.xls', '.xlsx', '.ppt', '.pptx',
+    '.txt',
+    '.md',
+    '.json',
+    '.csv',
+    '.xml',
+    '.yaml',
+    '.yml',
+    '.html',
+    '.css',
+    '.js',
+    '.ts',
+    '.dart',
+    '.py',
+    '.java',
+    '.pdf',
+    '.png',
+    '.jpg',
+    '.jpeg',
+    '.gif',
+    '.svg',
+    '.webp',
+    '.mp3',
+    '.mp4',
+    '.wav',
+    '.m4a',
+    '.mov',
+    '.avi',
+    '.zip',
+    '.tar',
+    '.gz',
+    '.7z',
+    '.rar',
+    '.doc',
+    '.docx',
+    '.xls',
+    '.xlsx',
+    '.ppt',
+    '.pptx',
   };
 
   // 禁止的文件扩展名黑名单
   static const Set<String> dangerousExtensions = {
-    '.exe', '.bat', '.cmd', '.sh', '.ps1', '.vbs', '.js',
-    '.jar', '.app', '.deb', '.rpm', '.dmg', '.pkg',
-    '.msi', '.com', '.scr', '.pif', '.vb', '.vbe',
-    '.jse', '.wsf', '.wsh', '.ws', '.scf', '.lnk',
-    '.iso', '.img', '.bin', '.toast', '.dmg',
+    '.exe',
+    '.bat',
+    '.cmd',
+    '.sh',
+    '.ps1',
+    '.vbs',
+    '.js',
+    '.jar',
+    '.app',
+    '.deb',
+    '.rpm',
+    '.dmg',
+    '.pkg',
+    '.msi',
+    '.com',
+    '.scr',
+    '.pif',
+    '.vb',
+    '.vbe',
+    '.jse',
+    '.wsf',
+    '.wsh',
+    '.ws',
+    '.scf',
+    '.lnk',
+    '.iso',
+    '.img',
+    '.bin',
+    '.toast',
+    '.dmg',
   };
 
   // 禁止的文件名模式
   static const List<String> forbiddenFileNamePatterns = [
-    r'\.\./',        // 父目录遍历
-    r'\.\.\\',       // Windows父目录遍历
-    r'~\$',           // Windows临时文件
-    r'thumbs\.db',   // Windows系统文件
-    r'\.ds_store',   // macOS系统文件
-    r'\._',           // macOS资源分叉文件
+    r'\.\./', // 父目录遍历
+    r'\.\.\\', // Windows父目录遍历
+    r'~\$', // Windows临时文件
+    r'thumbs\.db', // Windows系统文件
+    r'\.ds_store', // macOS系统文件
+    r'\._', // macOS资源分叉文件
     r'\.spotlight-', // macOS索引文件
-    r'\.trash',      // 回收站
-    r'\.recycle',    // 回收站
+    r'\.trash', // 回收站
+    r'\.recycle', // 回收站
   ];
 
   // 安全目录列表
@@ -191,7 +248,8 @@ class FileSecurityValidator {
   }
 
   /// 验证文件路径
-  Future<FileSecurityResult> validatePath(String filePath, {
+  Future<FileSecurityResult> validatePath(
+    String filePath, {
     bool requireExistence = false,
     bool checkWritePermission = false,
   }) async {
@@ -257,7 +315,6 @@ class FileSecurityValidator {
 
       _logAudit('path_validation', normalizedPath, true, null);
       return FileSecurityResult.success(normalizedPath);
-
     } catch (e) {
       _logAudit('path_validation', filePath, false, '验证异常: $e');
       return FileSecurityResult.failure('路径验证异常: $e');
@@ -276,25 +333,21 @@ class FileSecurityValidator {
 
       // 检查单个文件大小
       if (fileSize > maxSingleFileSize) {
-        _logAudit('size_validation', filePath, false,
-                 '文件过大: ${fileSize}bytes');
+        _logAudit('size_validation', filePath, false, '文件过大: ${fileSize}bytes');
         return FileSecurityResult.failure(
-          '文件过大: ${_formatFileSize(fileSize)} (最大: ${_formatFileSize(maxSingleFileSize)})'
-        );
+            '文件过大: ${_formatFileSize(fileSize)} (最大: ${_formatFileSize(maxSingleFileSize)})');
       }
 
       // 检查会话总大小
       if (_currentSessionSize + fileSize > maxTotalSize) {
         _logAudit('size_validation', filePath, false,
-                 '会话总大小超限: ${_currentSessionSize + fileSize}');
+            '会话总大小超限: ${_currentSessionSize + fileSize}');
         return FileSecurityResult.failure(
-          '会话总大小超限 (最大: ${_formatFileSize(maxTotalSize)})'
-        );
+            '会话总大小超限 (最大: ${_formatFileSize(maxTotalSize)})');
       }
 
       _logAudit('size_validation', filePath, true, 'Size: $fileSize', fileSize);
       return FileSecurityResult.success(filePath);
-
     } catch (e) {
       _logAudit('size_validation', filePath, false, '大小检查异常: $e');
       return FileSecurityResult.failure('文件大小检查异常: $e');
@@ -309,14 +362,11 @@ class FileSecurityValidator {
       // 检查是否在白名单中
       if (!allowedExtensions.contains(extension)) {
         _logAudit('type_validation', filePath, false, '不允许的文件类型');
-        return FileSecurityResult.failure(
-          '不允许的文件类型: $extension'
-        );
+        return FileSecurityResult.failure('不允许的文件类型: $extension');
       }
 
       _logAudit('type_validation', filePath, true, '类型: $extension');
       return FileSecurityResult.success(filePath);
-
     } catch (e) {
       _logAudit('type_validation', filePath, false, '类型检查异常: $e');
       return FileSecurityResult.failure('文件类型检查异常: $e');
@@ -324,7 +374,8 @@ class FileSecurityValidator {
   }
 
   /// 综合安全验证
-  Future<FileSecurityResult> validateFile(String filePath, {
+  Future<FileSecurityResult> validateFile(
+    String filePath, {
     bool requireExistence = false,
     bool checkWritePermission = false,
     bool checkType = true,
@@ -364,7 +415,8 @@ class FileSecurityValidator {
   /// 更新会话大小
   void updateSessionSize(int bytes) {
     _currentSessionSize += bytes;
-    Logger.debug('当前会话大小: ${_formatFileSize(_currentSessionSize)}', tag: 'SECURITY');
+    Logger.debug('当前会话大小: ${_formatFileSize(_currentSessionSize)}',
+        tag: 'SECURITY');
   }
 
   /// 重置会话大小
@@ -374,7 +426,8 @@ class FileSecurityValidator {
   }
 
   /// 创建安全的输出文件路径
-  Future<String> createSafeOutputPath(String suggestedName, String subDir) async {
+  Future<String> createSafeOutputPath(
+      String suggestedName, String subDir) async {
     try {
       // 清理文件名
       String safeName = _sanitizeFileName(suggestedName);
@@ -520,7 +573,8 @@ class FileSecurityValidator {
 
   String _sanitizeFileName(String fileName) {
     // 移除危险字符
-    String sanitized = fileName.replaceAll(RegExp(r'[<>:"|?*\\/\x00-\x1f]'), '_');
+    String sanitized =
+        fileName.replaceAll(RegExp(r'[<>:"|?*\\/\x00-\x1f]'), '_');
 
     // 限制长度
     if (sanitized.length > maxFileNameLength) {
@@ -533,8 +587,9 @@ class FileSecurityValidator {
     return sanitized;
   }
 
-  void _logAudit(String operation, String? filePath, bool allowed,
-                String? reason, [int? fileSize]) {
+  void _logAudit(
+      String operation, String? filePath, bool allowed, String? reason,
+      [int? fileSize]) {
     final log = SecurityAuditLog(
       timestamp: DateTime.now(),
       operation: operation,
@@ -556,7 +611,8 @@ class FileSecurityValidator {
   String _formatFileSize(int bytes) {
     if (bytes < 1024) return '$bytes B';
     if (bytes < 1024 * 1024) return '${(bytes / 1024).toStringAsFixed(1)} KB';
-    if (bytes < 1024 * 1024 * 1024) return '${(bytes / (1024 * 1024)).toStringAsFixed(1)} MB';
+    if (bytes < 1024 * 1024 * 1024)
+      return '${(bytes / (1024 * 1024)).toStringAsFixed(1)} MB';
     return '${(bytes / (1024 * 1024 * 1024)).toStringAsFixed(1)} GB';
   }
 

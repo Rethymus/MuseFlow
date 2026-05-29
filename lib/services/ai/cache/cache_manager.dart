@@ -285,9 +285,12 @@ class CachePerformanceMetrics {
     final buffer = StringBuffer();
     buffer.writeln('=== Cache Performance Metrics ===');
     buffer.writeln('Hit Rate: ${(hitRate * 100).toStringAsFixed(1)}%');
-    buffer.writeln('Requests Saved: ${(requestsSavedRate * 100).toStringAsFixed(1)}%');
-    buffer.writeln('Tokens Saved: ${(tokensSavedRate * 100).toStringAsFixed(1)}%');
-    buffer.writeln('Avg Response Time: ${avgResponseTime.toStringAsFixed(0)}ms');
+    buffer.writeln(
+        'Requests Saved: ${(requestsSavedRate * 100).toStringAsFixed(1)}%');
+    buffer.writeln(
+        'Tokens Saved: ${(tokensSavedRate * 100).toStringAsFixed(1)}%');
+    buffer
+        .writeln('Avg Response Time: ${avgResponseTime.toStringAsFixed(0)}ms');
     buffer.writeln('Memory Entries: $memoryEntries');
     buffer.writeln('Disk Entries: $diskEntries');
     buffer.writeln('Total Requests: $totalRequests');

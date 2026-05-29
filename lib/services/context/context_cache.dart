@@ -92,9 +92,8 @@ class CacheStats {
   });
 
   /// 缓存命中率
-  double get hitRate => hitCount + missCount > 0
-      ? hitCount / (hitCount + missCount)
-      : 0.0;
+  double get hitRate =>
+      hitCount + missCount > 0 ? hitCount / (hitCount + missCount) : 0.0;
 
   /// 缓存使用率
   double get usageRate => maxTokens > 0 ? totalTokens / maxTokens : 0.0;
@@ -102,9 +101,9 @@ class CacheStats {
   @override
   String toString() {
     return 'CacheStats(segments: $totalSegments, tokens: $totalTokens, '
-           'hitRate: ${(hitRate * 100).toStringAsFixed(1)}%, '
-           'usageRate: ${(usageRate * 100).toStringAsFixed(1)}%, '
-           'trims: $trimCount, summaries: $summarySegments)';
+        'hitRate: ${(hitRate * 100).toStringAsFixed(1)}%, '
+        'usageRate: ${(usageRate * 100).toStringAsFixed(1)}%, '
+        'trims: $trimCount, summaries: $summarySegments)';
   }
 }
 

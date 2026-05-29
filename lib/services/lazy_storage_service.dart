@@ -154,7 +154,8 @@ class LazyStorageService {
   }
 
   /// 获取设置
-  Future<String> getSetting(String key, {String defaultValue = 'system'}) async {
+  Future<String> getSetting(String key,
+      {String defaultValue = 'system'}) async {
     await basicReady; // 只需要基础初始化
     return _settingsBox?.get(key, defaultValue: defaultValue) ?? defaultValue;
   }
@@ -168,7 +169,8 @@ class LazyStorageService {
   /// 更新最近使用的笔记
   Future<void> _updateRecentNotes(String noteId) async {
     try {
-      final recentNotesJson = await getSetting('recent_notes', defaultValue: '[]');
+      final recentNotesJson =
+          await getSetting('recent_notes', defaultValue: '[]');
       final List<String> recentNotes = [];
 
       // 添加到开头
@@ -188,7 +190,8 @@ class LazyStorageService {
   /// 获取最近使用的笔记
   Future<List<String>> getRecentNotes() async {
     try {
-      final recentNotesJson = await getSetting('recent_notes', defaultValue: '');
+      final recentNotesJson =
+          await getSetting('recent_notes', defaultValue: '');
       if (recentNotesJson.isEmpty) return [];
 
       return recentNotesJson.split(',');

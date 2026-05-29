@@ -369,11 +369,11 @@ void main() {
       await tester.pumpAndSettle();
 
       final pages = [
-        Icons.edit_note,    // 写作
-        Icons.psychology,   // 编辑器
+        Icons.edit_note, // 写作
+        Icons.psychology, // 编辑器
         Icons.library_books, // 知识库
-        Icons.search,       // 搜索
-        Icons.settings,     // 设置
+        Icons.search, // 搜索
+        Icons.settings, // 设置
       ];
 
       for (final pageIcon in pages) {
@@ -480,7 +480,8 @@ void main() {
       );
 
       // 验证导航栏属性
-      expect(navBar.animationDuration, equals(const Duration(milliseconds: 300)));
+      expect(
+          navBar.animationDuration, equals(const Duration(milliseconds: 300)));
       expect(navBar.destinations.length, equals(5));
     });
 
@@ -1090,7 +1091,8 @@ void main() {
       expect(navBar.selectedIndex, equals(2));
     });
 
-    testWidgets('PageSwitchAnimation ValueKey变化验证', (WidgetTester tester) async {
+    testWidgets('PageSwitchAnimation ValueKey变化验证',
+        (WidgetTester tester) async {
       await tester.pumpWidget(createMainNavigationUnderTest());
       await tester.pumpAndSettle();
 
@@ -1119,7 +1121,8 @@ void main() {
       expect(find.byType(PageSwitchAnimation), findsOneWidget);
     });
 
-    testWidgets('FadeTransition和ScaleTransition存在验证', (WidgetTester tester) async {
+    testWidgets('FadeTransition和ScaleTransition存在验证',
+        (WidgetTester tester) async {
       await tester.pumpWidget(createMainNavigationUnderTest());
       await tester.pumpAndSettle();
 

@@ -215,7 +215,7 @@ void main() {
       // 超时相关错误通常是warning级别
       expect(
         userError.severity == ErrorSeverity.warning ||
-        userError.severity == ErrorSeverity.error,
+            userError.severity == ErrorSeverity.error,
         true,
       );
     });
@@ -237,8 +237,8 @@ void main() {
 
       expect(userError.solutions.length, greaterThan(0));
       // 检查是否包含文件相关的解决方案
-      final hasFileRelatedSolution = userError.solutions.any((solution) =>
-        solution.contains('文件') || solution.contains('路径'));
+      final hasFileRelatedSolution = userError.solutions.any(
+          (solution) => solution.contains('文件') || solution.contains('路径'));
       expect(hasFileRelatedSolution, true);
     });
 
@@ -248,8 +248,8 @@ void main() {
 
       expect(userError.solutions.length, greaterThan(0));
       // 检查是否包含网络相关的解决方案
-      final hasNetworkRelatedSolution = userError.solutions.any((solution) =>
-        solution.contains('网络') || solution.contains('连接'));
+      final hasNetworkRelatedSolution = userError.solutions.any(
+          (solution) => solution.contains('网络') || solution.contains('连接'));
       expect(hasNetworkRelatedSolution, true);
     });
 
@@ -259,8 +259,8 @@ void main() {
 
       expect(userError.solutions.length, greaterThan(0));
       // 检查是否包含权限相关的解决方案
-      final hasPermissionRelatedSolution = userError.solutions.any((solution) =>
-        solution.contains('权限') || solution.contains('设置'));
+      final hasPermissionRelatedSolution = userError.solutions.any(
+          (solution) => solution.contains('权限') || solution.contains('设置'));
       expect(hasPermissionRelatedSolution, true);
     });
   });

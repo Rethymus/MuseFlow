@@ -31,9 +31,10 @@ class ContextualAIService {
     AIService? baseService,
     PersonalizedAIService? personalizedService,
     WritingAnalyzer? writingAnalyzer,
-  }) : _baseService = baseService ?? AIService.instance,
-       _personalizedService = personalizedService ?? PersonalizedAIService.instance,
-       _writingAnalyzer = writingAnalyzer ?? WritingAnalyzer.instance;
+  })  : _baseService = baseService ?? AIService.instance,
+        _personalizedService =
+            personalizedService ?? PersonalizedAIService.instance,
+        _writingAnalyzer = writingAnalyzer ?? WritingAnalyzer.instance;
 
   /// 是否已初始化
   bool _initialized = false;
@@ -52,7 +53,8 @@ class ContextualAIService {
   }) async {
     final service = instance;
     service._baseService = baseService ?? AIService.instance;
-    service._personalizedService = personalizedService ?? PersonalizedAIService.instance;
+    service._personalizedService =
+        personalizedService ?? PersonalizedAIService.instance;
     service._writingAnalyzer = writingAnalyzer ?? WritingAnalyzer.instance;
 
     // 确保服务已初始化
@@ -80,7 +82,8 @@ class ContextualAIService {
     );
 
     // 提取风格特征
-    final styleFeatures = _extractStyleFeatures(documentContent, writingAnalysis);
+    final styleFeatures =
+        _extractStyleFeatures(documentContent, writingAnalysis);
 
     // 分析段落结构
     final paragraphAnalysis = _analyzeParagraphStructure(documentContent);
@@ -418,14 +421,16 @@ class ContextualAIService {
     final paragraphs = content.split(RegExp(r'\n\n+'));
     final avgParagraphLength = paragraphs.isEmpty
         ? 0
-        : paragraphs.map((p) => p.length).reduce((a, b) => a + b) / paragraphs.length;
+        : paragraphs.map((p) => p.length).reduce((a, b) => a + b) /
+            paragraphs.length;
 
     return StyleFeatures(
       averageSentenceLength: avgSentenceLength,
       averageParagraphLength: avgParagraphLength,
       sentenceLengthVariance: _calculateVariance(sentenceLengths),
       usesFormalLanguage: writingAnalysis.languageStyle == LanguageStyle.formal,
-      usesComplexStructures: writingAnalysis.sentenceComplexity == SentenceComplexity.complex,
+      usesComplexStructures:
+          writingAnalysis.sentenceComplexity == SentenceComplexity.complex,
       emotionTone: _detectEmotionTone(content),
     );
   }
@@ -437,7 +442,8 @@ class ContextualAIService {
       totalParagraphs: paragraphs.length,
       averageLength: paragraphs.isEmpty
           ? 0
-          : paragraphs.map((p) => p.length).reduce((a, b) => a + b) / paragraphs.length,
+          : paragraphs.map((p) => p.length).reduce((a, b) => a + b) /
+              paragraphs.length,
       usesIndentation: content.contains('    '),
       topicSentencePattern: _detectTopicSentencePattern(content),
       transitionUsage: _detectTransitionUsage(content),
@@ -582,7 +588,8 @@ class ContextualAIService {
     return '对话片段，包含 ${context.turnCount} 轮对话';
   }
 
-  ConversationSummary _generateConversationSummary(ConversationContext context) {
+  ConversationSummary _generateConversationSummary(
+      ConversationContext context) {
     return ConversationSummary(
       conversationId: context.conversationId,
       documentId: context.documentId,
@@ -632,8 +639,8 @@ class ContextualAIService {
       RegExp(r'[太惊讶了！|很震惊！]'),
     ];
 
-    final hasEmotionalContent = emotionalIndicators
-        .any((pattern) => pattern.hasMatch(content));
+    final hasEmotionalContent =
+        emotionalIndicators.any((pattern) => pattern.hasMatch(content));
 
     return hasEmotionalContent ? EmotionTone.emotional : EmotionTone.neutral;
   }
@@ -642,9 +649,9 @@ class ContextualAIService {
     if (values.isEmpty) return 0;
 
     final mean = values.reduce((a, b) => a + b) / values.length;
-    final variance = values
-        .map((v) => pow(v - mean, 2))
-        .reduce((a, b) => a + b) / values.length;
+    final variance =
+        values.map((v) => pow(v - mean, 2)).reduce((a, b) => a + b) /
+            values.length;
 
     return variance;
   }

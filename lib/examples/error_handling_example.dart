@@ -4,7 +4,6 @@ import '../utils/user_friendly_error_handler.dart';
 import '../widgets/error_display_widgets.dart';
 import '../services/error_handling_service.dart';
 
-
 /// 错误处理集成示例
 ///
 /// 展示如何在应用中集成和使用用户友好的错误处理系统
@@ -35,7 +34,8 @@ class ErrorHandlingDemoScreen extends StatefulWidget {
   const ErrorHandlingDemoScreen({super.key});
 
   @override
-  State<ErrorHandlingDemoScreen> createState() => _ErrorHandlingDemoScreenState();
+  State<ErrorHandlingDemoScreen> createState() =>
+      _ErrorHandlingDemoScreenState();
 }
 
 class _ErrorHandlingDemoScreenState extends State<ErrorHandlingDemoScreen> {
@@ -139,15 +139,15 @@ class _ErrorHandlingDemoScreenState extends State<ErrorHandlingDemoScreen> {
               child: Text('暂无错误记录'),
             )
           else
-            ..._errors.reversed.take(5).map((error) =>
-              Padding(
-                padding: const EdgeInsets.only(bottom: 8),
-                child: ErrorDisplayWidgets.createErrorNotification(
-                  error,
-                  onTap: () => _showErrorDetails(error),
+            ..._errors.reversed.take(5).map(
+                  (error) => Padding(
+                    padding: const EdgeInsets.only(bottom: 8),
+                    child: ErrorDisplayWidgets.createErrorNotification(
+                      error,
+                      onTap: () => _showErrorDetails(error),
+                    ),
+                  ),
                 ),
-              ),
-            ),
         ],
       ),
     );
@@ -253,10 +253,11 @@ class _ErrorHandlingDemoScreenState extends State<ErrorHandlingDemoScreen> {
             Text(patterns['trend'] ?? '未知'),
             const SizedBox(height: 16),
             const Text('改进建议：', style: TextStyle(fontWeight: FontWeight.bold)),
-            ...(patterns['recommendations'] as List<String>).map((rec) => Padding(
-              padding: const EdgeInsets.only(left: 16, bottom: 4),
-              child: Text('• $rec'),
-            )),
+            ...(patterns['recommendations'] as List<String>)
+                .map((rec) => Padding(
+                      padding: const EdgeInsets.only(left: 16, bottom: 4),
+                      child: Text('• $rec'),
+                    )),
           ],
         ),
         actions: [
@@ -297,10 +298,12 @@ class ErrorHandlingBestPractices extends StatefulWidget {
   const ErrorHandlingBestPractices({super.key});
 
   @override
-  State<ErrorHandlingBestPractices> createState() => _ErrorHandlingBestPracticesState();
+  State<ErrorHandlingBestPractices> createState() =>
+      _ErrorHandlingBestPracticesState();
 }
 
-class _ErrorHandlingBestPracticesState extends State<ErrorHandlingBestPractices> {
+class _ErrorHandlingBestPracticesState
+    extends State<ErrorHandlingBestPractices> {
   bool _isLoading = false;
 
   @override

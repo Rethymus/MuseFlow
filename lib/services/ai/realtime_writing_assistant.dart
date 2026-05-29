@@ -29,8 +29,8 @@ class RealTimeWritingAssistant {
   RealTimeWritingAssistant._({
     ContextualAIService? contextualService,
     WritingAnalyzer? writingAnalyzer,
-  }) : _contextualService = contextualService ?? ContextualAIService.instance,
-       _writingAnalyzer = writingAnalyzer ?? WritingAnalyzer.instance;
+  })  : _contextualService = contextualService ?? ContextualAIService.instance,
+        _writingAnalyzer = writingAnalyzer ?? WritingAnalyzer.instance;
 
   /// 获取单例实例
   static RealTimeWritingAssistant get instance {
@@ -44,7 +44,8 @@ class RealTimeWritingAssistant {
     WritingAnalyzer? writingAnalyzer,
   }) async {
     final service = instance;
-    service._contextualService = contextualService ?? ContextualAIService.instance;
+    service._contextualService =
+        contextualService ?? ContextualAIService.instance;
     service._writingAnalyzer = writingAnalyzer ?? WritingAnalyzer.instance;
 
     // 确保上下文服务已初始化
@@ -163,16 +164,14 @@ class RealTimeWritingAssistant {
     );
 
     // 计算置信度
-    final confidence = _calculateIntentConfidence(detectedIntents, writingPattern);
+    final confidence =
+        _calculateIntentConfidence(detectedIntents, writingPattern);
 
     return UserIntentPrediction(
       primaryIntent: detectedIntents.isEmpty
           ? WritingIntent.continueWriting
           : detectedIntents.first.intent,
-      alternativeIntents: detectedIntents
-          .skip(1)
-          .map((d) => d.intent)
-          .toList(),
+      alternativeIntents: detectedIntents.skip(1).map((d) => d.intent).toList(),
       suggestedActions: nextActions,
       confidence: confidence,
       contextFactors: _extractContextFactors(session, currentText),
@@ -308,13 +307,15 @@ class RealTimeWritingAssistant {
     }
 
     // 预测句子补全
-    final sentenceCompletion = await _predictSentenceCompletion(currentText, analysis);
+    final sentenceCompletion =
+        await _predictSentenceCompletion(currentText, analysis);
     if (sentenceCompletion != null) {
       predictions.add(sentenceCompletion);
     }
 
     // 预测段落结构
-    final paragraphStructure = await _predictParagraphStructure(currentText, analysis);
+    final paragraphStructure =
+        await _predictParagraphStructure(currentText, analysis);
     if (paragraphStructure != null) {
       predictions.add(paragraphStructure);
     }
@@ -580,9 +581,9 @@ class RealTimeWritingAssistant {
     if (intents.isEmpty) return 0.5;
 
     // 基于检测到的意图和写作模式计算置信度
-    final avgIntentConfidence = intents
-        .map((i) => i.confidence)
-        .reduce((a, b) => a + b) / intents.length;
+    final avgIntentConfidence =
+        intents.map((i) => i.confidence).reduce((a, b) => a + b) /
+            intents.length;
 
     final patternFactor = _calculatePatternFactor(pattern);
 
@@ -632,7 +633,8 @@ class RealTimeWritingAssistant {
 
     for (final area in focusAreas) {
       prompt.writeln('\n$area:');
-      prompt.writeln('- ${_getAreaSpecificSuggestion(area, currentText, analysis)}');
+      prompt.writeln(
+          '- ${_getAreaSpecificSuggestion(area, currentText, analysis)}');
     }
 
     return prompt.toString();
@@ -783,24 +785,30 @@ class RealTimeWritingAssistant {
   }
 
   bool _isAskingQuestion(String text) {
-    return text.contains('?') || text.contains('？') ||
-           text.contains(RegExp(r'[是否|怎样|如何|为什么|啥]'));
+    return text.contains('?') ||
+        text.contains('？') ||
+        text.contains(RegExp(r'[是否|怎样|如何|为什么|啥]'));
   }
 
   bool _isListingItems(String text) {
     return text.contains(RegExp(r'[\n]')) ||
-           text.contains(RegExp(r'[，、]')) ||
-           text.contains('首先') || text.contains('其次');
+        text.contains(RegExp(r'[，、]')) ||
+        text.contains('首先') ||
+        text.contains('其次');
   }
 
   bool _isExplainingConcept(String text) {
-    return text.contains('是指') || text.contains('意思是') ||
-           text.contains('例如') || text.contains('比如');
+    return text.contains('是指') ||
+        text.contains('意思是') ||
+        text.contains('例如') ||
+        text.contains('比如');
   }
 
   bool _isMakingArgument(String text) {
-    return text.contains('因此') || text.contains('所以') ||
-           text.contains('然而') || text.contains('但是');
+    return text.contains('因此') ||
+        text.contains('所以') ||
+        text.contains('然而') ||
+        text.contains('但是');
   }
 
   double _calculatePatternFactor(WritingPattern pattern) {
@@ -891,7 +899,8 @@ class RealTimeWritingAssistant {
     return '较少';
   }
 
-  Future<WritingSessionSummary> _generateSessionSummary(WritingSession session) async {
+  Future<WritingSessionSummary> _generateSessionSummary(
+      WritingSession session) async {
     return WritingSessionSummary(
       sessionId: session.sessionId,
       documentId: session.documentId,
@@ -902,7 +911,8 @@ class RealTimeWritingAssistant {
     );
   }
 
-  List<String> _extractContextFactors(WritingSession session, String currentText) {
+  List<String> _extractContextFactors(
+      WritingSession session, String currentText) {
     return [
       '文档ID: ${session.documentId}',
       '文本长度: ${currentText.length}',
@@ -942,8 +952,8 @@ class WritingSession {
     DateTime? lastUpdateTime,
     this.cursorPosition = 0,
     this.metadata,
-  }) : currentContent = currentContent ?? initialContent,
-       lastUpdateTime = lastUpdateTime ?? startTime;
+  })  : currentContent = currentContent ?? initialContent,
+        lastUpdateTime = lastUpdateTime ?? startTime;
 }
 
 /// 上下文理解
@@ -1144,10 +1154,10 @@ class FormatSuggestions {
   String punctuationStyle = '标准';
 
   Map<String, dynamic> toJson() => {
-    'paragraphBreaks': paragraphBreaks,
-    'listUsage': listUsage,
-    'punctuationStyle': punctuationStyle,
-  };
+        'paragraphBreaks': paragraphBreaks,
+        'listUsage': listUsage,
+        'punctuationStyle': punctuationStyle,
+      };
 }
 
 /// 格式建议
@@ -1264,13 +1274,13 @@ class WritingSessionSummary {
   });
 
   Map<String, dynamic> toJson() => {
-    'sessionId': sessionId,
-    'documentId': documentId,
-    'startTime': startTime.toIso8601String(),
-    'endTime': endTime.toIso8601String(),
-    'finalContent': finalContent,
-    'metadata': metadata,
-  };
+        'sessionId': sessionId,
+        'documentId': documentId,
+        'startTime': startTime.toIso8601String(),
+        'endTime': endTime.toIso8601String(),
+        'finalContent': finalContent,
+        'metadata': metadata,
+      };
 }
 
 /// 上下文建议
@@ -1290,12 +1300,12 @@ class ContextualSuggestion {
   });
 
   Map<String, dynamic> toJson() => {
-    'type': type.toString(),
-    'title': title,
-    'description': description,
-    'confidence': confidence,
-    'applicableText': applicableText,
-  };
+        'type': type.toString(),
+        'title': title,
+        'description': description,
+        'confidence': confidence,
+        'applicableText': applicableText,
+      };
 }
 
 /// 建议类型

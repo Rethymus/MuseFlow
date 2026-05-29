@@ -165,7 +165,7 @@ class StartupAnalyzer {
     );
     buffer.writeln(
       '  状态: ${_getStatusIcon(coreServices['status'])} '
-          '${coreServices['status']}',
+      '${coreServices['status']}',
     );
 
     // 完整启动性能
@@ -182,7 +182,7 @@ class StartupAnalyzer {
     buffer.writeln('\n📈 总体状态:');
     buffer.writeln(
       '  ${_getOverallStatusIcon(analysis['overall_status'])} '
-          '${analysis['overall_status']}',
+      '${analysis['overall_status']}',
     );
 
     // 任务详情
@@ -293,9 +293,8 @@ class StartupAnalyzer {
         'timestamp': current.timestamp.toIso8601String(),
         'basicUI_change': current.timeToBasicUI.inMilliseconds -
             previous.timeToBasicUI.inMilliseconds,
-        'coreServices_change':
-            current.timeToCoreServices.inMilliseconds -
-                previous.timeToCoreServices.inMilliseconds,
+        'coreServices_change': current.timeToCoreServices.inMilliseconds -
+            previous.timeToCoreServices.inMilliseconds,
         'complete_change': current.timeToComplete.inMilliseconds -
             previous.timeToComplete.inMilliseconds,
       };
@@ -323,7 +322,7 @@ class StartupAnalyzer {
     if (basicUI['status'] == 'fail') {
       issues.add(
         '基础UI加载时间过长: ${basicUI['time']}ms '
-            '(目标: ${basicUI['target']}ms)',
+        '(目标: ${basicUI['target']}ms)',
       );
     }
 
@@ -332,7 +331,7 @@ class StartupAnalyzer {
     if (coreServices['status'] == 'fail') {
       issues.add(
         '核心服务初始化时间过长: ${coreServices['time']}ms '
-            '(目标: ${coreServices['target']}ms)',
+        '(目标: ${coreServices['target']}ms)',
       );
     }
 
@@ -341,7 +340,7 @@ class StartupAnalyzer {
     if (complete['status'] == 'fail') {
       issues.add(
         '完整启动时间过长: ${complete['time']}ms '
-            '(目标: ${complete['target']}ms)',
+        '(目标: ${complete['target']}ms)',
       );
     }
 

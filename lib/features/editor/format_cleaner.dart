@@ -67,7 +67,8 @@ class FormatCleaner {
 
     // 清除HTML标签（选择性）
     _CleanRule(
-      pattern: RegExp(r'<\/?(?!br|p|strong|em|code)[a-z]+[^>]*>', multiLine: true, caseSensitive: false),
+      pattern: RegExp(r'<\/?(?!br|p|strong|em|code)[a-z]+[^>]*>',
+          multiLine: true, caseSensitive: false),
       replacement: '',
       description: '清除HTML标签',
     ),
@@ -364,8 +365,8 @@ class FormatInfo {
   @override
   String toString() {
     return 'FormatInfo(hasMarkdown: $hasMarkdown, hasHTML: $hasHTML, '
-           'hasCodeBlocks: $hasCodeBlocks, headers: $markdownHeaderCount, '
-           'lists: $markdownListCount, htmlTags: $htmlTagCount)';
+        'hasCodeBlocks: $hasCodeBlocks, headers: $markdownHeaderCount, '
+        'lists: $markdownListCount, htmlTags: $htmlTagCount)';
   }
 }
 
@@ -384,6 +385,6 @@ class CleanPreview {
   @override
   String toString() {
     return 'CleanPreview(description: $description, matches: $matchCount, '
-           'examples: ${examples.take(2).join(', ')}...)';
+        'examples: ${examples.take(2).join(', ')}...)';
   }
 }

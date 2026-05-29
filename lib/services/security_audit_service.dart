@@ -116,10 +116,10 @@ class SecurityAuditService {
     final last24Hours = now.subtract(const Duration(hours: 24));
     final last7Days = now.subtract(const Duration(days: 7));
 
-    final recent24Logs = _auditLogs.where((log) =>
-      log.timestamp.isAfter(last24Hours)).toList();
-    final recent7DaysLogs = _auditLogs.where((log) =>
-      log.timestamp.isAfter(last7Days)).toList();
+    final recent24Logs =
+        _auditLogs.where((log) => log.timestamp.isAfter(last24Hours)).toList();
+    final recent7DaysLogs =
+        _auditLogs.where((log) => log.timestamp.isAfter(last7Days)).toList();
 
     final rejected24 = recent24Logs.where((log) => !log.allowed).length;
     final rejected7Days = recent7DaysLogs.where((log) => !log.allowed).length;
@@ -132,8 +132,10 @@ class SecurityAuditService {
       'rejected_last_7_days': rejected7Days,
       'total_alerts': _alerts.length,
       'active_alerts': _alerts.where((alert) => !alert.resolved).length,
-      'high_severity_alerts': _alerts.where((alert) =>
-        alert.severity == AlertSeverity.high && !alert.resolved).length,
+      'high_severity_alerts': _alerts
+          .where((alert) =>
+              alert.severity == AlertSeverity.high && !alert.resolved)
+          .length,
     };
   }
 
@@ -170,13 +172,16 @@ class SecurityAuditService {
 
     final appDir = await getApplicationDocumentsDirectory();
     final timestamp = DateTime.now().toIso8601String();
-    final reportFile = File('${appDir.path}/museflow/audit/report_$timestamp.json');
+    final reportFile =
+        File('${appDir.path}/museflow/audit/report_$timestamp.json');
 
     final report = {
       'generated_at': timestamp,
       'statistics': getAuditStatistics(),
-      'recent_logs': getRecentLogs(limit: 500).map((log) => log.toJson()).toList(),
-      'active_alerts': getActiveAlerts().map((alert) => alert.toJson()).toList(),
+      'recent_logs':
+          getRecentLogs(limit: 500).map((log) => log.toJson()).toList(),
+      'active_alerts':
+          getActiveAlerts().map((alert) => alert.toJson()).toList(),
     };
 
     final jsonString = const JsonEncoder.withIndent('  ').convert(report);
@@ -187,7 +192,8 @@ class SecurityAuditService {
   }
 
   /// 清理旧日志
-  Future<void> cleanupOldLogs({Duration maxAge = const Duration(days: 30)}) async {
+  Future<void> cleanupOldLogs(
+      {Duration maxAge = const Duration(days: 30)}) async {
     final cutoff = DateTime.now().subtract(maxAge);
     final initialSize = _auditLogs.length;
 
@@ -201,9 +207,10 @@ class SecurityAuditService {
 
   Future<void> _loadExistingAuditLogs(String auditDir) async {
     try {
-      final auditFiles = Directory(auditDir).listSync()
-        .where((entity) => entity.path.endsWith('.json'))
-        .toList();
+      final auditFiles = Directory(auditDir)
+          .listSync()
+          .where((entity) => entity.path.endsWith('.json'))
+          .toList();
 
       for (final file in auditFiles) {
         if (file is! File) continue;
@@ -230,7 +237,6 @@ class SecurityAuditService {
 
       // 按时间戳排序
       _auditLogs.sort((a, b) => a.timestamp.compareTo(b.timestamp));
-
     } catch (e) {
       Logger.debug('加载现有审计日志失败: $e');
     }
@@ -359,8 +365,8 @@ class SecurityAlert {
       filePath: json['file_path'] as String?,
       resolved: json['resolved'] as bool? ?? false,
       resolvedAt: json['resolved_at'] != null
-        ? DateTime.parse(json['resolved_at'] as String)
-        : null,
+          ? DateTime.parse(json['resolved_at'] as String)
+          : null,
     );
   }
 }

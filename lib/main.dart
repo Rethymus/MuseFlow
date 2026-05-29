@@ -50,11 +50,12 @@ class MuseFlowApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => CharacterService()),
         ChangeNotifierProvider(create: (_) => WorldService()),
         Provider(create: (_) => SecureStorageService()),
-        ChangeNotifierProvider(create: (_) => GlobalSearchService(
-          storageService: SecureStorageService.instance,
-          characterService: CharacterService(),
-          worldService: WorldService(),
-        )),
+        ChangeNotifierProvider(
+            create: (_) => GlobalSearchService(
+                  storageService: SecureStorageService.instance,
+                  characterService: CharacterService(),
+                  worldService: WorldService(),
+                )),
         ChangeNotifierProvider(create: (_) => SharedDataService()),
       ],
       child: MaterialApp(

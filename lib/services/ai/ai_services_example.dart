@@ -145,7 +145,8 @@ class AIServicesExample {
 
     print('\n当前输入: "$userInput2"');
     print('预测意图: ${intent.primaryIntent}');
-    print('建议动作: ${intent.suggestedActions.map((a) => a.description).join(', ')}');
+    print(
+        '建议动作: ${intent.suggestedActions.map((a) => a.description).join(', ')}');
 
     // 4. 获取格式建议
     final userInput3 = '''
@@ -261,7 +262,6 @@ class AIServicesExample {
       // 3. 现在应该可以正常工作
       final response = await integration.sendContextualMessage('测试消息');
       print('成功发送上下文消息: ${response.content}');
-
     } catch (e) {
       print('发生错误: $e');
       // 错误处理逻辑

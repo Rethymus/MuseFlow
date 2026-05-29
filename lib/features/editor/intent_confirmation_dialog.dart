@@ -16,7 +16,8 @@ class IntentConfirmationDialog extends StatefulWidget {
   });
 
   @override
-  State<IntentConfirmationDialog> createState() => _IntentConfirmationDialogState();
+  State<IntentConfirmationDialog> createState() =>
+      _IntentConfirmationDialogState();
 }
 
 class _IntentConfirmationDialogState extends State<IntentConfirmationDialog> {
@@ -362,7 +363,8 @@ class _IntentAdjustmentDialog extends StatefulWidget {
   });
 
   @override
-  State<_IntentAdjustmentDialog> createState() => _IntentAdjustmentDialogState();
+  State<_IntentAdjustmentDialog> createState() =>
+      _IntentAdjustmentDialogState();
 }
 
 class _IntentAdjustmentDialogState extends State<_IntentAdjustmentDialog> {
@@ -372,7 +374,8 @@ class _IntentAdjustmentDialogState extends State<_IntentAdjustmentDialog> {
   @override
   void initState() {
     super.initState();
-    _descriptionController = TextEditingController(text: widget.intent.description);
+    _descriptionController =
+        TextEditingController(text: widget.intent.description);
     _parameterControllers = {};
 
     for (final entry in widget.intent.parameters.entries) {

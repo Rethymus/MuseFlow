@@ -101,7 +101,8 @@ class AICacheExample {
     Logger.debug('\n=== 缓存健康状态 ===');
     Logger.debug('健康状态: ${health['is_healthy'] ? "良好" : "需要关注"}');
     Logger.debug('命中率: ${(health['hit_rate'] * 100).toStringAsFixed(1)}%');
-    Logger.debug('请求节省率: ${(health['requests_saved_rate'] * 100).toStringAsFixed(1)}%');
+    Logger.debug(
+        '请求节省率: ${(health['requests_saved_rate'] * 100).toStringAsFixed(1)}%');
 
     // 获取性能指标
     final metrics = await aiService.getCachePerformanceMetrics();
@@ -150,7 +151,8 @@ class AICacheExample {
 
     // 获取当前性能指标
     final metricsBefore = await aiService.getCachePerformanceMetrics();
-    Logger.debug('优化前命中率: ${(metricsBefore.hitRate * 100).toStringAsFixed(1)}%');
+    Logger.debug(
+        '优化前命中率: ${(metricsBefore.hitRate * 100).toStringAsFixed(1)}%');
 
     // 优化缓存策略
     await aiService.optimizeCacheStrategy();
@@ -183,10 +185,13 @@ class AICacheExample {
 
     for (final query in commonQueries) {
       await aiService.warmupCache(
-        [AIMessage.system(
-          id: 'sys',
-          content: '你是一个Flutter专家',
-        ), query],
+        [
+          AIMessage.system(
+            id: 'sys',
+            content: '你是一个Flutter专家',
+          ),
+          query
+        ],
         config,
       );
     }
@@ -196,14 +201,18 @@ class AICacheExample {
     // 现在这些请求将直接从缓存返回
     for (final query in commonQueries) {
       final response = await aiService.sendMessage(
-        [AIMessage.system(
-          id: 'sys',
-          content: '你是一个Flutter专家',
-        ), query],
+        [
+          AIMessage.system(
+            id: 'sys',
+            content: '你是一个Flutter专家',
+          ),
+          query
+        ],
         config: config,
       );
       Logger.debug('查询: ${query.content}');
-      Logger.debug('响应: ${response.metadata?['cached'] ?? false ? "来自缓存" : "新请求"}');
+      Logger.debug(
+          '响应: ${response.metadata?['cached'] ?? false ? "来自缓存" : "新请求"}');
     }
   }
 
@@ -341,10 +350,12 @@ class AICacheExample {
     ];
 
     final response1 = await aiService.sendMessage(messages, config: config);
-    Logger.debug('  第一次请求: ${response1.metadata?['cached'] ?? false ? "缓存命中 ✓" : "新请求"}');
+    Logger.debug(
+        '  第一次请求: ${response1.metadata?['cached'] ?? false ? "缓存命中 ✓" : "新请求"}');
 
     final response2 = await aiService.sendMessage(messages, config: config);
-    Logger.debug('  第二次请求: ${response2.metadata?['cached'] ?? false ? "缓存命中 ✓" : "新请求"}');
+    Logger.debug(
+        '  第二次请求: ${response2.metadata?['cached'] ?? false ? "缓存命中 ✓" : "新请求"}');
     Logger.debug('');
 
     // 6. 查看统计

@@ -132,7 +132,8 @@ class CharacterModel extends HiveObject {
       personality: json['personality'] as String?,
       background: json['background'] as String?,
       speakingStyle: json['speakingStyle'] as String?,
-      relationships: (json['relationships'] as List<dynamic>?)?.cast<String>() ?? [],
+      relationships:
+          (json['relationships'] as List<dynamic>?)?.cast<String>() ?? [],
       tags: (json['tags'] as List<dynamic>?)?.cast<String>() ?? [],
       createdAt: json['createdAt'] != null
           ? DateTime.parse(json['createdAt'] as String)
@@ -155,7 +156,8 @@ class CharacterModel extends HiveObject {
     if (appearance?.isNotEmpty == true) buffer.writeln('外貌：$appearance');
     if (personality?.isNotEmpty == true) buffer.writeln('性格：$personality');
     if (background?.isNotEmpty == true) buffer.writeln('背景：$background');
-    if (speakingStyle?.isNotEmpty == true) buffer.writeln('说话风格：$speakingStyle');
+    if (speakingStyle?.isNotEmpty == true)
+      buffer.writeln('说话风格：$speakingStyle');
 
     if (relationships.isNotEmpty) {
       buffer.writeln('人际关系：${relationships.join('、')}');
@@ -176,12 +178,12 @@ class CharacterModel extends HiveObject {
 
     final lowerQuery = query.toLowerCase();
     return name.toLowerCase().contains(lowerQuery) ||
-           (appearance?.toLowerCase().contains(lowerQuery) ?? false) ||
-           (personality?.toLowerCase().contains(lowerQuery) ?? false) ||
-           (background?.toLowerCase().contains(lowerQuery) ?? false) ||
-           (speakingStyle?.toLowerCase().contains(lowerQuery) ?? false) ||
-           tags.any((tag) => tag.toLowerCase().contains(lowerQuery)) ||
-           relationships.any((rel) => rel.toLowerCase().contains(lowerQuery));
+        (appearance?.toLowerCase().contains(lowerQuery) ?? false) ||
+        (personality?.toLowerCase().contains(lowerQuery) ?? false) ||
+        (background?.toLowerCase().contains(lowerQuery) ?? false) ||
+        (speakingStyle?.toLowerCase().contains(lowerQuery) ?? false) ||
+        tags.any((tag) => tag.toLowerCase().contains(lowerQuery)) ||
+        relationships.any((rel) => rel.toLowerCase().contains(lowerQuery));
   }
 
   @override

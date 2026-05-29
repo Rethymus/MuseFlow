@@ -7,7 +7,8 @@ import '../utils/user_friendly_error_handler.dart';
 /// 提供各种错误显示方式，包括横幅、对话框、卡片等
 class ErrorDisplayWidgets {
   /// 显示错误横幅
-  static ScaffoldFeatureController<SnackBar, SnackBarClosedReason> showErrorBanner(
+  static ScaffoldFeatureController<SnackBar, SnackBarClosedReason>
+      showErrorBanner(
     BuildContext context,
     UserFriendlyError error, {
     Duration duration = const Duration(seconds: 5),
@@ -334,7 +335,8 @@ class _ErrorDialog extends StatelessWidget {
                       width: 24,
                       height: 24,
                       decoration: BoxDecoration(
-                        color: ErrorDisplayWidgets._getSeverityColor(error.severity),
+                        color: ErrorDisplayWidgets._getSeverityColor(
+                            error.severity),
                         shape: BoxShape.circle,
                       ),
                       child: Center(
@@ -348,9 +350,9 @@ class _ErrorDialog extends StatelessWidget {
                         ),
                       ),
                     ),
-                const SizedBox(width: 8),
-                Expanded(child: Text(solution)),
-              ],
+                    const SizedBox(width: 8),
+                    Expanded(child: Text(solution)),
+                  ],
                 ),
               );
             }).toList(),
@@ -367,7 +369,8 @@ class _ErrorDialog extends StatelessWidget {
                     Text(
                       '📚 查看帮助文档',
                       style: TextStyle(
-                        color: ErrorDisplayWidgets._getSeverityColor(error.severity),
+                        color: ErrorDisplayWidgets._getSeverityColor(
+                            error.severity),
                         decoration: TextDecoration.underline,
                       ),
                     ),
@@ -485,7 +488,8 @@ class _ErrorBoundaryState extends State<ErrorBoundary> {
     widget.onError?.call(error, stackTrace);
 
     // 记录错误
-    final userFriendlyError = userFriendlyErrorHandler.handleError(error, stackTrace);
+    final userFriendlyError =
+        userFriendlyErrorHandler.handleError(error, stackTrace);
     userFriendlyErrorHandler.logError(userFriendlyError);
   }
 
@@ -504,11 +508,13 @@ class _ErrorBoundaryState extends State<ErrorBoundary> {
       }
 
       // 默认错误显示
-      final userFriendlyError = userFriendlyErrorHandler.handleError(_error, _stackTrace);
+      final userFriendlyError =
+          userFriendlyErrorHandler.handleError(_error, _stackTrace);
       return Scaffold(
         appBar: AppBar(
           title: const Text('发生错误'),
-          backgroundColor: ErrorDisplayWidgets._getSeverityColor(userFriendlyError.severity),
+          backgroundColor:
+              ErrorDisplayWidgets._getSeverityColor(userFriendlyError.severity),
         ),
         body: Center(
           child: SingleChildScrollView(

@@ -55,7 +55,8 @@ class _SearchPageState extends State<SearchPage> {
 
   void _navigateToHome() {
     // 找到MainNavigationContainer并切换到首页
-    final navigationController = context.findAncestorStateOfType<_MainNavigationContainerState>();
+    final navigationController =
+        context.findAncestorStateOfType<_MainNavigationContainerState>();
     if (navigationController != null) {
       navigationController._onDestinationSelected(0);
     }
@@ -129,7 +130,8 @@ class _SearchPageState extends State<SearchPage> {
     );
   }
 
-  Widget _buildResultsContent(ThemeData theme, GlobalSearchService searchService) {
+  Widget _buildResultsContent(
+      ThemeData theme, GlobalSearchService searchService) {
     if (searchService.isSearching) {
       return const Center(
         child: CircularProgressIndicator(),
@@ -164,7 +166,8 @@ class _SearchPageState extends State<SearchPage> {
     );
   }
 
-  Widget _buildSearchHistory(ThemeData theme, GlobalSearchService searchService) {
+  Widget _buildSearchHistory(
+      ThemeData theme, GlobalSearchService searchService) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -206,7 +209,8 @@ class _SearchPageState extends State<SearchPage> {
     );
   }
 
-  Widget _buildPopularSearches(ThemeData theme, GlobalSearchService searchService) {
+  Widget _buildPopularSearches(
+      ThemeData theme, GlobalSearchService searchService) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -325,13 +329,13 @@ class _SearchPageState extends State<SearchPage> {
 
             // 该类型的结果列表
             ...results.map((result) => Padding(
-              padding: const EdgeInsets.only(bottom: 8),
-              child: GlobalSearchResultTile(
-                result: result,
-                query: searchService.query,
-                onTap: () => _handleSearchResult(result),
-              ),
-            )),
+                  padding: const EdgeInsets.only(bottom: 8),
+                  child: GlobalSearchResultTile(
+                    result: result,
+                    query: searchService.query,
+                    onTap: () => _handleSearchResult(result),
+                  ),
+                )),
           ],
         );
       },

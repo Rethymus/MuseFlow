@@ -35,11 +35,13 @@ class UserPreferenceManager {
     WritingAnalyzer? writingAnalyzer,
     FeedbackCollector? feedbackCollector,
     PreferenceLearningAlgorithm? learningAlgorithm,
-  }) : _secureStorage = secureStorage ?? const FlutterSecureStorage(),
-       _preferences = preferences ?? (throw ArgumentError('SharedPreferences required')),
-       _writingAnalyzer = writingAnalyzer ?? WritingAnalyzer.instance,
-       _feedbackCollector = feedbackCollector ?? FeedbackCollector.instance,
-       _learningAlgorithm = learningAlgorithm ?? PreferenceLearningAlgorithm.instance;
+  })  : _secureStorage = secureStorage ?? const FlutterSecureStorage(),
+        _preferences =
+            preferences ?? (throw ArgumentError('SharedPreferences required')),
+        _writingAnalyzer = writingAnalyzer ?? WritingAnalyzer.instance,
+        _feedbackCollector = feedbackCollector ?? FeedbackCollector.instance,
+        _learningAlgorithm =
+            learningAlgorithm ?? PreferenceLearningAlgorithm.instance;
 
   /// 获取单例实例
   static Future<UserPreferenceManager> initialize({
@@ -59,7 +61,8 @@ class UserPreferenceManager {
   /// 获取实例
   static UserPreferenceManager get instance {
     if (_instance == null) {
-      throw StateError('UserPreferenceManager not initialized. Call initialize() first.');
+      throw StateError(
+          'UserPreferenceManager not initialized. Call initialize() first.');
     }
     return _instance!;
   }
@@ -146,9 +149,8 @@ class UserPreferenceManager {
       if (feedbackJson != null) {
         final List<dynamic> data = json.decode(feedbackJson);
         _feedbackHistory.clear();
-        _feedbackHistory.addAll(
-          data.map((item) => UserFeedback.fromJson(item as Map<String, dynamic>))
-        );
+        _feedbackHistory.addAll(data.map(
+            (item) => UserFeedback.fromJson(item as Map<String, dynamic>)));
       }
     } catch (e) {
       // 忽略错误，保持空列表
@@ -158,9 +160,7 @@ class UserPreferenceManager {
   /// 保存反馈历史
   Future<void> saveFeedbackHistory() async {
     try {
-      final json = jsonEncode(
-        _feedbackHistory.map((f) => f.toJson()).toList()
-      );
+      final json = jsonEncode(_feedbackHistory.map((f) => f.toJson()).toList());
       await _preferences.setString(_feedbackKey, json);
     } catch (e) {
       throw UserPreferenceException('Failed to save feedback history: $e');
@@ -174,9 +174,8 @@ class UserPreferenceManager {
       if (analyticsJson != null) {
         final List<dynamic> data = json.decode(analyticsJson);
         _writingAnalytics.clear();
-        _writingAnalytics.addAll(
-          data.map((item) => WritingAnalysis.fromJson(item as Map<String, dynamic>))
-        );
+        _writingAnalytics.addAll(data.map(
+            (item) => WritingAnalysis.fromJson(item as Map<String, dynamic>)));
       }
     } catch (e) {
       // 忽略错误，保持空列表
@@ -186,9 +185,8 @@ class UserPreferenceManager {
   /// 保存写作分析数据
   Future<void> saveWritingAnalytics() async {
     try {
-      final json = jsonEncode(
-        _writingAnalytics.map((a) => a.toJson()).toList()
-      );
+      final json =
+          jsonEncode(_writingAnalytics.map((a) => a.toJson()).toList());
       await _preferences.setString(_analyticsKey, json);
     } catch (e) {
       throw UserPreferenceException('Failed to save writing analytics: $e');
@@ -199,16 +197,19 @@ class UserPreferenceManager {
   UserPreference? get currentPreference => _currentPreference;
 
   /// 获取学习配置
-  PreferenceLearningConfig get config => _config ?? PreferenceLearningConfig.defaultConfig();
+  PreferenceLearningConfig get config =>
+      _config ?? PreferenceLearningConfig.defaultConfig();
 
   /// 获取反馈历史
   List<UserFeedback> get feedbackHistory => List.unmodifiable(_feedbackHistory);
 
   /// 获取写作分析数据
-  List<WritingAnalysis> get writingAnalytics => List.unmodifiable(_writingAnalytics);
+  List<WritingAnalysis> get writingAnalytics =>
+      List.unmodifiable(_writingAnalytics);
 
   /// 偏好更新流
-  Stream<UserPreference> get preferenceUpdates => _preferenceUpdateController.stream;
+  Stream<UserPreference> get preferenceUpdates =>
+      _preferenceUpdateController.stream;
 
   /// 添加用户反馈
   Future<void> addFeedback(UserFeedback feedback) async {
@@ -313,7 +314,8 @@ class UserPreferenceManager {
       return originalSuggestion;
     }
 
-    if (!_currentPreference!.hasSufficientConfidence(config.confidenceThreshold)) {
+    if (!_currentPreference!
+        .hasSufficientConfidence(config.confidenceThreshold)) {
       return originalSuggestion;
     }
 
@@ -378,7 +380,8 @@ class UserPreferenceManager {
       'confidenceScore': preference.confidenceScore,
       'learningProgress': preference.learningProgress,
       'overallAcceptanceRate': preference.overallAcceptanceRate,
-      'hasSufficientConfidence': preference.hasSufficientConfidence(config.confidenceThreshold),
+      'hasSufficientConfidence':
+          preference.hasSufficientConfidence(config.confidenceThreshold),
       'topModificationTypes': preference.getTopModificationTypes(5),
       'topTopics': preference.getTopTopics(10),
       'feedbackHistorySize': _feedbackHistory.length,
@@ -405,15 +408,16 @@ class UserPreferenceManager {
 
   /// 清除过期数据
   Future<void> clearExpiredData() async {
-    final cutoffDate = DateTime.now().subtract(Duration(days: config.dataRetentionDays));
+    final cutoffDate =
+        DateTime.now().subtract(Duration(days: config.dataRetentionDays));
 
     // 清除过期的反馈历史
-    _feedbackHistory.removeWhere((feedback) =>
-      feedback.timestamp.isBefore(cutoffDate));
+    _feedbackHistory
+        .removeWhere((feedback) => feedback.timestamp.isBefore(cutoffDate));
 
     // 清除过期的写作分析
-    _writingAnalytics.removeWhere((analysis) =>
-      analysis.timestamp.isBefore(cutoffDate));
+    _writingAnalytics
+        .removeWhere((analysis) => analysis.timestamp.isBefore(cutoffDate));
 
     await saveFeedbackHistory();
     await saveWritingAnalytics();

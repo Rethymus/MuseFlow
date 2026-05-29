@@ -60,8 +60,7 @@ class SecureDataService {
       // Load existing key and salt
       _cachedKey = encrypt.Key.fromBase64(existingKey);
       _cachedSalt = Uint8List.fromList(
-        existingSalt.codeUnits.map((c) => c as int).toList()
-      );
+          existingSalt.codeUnits.map((c) => c as int).toList());
     } else {
       // Generate new key and salt
       final salt = _generateRandomBytes(_saltLength);
@@ -132,14 +131,11 @@ class SecureDataService {
     final iv = _generateRandomBytes(_ivLength);
 
     // Derive key for this specific data
-    final derivedKey = dataId != null
-        ? _deriveKey(dataId)
-        : _cachedKey!.bytes;
+    final derivedKey = dataId != null ? _deriveKey(dataId) : _cachedKey!.bytes;
 
     // Create encrypter with GCM mode
     final encrypter = encrypt.Encrypter(
-      encrypt.AES(encrypt.Key(derivedKey), mode: encrypt.AESMode.gcm)
-    );
+        encrypt.AES(encrypt.Key(derivedKey), mode: encrypt.AESMode.gcm));
 
     // Encrypt the data
     final encrypted = encrypter.encryptBytes(
@@ -178,14 +174,12 @@ class SecureDataService {
       final data = combined.sublist(_ivLength);
 
       // Derive key for this specific data
-      final derivedKey = dataId != null
-          ? _deriveKey(dataId)
-          : _cachedKey!.bytes;
+      final derivedKey =
+          dataId != null ? _deriveKey(dataId) : _cachedKey!.bytes;
 
       // Create decrypter with GCM mode
       final decrypter = encrypt.Encrypter(
-        encrypt.AES(encrypt.Key(derivedKey), mode: encrypt.AESMode.gcm)
-      );
+          encrypt.AES(encrypt.Key(derivedKey), mode: encrypt.AESMode.gcm));
 
       // Decrypt the data
       final decrypted = decrypter.decryptBytes(
@@ -240,7 +234,8 @@ class SecureDataService {
   ///
   /// Optimizes performance by caching derived keys and minimizing
   /// cryptographic operations.
-  List<Map<String, dynamic>> batchEncryptNotes(List<Map<String, dynamic>> notes) {
+  List<Map<String, dynamic>> batchEncryptNotes(
+      List<Map<String, dynamic>> notes) {
     return notes.map((note) {
       final noteId = note['id'] as String;
       final encrypted = encryptNoteData(
@@ -264,7 +259,8 @@ class SecureDataService {
   /// Batch decrypt multiple notes efficiently
   ///
   /// Optimizes performance for bulk decryption operations.
-  List<Map<String, dynamic>> batchDecryptNotes(List<Map<String, dynamic>> notes) {
+  List<Map<String, dynamic>> batchDecryptNotes(
+      List<Map<String, dynamic>> notes) {
     return notes.map((note) {
       final noteId = note['id'] as String;
       final isEncrypted = note['is_encrypted'] as bool? ?? false;
@@ -353,7 +349,8 @@ class SecurityException implements Exception {
 }
 
 /// PBKDF2 key derivation function implementation
-List<int> pbkdf2(Hmac hmac, List<int> password, List<int> salt, int iterations, int keyLength) {
+List<int> pbkdf2(Hmac hmac, List<int> password, List<int> salt, int iterations,
+    int keyLength) {
   final dk = <int>[];
   final blockCount = (keyLength / hmac.hash.digestSize).ceil();
 
@@ -382,6 +379,5 @@ List<int> pbkdf2(Hmac hmac, List<int> password, List<int> salt, int iterations, 
 
 /// Convert integer to big-endian bytes
 Uint8List _intToBytes(int value) {
-  return Uint8List(4)
-    ..buffer.asByteData().setUint32(0, value, Endian.big);
+  return Uint8List(4)..buffer.asByteData().setUint32(0, value, Endian.big);
 }

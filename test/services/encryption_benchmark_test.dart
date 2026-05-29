@@ -29,8 +29,10 @@ void main() {
 
         final avgTime = stopwatch.elapsedMilliseconds / iterations;
 
-        print('Small data encryption avg time: ${avgTime.toStringAsFixed(2)}ms');
-        print('Total time: ${stopwatch.elapsedMilliseconds}ms for $iterations operations');
+        print(
+            'Small data encryption avg time: ${avgTime.toStringAsFixed(2)}ms');
+        print(
+            'Total time: ${stopwatch.elapsedMilliseconds}ms for $iterations operations');
 
         expect(avgTime, lessThan(50)); // Should be under 50ms per operation
       });
@@ -48,9 +50,11 @@ void main() {
         stopwatch.stop();
 
         final avgTime = stopwatch.elapsedMilliseconds / iterations;
-        final throughput = (largeData.length * iterations) / (stopwatch.elapsedMilliseconds / 1000);
+        final throughput = (largeData.length * iterations) /
+            (stopwatch.elapsedMilliseconds / 1000);
 
-        print('Large data encryption avg time: ${avgTime.toStringAsFixed(2)}ms');
+        print(
+            'Large data encryption avg time: ${avgTime.toStringAsFixed(2)}ms');
         print('Throughput: ${(throughput / 1024).toStringAsFixed(2)} KB/s');
 
         expect(avgTime, lessThan(200)); // Should be under 200ms for 10KB
@@ -91,9 +95,8 @@ void main() {
         const iterations = 100;
 
         // Pre-encrypt data
-        final encryptedData = List.generate(iterations, (i) =>
-          secureService.encrypt(testData, dataId: 'decrypt-small-$i')
-        );
+        final encryptedData = List.generate(iterations,
+            (i) => secureService.encrypt(testData, dataId: 'decrypt-small-$i'));
 
         final stopwatch = Stopwatch()..start();
 
@@ -105,8 +108,10 @@ void main() {
 
         final avgTime = stopwatch.elapsedMilliseconds / iterations;
 
-        print('Small data decryption avg time: ${avgTime.toStringAsFixed(2)}ms');
-        print('Total time: ${stopwatch.elapsedMilliseconds}ms for $iterations operations');
+        print(
+            'Small data decryption avg time: ${avgTime.toStringAsFixed(2)}ms');
+        print(
+            'Total time: ${stopwatch.elapsedMilliseconds}ms for $iterations operations');
 
         expect(avgTime, lessThan(50));
       });
@@ -116,9 +121,10 @@ void main() {
         const iterations = 50;
 
         // Pre-encrypt data
-        final encryptedData = List.generate(iterations, (i) =>
-          secureService.encrypt(largeData, dataId: 'decrypt-large-$i')
-        );
+        final encryptedData = List.generate(
+            iterations,
+            (i) =>
+                secureService.encrypt(largeData, dataId: 'decrypt-large-$i'));
 
         final stopwatch = Stopwatch()..start();
 
@@ -129,9 +135,11 @@ void main() {
         stopwatch.stop();
 
         final avgTime = stopwatch.elapsedMilliseconds / iterations;
-        final throughput = (largeData.length * iterations) / (stopwatch.elapsedMilliseconds / 1000);
+        final throughput = (largeData.length * iterations) /
+            (stopwatch.elapsedMilliseconds / 1000);
 
-        print('Large data decryption avg time: ${avgTime.toStringAsFixed(2)}ms');
+        print(
+            'Large data decryption avg time: ${avgTime.toStringAsFixed(2)}ms');
         print('Throughput: ${(throughput / 1024).toStringAsFixed(2)} KB/s');
 
         expect(avgTime, lessThan(200));
@@ -141,14 +149,16 @@ void main() {
     group('Batch Operations Performance', () {
       test('should handle batch encryption efficiently', () async {
         final batchSize = 100;
-        final notes = List.generate(batchSize, (i) => {
-          'id': 'batch-$i',
-          'title': 'Note $i',
-          'content': 'Content' * 100, // ~700 bytes
-          'created_at': DateTime.now().toIso8601String(),
-          'updated_at': DateTime.now().toIso8601String(),
-          'tags': <String>[],
-        });
+        final notes = List.generate(
+            batchSize,
+            (i) => {
+                  'id': 'batch-$i',
+                  'title': 'Note $i',
+                  'content': 'Content' * 100, // ~700 bytes
+                  'created_at': DateTime.now().toIso8601String(),
+                  'updated_at': DateTime.now().toIso8601String(),
+                  'tags': <String>[],
+                });
 
         final stopwatch = Stopwatch()..start();
 
@@ -157,14 +167,19 @@ void main() {
         stopwatch.stop();
 
         final avgTime = stopwatch.elapsedMilliseconds / batchSize;
-        final totalSize = notes.fold<int>(0, (sum, note) =>
-          sum + (note['title'] as String).length + (note['content'] as String).length
-        );
+        final totalSize = notes.fold<int>(
+            0,
+            (sum, note) =>
+                sum +
+                (note['title'] as String).length +
+                (note['content'] as String).length);
         final throughput = totalSize / (stopwatch.elapsedMilliseconds / 1000);
 
-        print('Batch encryption: ${stopwatch.elapsedMilliseconds}ms for $batchSize notes');
+        print(
+            'Batch encryption: ${stopwatch.elapsedMilliseconds}ms for $batchSize notes');
         print('Avg per note: ${avgTime.toStringAsFixed(2)}ms');
-        print('Total throughput: ${(throughput / 1024).toStringAsFixed(2)} KB/s');
+        print(
+            'Total throughput: ${(throughput / 1024).toStringAsFixed(2)} KB/s');
 
         expect(encryptedNotes.length, equals(batchSize));
         expect(avgTime, lessThan(100)); // Should be under 100ms per note
@@ -172,14 +187,16 @@ void main() {
 
       test('should handle batch decryption efficiently', () async {
         final batchSize = 100;
-        final notes = List.generate(batchSize, (i) => {
-          'id': 'batch-decrypt-$i',
-          'title': 'Original $i',
-          'content': 'Content' * 100,
-          'created_at': DateTime.now().toIso8601String(),
-          'updated_at': DateTime.now().toIso8601String(),
-          'tags': <String>[],
-        });
+        final notes = List.generate(
+            batchSize,
+            (i) => {
+                  'id': 'batch-decrypt-$i',
+                  'title': 'Original $i',
+                  'content': 'Content' * 100,
+                  'created_at': DateTime.now().toIso8601String(),
+                  'updated_at': DateTime.now().toIso8601String(),
+                  'tags': <String>[],
+                });
 
         // Pre-encrypt
         final encryptedNotes = secureService.batchEncryptNotes(notes);
@@ -192,7 +209,8 @@ void main() {
 
         final avgTime = stopwatch.elapsedMilliseconds / batchSize;
 
-        print('Batch decryption: ${stopwatch.elapsedMilliseconds}ms for $batchSize notes');
+        print(
+            'Batch decryption: ${stopwatch.elapsedMilliseconds}ms for $batchSize notes');
         print('Avg per note: ${avgTime.toStringAsFixed(2)}ms');
 
         expect(decryptedNotes.length, equals(batchSize));
@@ -204,14 +222,16 @@ void main() {
         final results = <int, double>{};
 
         for (final size in batchSizes) {
-          final notes = List.generate(size, (i) => {
-            'id': 'scale-$size-$i',
-            'title': 'Note $i',
-            'content': 'Content',
-            'created_at': DateTime.now().toIso8601String(),
-            'updated_at': DateTime.now().toIso8601String(),
-            'tags': <String>[],
-          });
+          final notes = List.generate(
+              size,
+              (i) => {
+                    'id': 'scale-$size-$i',
+                    'title': 'Note $i',
+                    'content': 'Content',
+                    'created_at': DateTime.now().toIso8601String(),
+                    'updated_at': DateTime.now().toIso8601String(),
+                    'tags': <String>[],
+                  });
 
           final stopwatch = Stopwatch()..start();
           secureService.batchEncryptNotes(notes);
@@ -220,7 +240,8 @@ void main() {
           final avgTime = stopwatch.elapsedMilliseconds / size;
           results[size] = avgTime;
 
-          print('Batch size $size: ${avgTime.toStringAsFixed(2)}ms avg per note');
+          print(
+              'Batch size $size: ${avgTime.toStringAsFixed(2)}ms avg per note');
         }
 
         // Average time per note should not increase dramatically with batch size
@@ -238,8 +259,10 @@ void main() {
         final initialMetrics = performanceMonitor.getStatistics();
 
         for (int i = 0; i < iterations; i++) {
-          final encrypted = secureService.encrypt(testData, dataId: 'memory-$i');
-          final decrypted = secureService.decrypt(encrypted, dataId: 'memory-$i');
+          final encrypted =
+              secureService.encrypt(testData, dataId: 'memory-$i');
+          final decrypted =
+              secureService.decrypt(encrypted, dataId: 'memory-$i');
 
           expect(decrypted, equals(testData));
         }
@@ -251,7 +274,7 @@ void main() {
         print('Operations performed: ${iterations}');
 
         expect(finalMetrics.totalOperations - initialMetrics.totalOperations,
-               greaterThanOrEqualTo(iterations));
+            greaterThanOrEqualTo(iterations));
       });
 
       test('should handle large data without memory issues', () async {
@@ -259,8 +282,10 @@ void main() {
         const iterations = 20;
 
         for (int i = 0; i < iterations; i++) {
-          final encrypted = secureService.encrypt(largeData, dataId: 'large-memory-$i');
-          final decrypted = secureService.decrypt(encrypted, dataId: 'large-memory-$i');
+          final encrypted =
+              secureService.encrypt(largeData, dataId: 'large-memory-$i');
+          final decrypted =
+              secureService.decrypt(encrypted, dataId: 'large-memory-$i');
 
           expect(decrypted.length, equals(largeData.length));
           expect(decrypted, equals(largeData));
@@ -289,13 +314,16 @@ void main() {
         print('  Total operations: ${stats.totalOperations}');
         print('  Failed operations: ${stats.failedOperations}');
         print('  Success rate: ${stats.successRate.toStringAsFixed(1)}%');
-        print('  Average operation time: ${stats.averageOperationTime.toStringAsFixed(2)}ms');
+        print(
+            '  Average operation time: ${stats.averageOperationTime.toStringAsFixed(2)}ms');
         print('  Total bytes processed: ${stats.totalBytesProcessed}');
 
         if (stats.encryptStats.count > 0) {
           print('  Encrypt operations: ${stats.encryptStats.count}');
-          print('  Avg encrypt time: ${stats.encryptStats.averageTime.toStringAsFixed(2)}ms');
-          print('  P95 encrypt time: ${stats.encryptStats.p95Time.toStringAsFixed(2)}ms');
+          print(
+              '  Avg encrypt time: ${stats.encryptStats.averageTime.toStringAsFixed(2)}ms');
+          print(
+              '  P95 encrypt time: ${stats.encryptStats.p95Time.toStringAsFixed(2)}ms');
         }
 
         expect(stats.totalOperations, greaterThanOrEqualTo(operations));
@@ -343,7 +371,9 @@ void main() {
           title: 'My First Note',
           content: 'This is my first note content',
         );
-        createTimer.stop(dataSize: encryptedCreate['title']!.length + encryptedCreate['content']!.length);
+        createTimer.stop(
+            dataSize: encryptedCreate['title']!.length +
+                encryptedCreate['content']!.length);
 
         // Simulate updating the note
         final updateTimer = PerformanceTimer('update_note', performanceMonitor);
@@ -352,7 +382,9 @@ void main() {
           title: 'My Updated Note',
           content: 'This is my updated note content with more details',
         );
-        updateTimer.stop(dataSize: encryptedUpdate['title']!.length + encryptedUpdate['content']!.length);
+        updateTimer.stop(
+            dataSize: encryptedUpdate['title']!.length +
+                encryptedUpdate['content']!.length);
 
         // Simulate loading the note
         final loadTimer = PerformanceTimer('load_note', performanceMonitor);
@@ -361,21 +393,32 @@ void main() {
           encryptedTitle: encryptedUpdate['title']!,
           encryptedContent: encryptedUpdate['content']!,
         );
-        loadTimer.stop(dataSize: encryptedUpdate['title']!.length + encryptedUpdate['content']!.length);
+        loadTimer.stop(
+            dataSize: encryptedUpdate['title']!.length +
+                encryptedUpdate['content']!.length);
 
         // Simulate search (decrypting multiple notes)
-        final searchTimer = PerformanceTimer('search_notes', performanceMonitor);
-        final notes = List.generate(20, (i) => ({
-          'id': 'search-$i',
-          'title': secureService.encrypt('Note $i', dataId: 'search-$i'),
-          'content': secureService.encrypt('Content for note $i', dataId: 'search-$i'),
-          'is_encrypted': true,
-        }));
+        final searchTimer =
+            PerformanceTimer('search_notes', performanceMonitor);
+        final notes = List.generate(
+            20,
+            (i) => ({
+                  'id': 'search-$i',
+                  'title':
+                      secureService.encrypt('Note $i', dataId: 'search-$i'),
+                  'content': secureService.encrypt('Content for note $i',
+                      dataId: 'search-$i'),
+                  'is_encrypted': true,
+                }));
 
         secureService.batchDecryptNotes(notes);
-        searchTimer.stop(dataSize: notes.fold<int>(0, (sum, note) =>
-          sum + (note['title'] as String).length + (note['content'] as String).length
-        ));
+        searchTimer.stop(
+            dataSize: notes.fold<int>(
+                0,
+                (sum, note) =>
+                    sum +
+                    (note['title'] as String).length +
+                    (note['content'] as String).length));
 
         final stats = performanceMonitor.getStatistics();
 
@@ -385,7 +428,8 @@ void main() {
         print('  Load note: ${loadTimer.elapsedMs}ms');
         print('  Search notes: ${searchTimer.elapsedMs}ms');
         print('  Total operations: ${stats.totalOperations}');
-        print('  Average time: ${stats.averageOperationTime.toStringAsFixed(2)}ms');
+        print(
+            '  Average time: ${stats.averageOperationTime.toStringAsFixed(2)}ms');
 
         expect(stats.totalOperations, equals(4));
         expect(stats.failedOperations, equals(0));
@@ -419,7 +463,8 @@ void main() {
 
       // Performance baseline: should not exceed 50ms per operation
       expect(avgTime, lessThan(50),
-        reason: 'Encryption performance regression detected: ${avgTime}ms exceeds baseline');
+          reason:
+              'Encryption performance regression detected: ${avgTime}ms exceeds baseline');
     });
 
     test('should maintain decryption performance baseline', () async {
@@ -428,9 +473,10 @@ void main() {
       const testData = 'Decryption baseline test';
       const iterations = 100;
 
-      final encryptedData = List.generate(iterations, (i) =>
-        secureService.encrypt(testData, dataId: 'decrypt-baseline-$i')
-      );
+      final encryptedData = List.generate(
+          iterations,
+          (i) =>
+              secureService.encrypt(testData, dataId: 'decrypt-baseline-$i'));
 
       final stopwatch = Stopwatch()..start();
 
@@ -444,7 +490,8 @@ void main() {
 
       // Performance baseline: should not exceed 50ms per operation
       expect(avgTime, lessThan(50),
-        reason: 'Decryption performance regression detected: ${avgTime}ms exceeds baseline');
+          reason:
+              'Decryption performance regression detected: ${avgTime}ms exceeds baseline');
     });
   });
 }

@@ -122,7 +122,8 @@ class DiskCache {
       }
       return false;
     } catch (e) {
-      Logger.error('Error removing disk cache entry: $e', tag: 'DISK_CACHE', error: e);
+      Logger.error('Error removing disk cache entry: $e',
+          tag: 'DISK_CACHE', error: e);
       return false;
     }
   }
@@ -158,7 +159,8 @@ class DiskCache {
         _currentSize = 0;
       }
     } catch (e) {
-      Logger.error('Error clearing disk cache: $e', tag: 'DISK_CACHE', error: e);
+      Logger.error('Error clearing disk cache: $e',
+          tag: 'DISK_CACHE', error: e);
     }
   }
 
@@ -193,7 +195,8 @@ class DiskCache {
         await _updateSize();
       }
     } catch (e) {
-      Logger.error('Error removing expired entries: $e', tag: 'DISK_CACHE', error: e);
+      Logger.error('Error removing expired entries: $e',
+          tag: 'DISK_CACHE', error: e);
     }
 
     return expired;
@@ -223,7 +226,8 @@ class DiskCache {
         }
       }
     } catch (e) {
-      Logger.error('Error getting all entries: $e', tag: 'DISK_CACHE', error: e);
+      Logger.error('Error getting all entries: $e',
+          tag: 'DISK_CACHE', error: e);
     }
 
     return entries;
@@ -310,10 +314,10 @@ class DiskCache {
   /// 获取年龄分布
   Map<String, int> _getAgeDistribution(List<AICacheEntry> entries) {
     final distribution = <String, int>{
-      'fresh': 0,        // < 1小时
-      'recent': 0,       // 1-24小时
-      'old': 0,          // 1-7天
-      'very_old': 0,     // > 7天
+      'fresh': 0, // < 1小时
+      'recent': 0, // 1-24小时
+      'old': 0, // 1-7天
+      'very_old': 0, // > 7天
     };
 
     final now = DateTime.now();

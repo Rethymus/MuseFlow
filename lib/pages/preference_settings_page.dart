@@ -135,8 +135,10 @@ class _PreferenceSettingsPageState extends State<PreferenceSettingsPage> {
       learningDataPoints: stats['learningDataPoints'] as int? ?? 0,
       confidenceScore: (stats['confidenceScore'] as num?)?.toDouble() ?? 0.0,
       learningProgress: (stats['learningProgress'] as num?)?.toDouble() ?? 0.0,
-      overallAcceptanceRate: (stats['overallAcceptanceRate'] as num?)?.toDouble() ?? 0.0,
-      hasSufficientConfidence: stats['hasSufficientConfidence'] as bool? ?? false,
+      overallAcceptanceRate:
+          (stats['overallAcceptanceRate'] as num?)?.toDouble() ?? 0.0,
+      hasSufficientConfidence:
+          stats['hasSufficientConfidence'] as bool? ?? false,
     );
   }
 
@@ -191,7 +193,8 @@ class _PreferenceSettingsPageState extends State<PreferenceSettingsPage> {
 
     return PrivacyControlPanel(
       dataStoredLocally: report['dataStoredLocally'] as bool? ?? false,
-      dataStoredInSecureStorage: report['dataStoredInSecureStorage'] as bool? ?? false,
+      dataStoredInSecureStorage:
+          report['dataStoredInSecureStorage'] as bool? ?? false,
       feedbackHistorySize: report['feedbackHistorySize'] as int? ?? 0,
       writingAnalyticsSize: report['writingAnalyticsSize'] as int? ?? 0,
       dataRetentionDays: report['dataRetentionDays'] as int? ?? 90,

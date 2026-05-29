@@ -10,8 +10,8 @@ class MemoryCache {
   final LinkedHashMap<String, AICacheEntry> _cache;
   final StreamController<AICacheEvent> _eventController;
   int _currentSize = 0;
-  int _totalAccesses = 0;  // 总缓存访问次数
-  int _cacheHits = 0;      // 缓存命中次数
+  int _totalAccesses = 0; // 总缓存访问次数
+  int _cacheHits = 0; // 缓存命中次数
 
   MemoryCache({
     this.maxEntries = 1000,
@@ -68,7 +68,7 @@ class MemoryCache {
 
   /// 获取缓存值
   AICacheEntry? get(String key) {
-    _totalAccesses++;  // 增加总访问计数
+    _totalAccesses++; // 增加总访问计数
 
     final entry = _cache[key];
     if (entry == null) {
@@ -84,7 +84,7 @@ class MemoryCache {
     }
 
     // 缓存命中
-    _cacheHits++;  // 增加命中计数
+    _cacheHits++; // 增加命中计数
 
     // 更新访问信息和LRU顺序
     _cache.remove(key);
@@ -185,10 +185,10 @@ class MemoryCache {
   /// 获取缓存大小分布
   Map<String, int> getSizeDistribution() {
     final distribution = <String, int>{
-      'small': 0,    // < 1KB
-      'medium': 0,   // 1KB - 10KB
-      'large': 0,    // 10KB - 100KB
-      'huge': 0,     // > 100KB
+      'small': 0, // < 1KB
+      'medium': 0, // 1KB - 10KB
+      'large': 0, // 10KB - 100KB
+      'huge': 0, // > 100KB
     };
 
     for (final entry in _cache.values) {
@@ -210,11 +210,11 @@ class MemoryCache {
   /// 获取命中率分布
   Map<String, int> getHitRateDistribution() {
     final distribution = <String, int>{
-      'never': 0,      // 从未命中
-      'low': 0,        // 1-5次命中
-      'medium': 0,     // 6-20次命中
-      'high': 0,       // 21-100次命中
-      'very_high': 0,  // > 100次命中
+      'never': 0, // 从未命中
+      'low': 0, // 1-5次命中
+      'medium': 0, // 6-20次命中
+      'high': 0, // 21-100次命中
+      'very_high': 0, // > 100次命中
     };
 
     for (final entry in _cache.values) {

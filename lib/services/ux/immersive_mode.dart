@@ -133,8 +133,12 @@ class ImmersiveMode extends ChangeNotifier {
     }
 
     // 计算平均打字速度和稳定性
-    final avgSpeed = _typingSpeedHistory.reduce((a, b) => a + b) / _typingSpeedHistory.length;
-    final variance = _typingSpeedHistory.map((s) => pow(s - avgSpeed, 2)).reduce((a, b) => a + b) / _typingSpeedHistory.length;
+    final avgSpeed = _typingSpeedHistory.reduce((a, b) => a + b) /
+        _typingSpeedHistory.length;
+    final variance = _typingSpeedHistory
+            .map((s) => pow(s - avgSpeed, 2))
+            .reduce((a, b) => a + b) /
+        _typingSpeedHistory.length;
     final stability = 1.0 / (1.0 + variance);
 
     // 心流状态判断标准
@@ -183,7 +187,8 @@ class ImmersiveMode extends ChangeNotifier {
       return;
     }
 
-    final recentSpeed = _typingSpeedHistory.takeLast(10).reduce((a, b) => a + b) / 10;
+    final recentSpeed =
+        _typingSpeedHistory.takeLast(10).reduce((a, b) => a + b) / 10;
     final speedFactor = (recentSpeed / 10.0).clamp(0.0, 1.0);
 
     final durationFactor = (_sessionDuration / 60.0).clamp(0.0, 1.0);
@@ -217,7 +222,8 @@ class ImmersiveMode extends ChangeNotifier {
       'wordCount': _wordCount,
       'focusScore': _focusScore,
       'typingSpeed': _typingSpeedHistory.isNotEmpty
-          ? _typingSpeedHistory.reduce((a, b) => a + b) / _typingSpeedHistory.length
+          ? _typingSpeedHistory.reduce((a, b) => a + b) /
+              _typingSpeedHistory.length
           : 0.0,
     };
   }

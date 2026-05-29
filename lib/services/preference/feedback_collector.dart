@@ -7,7 +7,8 @@ import '../../utils/logger.dart';
 /// 负责收集和管理用户对AI建议的反馈
 class FeedbackCollector {
   static FeedbackCollector? _instance;
-  final StreamController<UserFeedback> _feedbackController = StreamController.broadcast();
+  final StreamController<UserFeedback> _feedbackController =
+      StreamController.broadcast();
   final List<FeedbackListener> _listeners = [];
 
   FeedbackCollector._();
@@ -123,7 +124,8 @@ class FeedbackCollector {
   }
 
   /// 批量记录反馈
-  Future<List<UserFeedback>> recordBatchFeedback(List<FeedbackData> feedbacks) async {
+  Future<List<UserFeedback>> recordBatchFeedback(
+      List<FeedbackData> feedbacks) async {
     final results = <UserFeedback>[];
 
     for (final feedbackData in feedbacks) {
@@ -380,7 +382,8 @@ class AutoFeedbackCollector {
   }
 
   /// 记录用户接受
-  Future<void> recordUserAccept(String sessionId, String suggestion, String result) async {
+  Future<void> recordUserAccept(
+      String sessionId, String suggestion, String result) async {
     final session = _sessions.firstWhere(
       (s) => s.id == sessionId,
       orElse: () => throw ArgumentError('Session not found: $sessionId'),
@@ -402,7 +405,8 @@ class AutoFeedbackCollector {
       modificationType: modificationType,
       context: session.id,
       topics: topics,
-      processingTime: DateTime.now().difference(session.startTime).inMilliseconds,
+      processingTime:
+          DateTime.now().difference(session.startTime).inMilliseconds,
     );
   }
 
@@ -436,20 +440,42 @@ class AutoFeedbackCollector {
   /// 提取主题关键词
   List<String> _extractTopics(String text) {
     // 简单的关键词提取
-    final words = text.toLowerCase().replaceAll(RegExp(r'[^\w\s]'), '').split(RegExp(r'\s+'));
+    final words = text
+        .toLowerCase()
+        .replaceAll(RegExp(r'[^\w\s]'), '')
+        .split(RegExp(r'\s+'));
 
     // 过滤停用词和短词
     final stopWords = {
-      '的', '是', '在', '和', '或', '但', '与', '及', '等', '很', '也',
-      'the', 'is', 'and', 'or', 'but', 'with', 'very', 'also', 'this', 'that',
+      '的',
+      '是',
+      '在',
+      '和',
+      '或',
+      '但',
+      '与',
+      '及',
+      '等',
+      '很',
+      '也',
+      'the',
+      'is',
+      'and',
+      'or',
+      'but',
+      'with',
+      'very',
+      'also',
+      'this',
+      'that',
     };
 
     return words
         .where((word) => word.length > 2 && !stopWords.contains(word))
         .toSet()
         .toList()
-        ..shuffle()
-        ..take(5);
+      ..shuffle()
+      ..take(5);
   }
 }
 

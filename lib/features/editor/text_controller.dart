@@ -47,7 +47,8 @@ class EditorTextController extends TextEditingController {
     if (oldText == newText) return;
 
     // 计算变化差异
-    final diff = _computeTextDiff(oldText, newText, oldValue.selection, newValue.selection);
+    final diff = _computeTextDiff(
+        oldText, newText, oldValue.selection, newValue.selection);
 
     if (diff == null) return;
 
@@ -63,10 +64,13 @@ class EditorTextController extends TextEditingController {
             _isProcessingChange = true;
             final currentValue = this.value;
             final currentText = currentValue.text;
-            final newText = currentText.substring(0, diff.position) + text + currentText.substring(diff.position);
+            final newText = currentText.substring(0, diff.position) +
+                text +
+                currentText.substring(diff.position);
             this.value = TextEditingValue(
               text: newText,
-              selection: TextSelection.collapsed(offset: diff.position + text.length),
+              selection:
+                  TextSelection.collapsed(offset: diff.position + text.length),
             );
             _isProcessingChange = false;
           },
@@ -74,7 +78,8 @@ class EditorTextController extends TextEditingController {
             _isProcessingChange = true;
             final currentValue = this.value;
             final currentText = currentValue.text;
-            final newText = currentText.substring(0, diff.position) + currentText.substring(diff.position + diff.text.length);
+            final newText = currentText.substring(0, diff.position) +
+                currentText.substring(diff.position + diff.text.length);
             this.value = TextEditingValue(
               text: newText,
               selection: TextSelection.collapsed(offset: diff.position),
@@ -92,10 +97,13 @@ class EditorTextController extends TextEditingController {
             _isProcessingChange = true;
             final currentValue = this.value;
             final currentText = currentValue.text;
-            final newText = currentText.substring(0, diff.position) + text + currentText.substring(diff.position);
+            final newText = currentText.substring(0, diff.position) +
+                text +
+                currentText.substring(diff.position);
             this.value = TextEditingValue(
               text: newText,
-              selection: TextSelection.collapsed(offset: diff.position + text.length),
+              selection:
+                  TextSelection.collapsed(offset: diff.position + text.length),
             );
             _isProcessingChange = false;
           },
@@ -103,7 +111,8 @@ class EditorTextController extends TextEditingController {
             _isProcessingChange = true;
             final currentValue = this.value;
             final currentText = currentValue.text;
-            final newText = currentText.substring(0, diff.position) + currentText.substring(diff.position + diff.text.length);
+            final newText = currentText.substring(0, diff.position) +
+                currentText.substring(diff.position + diff.text.length);
             this.value = TextEditingValue(
               text: newText,
               selection: TextSelection.collapsed(offset: diff.position),
@@ -118,17 +127,22 @@ class EditorTextController extends TextEditingController {
           startPosition: diff.position,
           endPosition: diff.position + diff.text.length,
           oldText: diff.text,
-          newText: newText.substring(diff.position, diff.position + (newText.length - oldText.length + diff.text.length)),
+          newText: newText.substring(
+              diff.position,
+              diff.position +
+                  (newText.length - oldText.length + diff.text.length)),
           onReplace: (oldText, newText) {
             _isProcessingChange = true;
             final currentValue = this.value;
             final currentText = currentValue.text;
             final beforeText = currentText.substring(0, diff.position);
-            final afterText = currentText.substring(diff.position + oldText.length);
+            final afterText =
+                currentText.substring(diff.position + oldText.length);
             final resultText = beforeText + newText + afterText;
             this.value = TextEditingValue(
               text: resultText,
-              selection: TextSelection.collapsed(offset: diff.position + newText.length),
+              selection: TextSelection.collapsed(
+                  offset: diff.position + newText.length),
             );
             _isProcessingChange = false;
           },
@@ -142,7 +156,8 @@ class EditorTextController extends TextEditingController {
   }
 
   // 计算文本差异
-  _TextDiff? _computeTextDiff(String oldText, String newText, TextSelection oldSelection, TextSelection newSelection) {
+  _TextDiff? _computeTextDiff(String oldText, String newText,
+      TextSelection oldSelection, TextSelection newSelection) {
     // 简单的文本差异计算
     if (oldText.length == newText.length) {
       // 可能是替换操作
@@ -339,8 +354,8 @@ class EditorTextController extends TextEditingController {
     final currentText = text;
 
     final newText = currentText.substring(0, cursorPosition) +
-                   textToInsert +
-                   currentText.substring(cursorPosition);
+        textToInsert +
+        currentText.substring(cursorPosition);
 
     value = TextEditingValue(
       text: newText,

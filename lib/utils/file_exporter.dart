@@ -14,14 +14,16 @@ class FileExporter {
 
   /// 将笔记导出为JSON字符串
   static Future<String> exportToJSON(List<Note> notes) async {
-    final List<Map<String, dynamic>> notesJson = notes.map((note) => {
-      'id': note.id,
-      'title': note.title,
-      'content': note.content,
-      'createdAt': note.createdAt.toIso8601String(),
-      'updatedAt': note.updatedAt.toIso8601String(),
-      'tags': note.tags,
-    }).toList();
+    final List<Map<String, dynamic>> notesJson = notes
+        .map((note) => {
+              'id': note.id,
+              'title': note.title,
+              'content': note.content,
+              'createdAt': note.createdAt.toIso8601String(),
+              'updatedAt': note.updatedAt.toIso8601String(),
+              'tags': note.tags,
+            })
+        .toList();
 
     return jsonEncode(notesJson);
   }
@@ -73,7 +75,6 @@ class FileExporter {
 
       Logger.debug('笔记导出成功: ${file.path}');
       return true;
-
     } catch (e) {
       Logger.debug('导出笔记时发生错误: $e');
       return false;
@@ -93,7 +94,8 @@ class FileExporter {
 
       final String? outputFile = await FilePicker.platform.saveFile(
         dialogTitle: 'Save Notes As JSON',
-        fileName: '$_defaultFileName_${DateTime.now().millisecondsSinceEpoch}.json',
+        fileName:
+            '$_defaultFileName_${DateTime.now().millisecondsSinceEpoch}.json',
         type: FileType.custom,
         allowedExtensions: ['json'],
       );
@@ -133,7 +135,6 @@ class FileExporter {
 
       Logger.debug('笔记导出成功: ${file.path}');
       return true;
-
     } catch (e) {
       Logger.debug('使用文件选择器导出时发生错误: $e');
       return false;
@@ -181,7 +182,8 @@ class FileExporter {
       final validatedPath = pathValidation.sanitizedPath ?? selectedFile.path!;
 
       // 3. 验证文件类型
-      final typeValidation = fileSecurityValidator.validateFileType(validatedPath);
+      final typeValidation =
+          fileSecurityValidator.validateFileType(validatedPath);
       if (!typeValidation.isValid) {
         Logger.debug('导入失败：${typeValidation.errorMessage}');
         return [];
@@ -241,12 +243,10 @@ class FileExporter {
 
         Logger.debug('成功导入 ${notes.length} 条笔记');
         return notes;
-
       } on FormatException catch (e) {
         Logger.debug('导入失败：无效的JSON格式 - $e');
         return [];
       }
-
     } catch (e) {
       Logger.debug('导入文件时发生错误: $e');
       return [];

@@ -121,7 +121,8 @@ class _GlobalSearchDialogState extends State<GlobalSearchDialog> {
             },
           ),
           border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(AppConstants.mediumBorderRadius),
+            borderRadius:
+                BorderRadius.circular(AppConstants.mediumBorderRadius),
           ),
           filled: true,
           fillColor: theme.colorScheme.surface,

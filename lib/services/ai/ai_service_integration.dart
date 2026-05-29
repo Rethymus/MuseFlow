@@ -69,9 +69,9 @@ class AIServiceIntegration {
       if (integration._config.enablePersonalizedService) {
         Logger.info('初始化个性化AI服务...', tag: 'AIIntegration');
         integration._personalizedService = personalizedService ??
-          await PersonalizedAIService.initialize(
-            baseService: integration._baseService,
-          );
+            await PersonalizedAIService.initialize(
+              baseService: integration._baseService,
+            );
         integration._serviceStatus['personalized'] = true;
       } else {
         integration._personalizedService = PersonalizedAIService.instance;
@@ -81,10 +81,10 @@ class AIServiceIntegration {
       if (integration._config.enableContextualService) {
         Logger.info('初始化上下文AI服务...', tag: 'AIIntegration');
         integration._contextualService = contextualService ??
-          await ContextualAIService.initialize(
-            baseService: integration._baseService,
-            personalizedService: integration._personalizedService,
-          );
+            await ContextualAIService.initialize(
+              baseService: integration._baseService,
+              personalizedService: integration._personalizedService,
+            );
         integration._serviceStatus['contextual'] = true;
       } else {
         integration._contextualService = ContextualAIService.instance;
@@ -94,9 +94,9 @@ class AIServiceIntegration {
       if (integration._config.enableWritingAssistant) {
         Logger.info('初始化实时写作助手...', tag: 'AIIntegration');
         integration._writingAssistant = writingAssistant ??
-          await RealTimeWritingAssistant.initialize(
-            contextualService: integration._contextualService,
-          );
+            await RealTimeWritingAssistant.initialize(
+              contextualService: integration._contextualService,
+            );
         integration._serviceStatus['writingAssistant'] = true;
       } else {
         integration._writingAssistant = RealTimeWritingAssistant.instance;
@@ -104,7 +104,6 @@ class AIServiceIntegration {
 
       integration._initialized = true;
       Logger.info('AI服务集成初始化完成', tag: 'AIIntegration');
-
     } catch (e) {
       Logger.error('AI服务集成初始化失败: $e', tag: 'AIIntegration');
       rethrow;
@@ -116,7 +115,8 @@ class AIServiceIntegration {
   /// 确保已初始化
   void _ensureInitialized() {
     if (!_initialized) {
-      throw StateError('AIServiceIntegration not initialized. Call initialize() first.');
+      throw StateError(
+          'AIServiceIntegration not initialized. Call initialize() first.');
     }
   }
 
@@ -381,23 +381,33 @@ class AIServiceIntegration {
   Future<void> deleteConfig(String id) => _baseService.deleteConfig(id);
   Future<void> setActiveConfig(String id) => _baseService.setActiveConfig(id);
   Future<AIConfig?> getActiveConfig() => _baseService.getActiveConfig();
-  Future<bool> validateApiKey(AIConfig config) => _baseService.validateApiKey(config);
-  Future<List<String>> getAvailableModels(AIConfig config) => _baseService.getAvailableModels(config);
-  int estimateTokens(List<AIMessage> messages, AIConfig config) => _baseService.estimateTokens(messages, config);
+  Future<bool> validateApiKey(AIConfig config) =>
+      _baseService.validateApiKey(config);
+  Future<List<String>> getAvailableModels(AIConfig config) =>
+      _baseService.getAvailableModels(config);
+  int estimateTokens(List<AIMessage> messages, AIConfig config) =>
+      _baseService.estimateTokens(messages, config);
 
   // 缓存相关方法
   CacheManager get cacheManager => _baseService.cacheManager;
   Future<AICacheStats> getCacheStats() => _baseService.getCacheStats();
-  Future<String> getCachePerformanceReport() => _baseService.getCachePerformanceReport();
-  Future<Map<String, dynamic>> getCacheHealthStatus() => _baseService.getCacheHealthStatus();
-  Future<void> clearCache({bool clearExpiredOnly = false}) => _baseService.clearCache(clearExpiredOnly: clearExpiredOnly);
+  Future<String> getCachePerformanceReport() =>
+      _baseService.getCachePerformanceReport();
+  Future<Map<String, dynamic>> getCacheHealthStatus() =>
+      _baseService.getCacheHealthStatus();
+  Future<void> clearCache({bool clearExpiredOnly = false}) =>
+      _baseService.clearCache(clearExpiredOnly: clearExpiredOnly);
   void resetCacheStats() => _baseService.resetCacheStats();
-  void setCachingEnabled(bool enabled) => _baseService.setCachingEnabled(enabled);
-  Future<CachePerformanceMetrics> getCachePerformanceMetrics() => _baseService.getCachePerformanceMetrics();
-  Future<List<String>> getCacheSuggestions() => _baseService.getCacheSuggestions();
+  void setCachingEnabled(bool enabled) =>
+      _baseService.setCachingEnabled(enabled);
+  Future<CachePerformanceMetrics> getCachePerformanceMetrics() =>
+      _baseService.getCachePerformanceMetrics();
+  Future<List<String>> getCacheSuggestions() =>
+      _baseService.getCacheSuggestions();
   Stream<CacheManagerEvent> get cacheEvents => _baseService.cacheEvents;
   Future<void> optimizeCacheStrategy() => _baseService.optimizeCacheStrategy();
-  Future<void> warmupCache(List<AIMessage> commonMessages, AIConfig? config) => _baseService.warmupCache(commonMessages, config);
+  Future<void> warmupCache(List<AIMessage> commonMessages, AIConfig? config) =>
+      _baseService.warmupCache(commonMessages, config);
 
   // 个性化服务方法
   Future<void> recordFeedback({
@@ -418,9 +428,11 @@ class AIServiceIntegration {
     }
   }
 
-  Future<WritingAnalysis> analyzeUserWriting(String text, {String? context}) async {
+  Future<WritingAnalysis> analyzeUserWriting(String text,
+      {String? context}) async {
     if (_serviceStatus['personalized'] == true) {
-      return await _personalizedService.analyzeUserWriting(text, context: context);
+      return await _personalizedService.analyzeUserWriting(text,
+          context: context);
     }
     throw StateError('PersonalizedAIService not enabled');
   }
@@ -500,12 +512,14 @@ class AIServiceIntegration {
     _config = config;
 
     // 重新初始化需要的服务
-    if (config.enablePersonalizedService && _serviceStatus['personalized'] != true) {
+    if (config.enablePersonalizedService &&
+        _serviceStatus['personalized'] != true) {
       await PersonalizedAIService.initialize(baseService: _baseService);
       _serviceStatus['personalized'] = true;
     }
 
-    if (config.enableContextualService && _serviceStatus['contextual'] != true) {
+    if (config.enableContextualService &&
+        _serviceStatus['contextual'] != true) {
       await ContextualAIService.initialize(
         baseService: _baseService,
         personalizedService: _personalizedService,
@@ -513,7 +527,8 @@ class AIServiceIntegration {
       _serviceStatus['contextual'] = true;
     }
 
-    if (config.enableWritingAssistant && _serviceStatus['writingAssistant'] != true) {
+    if (config.enableWritingAssistant &&
+        _serviceStatus['writingAssistant'] != true) {
       await RealTimeWritingAssistant.initialize(
         contextualService: _contextualService,
       );
@@ -559,7 +574,8 @@ class AIServiceIntegration {
         final privacyReport = await _personalizedService.getPrivacyReport();
         healthStatus['personalization'] = {
           'enabled': _personalizedService.currentPreference?.enabled ?? false,
-          'confidence': _personalizedService.currentPreference?.confidenceScore ?? 0.0,
+          'confidence':
+              _personalizedService.currentPreference?.confidenceScore ?? 0.0,
         };
       } catch (e) {
         healthStatus['personalization'] = {'error': e.toString()};
@@ -629,34 +645,35 @@ class AIServiceIntegrationConfig {
   }) {
     return AIServiceIntegrationConfig(
       enablePersonalizedService:
-        enablePersonalizedService ?? this.enablePersonalizedService,
+          enablePersonalizedService ?? this.enablePersonalizedService,
       enableContextualService:
-        enableContextualService ?? this.enableContextualService,
+          enableContextualService ?? this.enableContextualService,
       enableWritingAssistant:
-        enableWritingAssistant ?? this.enableWritingAssistant,
+          enableWritingAssistant ?? this.enableWritingAssistant,
       enableCaching: enableCaching ?? this.enableCaching,
       maxContextHistory: maxContextHistory ?? this.maxContextHistory,
       styleAnalysisThreshold:
-        styleAnalysisThreshold ?? this.styleAnalysisThreshold,
+          styleAnalysisThreshold ?? this.styleAnalysisThreshold,
       maxConversationTurns: maxConversationTurns ?? this.maxConversationTurns,
     );
   }
 
   /// 转换为JSON
   Map<String, dynamic> toJson() => {
-    'enablePersonalizedService': enablePersonalizedService,
-    'enableContextualService': enableContextualService,
-    'enableWritingAssistant': enableWritingAssistant,
-    'enableCaching': enableCaching,
-    'maxContextHistory': maxContextHistory,
-    'styleAnalysisThreshold': styleAnalysisThreshold,
-    'maxConversationTurns': maxConversationTurns,
-  };
+        'enablePersonalizedService': enablePersonalizedService,
+        'enableContextualService': enableContextualService,
+        'enableWritingAssistant': enableWritingAssistant,
+        'enableCaching': enableCaching,
+        'maxContextHistory': maxContextHistory,
+        'styleAnalysisThreshold': styleAnalysisThreshold,
+        'maxConversationTurns': maxConversationTurns,
+      };
 
   /// 从JSON创建
   factory AIServiceIntegrationConfig.fromJson(Map<String, dynamic> json) {
     return AIServiceIntegrationConfig(
-      enablePersonalizedService: json['enablePersonalizedService'] as bool? ?? true,
+      enablePersonalizedService:
+          json['enablePersonalizedService'] as bool? ?? true,
       enableContextualService: json['enableContextualService'] as bool? ?? true,
       enableWritingAssistant: json['enableWritingAssistant'] as bool? ?? true,
       enableCaching: json['enableCaching'] as bool? ?? true,

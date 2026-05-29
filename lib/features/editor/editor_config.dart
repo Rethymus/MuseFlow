@@ -35,7 +35,8 @@ class EditorConfig {
   // 性能配置 (使用 AppConstants 中的时间和缓存配置)
   static const int debounceDelay = AppConstants.debounceDelayMilliseconds;
   static const int autoSaveInterval = AppConstants.autoSaveIntervalSeconds;
-  static const int maxCacheSize = AppConstants.maxCacheSizeBytesEditor ~/ (1024 * 1024); // 转换为MB
+  static const int maxCacheSize =
+      AppConstants.maxCacheSizeBytesEditor ~/ (1024 * 1024); // 转换为MB
 
   // 快捷键配置
   static const Map<String, String> defaultShortcuts = {

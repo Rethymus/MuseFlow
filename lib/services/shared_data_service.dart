@@ -27,7 +27,8 @@ class SharedDataService extends ChangeNotifier {
   CharacterModel? get selectedCharacter => _selectedCharacter;
   WorldModel? get selectedWorld => _selectedWorld;
   String get contextAnchor => _contextAnchor;
-  List<DataOperation> get operationHistory => List.unmodifiable(_operationHistory);
+  List<DataOperation> get operationHistory =>
+      List.unmodifiable(_operationHistory);
   int get collaborationMode => _collaborationMode;
 
   // 编辑器内容操作
@@ -47,7 +48,8 @@ class SharedDataService extends ChangeNotifier {
   // 知识库引用操作
   void selectCharacter(CharacterModel character) {
     _selectedCharacter = character;
-    _recordOperation(DataOperationType.characterSelect, {'characterId': character.id});
+    _recordOperation(
+        DataOperationType.characterSelect, {'characterId': character.id});
     notifyListeners();
   }
 
@@ -92,7 +94,8 @@ class SharedDataService extends ChangeNotifier {
     final insertion = '\n[角色参考: ${_selectedCharacter!.name}]\n$reference\n';
 
     _sharedEditorContent += insertion;
-    _recordOperation(DataOperationType.characterInsert, {'characterId': _selectedCharacter!.id});
+    _recordOperation(DataOperationType.characterInsert,
+        {'characterId': _selectedCharacter!.id});
     notifyListeners();
 
     return insertion;
@@ -105,7 +108,8 @@ class SharedDataService extends ChangeNotifier {
     final insertion = '\n[世界观参考: ${_selectedWorld!.name}]\n$reference\n';
 
     _sharedEditorContent += insertion;
-    _recordOperation(DataOperationType.worldInsert, {'worldId': _selectedWorld!.id});
+    _recordOperation(
+        DataOperationType.worldInsert, {'worldId': _selectedWorld!.id});
     notifyListeners();
 
     return insertion;

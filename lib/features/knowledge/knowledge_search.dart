@@ -96,7 +96,8 @@ class KnowledgeSearchController extends ChangeNotifier {
       results.add(SearchResult(
         id: world.id,
         title: world.name,
-        subtitle: '${world.worldType}${world.era != null ? ' · ${world.era}' : ''}',
+        subtitle:
+            '${world.worldType}${world.era != null ? ' · ${world.era}' : ''}',
         type: SearchResultType.world,
         data: world,
       ));

@@ -48,7 +48,8 @@ class KnowledgeNode {
         orElse: () => KnowledgeNodeType.concept,
       ),
       properties: json['properties'] as Map<String, dynamic>? ?? {},
-      connections: (json['connections'] as List<dynamic>?)?.cast<String>() ?? [],
+      connections:
+          (json['connections'] as List<dynamic>?)?.cast<String>() ?? [],
     );
   }
 }
@@ -146,7 +147,8 @@ class KnowledgeGraphEngine with ChangeNotifier {
   }
 
   /// 发现角色间关系（公共接口）
-  Future<void> discoverCharacterRelationships(List<CharacterModel> characters) async {
+  Future<void> discoverCharacterRelationships(
+      List<CharacterModel> characters) async {
     await _discoverCharacterRelationships(characters);
   }
 
@@ -264,7 +266,8 @@ class KnowledgeGraphEngine with ChangeNotifier {
   }
 
   /// 添加组织节点
-  Future<void> _addOrganizationNode(Organization organization, String worldId) async {
+  Future<void> _addOrganizationNode(
+      Organization organization, String worldId) async {
     final node = KnowledgeNode(
       id: organization.id,
       label: organization.name,
@@ -292,7 +295,8 @@ class KnowledgeGraphEngine with ChangeNotifier {
   }
 
   /// 自动发现角色之间的关系
-  Future<void> _discoverCharacterRelationships(List<CharacterModel> characters) async {
+  Future<void> _discoverCharacterRelationships(
+      List<CharacterModel> characters) async {
     for (int i = 0; i < characters.length; i++) {
       for (int j = i + 1; j < characters.length; j++) {
         final char1 = characters[i];
@@ -308,7 +312,8 @@ class KnowledgeGraphEngine with ChangeNotifier {
   }
 
   /// 检查显式关系
-  Future<void> _checkExplicitRelationships(CharacterModel char1, CharacterModel char2) async {
+  Future<void> _checkExplicitRelationships(
+      CharacterModel char1, CharacterModel char2) async {
     // 检查char1的关系列表中是否提到char2
     for (final relationship in char1.relationships) {
       if (relationship.toLowerCase().contains(char2.name.toLowerCase())) {
@@ -341,12 +346,14 @@ class KnowledgeGraphEngine with ChangeNotifier {
   }
 
   /// 发现隐式关系
-  Future<void> _discoverImplicitRelationships(CharacterModel char1, CharacterModel char2) async {
+  Future<void> _discoverImplicitRelationships(
+      CharacterModel char1, CharacterModel char2) async {
     double relationshipStrength = 0.0;
     final List<String> reasons = [];
 
     // 检查共同标签
-    final commonTags = char1.tags.where((tag) => char2.tags.contains(tag)).toList();
+    final commonTags =
+        char1.tags.where((tag) => char2.tags.contains(tag)).toList();
     if (commonTags.isNotEmpty) {
       relationshipStrength += commonTags.length * 0.2;
       reasons.add('共同标签: ${commonTags.join(", ")}');
@@ -358,7 +365,8 @@ class KnowledgeGraphEngine with ChangeNotifier {
       final background2 = char2.background!.toLowerCase();
 
       // 简单的文本相似性检查
-      if (background1.contains(background2) || background2.contains(background1)) {
+      if (background1.contains(background2) ||
+          background2.contains(background1)) {
         relationshipStrength += 0.3;
         reasons.add('背景相似');
       }
@@ -369,7 +377,8 @@ class KnowledgeGraphEngine with ChangeNotifier {
       final personality1 = char1.personality!.toLowerCase();
       final personality2 = char2.personality!.toLowerCase();
 
-      if (personality1.contains(personality2) || personality2.contains(personality1)) {
+      if (personality1.contains(personality2) ||
+          personality2.contains(personality1)) {
         relationshipStrength += 0.2;
         reasons.add('性格相似');
       }
@@ -404,7 +413,8 @@ class KnowledgeGraphEngine with ChangeNotifier {
 
     // 如果指定了焦点节点，从该节点开始遍历
     if (focusNodeId != null && _nodes.containsKey(focusNodeId)) {
-      _bfsTraversal(focusNodeId, maxDepth, visibleNodes, visibleEdges, visitedNodeIds);
+      _bfsTraversal(
+          focusNodeId, maxDepth, visibleNodes, visibleEdges, visitedNodeIds);
     } else {
       // 否则显示所有节点（限制数量）
       for (final node in _nodes.values) {
@@ -460,7 +470,8 @@ class KnowledgeGraphEngine with ChangeNotifier {
       // 查找相关边和邻居节点
       for (final edge in _edges.values) {
         if (edge.sourceId == currentNodeId || edge.targetId == currentNodeId) {
-          final neighborId = edge.sourceId == currentNodeId ? edge.targetId : edge.sourceId;
+          final neighborId =
+              edge.sourceId == currentNodeId ? edge.targetId : edge.sourceId;
 
           if (!visitedNodeIds.contains(neighborId)) {
             visitedNodeIds.add(neighborId);
@@ -508,13 +519,16 @@ class KnowledgeGraphEngine with ChangeNotifier {
   /// 基于标签推荐
   List<RelationshipRecommendation> _recommendByTags(KnowledgeNode sourceNode) {
     final List<RelationshipRecommendation> recommendations = [];
-    final sourceTags = (sourceNode.properties['tags'] as List<dynamic>?)?.cast<String>() ?? [];
+    final sourceTags =
+        (sourceNode.properties['tags'] as List<dynamic>?)?.cast<String>() ?? [];
 
     for (final node in _nodes.values) {
       if (node.id == sourceNode.id) continue;
 
-      final targetTags = (node.properties['tags'] as List<dynamic>?)?.cast<String>() ?? [];
-      final commonTags = sourceTags.where((tag) => targetTags.contains(tag)).toList();
+      final targetTags =
+          (node.properties['tags'] as List<dynamic>?)?.cast<String>() ?? [];
+      final commonTags =
+          sourceTags.where((tag) => targetTags.contains(tag)).toList();
 
       if (commonTags.isNotEmpty) {
         recommendations.add(RelationshipRecommendation(
@@ -531,7 +545,8 @@ class KnowledgeGraphEngine with ChangeNotifier {
   }
 
   /// 基于共同邻居推荐
-  List<RelationshipRecommendation> _recommendByCommonNeighbors(String sourceId) {
+  List<RelationshipRecommendation> _recommendByCommonNeighbors(
+      String sourceId) {
     final List<RelationshipRecommendation> recommendations = [];
     final neighbors = _getNodeNeighbors(sourceId);
 
@@ -539,7 +554,8 @@ class KnowledgeGraphEngine with ChangeNotifier {
       if (node.id == sourceId) continue;
 
       final targetNeighbors = _getNodeNeighbors(node.id);
-      final commonNeighbors = neighbors.where((id) => targetNeighbors.contains(id)).toList();
+      final commonNeighbors =
+          neighbors.where((id) => targetNeighbors.contains(id)).toList();
 
       if (commonNeighbors.length >= 2) {
         recommendations.add(RelationshipRecommendation(
@@ -556,7 +572,8 @@ class KnowledgeGraphEngine with ChangeNotifier {
   }
 
   /// 基于内容相似性推荐
-  List<RelationshipRecommendation> _recommendByContentSimilarity(KnowledgeNode sourceNode) {
+  List<RelationshipRecommendation> _recommendByContentSimilarity(
+      KnowledgeNode sourceNode) {
     final List<RelationshipRecommendation> recommendations = [];
 
     for (final node in _nodes.values) {
@@ -568,7 +585,8 @@ class KnowledgeGraphEngine with ChangeNotifier {
       final sourceBackground = sourceNode.properties['background'] as String?;
       final targetBackground = node.properties['background'] as String?;
       if (sourceBackground != null && targetBackground != null) {
-        if (_calculateTextSimilarity(sourceBackground, targetBackground) > 0.5) {
+        if (_calculateTextSimilarity(sourceBackground, targetBackground) >
+            0.5) {
           similarity += 0.4;
         }
       }
@@ -577,7 +595,8 @@ class KnowledgeGraphEngine with ChangeNotifier {
       final sourcePersonality = sourceNode.properties['personality'] as String?;
       final targetPersonality = node.properties['personality'] as String?;
       if (sourcePersonality != null && targetPersonality != null) {
-        if (_calculateTextSimilarity(sourcePersonality, targetPersonality) > 0.5) {
+        if (_calculateTextSimilarity(sourcePersonality, targetPersonality) >
+            0.5) {
           similarity += 0.3;
         }
       }
@@ -685,7 +704,8 @@ class KnowledgeGraphEngine with ChangeNotifier {
 
     for (final edge in _edges.values) {
       if (edge.sourceId == nodeId || edge.targetId == nodeId) {
-        final otherNodeId = edge.sourceId == nodeId ? edge.targetId : edge.sourceId;
+        final otherNodeId =
+            edge.sourceId == nodeId ? edge.targetId : edge.sourceId;
         final otherNode = _nodes[otherNodeId];
 
         if (otherNode != null) {

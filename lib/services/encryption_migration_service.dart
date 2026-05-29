@@ -11,7 +11,8 @@ import 'dart:convert';
 /// from unencrypted storage to encrypted storage, ensuring data integrity
 /// and providing rollback capabilities if needed.
 class EncryptionMigrationService {
-  static final EncryptionMigrationService instance = EncryptionMigrationService._internal();
+  static final EncryptionMigrationService instance =
+      EncryptionMigrationService._internal();
   factory EncryptionMigrationService() => instance;
   EncryptionMigrationService._internal() {
     _secureService = SecureDataService.instance;
@@ -71,10 +72,14 @@ class EncryptionMigrationService {
     try {
       // Update state to in progress
       await _migrationBox.put(_migrationStateKey, STATE_IN_PROGRESS);
-      await _migrationBox.put(_migrationStartTimeKey, DateTime.now().toIso8601String());
+      await _migrationBox.put(
+          _migrationStartTimeKey, DateTime.now().toIso8601String());
       await _migrationBox.delete(_migrationErrorKey);
 
-      yield MigrationProgress(state: STATE_IN_PROGRESS, progress: 0.0, message: 'Starting migration...');
+      yield MigrationProgress(
+          state: STATE_IN_PROGRESS,
+          progress: 0.0,
+          message: 'Starting migration...');
 
       // Open legacy box
       final legacyBox = await Hive.openBox<Note>('notes');
@@ -82,12 +87,18 @@ class EncryptionMigrationService {
 
       if (totalNotes == 0) {
         await _migrationBox.put(_migrationStateKey, STATE_COMPLETED);
-        yield MigrationProgress(state: STATE_COMPLETED, progress: 1.0, message: 'No data to migrate');
+        yield MigrationProgress(
+            state: STATE_COMPLETED,
+            progress: 1.0,
+            message: 'No data to migrate');
         return;
       }
 
       // Create backup
-      yield MigrationProgress(state: STATE_IN_PROGRESS, progress: 0.1, message: 'Creating backup...');
+      yield MigrationProgress(
+          state: STATE_IN_PROGRESS,
+          progress: 0.1,
+          message: 'Creating backup...');
       await _createBackup(legacyBox);
 
       // Migrate notes in batches
@@ -118,7 +129,10 @@ class EncryptionMigrationService {
       }
 
       // Verify migration
-      yield MigrationProgress(state: STATE_IN_PROGRESS, progress: 0.9, message: 'Verifying migration...');
+      yield MigrationProgress(
+          state: STATE_IN_PROGRESS,
+          progress: 0.9,
+          message: 'Verifying migration...');
       final verified = await _verifyMigration(totalNotes);
 
       if (!verified) {
@@ -126,7 +140,8 @@ class EncryptionMigrationService {
       }
 
       // Clear legacy data after successful verification
-      yield MigrationProgress(state: STATE_IN_PROGRESS, progress: 0.95, message: 'Cleaning up...');
+      yield MigrationProgress(
+          state: STATE_IN_PROGRESS, progress: 0.95, message: 'Cleaning up...');
       await legacyBox.clear();
       await legacyBox.close();
 
@@ -140,7 +155,6 @@ class EncryptionMigrationService {
         message: 'Migration completed successfully',
         totalMigrated: totalNotes,
       );
-
     } catch (e) {
       // Handle migration failure
       await _migrationBox.put(_migrationStateKey, STATE_FAILED);
@@ -157,14 +171,16 @@ class EncryptionMigrationService {
   /// Create backup of existing data
   Future<void> _createBackup(Box<Note> legacyBox) async {
     final notes = legacyBox.values.toList();
-    final backupData = notes.map((note) => {
-      'id': note.id,
-      'title': note.title,
-      'content': note.content,
-      'created_at': note.createdAt.toIso8601String(),
-      'updated_at': note.updatedAt.toIso8601String(),
-      'tags': note.tags,
-    }).toList();
+    final backupData = notes
+        .map((note) => {
+              'id': note.id,
+              'title': note.title,
+              'content': note.content,
+              'created_at': note.createdAt.toIso8601String(),
+              'updated_at': note.updatedAt.toIso8601String(),
+              'tags': note.tags,
+            })
+        .toList();
 
     await _migrationBox.put(_migrationBackupKey, jsonEncode(backupData));
   }
@@ -219,7 +235,6 @@ class EncryptionMigrationService {
 
       // Update state
       await _migrationBox.put(_migrationStateKey, STATE_ROLLED_BACK);
-
     } catch (e) {
       throw MigrationException('Rollback failed: $e');
     }
@@ -244,7 +259,8 @@ class EncryptionMigrationService {
   Future<void> clearMigrationData() async {
     final state = await getMigrationState();
     if (state != STATE_COMPLETED) {
-      throw MigrationException('Cannot clear migration data: migration not completed');
+      throw MigrationException(
+          'Cannot clear migration data: migration not completed');
     }
 
     await _migrationBox.delete(_migrationBackupKey);

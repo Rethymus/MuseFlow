@@ -304,7 +304,8 @@ class AIService {
 
     // 检查缓存
     if (_enableCaching && useCache) {
-      final cachedResponse = await _cacheManager.checkCache(messages, effectiveConfig);
+      final cachedResponse =
+          await _cacheManager.checkCache(messages, effectiveConfig);
       if (cachedResponse != null) {
         // 返回缓存的响应
         return AIResponse(

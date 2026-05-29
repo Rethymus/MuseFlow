@@ -302,7 +302,8 @@ class UserFriendlyErrorHandler {
     final message = error.toString().toLowerCase();
 
     // 连接失败
-    if (message.contains('connection refused') || message.contains('failed to connect')) {
+    if (message.contains('connection refused') ||
+        message.contains('failed to connect')) {
       return UserFriendlyError(
         title: '网络连接失败',
         description: '无法连接到服务器或网络',
@@ -430,7 +431,9 @@ class UserFriendlyErrorHandler {
     final message = error.toString().toLowerCase();
 
     // AI服务错误
-    if (message.contains('ai') || message.contains('api') || message.contains('service')) {
+    if (message.contains('ai') ||
+        message.contains('api') ||
+        message.contains('service')) {
       return UserFriendlyError(
         title: 'AI服务错误',
         description: 'AI服务暂时不可用或响应异常',
@@ -449,7 +452,9 @@ class UserFriendlyErrorHandler {
     }
 
     // 数据错误
-    if (message.contains('data') || message.contains('database') || message.contains('storage')) {
+    if (message.contains('data') ||
+        message.contains('database') ||
+        message.contains('storage')) {
       return UserFriendlyError(
         title: '数据错误',
         description: '数据处理或存储出现问题',
@@ -503,7 +508,9 @@ class UserFriendlyErrorHandler {
     }
 
     // 网络相关
-    if (message.contains('网络') || message.contains('network') || message.contains('连接')) {
+    if (message.contains('网络') ||
+        message.contains('network') ||
+        message.contains('连接')) {
       return UserFriendlyError(
         title: '网络连接错误',
         description: error,
@@ -572,7 +579,8 @@ class UserFriendlyErrorHandler {
   void logError(UserFriendlyError error) {
     final severityTag = error.severity.toString().split('.').last.toUpperCase();
 
-    Logger.debug('${error.colorCode}[$severityTag] ${error.emoji} ${error.title}${error.resetCode}');
+    Logger.debug(
+        '${error.colorCode}[$severityTag] ${error.emoji} ${error.title}${error.resetCode}');
     Logger.debug('${error.description}');
 
     if (error.technicalDetails != null && kDebugMode) {
@@ -606,18 +614,19 @@ class UserFriendlyErrorHandler {
               children: [
                 Text(error.description),
                 const SizedBox(height: 16),
-                const Text('解决方案：', style: TextStyle(fontWeight: FontWeight.bold)),
+                const Text('解决方案：',
+                    style: TextStyle(fontWeight: FontWeight.bold)),
                 const SizedBox(height: 8),
                 ...error.solutions.map((solution) => Padding(
-                  padding: const EdgeInsets.only(bottom: 4),
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Text('• '),
-                      Expanded(child: Text(solution)),
-                    ],
-                  ),
-                )),
+                      padding: const EdgeInsets.only(bottom: 4),
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Text('• '),
+                          Expanded(child: Text(solution)),
+                        ],
+                      ),
+                    )),
                 if (error.helpLink != null) ...[
                   const SizedBox(height: 16),
                   InkWell(
@@ -626,7 +635,8 @@ class UserFriendlyErrorHandler {
                     },
                     child: Text(
                       '📚 查看帮助文档',
-                      style: TextStyle(color: Theme.of(context).colorScheme.primary),
+                      style: TextStyle(
+                          color: Theme.of(context).colorScheme.primary),
                     ),
                   ),
                 ],
@@ -637,13 +647,15 @@ class UserFriendlyErrorHandler {
                 if (error.technicalDetails != null && kDebugMode) ...[
                   const SizedBox(height: 16),
                   ExpansionTile(
-                    title: const Text('🔧 技术详情', style: TextStyle(fontSize: 12)),
+                    title:
+                        const Text('🔧 技术详情', style: TextStyle(fontSize: 12)),
                     children: [
                       Padding(
                         padding: const EdgeInsets.all(8.0),
                         child: Text(
                           error.technicalDetails!,
-                          style: const TextStyle(fontFamily: 'monospace', fontSize: 10),
+                          style: const TextStyle(
+                              fontFamily: 'monospace', fontSize: 10),
                         ),
                       ),
                     ],
@@ -713,7 +725,8 @@ class TimeoutException implements Exception {
   TimeoutException(this.message, [this.duration]);
 
   @override
-  String toString() => 'TimeoutException: $message${duration != null ? ' after ${duration!.inSeconds} seconds' : ''}';
+  String toString() =>
+      'TimeoutException: $message${duration != null ? ' after ${duration!.inSeconds} seconds' : ''}';
 }
 
 /// 全局用户友好错误处理器实例

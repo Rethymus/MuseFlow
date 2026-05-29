@@ -64,7 +64,8 @@ class AdaptiveUIManager {
   }
 
   /// 记录用户行为
-  Future<void> trackUserBehavior(String action, Map<String, dynamic> data) async {
+  Future<void> trackUserBehavior(
+      String action, Map<String, dynamic> data) async {
     switch (action) {
       case 'feature_used':
         await _trackFeatureUsage(data['feature'] as String);
@@ -116,7 +117,7 @@ class AdaptiveUIManager {
   }) {
     final prefs = customPreferences ?? _layoutPreferences;
     final density = prefs['layoutDensity'] as String? ??
-                   _userHabits['preferredLayoutDensity'] as String;
+        _userHabits['preferredLayoutDensity'] as String;
 
     return AdaptiveLayout(
       density: density,
@@ -150,7 +151,8 @@ class AdaptiveUIManager {
     }
 
     // 按优先级排序
-    recommendations.sort((a, b) => b.priority.index.compareTo(a.priority.index));
+    recommendations
+        .sort((a, b) => b.priority.index.compareTo(a.priority.index));
 
     return recommendations;
   }
@@ -171,7 +173,8 @@ class AdaptiveUIManager {
   /// 更新布局偏好
   Future<void> updateLayoutPreference(String key, dynamic value) async {
     _layoutPreferences[key] = value;
-    await _prefs?.setString('$_preferencesKey\_layout', json.encode(_layoutPreferences));
+    await _prefs?.setString(
+        '$_preferencesKey\_layout', json.encode(_layoutPreferences));
   }
 
   /// 重置所有习惯数据

@@ -84,14 +84,17 @@ class StartupBenchmark {
     StartupMonitor.instance.recordCoreServices();
 
     // 模拟阶段3：辅助功能初始化
-    await Future.delayed(Duration(milliseconds: AppConstants.animationDurationMilliseconds));
+    await Future.delayed(
+        Duration(milliseconds: AppConstants.animationDurationMilliseconds));
     StartupMonitor.instance.recordComplete();
   }
 
   /// 分析基准测试结果
-  static Map<String, dynamic> _analyzeResults(List<Map<String, dynamic>> results) {
+  static Map<String, dynamic> _analyzeResults(
+      List<Map<String, dynamic>> results) {
     final basicUITimes = results.map((r) => r['basicUI'] as int).toList();
-    final coreServicesTimes = results.map((r) => r['coreServices'] as int).toList();
+    final coreServicesTimes =
+        results.map((r) => r['coreServices'] as int).toList();
     final completeTimes = results.map((r) => r['complete'] as int).toList();
 
     final analysis = <String, dynamic>{
@@ -102,7 +105,8 @@ class StartupBenchmark {
         'max': _max(basicUITimes),
         'std': _stdDev(basicUITimes),
         'target': AppConstants.startupBasicUIThresholdMs,
-        'pass_rate': _passRate(basicUITimes, AppConstants.startupBasicUIThresholdMs),
+        'pass_rate':
+            _passRate(basicUITimes, AppConstants.startupBasicUIThresholdMs),
       },
       'coreServices': {
         'avg': _average(coreServicesTimes),
@@ -110,7 +114,8 @@ class StartupBenchmark {
         'max': _max(coreServicesTimes),
         'std': _stdDev(coreServicesTimes),
         'target': AppConstants.startupCoreServicesThresholdMs,
-        'pass_rate': _passRate(coreServicesTimes, AppConstants.startupCoreServicesThresholdMs),
+        'pass_rate': _passRate(
+            coreServicesTimes, AppConstants.startupCoreServicesThresholdMs),
       },
       'complete': {
         'avg': _average(completeTimes),
@@ -118,7 +123,8 @@ class StartupBenchmark {
         'max': _max(completeTimes),
         'std': _stdDev(completeTimes),
         'target': AppConstants.startupCompleteThresholdMs,
-        'pass_rate': _passRate(completeTimes, AppConstants.startupCompleteThresholdMs),
+        'pass_rate':
+            _passRate(completeTimes, AppConstants.startupCompleteThresholdMs),
       },
       'overall_pass_rate': _overallPassRate(results),
     };
@@ -192,9 +198,9 @@ class StartupBenchmark {
   static double _stdDev(List<int> values) {
     if (values.isEmpty) return 0.0;
     final avg = _average(values);
-    final variance = values
-        .map((v) => (v - avg) * (v - avg))
-        .reduce((a, b) => a + b) / values.length;
+    final variance =
+        values.map((v) => (v - avg) * (v - avg)).reduce((a, b) => a + b) /
+            values.length;
     return variance > 0 ? variance.sqrt() : 0.0;
   }
 
@@ -240,21 +246,26 @@ class StartupBenchmark {
       'coreServices': {
         'time': metrics.timeToCoreServices.inMilliseconds,
         'target': 1200,
-        'status': metrics.timeToCoreServices.inMilliseconds < 1200 ? 'pass' : 'fail',
+        'status':
+            metrics.timeToCoreServices.inMilliseconds < 1200 ? 'pass' : 'fail',
       },
       'complete': {
         'time': metrics.timeToComplete.inMilliseconds,
         'target': 2000,
-        'status': metrics.timeToComplete.inMilliseconds < 2000 ? 'pass' : 'fail',
+        'status':
+            metrics.timeToComplete.inMilliseconds < 2000 ? 'pass' : 'fail',
       },
       'overall': metrics.meetsTarget() ? 'pass' : 'fail',
     };
 
     // 打印结果
     Logger.debug('\n快速性能检查结果:');
-    Logger.debug('基础UI: ${result['basicUI']['time']}ms (${result['basicUI']['status']})');
-    Logger.debug('核心服务: ${result['coreServices']['time']}ms (${result['coreServices']['status']})');
-    Logger.debug('完整启动: ${result['complete']['time']}ms (${result['complete']['status']})');
+    Logger.debug(
+        '基础UI: ${result['basicUI']['time']}ms (${result['basicUI']['status']})');
+    Logger.debug(
+        '核心服务: ${result['coreServices']['time']}ms (${result['coreServices']['status']})');
+    Logger.debug(
+        '完整启动: ${result['complete']['time']}ms (${result['complete']['status']})');
     Logger.debug('总体状态: ${result['overall']}');
 
     return result;

@@ -31,20 +31,14 @@ class PreferenceSummaryCard extends StatelessWidget {
             Row(
               children: [
                 Icon(
-                  hasSufficientConfidence
-                      ? Icons.check_circle
-                      : Icons.info,
-                  color: hasSufficientConfidence
-                      ? Colors.green
-                      : Colors.orange,
+                  hasSufficientConfidence ? Icons.check_circle : Icons.info,
+                  color: hasSufficientConfidence ? Colors.green : Colors.orange,
                   size: 24,
                 ),
                 const SizedBox(width: 8),
                 Expanded(
                   child: Text(
-                    hasSufficientConfidence
-                        ? 'AI已充分了解您的写作偏好'
-                        : 'AI正在学习您的写作偏好',
+                    hasSufficientConfidence ? 'AI已充分了解您的写作偏好' : 'AI正在学习您的写作偏好',
                     style: Theme.of(context).textTheme.titleMedium,
                   ),
                 ),

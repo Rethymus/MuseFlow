@@ -1,5 +1,6 @@
 import 'dependency_auditor.dart';
-export 'dependency_auditor.dart' show ConflictSeverity, HealthScore, UpdatePriorityLevel;
+export 'dependency_auditor.dart'
+    show ConflictSeverity, HealthScore, UpdatePriorityLevel;
 import 'dart:io';
 
 /// 依赖管理器 - 主入口类
@@ -128,7 +129,8 @@ class DependencyManager {
     buffer.writeln();
     buffer.writeln('- **评分**: ${_getScoreBadge(result.healthReport.score)}');
     buffer.writeln('- **总依赖数**: ${result.dependencies.length}');
-    buffer.writeln('- **过时依赖**: ${result.healthReport.outdatedCount} (${result.healthReport.outdatedPercentage.toStringAsFixed(1)}%)');
+    buffer.writeln(
+        '- **过时依赖**: ${result.healthReport.outdatedCount} (${result.healthReport.outdatedPercentage.toStringAsFixed(1)}%)');
     buffer.writeln('- **版本冲突**: ${result.conflicts.length}');
     buffer.writeln('- **警告**: ${result.healthReport.warnings.length}');
     buffer.writeln('- **错误**: ${result.healthReport.errors.length}');
@@ -138,8 +140,11 @@ class DependencyManager {
     buffer.writeln('## 依赖清单');
     buffer.writeln();
 
-    final directDeps = result.dependencies.where((d) => d.type == DependencyType.direct).toList();
-    final devDeps = result.dependencies.where((d) => d.type == DependencyType.dev).toList();
+    final directDeps = result.dependencies
+        .where((d) => d.type == DependencyType.direct)
+        .toList();
+    final devDeps =
+        result.dependencies.where((d) => d.type == DependencyType.dev).toList();
 
     buffer.writeln('### 生产依赖');
     buffer.writeln();
@@ -147,7 +152,8 @@ class DependencyManager {
     buffer.writeln('|------|---------|------|------|');
     for (final dep in directDeps) {
       final status = dep.isOutdated ? '⚠️ 过时' : '✅ 正常';
-      buffer.writeln('| ${dep.name} | ${dep.currentVersion} | ${dep.type.name} | $status |');
+      buffer.writeln(
+          '| ${dep.name} | ${dep.currentVersion} | ${dep.type.name} | $status |');
     }
 
     if (devDeps.isNotEmpty) {
@@ -168,10 +174,12 @@ class DependencyManager {
       buffer.writeln('## 版本冲突');
       buffer.writeln();
       for (final conflict in result.conflicts) {
-        final severity = conflict.severity == ConflictSeverity.error ? '🔴' : '⚠️';
+        final severity =
+            conflict.severity == ConflictSeverity.error ? '🔴' : '⚠️';
         buffer.writeln('### $severity ${conflict.packageName}');
         buffer.writeln();
-        buffer.writeln('- **冲突版本**: ${conflict.conflictingVersions.join(', ')}');
+        buffer
+            .writeln('- **冲突版本**: ${conflict.conflictingVersions.join(', ')}');
         buffer.writeln('- **依赖项**: ${conflict.dependents.join(', ')}');
         buffer.writeln('- **解决方案**: ${conflict.resolution}');
         buffer.writeln();

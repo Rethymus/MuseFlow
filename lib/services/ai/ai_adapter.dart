@@ -184,7 +184,9 @@ abstract class BaseAIAdapter implements AIAdapter {
     final message = error.toString();
 
     // 根据状态码或消息内容判断错误类型
-    if (statusCode == 401 || message.contains('api key') || message.contains('unauthorized')) {
+    if (statusCode == 401 ||
+        message.contains('api key') ||
+        message.contains('unauthorized')) {
       throw ApiKeyException(
         message: 'Invalid API key',
         statusCode: statusCode,
@@ -200,7 +202,9 @@ abstract class BaseAIAdapter implements AIAdapter {
       );
     }
 
-    if (statusCode == 402 || message.contains('quota') || message.contains('billing')) {
+    if (statusCode == 402 ||
+        message.contains('quota') ||
+        message.contains('billing')) {
       throw QuotaException(
         message: 'API quota exceeded',
         statusCode: statusCode,

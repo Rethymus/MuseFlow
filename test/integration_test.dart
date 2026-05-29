@@ -114,19 +114,23 @@ void main() {
       expect(appState, isNotNull);
 
       // 验证CharacterService存在
-      final characterService = tester.widget<CharacterService>(find.byType(CharacterService));
+      final characterService =
+          tester.widget<CharacterService>(find.byType(CharacterService));
       expect(characterService, isNotNull);
 
       // 验证WorldService存在
-      final worldService = tester.widget<WorldService>(find.byType(WorldService));
+      final worldService =
+          tester.widget<WorldService>(find.byType(WorldService));
       expect(worldService, isNotNull);
 
       // 验证SharedDataService存在
-      final sharedDataService = tester.widget<SharedDataService>(find.byType(SharedDataService));
+      final sharedDataService =
+          tester.widget<SharedDataService>(find.byType(SharedDataService));
       expect(sharedDataService, isNotNull);
 
       // 验证GlobalSearchService存在
-      final searchService = tester.widget<GlobalSearchService>(find.byType(GlobalSearchService));
+      final searchService =
+          tester.widget<GlobalSearchService>(find.byType(GlobalSearchService));
       expect(searchService, isNotNull);
     });
 

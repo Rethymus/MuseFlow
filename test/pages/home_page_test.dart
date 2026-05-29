@@ -310,12 +310,12 @@ void main() {
       // 验证创建时间在合理范围内
       expect(
         mockAppState.notes.first.createdAt.isAfter(beforeCreate) ||
-        mockAppState.notes.first.createdAt.isAtSameMomentAs(beforeCreate),
+            mockAppState.notes.first.createdAt.isAtSameMomentAs(beforeCreate),
         isTrue,
       );
       expect(
         mockAppState.notes.first.createdAt.isBefore(afterCreate) ||
-        mockAppState.notes.first.createdAt.isAtSameMomentAs(afterCreate),
+            mockAppState.notes.first.createdAt.isAtSameMomentAs(afterCreate),
         isTrue,
       );
     });
@@ -399,7 +399,8 @@ void main() {
       await tester.pump();
 
       // 验证输入框清空
-      final textFieldAfterClear = tester.widget<TextField>(find.byType(TextField));
+      final textFieldAfterClear =
+          tester.widget<TextField>(find.byType(TextField));
       expect(textFieldAfterClear.controller?.text, isEmpty);
     });
 
@@ -439,7 +440,8 @@ void main() {
       await tester.pumpWidget(createHomePageUnderTest());
 
       // 获取FloatingActionButton
-      final fab = tester.widget<FloatingActionButton>(find.byType(FloatingActionButton));
+      final fab = tester
+          .widget<FloatingActionButton>(find.byType(FloatingActionButton));
 
       // 验证按钮包含加号图标
       expect(find.byIcon(Icons.add), findsOneWidget);

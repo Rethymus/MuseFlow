@@ -23,8 +23,9 @@ class EncryptedAppState extends ChangeNotifier {
   EncryptedAppState({
     SecureStorageService? storageService,
     EncryptionPerformanceMonitor? performanceMonitor,
-  }) : _storageService = storageService ?? SecureStorageService.instance,
-       _performanceMonitor = performanceMonitor ?? EncryptionPerformanceMonitor.instance;
+  })  : _storageService = storageService ?? SecureStorageService.instance,
+        _performanceMonitor =
+            performanceMonitor ?? EncryptionPerformanceMonitor.instance;
 
   List<Note> get notes => _notes;
   Note? get currentNote => _currentNote;
@@ -126,7 +127,8 @@ class EncryptedAppState extends ChangeNotifier {
       await _performanceMonitor.measureOperation(
         operation: 'bulk_save_notes',
         operationFn: () => _storageService.bulkSaveNotes(_notes),
-        dataSize: _notes.fold<int>(0, (sum, note) => sum + note.title.length + note.content.length),
+        dataSize: _notes.fold<int>(
+            0, (sum, note) => sum + note.title.length + note.content.length),
       );
 
       notifyListeners();

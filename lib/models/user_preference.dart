@@ -7,10 +7,13 @@ part 'user_preference.g.dart';
 enum LanguageStyle {
   /// 正式语言
   formal,
+
   /// 口语化语言
   casual,
+
   /// 混合风格
   mixed,
+
   /// 未检测到明确偏好
   unknown,
 }
@@ -19,12 +22,16 @@ enum LanguageStyle {
 enum DetailLevel {
   /// 简洁
   concise,
+
   /// 适中
   moderate,
+
   /// 详细
   detailed,
+
   /// 极其详细
   verbose,
+
   /// 未检测
   unknown,
 }
@@ -33,18 +40,25 @@ enum DetailLevel {
 enum ModificationType {
   /// 语法修正
   grammar,
+
   /// 拼写修正
   spelling,
+
   /// 风格改进
   style,
+
   /// 内容扩展
   expansion,
+
   /// 内容精简
   simplification,
+
   /// 结构调整
   structure,
+
   /// 词汇替换
   vocabulary,
+
   /// 其他修改
   other,
 }
@@ -53,10 +67,13 @@ enum ModificationType {
 enum FeedbackType {
   /// 接受修改
   accepted,
+
   /// 拒绝修改
   rejected,
+
   /// 部分接受
   partiallyAccepted,
+
   /// 撤销修改
   reverted,
 }
@@ -65,12 +82,16 @@ enum FeedbackType {
 enum ParagraphStructure {
   /// 短段落为主
   shortParagraphs,
+
   /// 中等长度段落
   mediumParagraphs,
+
   /// 长段落为主
   longParagraphs,
+
   /// 混合使用
   mixed,
+
   /// 未检测
   unknown,
 }
@@ -79,12 +100,16 @@ enum ParagraphStructure {
 enum SentenceComplexity {
   /// 简单句为主
   simple,
+
   /// 中等复杂度
   moderate,
+
   /// 复杂句为主
   complex,
+
   /// 多样化混合
   varied,
+
   /// 未检测
   unknown,
 }
@@ -193,10 +218,12 @@ class UserPreference {
       detailLevel: detailLevel ?? this.detailLevel,
       paragraphStructure: paragraphStructure ?? this.paragraphStructure,
       sentenceComplexity: sentenceComplexity ?? this.sentenceComplexity,
-      modificationAcceptanceRates: modificationAcceptanceRates ?? this.modificationAcceptanceRates,
+      modificationAcceptanceRates:
+          modificationAcceptanceRates ?? this.modificationAcceptanceRates,
       preferredVocabulary: preferredVocabulary ?? this.preferredVocabulary,
       topicInterests: topicInterests ?? this.topicInterests,
-      overallAcceptanceRate: overallAcceptanceRate ?? this.overallAcceptanceRate,
+      overallAcceptanceRate:
+          overallAcceptanceRate ?? this.overallAcceptanceRate,
       learningDataPoints: learningDataPoints ?? this.learningDataPoints,
       confidenceScore: confidenceScore ?? this.confidenceScore,
       enabled: enabled ?? this.enabled,
@@ -228,10 +255,13 @@ class UserPreference {
     final entries = modificationAcceptanceRates.entries.toList()
       ..sort((a, b) => b.value.compareTo(a.value));
 
-    return entries.take(limit).map((e) => {
-      'type': e.key.toString(),
-      'acceptanceRate': e.value,
-    }).toList();
+    return entries
+        .take(limit)
+        .map((e) => {
+              'type': e.key.toString(),
+              'acceptanceRate': e.value,
+            })
+        .toList();
   }
 
   /// 获取最关注的主题
@@ -239,10 +269,13 @@ class UserPreference {
     final entries = topicInterests.entries.toList()
       ..sort((a, b) => b.value.compareTo(a.value));
 
-    return entries.take(limit).map((e) => {
-      'topic': e.key,
-      'interest': e.value,
-    }).toList();
+    return entries
+        .take(limit)
+        .map((e) => {
+              'topic': e.key,
+              'interest': e.value,
+            })
+        .toList();
   }
 
   /// 是否有足够的置信度
@@ -347,12 +380,14 @@ class UserFeedback {
   }
 
   /// 是否是正反馈
-  bool get isPositive => feedbackType == FeedbackType.accepted ||
-                         feedbackType == FeedbackType.partiallyAccepted;
+  bool get isPositive =>
+      feedbackType == FeedbackType.accepted ||
+      feedbackType == FeedbackType.partiallyAccepted;
 
   /// 是否是负反馈
-  bool get isNegative => feedbackType == FeedbackType.rejected ||
-                         feedbackType == FeedbackType.reverted;
+  bool get isNegative =>
+      feedbackType == FeedbackType.rejected ||
+      feedbackType == FeedbackType.reverted;
 }
 
 /// 写作分析数据

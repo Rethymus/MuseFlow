@@ -12,7 +12,8 @@ import 'performance/memory_optimizer.dart';
 import 'performance/performance_metrics.dart';
 
 // 导入性能相关的枚举类型
-export 'performance/memory_optimizer.dart' show MemoryState, MemoryOptimizationStrategy;
+export 'performance/memory_optimizer.dart'
+    show MemoryState, MemoryOptimizationStrategy;
 
 /// 启动阶段
 enum StartupPhase {
@@ -85,9 +86,12 @@ class PhaseConfig {
 class ProgressiveInitializer {
   static ProgressiveInitializer? _instance;
   // 使用 AppConstants 中的启动性能阈值
-  static const Duration _phase1Target = Duration(milliseconds: AppConstants.startupBasicUIThresholdMs);
-  static const Duration _phase2Target = Duration(milliseconds: AppConstants.startupCoreServicesThresholdMs);
-  static const Duration _phase3Target = Duration(milliseconds: AppConstants.startupCompleteThresholdMs);
+  static const Duration _phase1Target =
+      Duration(milliseconds: AppConstants.startupBasicUIThresholdMs);
+  static const Duration _phase2Target =
+      Duration(milliseconds: AppConstants.startupCoreServicesThresholdMs);
+  static const Duration _phase3Target =
+      Duration(milliseconds: AppConstants.startupCompleteThresholdMs);
 
   final _stateController = StreamController<InitializationState>.broadcast();
   InitializationState _state = InitializationState(
@@ -182,7 +186,6 @@ class ProgressiveInitializer {
 
       // 记录性能报告
       _reportPerformanceMetrics(totalTime);
-
     } catch (e, stackTrace) {
       Logger.debug('初始化失败: $e');
       Logger.debug(stackTrace.toString());
@@ -211,7 +214,8 @@ class ProgressiveInitializer {
       // 快速执行UI相关的最小初始化
       // 这些操作应该在500ms内完成
 
-      await Future.delayed(const Duration(milliseconds: 50)); // 模拟最小初始化时间 - 保持不变，这是极短延迟
+      await Future.delayed(
+          const Duration(milliseconds: 50)); // 模拟最小初始化时间 - 保持不变，这是极短延迟
 
       final phaseTime = DateTime.now().difference(phaseStart);
       Logger.debug('阶段1完成: ${phaseTime.inMilliseconds}ms');
@@ -493,7 +497,8 @@ class ProgressiveInitializer {
 
     // 内存使用报告
     final memoryStats = memoryOptimizer.currentStats;
-    Logger.debug('内存使用: ${memoryStats.usedMemoryMB}MB / ${memoryStats.totalMemoryMB}MB');
+    Logger.debug(
+        '内存使用: ${memoryStats.usedMemoryMB}MB / ${memoryStats.totalMemoryMB}MB');
 
     // 记录内存使用
     performanceMetrics.recordMetric(
@@ -510,7 +515,8 @@ class ProgressiveInitializer {
 
     // 预加载报告
     final preloadStats = preloadManager.getPerformanceStats();
-    Logger.debug('预加载统计: ${preloadStats['totalPreloadAttempts']} 次尝试, ${preloadStats['successfulPreloads']} 次成功');
+    Logger.debug(
+        '预加载统计: ${preloadStats['totalPreloadAttempts']} 次尝试, ${preloadStats['successfulPreloads']} 次成功');
 
     // 生成优化报告
     final report = performanceMetrics.generateOptimizationReport();
@@ -567,7 +573,8 @@ class ProgressiveInitializer {
         final slowestPhase = _phaseDurations.entries.reduce(
           (a, b) => a.value > b.value ? a : b,
         );
-        improvements.add('最慢阶段: ${slowestPhase.key} (${slowestPhase.value.inMilliseconds}ms)');
+        improvements.add(
+            '最慢阶段: ${slowestPhase.key} (${slowestPhase.value.inMilliseconds}ms)');
       }
     }
 

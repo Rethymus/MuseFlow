@@ -38,7 +38,8 @@ class IntentAnalyzer {
   }
 
   /// 分析润色意图
-  IntentConfirmation _analyzePolishIntent(String text, Map<String, dynamic>? params) {
+  IntentConfirmation _analyzePolishIntent(
+      String text, Map<String, dynamic>? params) {
     final context = params?['context'] as String? ?? '';
     final textLength = text.length;
 
@@ -90,7 +91,8 @@ class IntentAnalyzer {
   }
 
   /// 分析扩写意图
-  IntentConfirmation _analyzeExpandIntent(String text, Map<String, dynamic>? params) {
+  IntentConfirmation _analyzeExpandIntent(
+      String text, Map<String, dynamic>? params) {
     final context = params?['context'] as String? ?? '';
     final targetLength = params?['targetLength'] as int? ?? text.length * 2;
 
@@ -134,7 +136,8 @@ class IntentAnalyzer {
   }
 
   /// 分析大纲意图
-  IntentConfirmation _analyzeOutlineIntent(String text, Map<String, dynamic>? params) {
+  IntentConfirmation _analyzeOutlineIntent(
+      String text, Map<String, dynamic>? params) {
     final maxItems = params?['maxItems'] as int? ?? 10;
     final sentences = text.split(RegExp(r'[。！？\n]'));
     final actualSentences = sentences.where((s) => s.trim().isNotEmpty).length;
@@ -150,12 +153,14 @@ class IntentAnalyzer {
         'numbering_style': 'numeric',
       },
       explanation: '我将分析全文内容（约${actualSentences}个句子），提取主要观点和论据，按逻辑层次生成结构化大纲。',
-      expectedOutcome: '生成的大纲将使用数字编号，包含${actualSentences.clamp(3, maxItems)}个要点，层次清晰，简洁明了。',
+      expectedOutcome:
+          '生成的大纲将使用数字编号，包含${actualSentences.clamp(3, maxItems)}个要点，层次清晰，简洁明了。',
     );
   }
 
   /// 分析摘要意图
-  IntentConfirmation _analyzeSummarizeIntent(String text, Map<String, dynamic>? params) {
+  IntentConfirmation _analyzeSummarizeIntent(
+      String text, Map<String, dynamic>? params) {
     final maxLength = params?['maxLength'] as int? ?? 100;
     final textLength = text.length;
     final compressionRatio = (maxLength / textLength * 100).toStringAsFixed(0);
@@ -176,7 +181,8 @@ class IntentAnalyzer {
   }
 
   /// 分析风格转换意图
-  IntentConfirmation _analyzeChangeStyleIntent(String text, Map<String, dynamic>? params) {
+  IntentConfirmation _analyzeChangeStyleIntent(
+      String text, Map<String, dynamic>? params) {
     final targetStyle = params?['targetStyle'] as String? ?? '正式';
 
     return IntentConfirmation(
@@ -194,11 +200,14 @@ class IntentAnalyzer {
   }
 
   /// 分析智能替换意图
-  IntentConfirmation _analyzeSmartReplaceIntent(String text, Map<String, dynamic>? params) {
+  IntentConfirmation _analyzeSmartReplaceIntent(
+      String text, Map<String, dynamic>? params) {
     final findText = params?['findText'] as String? ?? '';
     final replaceWith = params?['replaceWith'] as String? ?? '';
 
-    final occurrences = (text.toLowerCase().split(findText.toLowerCase()).length - 1).clamp(0, 999);
+    final occurrences =
+        (text.toLowerCase().split(findText.toLowerCase()).length - 1)
+            .clamp(0, 999);
 
     return IntentConfirmation(
       id: IntentConfirmation.generateId(),
@@ -353,10 +362,11 @@ class IntentAnalyzer {
     }
 
     final confirmed = _feedbackHistory.where((f) => f.confirmed).length;
-    final adjusted = _feedbackHistory.where((f) =>
-        f.adjustedDescription != null ||
-        (f.adjustedParameters?.isNotEmpty ?? false)
-    ).length;
+    final adjusted = _feedbackHistory
+        .where((f) =>
+            f.adjustedDescription != null ||
+            (f.adjustedParameters?.isNotEmpty ?? false))
+        .length;
 
     return {
       'total': _feedbackHistory.length,

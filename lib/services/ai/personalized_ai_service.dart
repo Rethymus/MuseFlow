@@ -47,8 +47,10 @@ class PersonalizedAIService {
     service._baseService = baseService ?? AIService.instance;
 
     // 初始化偏好管理器
-    service._preferenceManager = preferenceManager ?? await UserPreferenceManager.initialize();
-    service._feedbackCollector = feedbackCollector ?? FeedbackCollector.instance;
+    service._preferenceManager =
+        preferenceManager ?? await UserPreferenceManager.initialize();
+    service._feedbackCollector =
+        feedbackCollector ?? FeedbackCollector.instance;
     service._writingAnalyzer = writingAnalyzer ?? WritingAnalyzer.instance;
 
     service._initialized = true;
@@ -58,7 +60,8 @@ class PersonalizedAIService {
   /// 确保已初始化
   void _ensureInitialized() {
     if (!_initialized) {
-      throw StateError('PersonalizedAIService not initialized. Call initialize() first.');
+      throw StateError(
+          'PersonalizedAIService not initialized. Call initialize() first.');
     }
   }
 
@@ -78,7 +81,8 @@ class PersonalizedAIService {
     final preference = _preferenceManager!.currentPreference;
     if (applyPreferences && preference != null && preference.enabled) {
       // 应用用户偏好到消息
-      final personalizedMessages = _applyPreferencesToMessages(messages, preference);
+      final personalizedMessages =
+          _applyPreferencesToMessages(messages, preference);
 
       // 发送消息
       final response = await _baseService.sendMessage(
@@ -89,7 +93,8 @@ class PersonalizedAIService {
       );
 
       // 根据用户偏好调整响应
-      final adjustedResponse = _adjustResponseForPreferences(response, preference);
+      final adjustedResponse =
+          _adjustResponseForPreferences(response, preference);
 
       return adjustedResponse;
     } else {
@@ -117,7 +122,8 @@ class PersonalizedAIService {
     final preference = _preferenceManager!.currentPreference;
     if (applyPreferences && preference != null && preference.enabled) {
       // 应用用户偏好到消息
-      final personalizedMessages = _applyPreferencesToMessages(messages, preference);
+      final personalizedMessages =
+          _applyPreferencesToMessages(messages, preference);
 
       // 流式发送消息
       await for (final chunk in _baseService.sendMessageStream(
@@ -304,7 +310,9 @@ class PersonalizedAIService {
       }
     }
 
-    return parts.isEmpty ? '' : '个性化要求：\n${parts.map((p) => '- $p').join('\n')}';
+    return parts.isEmpty
+        ? ''
+        : '个性化要求：\n${parts.map((p) => '- $p').join('\n')}';
   }
 
   /// 描述修改类型
@@ -418,7 +426,8 @@ class PersonalizedAIService {
   }
 
   /// 分析用户写作
-  Future<WritingAnalysis> analyzeUserWriting(String text, {String? context}) async {
+  Future<WritingAnalysis> analyzeUserWriting(String text,
+      {String? context}) async {
     _ensureInitialized();
     return await _preferenceManager!.analyzeWriting(text, context: context);
   }
@@ -484,20 +493,30 @@ class PersonalizedAIService {
   Future<void> deleteConfig(String id) => _baseService.deleteConfig(id);
   Future<void> setActiveConfig(String id) => _baseService.setActiveConfig(id);
   Future<AIConfig?> getActiveConfig() => _baseService.getActiveConfig();
-  Future<bool> validateApiKey(AIConfig config) => _baseService.validateApiKey(config);
-  Future<List<String>> getAvailableModels(AIConfig config) => _baseService.getAvailableModels(config);
-  int estimateTokens(List<AIMessage> messages, AIConfig config) => _baseService.estimateTokens(messages, config);
+  Future<bool> validateApiKey(AIConfig config) =>
+      _baseService.validateApiKey(config);
+  Future<List<String>> getAvailableModels(AIConfig config) =>
+      _baseService.getAvailableModels(config);
+  int estimateTokens(List<AIMessage> messages, AIConfig config) =>
+      _baseService.estimateTokens(messages, config);
   void dispose() => _baseService.dispose();
   CacheManager get cacheManager => _baseService.cacheManager;
   Future<AICacheStats> getCacheStats() => _baseService.getCacheStats();
-  Future<String> getCachePerformanceReport() => _baseService.getCachePerformanceReport();
-  Future<Map<String, dynamic>> getCacheHealthStatus() => _baseService.getCacheHealthStatus();
-  Future<void> clearCache({bool clearExpiredOnly = false}) => _baseService.clearCache(clearExpiredOnly: clearExpiredOnly);
+  Future<String> getCachePerformanceReport() =>
+      _baseService.getCachePerformanceReport();
+  Future<Map<String, dynamic>> getCacheHealthStatus() =>
+      _baseService.getCacheHealthStatus();
+  Future<void> clearCache({bool clearExpiredOnly = false}) =>
+      _baseService.clearCache(clearExpiredOnly: clearExpiredOnly);
   void resetCacheStats() => _baseService.resetCacheStats();
-  void setCachingEnabled(bool enabled) => _baseService.setCachingEnabled(enabled);
-  Future<CachePerformanceMetrics> getCachePerformanceMetrics() => _baseService.getCachePerformanceMetrics();
-  Future<List<String>> getCacheSuggestions() => _baseService.getCacheSuggestions();
+  void setCachingEnabled(bool enabled) =>
+      _baseService.setCachingEnabled(enabled);
+  Future<CachePerformanceMetrics> getCachePerformanceMetrics() =>
+      _baseService.getCachePerformanceMetrics();
+  Future<List<String>> getCacheSuggestions() =>
+      _baseService.getCacheSuggestions();
   Stream<CacheManagerEvent> get cacheEvents => _baseService.cacheEvents;
   Future<void> optimizeCacheStrategy() => _baseService.optimizeCacheStrategy();
-  Future<void> warmupCache(List<AIMessage> commonMessages, AIConfig? config) => _baseService.warmupCache(commonMessages, config);
+  Future<void> warmupCache(List<AIMessage> commonMessages, AIConfig? config) =>
+      _baseService.warmupCache(commonMessages, config);
 }

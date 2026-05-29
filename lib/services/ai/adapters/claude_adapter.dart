@@ -56,7 +56,8 @@ class ClaudeAdapter extends BaseAIAdapterImpl {
     final effectiveConfig = config ?? this.config;
 
     try {
-      final response = await _makeRequest(messages, effectiveConfig, stream: false);
+      final response =
+          await _makeRequest(messages, effectiveConfig, stream: false);
       return _parseResponse(response, effectiveConfig);
     } catch (e) {
       handleError(e);
@@ -72,7 +73,8 @@ class ClaudeAdapter extends BaseAIAdapterImpl {
     final effectiveConfig = config ?? this.config;
 
     try {
-      final stream = await _makeRequest(messages, effectiveConfig, stream: true);
+      final stream =
+          await _makeRequest(messages, effectiveConfig, stream: true);
       await for (final chunk in _parseStreamResponse(stream, effectiveConfig)) {
         onChunk?.call(chunk);
         yield chunk;
@@ -92,11 +94,13 @@ class ClaudeAdapter extends BaseAIAdapterImpl {
     final requestBody = _buildRequestBody(messages, config, stream);
 
     final response = await executeRequest(
-      () => client.post(
+      () => client
+          .post(
         url,
         headers: _buildHeaders(config),
         body: jsonEncode(requestBody),
-      ).timeout(
+      )
+          .timeout(
         Duration(seconds: config.effectiveTimeout),
         onTimeout: () {
           throw TimeoutException(
@@ -119,13 +123,16 @@ class ClaudeAdapter extends BaseAIAdapterImpl {
     bool stream,
   ) {
     // 分离系统消息和用户/助手消息
-    final systemMessages = messages.where((m) => m.role == MessageRole.system).toList();
-    final conversationMessages = messages.where((m) => m.role != MessageRole.system).toList();
+    final systemMessages =
+        messages.where((m) => m.role == MessageRole.system).toList();
+    final conversationMessages =
+        messages.where((m) => m.role != MessageRole.system).toList();
 
     final body = <String, dynamic>{
       'model': config.model,
       'max_tokens': config.maxTokens,
-      'messages': conversationMessages.map((msg) => _formatMessage(msg)).toList(),
+      'messages':
+          conversationMessages.map((msg) => _formatMessage(msg)).toList(),
       'stream': stream,
     };
 
@@ -195,7 +202,8 @@ class ClaudeAdapter extends BaseAIAdapterImpl {
         model: data['model'] ?? config.model,
         inputTokens: data['usage']?['input_tokens'],
         outputTokens: data['usage']?['output_tokens'],
-        totalTokens: (data['usage']?['input_tokens'] as int? ?? 0) + (data['usage']?['output_tokens'] as int? ?? 0),
+        totalTokens: (data['usage']?['input_tokens'] as int? ?? 0) +
+            (data['usage']?['output_tokens'] as int? ?? 0),
         finishReason: data['stop_reason'],
         timestamp: DateTime.now(),
       );

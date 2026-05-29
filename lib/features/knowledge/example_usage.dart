@@ -1,5 +1,6 @@
 import '../../config/app_constants.dart';
 import '../../utils/logger.dart';
+
 /// 知识库功能使用示例
 ///
 /// 注意：此文件展示了如何使用知识库功能，需要Flutter环境运行

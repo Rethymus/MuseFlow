@@ -188,7 +188,8 @@ void main() {
       final userSegments = manager.getSegmentsByType(SegmentType.userMessage);
       expect(userSegments.length, equals(2));
 
-      final systemSegments = manager.getSegmentsByType(SegmentType.systemResponse);
+      final systemSegments =
+          manager.getSegmentsByType(SegmentType.systemResponse);
       expect(systemSegments.length, equals(1));
     });
 

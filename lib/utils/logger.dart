@@ -20,9 +20,8 @@ class Logger {
   Logger._();
 
   /// 当前日志级别 - 基于调试模式配置
-  static LogLevel _currentLevel = AppConstants.enableDebugMode
-      ? LogLevel.DEBUG
-      : LogLevel.ERROR;
+  static LogLevel _currentLevel =
+      AppConstants.enableDebugMode ? LogLevel.DEBUG : LogLevel.ERROR;
 
   /// 设置日志级别
   static void setLogLevel(LogLevel level) {
@@ -48,7 +47,8 @@ class Logger {
   /// DEBUG级别日志 - 仅在开发模式输出
   static void debug(String message, {String? tag}) {
     if (_shouldLog(LogLevel.DEBUG)) {
-      final formattedMessage = _formatMessage(LogLevel.DEBUG, message, tag: tag);
+      final formattedMessage =
+          _formatMessage(LogLevel.DEBUG, message, tag: tag);
       if (kDebugMode) {
         print(formattedMessage);
       }
@@ -68,7 +68,8 @@ class Logger {
   /// WARNING级别日志 - 仅在开发模式输出
   static void warning(String message, {String? tag}) {
     if (_shouldLog(LogLevel.WARNING)) {
-      final formattedMessage = _formatMessage(LogLevel.WARNING, message, tag: tag);
+      final formattedMessage =
+          _formatMessage(LogLevel.WARNING, message, tag: tag);
       if (kDebugMode) {
         print(formattedMessage);
       }
@@ -76,9 +77,11 @@ class Logger {
   }
 
   /// ERROR级别日志 - 生产环境和开发环境都输出
-  static void error(String message, {String? tag, Object? error, StackTrace? stackTrace}) {
+  static void error(String message,
+      {String? tag, Object? error, StackTrace? stackTrace}) {
     if (_shouldLog(LogLevel.ERROR)) {
-      final formattedMessage = _formatMessage(LogLevel.ERROR, message, tag: tag);
+      final formattedMessage =
+          _formatMessage(LogLevel.ERROR, message, tag: tag);
       if (kDebugMode) {
         print(formattedMessage);
         if (error != null) {
@@ -98,9 +101,11 @@ class Logger {
   }
 
   /// FATAL级别日志 - 生产环境和开发环境都输出
-  static void fatal(String message, {String? tag, Object? error, StackTrace? stackTrace}) {
+  static void fatal(String message,
+      {String? tag, Object? error, StackTrace? stackTrace}) {
     if (_shouldLog(LogLevel.FATAL)) {
-      final formattedMessage = _formatMessage(LogLevel.FATAL, message, tag: tag);
+      final formattedMessage =
+          _formatMessage(LogLevel.FATAL, message, tag: tag);
       if (kDebugMode) {
         print(formattedMessage);
         if (error != null) {
@@ -133,7 +138,8 @@ class Logger {
   }
 
   /// 便捷方法：记录API响应
-  static void logApiResponse(String endpoint, {int? statusCode, int? durationMs}) {
+  static void logApiResponse(String endpoint,
+      {int? statusCode, int? durationMs}) {
     if (AppConstants.logAIRequests) {
       debug('API Response: $endpoint', tag: 'API');
       if (statusCode != null) {
@@ -156,16 +162,20 @@ class Logger {
   }
 
   /// 便捷方法：记录性能指标
-  static void logPerformance(String operation, int durationMs, {String? threshold}) {
+  static void logPerformance(String operation, int durationMs,
+      {String? threshold}) {
     if (AppConstants.enableDebugMode) {
-      final status = AppConstants.isWithinThreshold(durationMs,
-          int.parse(threshold ?? '1000')) ? '✓' : '⚠';
+      final status = AppConstants.isWithinThreshold(
+              durationMs, int.parse(threshold ?? '1000'))
+          ? '✓'
+          : '⚠';
       debug('Performance: $operation - ${durationMs}ms $status', tag: 'PERF');
     }
   }
 
   /// 便捷方法：记录文件操作
-  static void logFileOperation(String operation, String path, {bool success = true}) {
+  static void logFileOperation(String operation, String path,
+      {bool success = true}) {
     if (AppConstants.enableDebugMode) {
       final status = success ? '✓' : '✗';
       debug('File $status: $operation - $path', tag: 'FILE');

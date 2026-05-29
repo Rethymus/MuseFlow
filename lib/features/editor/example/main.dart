@@ -238,7 +238,8 @@ class _ConfigExampleScreenState extends State<ConfigExampleScreen> {
         padding: const EdgeInsets.all(16),
         children: [
           // 主题配置
-          const Text('主题配置', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+          const Text('主题配置',
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
           const SizedBox(height: 12),
 
           SwitchListTile(
@@ -285,7 +286,8 @@ class _ConfigExampleScreenState extends State<ConfigExampleScreen> {
           const Divider(height: 32),
 
           // 行为配置
-          const Text('行为配置', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+          const Text('行为配置',
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
           const SizedBox(height: 12),
 
           SwitchListTile(
@@ -305,7 +307,8 @@ class _ConfigExampleScreenState extends State<ConfigExampleScreen> {
             value: _behaviorConfig.enableSpellCheck,
             onChanged: (value) {
               setState(() {
-                _behaviorConfig = _behaviorConfig.copyWith(enableSpellCheck: value);
+                _behaviorConfig =
+                    _behaviorConfig.copyWith(enableSpellCheck: value);
               });
             },
           ),
@@ -313,7 +316,8 @@ class _ConfigExampleScreenState extends State<ConfigExampleScreen> {
           const Divider(height: 32),
 
           // 配置预览
-          const Text('当前配置', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+          const Text('当前配置',
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
           const SizedBox(height: 12),
 
           Card(
@@ -327,7 +331,8 @@ class _ConfigExampleScreenState extends State<ConfigExampleScreen> {
                   Text('行高: ${_themeConfig.lineHeight}'),
                   const SizedBox(height: 8),
                   Text('自动保存: ${_behaviorConfig.autoSave ? "开启" : "关闭"}'),
-                  Text('拼写检查: ${_behaviorConfig.enableSpellCheck ? "开启" : "关闭"}'),
+                  Text(
+                      '拼写检查: ${_behaviorConfig.enableSpellCheck ? "开启" : "关闭"}'),
                 ],
               ),
             ),
@@ -357,7 +362,6 @@ class AdvancedExampleScreen extends StatelessWidget {
             style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 12),
-
           const Card(
             child: Padding(
               padding: EdgeInsets.all(16),
@@ -377,15 +381,12 @@ class AdvancedExampleScreen extends StatelessWidget {
               ),
             ),
           ),
-
           const SizedBox(height: 16),
-
           const Text(
             '数据持久化',
             style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 12),
-
           const Card(
             child: Padding(
               padding: EdgeInsets.all(16),
@@ -405,15 +406,12 @@ class AdvancedExampleScreen extends StatelessWidget {
               ),
             ),
           ),
-
           const SizedBox(height: 16),
-
           const Text(
             '扩展功能',
             style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 12),
-
           const Card(
             child: Padding(
               padding: EdgeInsets.all(16),
@@ -433,9 +431,7 @@ class AdvancedExampleScreen extends StatelessWidget {
               ),
             ),
           ),
-
           const SizedBox(height: 24),
-
           ElevatedButton.icon(
             icon: const Icon(Icons.code),
             label: const Text('查看集成代码'),

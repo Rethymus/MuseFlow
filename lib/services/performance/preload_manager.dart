@@ -140,7 +140,10 @@ class UserUsagePattern {
     pageVisitCounts[pageId] = (pageVisitCounts[pageId] ?? 0) + 1;
     lastVisitTimes[pageId] = DateTime.now();
 
-    visitTimestamps[pageId] = [...visitTimestamps[pageId] ?? [], DateTime.now()];
+    visitTimestamps[pageId] = [
+      ...visitTimestamps[pageId] ?? [],
+      DateTime.now()
+    ];
     // 只保留最近50次访问记录
     if (visitTimestamps[pageId]!.length > 50) {
       visitTimestamps[pageId] = visitTimestamps[pageId]!.take(50).toList();
@@ -155,7 +158,8 @@ class UserUsagePattern {
     final now = DateTime.now();
     final oneMinuteAgo = now.subtract(const Duration(minutes: 1));
 
-    final recentVisits = timestamps.where((t) => t.isAfter(oneMinuteAgo)).length;
+    final recentVisits =
+        timestamps.where((t) => t.isAfter(oneMinuteAgo)).length;
     return recentVisits.toDouble();
   }
 
@@ -196,7 +200,8 @@ class UserUsagePattern {
   Map<String, dynamic> toJson() {
     return {
       'pageVisitCounts': pageVisitCounts,
-      'lastVisitTimes': lastVisitTimes.map((k, v) => MapEntry(k, v.toIso8601String())),
+      'lastVisitTimes':
+          lastVisitTimes.map((k, v) => MapEntry(k, v.toIso8601String())),
       'visitTimestamps': visitTimestamps.map(
         (k, v) => MapEntry(k, v.map((t) => t.toIso8601String()).toList()),
       ),
@@ -220,7 +225,8 @@ class UserUsagePattern {
           ),
         ),
       ),
-      lastUpdated: DateTime.parse(json['lastUpdated'] as String? ?? DateTime.now().toIso8601String()),
+      lastUpdated: DateTime.parse(
+          json['lastUpdated'] as String? ?? DateTime.now().toIso8601String()),
     );
   }
 }
@@ -335,7 +341,8 @@ class PreloadCache {
       'entryCount': _cache.length,
       'estimatedSizeBytes': _currentCacheSize,
       'maxSizeBytes': _maxCacheSizeBytes,
-      'usagePercentage': (_currentCacheSize / _maxCacheSizeBytes * 100).toStringAsFixed(2),
+      'usagePercentage':
+          (_currentCacheSize / _maxCacheSizeBytes * 100).toStringAsFixed(2),
     };
   }
 
@@ -501,15 +508,20 @@ class PreloadManager {
       'successfulPreloads': _successfulPreloads,
       'failedPreloads': _failedPreloads,
       'successRate': _totalPreloadAttempts > 0
-          ? (_successfulPreloads / _totalPreloadAttempts * 100).toStringAsFixed(2) + '%'
+          ? (_successfulPreloads / _totalPreloadAttempts * 100)
+                  .toStringAsFixed(2) +
+              '%'
           : 'N/A',
       'averagePreloadTimeMs': _successfulPreloads > 0
-          ? (_totalPreloadTime.inMilliseconds / _successfulPreloads).toStringAsFixed(2)
+          ? (_totalPreloadTime.inMilliseconds / _successfulPreloads)
+              .toStringAsFixed(2)
           : 'N/A',
       'cacheHits': _cacheHits,
       'cacheMisses': _cacheMisses,
       'cacheHitRate': (_cacheHits + _cacheMisses) > 0
-          ? (_cacheHits / (_cacheHits + _cacheMisses) * 100).toStringAsFixed(2) + '%'
+          ? (_cacheHits / (_cacheHits + _cacheMisses) * 100)
+                  .toStringAsFixed(2) +
+              '%'
           : 'N/A',
       'pendingTasks': _pendingTasks.length,
       'completedTasks': _completedTasks.length,
@@ -527,7 +539,8 @@ class PreloadManager {
     if (totalCacheAccesses > 10) {
       final hitRate = _cacheHits / totalCacheAccesses;
       if (hitRate < 0.5) {
-        suggestions.add('缓存命中率较低 (${(hitRate * 100).toStringAsFixed(1)}%)，建议调整预加载策略');
+        suggestions
+            .add('缓存命中率较低 (${(hitRate * 100).toStringAsFixed(1)}%)，建议调整预加载策略');
       }
     }
 
@@ -535,7 +548,8 @@ class PreloadManager {
     if (_totalPreloadAttempts > 5) {
       final failureRate = _failedPreloads / _totalPreloadAttempts;
       if (failureRate > 0.3) {
-        suggestions.add('预加载失败率较高 (${(failureRate * 100).toStringAsFixed(1)}%)，建议检查网络连接或资源可用性');
+        suggestions.add(
+            '预加载失败率较高 (${(failureRate * 100).toStringAsFixed(1)}%)，建议检查网络连接或资源可用性');
       }
     }
 
@@ -543,13 +557,15 @@ class PreloadManager {
     if (_successfulPreloads > 5) {
       final avgTime = _totalPreloadTime.inMilliseconds / _successfulPreloads;
       if (avgTime > 1000) {
-        suggestions.add('平均预加载时间较长 (${avgTime.toStringAsFixed(0)}ms)，建议优化资源大小或加载策略');
+        suggestions
+            .add('平均预加载时间较长 (${avgTime.toStringAsFixed(0)}ms)，建议优化资源大小或加载策略');
       }
     }
 
     // 检查缓存使用率
     final cacheStats = _cache.getStats();
-    final usagePercentage = double.parse(cacheStats['usagePercentage'] as String);
+    final usagePercentage =
+        double.parse(cacheStats['usagePercentage'] as String);
     if (usagePercentage < 20) {
       suggestions.add('缓存使用率较低 ($usagePercentage%)，可以增加预加载内容');
     } else if (usagePercentage > 90) {

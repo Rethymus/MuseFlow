@@ -241,9 +241,8 @@ class WorldService with ChangeNotifier {
   Map<String, dynamic> exportToJson({List<String>? ids}) async {
     final List<Map<String, dynamic>> worldsData = [];
 
-    final worldsToExport = ids != null
-        ? _worlds.where((w) => ids.contains(w.id))
-        : _worlds;
+    final worldsToExport =
+        ids != null ? _worlds.where((w) => ids.contains(w.id)) : _worlds;
 
     for (final world in worldsToExport) {
       try {
@@ -288,7 +287,8 @@ class WorldService with ChangeNotifier {
       final validatedPath = pathValidation.sanitizedPath ?? file.path!;
 
       // 2. 验证文件类型
-      final typeValidation = FileSecurityValidator.instance.validateFileType(validatedPath);
+      final typeValidation =
+          FileSecurityValidator.instance.validateFileType(validatedPath);
       if (!typeValidation.isValid) {
         Logger.debug('导入失败：${typeValidation.errorMessage}');
         return 0;
@@ -356,7 +356,8 @@ class WorldService with ChangeNotifier {
         Logger.debug('导出失败：${validation.errorMessage}');
 
         // 使用安全路径作为后备
-        final safePath = await FileSecurityValidator.instance.createSafeOutputPath(
+        final safePath =
+            await FileSecurityValidator.instance.createSafeOutputPath(
           'worlds_${DateTime.now().toIso8601String()}.json',
           'exports',
         );
@@ -409,13 +410,15 @@ class WorldService with ChangeNotifier {
     if (_semanticSearch == null) {
       // 回退到基本搜索
       final results = searchWorlds(query);
-      return results.map((world) => {
-        'id': world.id,
-        'name': world.name,
-        'type': 'world',
-        'relevanceScore': 1.0,
-        'world': world,
-      }).toList();
+      return results
+          .map((world) => {
+                'id': world.id,
+                'name': world.name,
+                'type': 'world',
+                'relevanceScore': 1.0,
+                'world': world,
+              })
+          .toList();
     }
 
     final searchResults = await _semanticSearch!.semanticSearch(
@@ -425,8 +428,11 @@ class WorldService with ChangeNotifier {
 
     final List<Map<String, dynamic>> results = [];
     for (final result in searchResults) {
-      if (result.type == 'world' || result.type == 'location' || result.type == 'organization') {
-        final world = getWorld(result.metadata['worldId'] as String? ?? result.id);
+      if (result.type == 'world' ||
+          result.type == 'location' ||
+          result.type == 'organization') {
+        final world =
+            getWorld(result.metadata['worldId'] as String? ?? result.id);
         if (world != null) {
           results.add({
             'id': result.id,

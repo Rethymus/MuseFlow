@@ -155,7 +155,9 @@ class _UXEnhancedHomePageState extends State<UXEnhancedHomePage>
       elevation: 0,
       actions: [
         IconButton(
-          icon: Icon(_immersiveMode.isActive ? Icons.exit_to_app : Icons.center_focus_strong),
+          icon: Icon(_immersiveMode.isActive
+              ? Icons.exit_to_app
+              : Icons.center_focus_strong),
           onPressed: _toggleImmersiveMode,
           tooltip: '沉浸模式',
         ),
@@ -264,19 +266,19 @@ class _UXEnhancedHomePageState extends State<UXEnhancedHomePage>
             ),
             const SizedBox(height: 8),
             ...recommendations.take(3).map((rec) => Padding(
-              padding: const EdgeInsets.only(bottom: 4),
-              child: Row(
-                children: [
-                  Icon(
-                    _getPriorityIcon(rec.priority),
-                    size: 16,
-                    color: _getPriorityColor(rec.priority),
+                  padding: const EdgeInsets.only(bottom: 4),
+                  child: Row(
+                    children: [
+                      Icon(
+                        _getPriorityIcon(rec.priority),
+                        size: 16,
+                        color: _getPriorityColor(rec.priority),
+                      ),
+                      const SizedBox(width: 8),
+                      Expanded(child: Text(rec.componentId)),
+                    ],
                   ),
-                  const SizedBox(width: 8),
-                  Expanded(child: Text(rec.componentId)),
-                ],
-              ),
-            )),
+                )),
           ],
         ),
       ),
@@ -310,7 +312,8 @@ class _UXEnhancedHomePageState extends State<UXEnhancedHomePage>
 
   /// 处理搜索结果选择
   void _handleSearchResult(BuildContext context, GlobalSearchResult result) {
-    _recordInteraction('search_result_selected', {'type': result.type.toString()});
+    _recordInteraction(
+        'search_result_selected', {'type': result.type.toString()});
 
     switch (result.type) {
       case GlobalSearchResultType.note:
@@ -366,28 +369,28 @@ class _UXEnhancedHomePageState extends State<UXEnhancedHomePage>
               const Text('使用习惯', style: TextStyle(fontWeight: FontWeight.bold)),
               const SizedBox(height: 8),
               ...insights.map((insight) => ListTile(
-                leading: Icon(_getInsightIcon(insight.type)),
-                title: Text(insight.title),
-        subtitle: Text(insight.description),
-                trailing: insight.actionable
-                    ? const Icon(Icons.arrow_forward_ios, size: 16)
-                    : null,
-              )),
+                    leading: Icon(_getInsightIcon(insight.type)),
+                    title: Text(insight.title),
+                    subtitle: Text(insight.description),
+                    trailing: insight.actionable
+                        ? const Icon(Icons.arrow_forward_ios, size: 16)
+                        : null,
+                  )),
               const Divider(),
               const Text('优化建议', style: TextStyle(fontWeight: FontWeight.bold)),
               const SizedBox(height: 8),
               ...suggestions.take(5).map((suggestion) => ListTile(
-                leading: Icon(_getSuggestionIcon(suggestion.category)),
-                title: Text(suggestion.title),
-                subtitle: Text(suggestion.description),
-                trailing: Text(
-                  '${(suggestion.estimatedImpact * 100).toStringAsFixed(0)}%',
-                  style: TextStyle(
-                    color: _getPriorityColor(suggestion.priority),
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              )),
+                    leading: Icon(_getSuggestionIcon(suggestion.category)),
+                    title: Text(suggestion.title),
+                    subtitle: Text(suggestion.description),
+                    trailing: Text(
+                      '${(suggestion.estimatedImpact * 100).toStringAsFixed(0)}%',
+                      style: TextStyle(
+                        color: _getPriorityColor(suggestion.priority),
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  )),
             ],
           ),
         ),

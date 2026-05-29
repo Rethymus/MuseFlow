@@ -174,32 +174,37 @@ void main() {
     });
 
     test('should encrypt multiple notes efficiently', () {
-      final notes = List.generate(100, (i) => {
-        'id': 'note-$i',
-        'title': 'Note $i Title',
-        'content': 'Note $i Content',
-        'created_at': DateTime.now().toIso8601String(),
-        'updated_at': DateTime.now().toIso8601String(),
-        'tags': <String>[],
-      });
+      final notes = List.generate(
+          100,
+          (i) => {
+                'id': 'note-$i',
+                'title': 'Note $i Title',
+                'content': 'Note $i Content',
+                'created_at': DateTime.now().toIso8601String(),
+                'updated_at': DateTime.now().toIso8601String(),
+                'tags': <String>[],
+              });
 
       final encryptedNotes = secureService.batchEncryptNotes(notes);
 
       expect(encryptedNotes.length, equals(100));
-      expect(encryptedNotes.every((note) => note['is_encrypted'] == true), isTrue);
+      expect(
+          encryptedNotes.every((note) => note['is_encrypted'] == true), isTrue);
       expect(encryptedNotes.every((note) => note['title'] is String), isTrue);
       expect(encryptedNotes.every((note) => note['content'] is String), isTrue);
     });
 
     test('should decrypt multiple notes efficiently', () {
-      final notes = List.generate(50, (i) => {
-        'id': 'note-$i',
-        'title': 'Original Title $i',
-        'content': 'Original Content $i',
-        'created_at': DateTime.now().toIso8601String(),
-        'updated_at': DateTime.now().toIso8601String(),
-        'tags': <String>[],
-      });
+      final notes = List.generate(
+          50,
+          (i) => {
+                'id': 'note-$i',
+                'title': 'Original Title $i',
+                'content': 'Original Content $i',
+                'created_at': DateTime.now().toIso8601String(),
+                'updated_at': DateTime.now().toIso8601String(),
+                'tags': <String>[],
+              });
 
       final encryptedNotes = secureService.batchEncryptNotes(notes);
       final decryptedNotes = secureService.batchDecryptNotes(encryptedNotes);
@@ -217,8 +222,10 @@ void main() {
       final notes = [
         {
           'id': 'encrypted-1',
-          'title': secureService.encrypt('Encrypted Title', dataId: 'encrypted-1_title'),
-          'content': secureService.encrypt('Encrypted Content', dataId: 'encrypted-1_content'),
+          'title': secureService.encrypt('Encrypted Title',
+              dataId: 'encrypted-1_title'),
+          'content': secureService.encrypt('Encrypted Content',
+              dataId: 'encrypted-1_content'),
           'is_encrypted': true,
           'created_at': DateTime.now().toIso8601String(),
           'updated_at': DateTime.now().toIso8601String(),
@@ -282,8 +289,10 @@ void main() {
       expect(encrypted1, isNot(equals(encrypted2)));
 
       // Both should decrypt to the same original text
-      expect(secureService.decrypt(encrypted1, dataId: 'operation1'), equals(sameText));
-      expect(secureService.decrypt(encrypted2, dataId: 'operation2'), equals(sameText));
+      expect(secureService.decrypt(encrypted1, dataId: 'operation1'),
+          equals(sameText));
+      expect(secureService.decrypt(encrypted2, dataId: 'operation2'),
+          equals(sameText));
     });
   });
 
@@ -293,21 +302,24 @@ void main() {
     });
 
     test('should handle batch encryption without memory leaks', () async {
-      final notes = List.generate(1000, (i) => {
-        'id': 'note-$i',
-        'title': 'Performance Test Note $i',
-        'content': 'A' * 1000, // 1KB per note
-        'created_at': DateTime.now().toIso8601String(),
-        'updated_at': DateTime.now().toIso8601String(),
-        'tags': <String>[],
-      });
+      final notes = List.generate(
+          1000,
+          (i) => {
+                'id': 'note-$i',
+                'title': 'Performance Test Note $i',
+                'content': 'A' * 1000, // 1KB per note
+                'created_at': DateTime.now().toIso8601String(),
+                'updated_at': DateTime.now().toIso8601String(),
+                'tags': <String>[],
+              });
 
       final stopwatch = Stopwatch()..start();
       final encrypted = secureService.batchEncryptNotes(notes);
       stopwatch.stop();
 
       expect(encrypted.length, equals(1000));
-      expect(stopwatch.elapsedMilliseconds, lessThan(5000)); // Should complete in < 5 seconds
+      expect(stopwatch.elapsedMilliseconds,
+          lessThan(5000)); // Should complete in < 5 seconds
 
       // Verify decryption works
       final decrypted = secureService.batchDecryptNotes(encrypted);

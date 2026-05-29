@@ -65,7 +65,8 @@ class SecureStorageService implements BaseStorageService {
 
   /// Check if legacy data migration is needed and perform it
   Future<void> _checkAndPerformMigration() async {
-    final migrationCompleted = await _migrationBox.get(_migrationKey) ?? 'false';
+    final migrationCompleted =
+        await _migrationBox.get(_migrationKey) ?? 'false';
 
     if (migrationCompleted == 'false') {
       await _migrateLegacyData();
@@ -81,7 +82,8 @@ class SecureStorageService implements BaseStorageService {
       if (legacyNotesBox.isEmpty) {
         // No legacy data to migrate
         await _migrationBox.put(_migrationKey, 'true');
-        await _migrationBox.put(_encryptionVersionKey, _currentEncryptionVersion.toString());
+        await _migrationBox.put(
+            _encryptionVersionKey, _currentEncryptionVersion.toString());
         return;
       }
 
@@ -105,11 +107,15 @@ class SecureStorageService implements BaseStorageService {
 
       // Mark migration as complete
       await _migrationBox.put(_migrationKey, 'true');
-      await _migrationBox.put(_encryptionVersionKey, _currentEncryptionVersion.toString());
+      await _migrationBox.put(
+          _encryptionVersionKey, _currentEncryptionVersion.toString());
 
-      Logger.info('Successfully migrated ${notes.length} notes to encrypted storage', tag: 'MIGRATION');
+      Logger.info(
+          'Successfully migrated ${notes.length} notes to encrypted storage',
+          tag: 'MIGRATION');
     } catch (e) {
-      Logger.error('Error during data migration: $e', tag: 'MIGRATION', error: e);
+      Logger.error('Error during data migration: $e',
+          tag: 'MIGRATION', error: e);
       // Don't rethrow - allow app to continue
     }
   }
@@ -216,7 +222,8 @@ class SecureStorageService implements BaseStorageService {
 
   /// Get a setting value
   @override
-  Future<String> getSetting(String key, {String defaultValue = 'system'}) async {
+  Future<String> getSetting(String key,
+      {String defaultValue = 'system'}) async {
     return _settingsBox.get(key, defaultValue: defaultValue)!;
   }
 
@@ -247,7 +254,7 @@ class SecureStorageService implements BaseStorageService {
 
       return allNotes.where((note) {
         return note.title.toLowerCase().contains(lowerQuery) ||
-               note.content.toLowerCase().contains(lowerQuery);
+            note.content.toLowerCase().contains(lowerQuery);
       }).toList();
     } on StorageException {
       // Re-throw StorageException as-is (already formatted)
@@ -288,14 +295,16 @@ class SecureStorageService implements BaseStorageService {
     try {
       // Batch encrypt all notes
       final encryptedNotes = _secureService.batchEncryptNotes(
-        notes.map((note) => {
-          'id': note.id,
-          'title': note.title,
-          'content': note.content,
-          'created_at': note.createdAt.toIso8601String(),
-          'updated_at': note.updatedAt.toIso8601String(),
-          'tags': note.tags,
-        }).toList(),
+        notes
+            .map((note) => {
+                  'id': note.id,
+                  'title': note.title,
+                  'content': note.content,
+                  'created_at': note.createdAt.toIso8601String(),
+                  'updated_at': note.updatedAt.toIso8601String(),
+                  'tags': note.tags,
+                })
+            .toList(),
       );
 
       // Save all encrypted notes
@@ -329,14 +338,16 @@ class SecureStorageService implements BaseStorageService {
     try {
       final notes = await getAllNotes();
 
-      return notes.map((note) => {
-        'id': note.id,
-        'title': note.title,
-        'content': note.content,
-        'created_at': note.createdAt.toIso8601String(),
-        'updated_at': note.updatedAt.toIso8601String(),
-        'tags': note.tags,
-      }).toList();
+      return notes
+          .map((note) => {
+                'id': note.id,
+                'title': note.title,
+                'content': note.content,
+                'created_at': note.createdAt.toIso8601String(),
+                'updated_at': note.updatedAt.toIso8601String(),
+                'tags': note.tags,
+              })
+          .toList();
     } on StorageException {
       // Re-throw StorageException as-is (already formatted)
       rethrow;
@@ -390,7 +401,8 @@ class SecureStorageService implements BaseStorageService {
       'settings_count': settingsCount,
       'encryption_enabled': true,
       'migration_completed': await _migrationBox.get(_migrationKey) ?? 'false',
-      'encryption_version': await _migrationBox.get(_encryptionVersionKey) ?? '0',
+      'encryption_version':
+          await _migrationBox.get(_encryptionVersionKey) ?? '0',
     };
   }
 

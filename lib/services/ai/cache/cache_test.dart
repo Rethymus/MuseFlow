@@ -67,7 +67,9 @@ void main() {
       final longMessages = [
         AIMessage.user(
           id: 'msg1',
-          content: 'This is a very long message that exceeds 500 characters... ' * 10,
+          content:
+              'This is a very long message that exceeds 500 characters... ' *
+                  10,
         ),
       ];
 

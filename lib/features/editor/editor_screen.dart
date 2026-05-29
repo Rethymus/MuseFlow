@@ -5,7 +5,8 @@ import 'ai_action_handler.dart';
 import 'format_cleaner.dart';
 import 'undo_redo/undo_redo.dart';
 import 'intent_confirmation_dialog.dart';
-import '../../widgets/thought_fragment/thought_fragment_widget.dart' as widget_show;
+import '../../widgets/thought_fragment/thought_fragment_widget.dart'
+    as widget_show;
 import '../../widgets/context_anchor_indicator.dart';
 import '../../models/intent_confirmation.dart';
 import '../../config/app_constants.dart';
@@ -148,7 +149,8 @@ class _EditorScreenState extends State<EditorScreen> {
       final after = text.substring(selection.end);
       _textController.value = TextEditingValue(
         text: before + newText + after,
-        selection: TextSelection.collapsed(offset: before.length + newText.length),
+        selection:
+            TextSelection.collapsed(offset: before.length + newText.length),
       );
     }
   }
@@ -158,8 +160,8 @@ class _EditorScreenState extends State<EditorScreen> {
     final cursorPosition = _textController.selection.baseOffset;
     final currentText = _textController.value.text;
     final newText = currentText.substring(0, cursorPosition) +
-                   text +
-                   currentText.substring(cursorPosition);
+        text +
+        currentText.substring(cursorPosition);
 
     _textController.value = TextEditingValue(
       text: newText,
@@ -203,7 +205,8 @@ class _EditorScreenState extends State<EditorScreen> {
   }
 
   // 处理文本选择
-  void _handleSelectionChanged(TextSelection selection, SelectionChangedCause? cause) {
+  void _handleSelectionChanged(
+      TextSelection selection, SelectionChangedCause? cause) {
     if (selection.isValid && !selection.isCollapsed) {
       _selectedText.value = _textController.value.text.substring(
         selection.start,
@@ -451,9 +454,12 @@ class _EditorScreenState extends State<EditorScreen> {
                   ),
                   IconButton(
                     icon: const Icon(Icons.history),
-                    onPressed: () => setState(() => _showHistory = !_showHistory),
+                    onPressed: () =>
+                        setState(() => _showHistory = !_showHistory),
                     tooltip: '查看历史',
-                    color: _showHistory ? Theme.of(context).colorScheme.primary : null,
+                    color: _showHistory
+                        ? Theme.of(context).colorScheme.primary
+                        : null,
                   ),
                 ],
               );
@@ -493,7 +499,8 @@ class _EditorScreenState extends State<EditorScreen> {
                       if (anchor.isNotEmpty) ...[
                         const SizedBox(width: 4),
                         Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 6, vertical: 2),
                           decoration: BoxDecoration(
                             color: Colors.blue.shade600,
                             borderRadius: BorderRadius.circular(8),
@@ -525,7 +532,8 @@ class _EditorScreenState extends State<EditorScreen> {
   void _handleUndo() {
     if (_textController.canUndo) {
       _textController.undo();
-      _showUndoRedoFeedback('撤销', _textController.undoRedoManager.undoDescription);
+      _showUndoRedoFeedback(
+          '撤销', _textController.undoRedoManager.undoDescription);
     } else {
       _showNoMoreActionsFeedback('撤销');
     }
@@ -535,7 +543,8 @@ class _EditorScreenState extends State<EditorScreen> {
   void _handleRedo() {
     if (_textController.canRedo) {
       _textController.redo();
-      _showUndoRedoFeedback('重做', _textController.undoRedoManager.redoDescription);
+      _showUndoRedoFeedback(
+          '重做', _textController.undoRedoManager.redoDescription);
     } else {
       _showNoMoreActionsFeedback('重做');
     }
@@ -665,13 +674,16 @@ class _EditorScreenState extends State<EditorScreen> {
                 const SizedBox(height: 16),
                 Row(
                   children: [
-                    Icon(Icons.text_fields, size: 16, color: Colors.blue.shade700),
+                    Icon(Icons.text_fields,
+                        size: 16, color: Colors.blue.shade700),
                     const SizedBox(width: 4),
                     Text('${anchor.length} 字符'),
                     const SizedBox(width: 16),
-                    Icon(Icons.format_size, size: 16, color: Colors.blue.shade700),
+                    Icon(Icons.format_size,
+                        size: 16, color: Colors.blue.shade700),
                     const SizedBox(width: 4),
-                    Text('${anchor.split(RegExp(r'\s+')).where((s) => s.isNotEmpty).length} 词'),
+                    Text(
+                        '${anchor.split(RegExp(r'\s+')).where((s) => s.isNotEmpty).length} 词'),
                   ],
                 ),
               ],
@@ -707,14 +719,15 @@ class _EditorScreenState extends State<EditorScreen> {
         maxLines: null,
         expands: true,
         decoration: const InputDecoration(
-          hintText: '开始写作...\n\n支持快捷键:\nCtrl+K: AI润色\nCtrl+E: AI扩写\nCtrl+O: 生成大纲',
+          hintText:
+              '开始写作...\n\n支持快捷键:\nCtrl+K: AI润色\nCtrl+E: AI扩写\nCtrl+O: 生成大纲',
           border: InputBorder.none,
           contentPadding: EdgeInsets.zero,
         ),
         style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-          height: 1.6,
-          fontSize: 16,
-        ),
+              height: 1.6,
+              fontSize: 16,
+            ),
       ),
     );
   }
@@ -891,7 +904,7 @@ class _EditorScreenState extends State<EditorScreen> {
 
     // 检查是否按下了控制键
     final isControlPressed = HardwareKeyboard.instance.isControlPressed ||
-                           HardwareKeyboard.instance.isMetaPressed;
+        HardwareKeyboard.instance.isMetaPressed;
 
     if (!isControlPressed) return KeyEventResult.ignored;
 

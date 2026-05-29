@@ -16,8 +16,9 @@ class AIServicesConfigManager {
   AIServicesConfigManager._({
     FlutterSecureStorage? secureStorage,
     AIServiceIntegrationConfig? initialConfig,
-  }) : _secureStorage = secureStorage ?? const FlutterSecureStorage(),
-       _currentConfig = initialConfig ?? AIServiceIntegrationConfig.defaultConfig();
+  })  : _secureStorage = secureStorage ?? const FlutterSecureStorage(),
+        _currentConfig =
+            initialConfig ?? AIServiceIntegrationConfig.defaultConfig();
 
   /// 获取单例实例
   static AIServicesConfigManager? _instance;
@@ -392,7 +393,8 @@ class AIServicesConfigManager {
   ) {
     final differences = <String, dynamic>{};
 
-    if (config1.enablePersonalizedService != config2.enablePersonalizedService) {
+    if (config1.enablePersonalizedService !=
+        config2.enablePersonalizedService) {
       differences['personalizedService'] = {
         'old': config1.enablePersonalizedService,
         'new': config2.enablePersonalizedService,

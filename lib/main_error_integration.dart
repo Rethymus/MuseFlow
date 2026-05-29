@@ -137,9 +137,11 @@ class _StartupScreenWrapperState extends State<StartupScreenWrapper> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const Icon(Icons.error_outline, size: AppConstants.massiveIconSize, color: Colors.red),
+              const Icon(Icons.error_outline,
+                  size: AppConstants.massiveIconSize, color: Colors.red),
               const SizedBox(height: AppConstants.standardSpacing),
-              const Text('初始化失败', style: TextStyle(fontSize: AppConstants.hugeFontSize)),
+              const Text('初始化失败',
+                  style: TextStyle(fontSize: AppConstants.hugeFontSize)),
               const SizedBox(height: AppConstants.smallSpacing),
               ElevatedButton(
                 onPressed: () {
@@ -177,7 +179,8 @@ class SafeFileOperations extends StatelessWidget {
       // 获取当前上下文
       final context = GlobalKey<ScaffoldState>().currentContext;
       if (context != null) {
-        await ErrorHandlingService.instance.showError(context, error, stackTrace);
+        await ErrorHandlingService.instance
+            .showError(context, error, stackTrace);
       }
     }
   }

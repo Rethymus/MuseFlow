@@ -24,8 +24,10 @@ class WindowService {
     await windowManager.ensureInitialized();
 
     const windowOptions = WindowOptions(
-      size: Size(AppConstants.defaultWindowWidth, AppConstants.defaultWindowHeight),
-      minimumSize: Size(AppConstants.minWindowWidth, AppConstants.minWindowHeight),
+      size: Size(
+          AppConstants.defaultWindowWidth, AppConstants.defaultWindowHeight),
+      minimumSize:
+          Size(AppConstants.minWindowWidth, AppConstants.minWindowHeight),
       center: true,
       backgroundColor: Colors.transparent,
       skipTaskbar: false,
@@ -43,15 +45,16 @@ class WindowService {
   bool _isDesktopPlatform() {
     final platform = Theme.of().platform;
     return platform == TargetPlatform.windows ||
-           platform == TargetPlatform.linux ||
-           platform == TargetPlatform.macOS;
+        platform == TargetPlatform.linux ||
+        platform == TargetPlatform.macOS;
   }
 
   /// 自定义窗口配置初始化
   ///
   /// 允许使用自定义窗口选项进行初始化
   /// [customOptions] 自定义的窗口配置选项
-  Future<void> initializeWindowWithCustomOptions(WindowOptions customOptions) async {
+  Future<void> initializeWindowWithCustomOptions(
+      WindowOptions customOptions) async {
     if (!_isDesktopPlatform()) {
       return;
     }

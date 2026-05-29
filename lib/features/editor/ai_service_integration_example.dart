@@ -1,5 +1,6 @@
 import '../../config/app_constants.dart';
 import '../../utils/logger.dart';
+
 /// AI服务集成示例
 /// 展示如何在应用中使用AI服务
 

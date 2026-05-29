@@ -232,8 +232,8 @@ class CharacterService with ChangeNotifier {
 
       for (final characterData in charactersData) {
         try {
-          final character = CharacterModel.fromJson(
-              characterData as Map<String, dynamic>);
+          final character =
+              CharacterModel.fromJson(characterData as Map<String, dynamic>);
 
           // 检查是否已存在（通过ID）
           if (_box!.containsKey(character.id)) {
@@ -379,7 +379,8 @@ class CharacterService with ChangeNotifier {
         Logger.debug('导出失败：${validation.errorMessage}');
 
         // 使用安全路径作为后备
-        final safePath = await FileSecurityValidator.instance.createSafeOutputPath(
+        final safePath =
+            await FileSecurityValidator.instance.createSafeOutputPath(
           'characters_${DateTime.now().toIso8601String()}.json',
           'exports',
         );
@@ -494,13 +495,15 @@ class CharacterService with ChangeNotifier {
     if (_semanticSearch == null) {
       // 回退到基本搜索
       final results = searchCharacters(query);
-      return results.map((char) => {
-        'id': char.id,
-        'name': char.name,
-        'type': 'character',
-        'relevanceScore': 1.0,
-        'character': char,
-      }).toList();
+      return results
+          .map((char) => {
+                'id': char.id,
+                'name': char.name,
+                'type': 'character',
+                'relevanceScore': 1.0,
+                'character': char,
+              })
+          .toList();
     }
 
     final searchResults = await _semanticSearch!.semanticSearch(

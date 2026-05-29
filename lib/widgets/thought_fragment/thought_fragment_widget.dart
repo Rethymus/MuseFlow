@@ -135,8 +135,7 @@ class ThoughtFragmentWidget extends StatelessWidget {
                         style: const TextStyle(fontSize: 10),
                       ),
                       padding: EdgeInsets.zero,
-                      materialTapTargetSize:
-                          MaterialTapTargetSize.shrinkWrap,
+                      materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
                       visualDensity: VisualDensity.compact,
                     );
                   }).toList(),
@@ -178,8 +177,7 @@ class ThoughtFragmentDialog extends StatefulWidget {
   });
 
   @override
-  State<ThoughtFragmentDialog> createState() =>
-      _ThoughtFragmentDialogState();
+  State<ThoughtFragmentDialog> createState() => _ThoughtFragmentDialogState();
 }
 
 class _ThoughtFragmentDialogState extends State<ThoughtFragmentDialog> {

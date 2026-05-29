@@ -337,7 +337,8 @@ class SemanticSearchEngine with ChangeNotifier {
       ));
 
       // 缓存地点嵌入
-      final embedding = await _embeddingEngine!.generateEmbedding(location.description);
+      final embedding =
+          await _embeddingEngine!.generateEmbedding(location.description);
       _embeddingCache[location.id] = embedding;
     }
 
@@ -378,9 +379,11 @@ class SemanticSearchEngine with ChangeNotifier {
     buffer.write(character.name);
     if (character.age != null) buffer.write(' ${character.age}岁');
     if (character.appearance != null) buffer.write(' ${character.appearance}');
-    if (character.personality != null) buffer.write(' ${character.personality}');
+    if (character.personality != null)
+      buffer.write(' ${character.personality}');
     if (character.background != null) buffer.write(' ${character.background}');
-    if (character.speakingStyle != null) buffer.write(' ${character.speakingStyle}');
+    if (character.speakingStyle != null)
+      buffer.write(' ${character.speakingStyle}');
 
     if (character.tags.isNotEmpty) {
       buffer.write(' 标签: ${character.tags.join(' ')}');
@@ -420,8 +423,10 @@ class SemanticSearchEngine with ChangeNotifier {
     final buffer = StringBuffer();
 
     buffer.write('${organization.name} ${organization.description}');
-    if (organization.leader != null) buffer.write(' 领导: ${organization.leader}');
-    if (organization.philosophy != null) buffer.write(' 理念: ${organization.philosophy}');
+    if (organization.leader != null)
+      buffer.write(' 领导: ${organization.leader}');
+    if (organization.philosophy != null)
+      buffer.write(' 理念: ${organization.philosophy}');
     if (organization.members.isNotEmpty) {
       buffer.write(' 成员: ${organization.members.join(' ')}');
     }
@@ -553,7 +558,7 @@ class SemanticSearchEngine with ChangeNotifier {
 
       // 加权组合
       final combinedScore = (normalizedSemantic * semanticWeight) +
-                            (normalizedKeyword * keywordWeight);
+          (normalizedKeyword * keywordWeight);
 
       // 获取原始结果项
       SearchResultItem? originalItem;
@@ -705,7 +710,9 @@ class SemanticSearchEngine with ChangeNotifier {
     // 从世界观中获取建议
     for (final items in _worldIndex.values) {
       for (final item in items) {
-        if ((item.type == 'world' || item.type == 'location' || item.type == 'organization') &&
+        if ((item.type == 'world' ||
+                item.type == 'location' ||
+                item.type == 'organization') &&
             item.title.toLowerCase().contains(lowerQuery)) {
           suggestions.add(item.title);
         }
@@ -729,10 +736,14 @@ class SemanticSearchEngine with ChangeNotifier {
   /// 获取索引统计信息
   Map<String, dynamic> getIndexStatistics() {
     int totalItems = 0;
-    totalItems += _characterIndex.values.fold(0, (sum, items) => sum + items.length);
-    totalItems += _worldIndex.values.fold(0, (sum, items) => sum + items.length);
-    totalItems += _locationIndex.values.fold(0, (sum, items) => sum + items.length);
-    totalItems += _organizationIndex.values.fold(0, (sum, items) => sum + items.length);
+    totalItems +=
+        _characterIndex.values.fold(0, (sum, items) => sum + items.length);
+    totalItems +=
+        _worldIndex.values.fold(0, (sum, items) => sum + items.length);
+    totalItems +=
+        _locationIndex.values.fold(0, (sum, items) => sum + items.length);
+    totalItems +=
+        _organizationIndex.values.fold(0, (sum, items) => sum + items.length);
 
     return {
       'isInitialized': _isInitialized,

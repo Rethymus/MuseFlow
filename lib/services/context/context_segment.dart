@@ -67,9 +67,9 @@ class ContextSegment {
     this.metadata = const {},
     this.summary,
     this.isSummary = false,
-  }) : id = id ?? const Uuid().v4(),
-       createdAt = createdAt ?? DateTime.now(),
-       estimatedTokens = estimatedTokens ?? _estimateTokens(content);
+  })  : id = id ?? const Uuid().v4(),
+        createdAt = createdAt ?? DateTime.now(),
+        estimatedTokens = estimatedTokens ?? _estimateTokens(content);
 
   /// 计算中文字符的token数量
   /// 中文大约1.5字/token，英文大约4字/token

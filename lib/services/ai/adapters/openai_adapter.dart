@@ -57,7 +57,8 @@ class OpenAIAdapter extends BaseAIAdapterImpl {
     final effectiveConfig = config ?? this.config;
 
     try {
-      final response = await _makeRequest(messages, effectiveConfig, stream: false);
+      final response =
+          await _makeRequest(messages, effectiveConfig, stream: false);
       return _parseResponse(response, effectiveConfig);
     } catch (e) {
       handleError(e);
@@ -73,8 +74,10 @@ class OpenAIAdapter extends BaseAIAdapterImpl {
     final effectiveConfig = config ?? this.config;
 
     try {
-      final response = await _makeRequest(messages, effectiveConfig, stream: true);
-      await for (final chunk in _parseStreamResponse(response, effectiveConfig)) {
+      final response =
+          await _makeRequest(messages, effectiveConfig, stream: true);
+      await for (final chunk
+          in _parseStreamResponse(response, effectiveConfig)) {
         onChunk?.call(chunk);
         yield chunk;
       }
@@ -104,11 +107,13 @@ class OpenAIAdapter extends BaseAIAdapterImpl {
     }
 
     final response = await executeRequest(
-      () => client.post(
+      () => client
+          .post(
         url,
         headers: buildStandardHeaders(),
         body: jsonEncode(body),
-      ).timeout(
+      )
+          .timeout(
         Duration(seconds: config.effectiveTimeout),
         onTimeout: () {
           throw TimeoutException(

@@ -140,9 +140,10 @@ class PerformanceStatistics {
     if (dataPoints.isEmpty) return 0.0;
     final avg = average;
     final variance = dataPoints.fold<double>(
-      0.0,
-      (sum, dp) => sum + (dp.value - avg) * (dp.value - avg),
-    ) / dataPoints.length;
+          0.0,
+          (sum, dp) => sum + (dp.value - avg) * (dp.value - avg),
+        ) /
+        dataPoints.length;
     return variance > 0 ? variance : 0.0;
   }
 
@@ -481,7 +482,8 @@ class PerformanceMetrics {
     // 分析启动时间
     final startupStats = _statistics['startup_time'];
     if (startupStats != null && startupStats.average > 2000) {
-      recommendations.add('平均启动时间较长 (${startupStats.average.toStringAsFixed(0)}ms)，建议优化初始化流程');
+      recommendations.add(
+          '平均启动时间较长 (${startupStats.average.toStringAsFixed(0)}ms)，建议优化初始化流程');
       if (startupStats.p95 > 3000) {
         recommendations.add('95%的启动时间超过3秒，存在严重的性能问题');
       }
@@ -490,22 +492,26 @@ class PerformanceMetrics {
     // 分析内存使用
     final memoryStats = _statistics['memory_usage'];
     if (memoryStats != null && memoryStats.average > 500) {
-      recommendations.add('平均内存使用较高 (${memoryStats.average.toStringAsFixed(0)}MB)，建议优化内存管理');
+      recommendations.add(
+          '平均内存使用较高 (${memoryStats.average.toStringAsFixed(0)}MB)，建议优化内存管理');
       if (memoryStats.max > 800) {
-        recommendations.add('检测到内存峰值过高 (${memoryStats.max.toStringAsFixed(0)}MB)，可能存在内存泄漏');
+        recommendations.add(
+            '检测到内存峰值过高 (${memoryStats.max.toStringAsFixed(0)}MB)，可能存在内存泄漏');
       }
     }
 
     // 分析网络请求
     final networkStats = _statistics['network_request'];
     if (networkStats != null && networkStats.average > 1000) {
-      recommendations.add('网络请求时间较长 (${networkStats.average.toStringAsFixed(0)}ms)，建议优化网络层');
+      recommendations.add(
+          '网络请求时间较长 (${networkStats.average.toStringAsFixed(0)}ms)，建议优化网络层');
     }
 
     // 分析UI渲染
     final uiStats = _statistics['ui_render'];
     if (uiStats != null && uiStats.p95 > 16) {
-      recommendations.add('UI渲染性能不佳 (P95: ${uiStats.p95.toStringAsFixed(1)}ms)，建议优化UI构建');
+      recommendations
+          .add('UI渲染性能不佳 (P95: ${uiStats.p95.toStringAsFixed(1)}ms)，建议优化UI构建');
     }
 
     // 通用建议
@@ -611,8 +617,7 @@ class PerformanceTimer {
   final String operationName;
   final Stopwatch _stopwatch;
 
-  PerformanceTimer(this.operationName)
-      : _stopwatch = Stopwatch()..start() {
+  PerformanceTimer(this.operationName) : _stopwatch = Stopwatch()..start() {
     Logger.debug('开始性能计时: $operationName');
   }
 
@@ -629,7 +634,8 @@ class PerformanceTimer {
         'operationType': 'timing',
       },
     );
-    Logger.debug('性能计时结束: $operationName (${_stopwatch.elapsedMilliseconds}ms)');
+    Logger.debug(
+        '性能计时结束: $operationName (${_stopwatch.elapsedMilliseconds}ms)');
   }
 
   /// 获取当前耗时

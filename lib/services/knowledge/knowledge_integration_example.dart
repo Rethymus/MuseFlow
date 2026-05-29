@@ -52,7 +52,8 @@ class KnowledgeIntegrationManager {
     // 从世界观构建知识图谱
     await knowledgeGraph.buildFromWorlds(worldService.worlds);
 
-    print('知识图谱构建完成: ${knowledgeGraph.nodeCount} 个节点, ${knowledgeGraph.edgeCount} 条边');
+    print(
+        '知识图谱构建完成: ${knowledgeGraph.nodeCount} 个节点, ${knowledgeGraph.edgeCount} 条边');
   }
 
   /// 构建语义搜索索引
@@ -78,7 +79,8 @@ class KnowledgeIntegrationManager {
     }
 
     // 发现角色之间的关系
-    final characterRelationships = await characterService.discoverRelationships();
+    final characterRelationships =
+        await characterService.discoverRelationships();
 
     // 这里可以添加更多类型的关系发现
     // 例如：角色与世界之间的关系，地点与角色之间的关系等
@@ -116,7 +118,8 @@ class KnowledgeIntegrationManager {
       return allResults.take(limit).toList();
     } else {
       // 仅使用语义搜索
-      final searchResults = await semanticSearch.semanticSearch(query, limit: limit);
+      final searchResults =
+          await semanticSearch.semanticSearch(query, limit: limit);
       return searchResults.map((result) => result.toJson()).toList();
     }
   }

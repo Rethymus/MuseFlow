@@ -171,7 +171,8 @@ class AIRequestCache {
     }
 
     // 简单查询缓存时间较短
-    final totalLength = messages.fold<int>(0, (sum, m) => sum + m.content.length);
+    final totalLength =
+        messages.fold<int>(0, (sum, m) => sum + m.content.length);
     if (totalLength < 500) {
       return const Duration(hours: 6); // 短查询缓存6小时
     }
@@ -287,17 +288,22 @@ class AIRequestCache {
     final buffer = StringBuffer();
     buffer.writeln('=== AI Cache Performance Report ===');
     buffer.writeln();
-    buffer.writeln('Health Status: ${health['is_healthy'] ? "✓ HEALTHY" : "⚠ NEEDS ATTENTION"}');
-    buffer.writeln('Hit Rate: ${(health['hit_rate'] * 100).toStringAsFixed(1)}%');
-    buffer.writeln('Requests Saved Rate: ${(health['requests_saved_rate'] * 100).toStringAsFixed(1)}%');
+    buffer.writeln(
+        'Health Status: ${health['is_healthy'] ? "✓ HEALTHY" : "⚠ NEEDS ATTENTION"}');
+    buffer
+        .writeln('Hit Rate: ${(health['hit_rate'] * 100).toStringAsFixed(1)}%');
+    buffer.writeln(
+        'Requests Saved Rate: ${(health['requests_saved_rate'] * 100).toStringAsFixed(1)}%');
     buffer.writeln();
     buffer.writeln('Cache Sizes:');
     buffer.writeln('  Memory Entries: ${health['memory_usage']}');
     buffer.writeln('  Disk Entries: ${health['disk_usage']}');
     buffer.writeln();
     buffer.writeln('Targets Met:');
-    buffer.writeln('  Hit Rate ≥ 45%: ${health['targets_met']['hit_rate_45'] ? "✓" : "✗"}');
-    buffer.writeln('  Requests Saved ≥ 30%: ${health['targets_met']['requests_saved_30'] ? "✓" : "✗"}');
+    buffer.writeln(
+        '  Hit Rate ≥ 45%: ${health['targets_met']['hit_rate_45'] ? "✓" : "✗"}');
+    buffer.writeln(
+        '  Requests Saved ≥ 30%: ${health['targets_met']['requests_saved_30'] ? "✓" : "✗"}');
     buffer.writeln();
     buffer.writeln('Performance Stats:');
     buffer.writeln('  Total Requests: ${_stats.totalRequests}');

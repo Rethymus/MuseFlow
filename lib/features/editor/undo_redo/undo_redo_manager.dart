@@ -196,7 +196,8 @@ class UndoRedoManager extends ChangeNotifier {
   int get memoryUsageKB => _currentMemoryUsage ~/ 1024;
 
   /// 获取内存使用百分比
-  double get memoryUsagePercent => min(1.0, _currentMemoryUsage / maxMemoryUsage);
+  double get memoryUsagePercent =>
+      min(1.0, _currentMemoryUsage / maxMemoryUsage);
 
   /// 压缩历史记录（删除较老的、较大的动作）
   void compressHistory() {

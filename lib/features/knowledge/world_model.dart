@@ -232,7 +232,8 @@ class WorldModel extends HiveObject {
       technology: technology ?? this.technology,
       rules: rules ?? List.from(rules),
       locations: locations ?? locations.map((l) => l.copyWith()).toList(),
-      organizations: organizations ?? organizations.map((o) => o.copyWith()).toList(),
+      organizations:
+          organizations ?? organizations.map((o) => o.copyWith()).toList(),
       geography: geography ?? this.geography,
       history: history ?? this.history,
       tags: tags ?? List.from(tags),
@@ -328,7 +329,8 @@ class WorldModel extends HiveObject {
       buffer.writeln('主要势力：');
       for (final org in organizations) {
         buffer.writeln('  - ${org.name}：${org.description}');
-        if (org.leader?.isNotEmpty == true) buffer.writeln('    领袖：${org.leader}');
+        if (org.leader?.isNotEmpty == true)
+          buffer.writeln('    领袖：${org.leader}');
       }
     }
 
@@ -347,20 +349,20 @@ class WorldModel extends HiveObject {
 
     final lowerQuery = query.toLowerCase();
     return name.toLowerCase().contains(lowerQuery) ||
-           worldType.toLowerCase().contains(lowerQuery) ||
-           (era?.toLowerCase().contains(lowerQuery) ?? false) ||
-           (magicSystem?.toLowerCase().contains(lowerQuery) ?? false) ||
-           (technology?.toLowerCase().contains(lowerQuery) ?? false) ||
-           (geography?.toLowerCase().contains(lowerQuery) ?? false) ||
-           (history?.toLowerCase().contains(lowerQuery) ?? false) ||
-           rules.any((rule) => rule.toLowerCase().contains(lowerQuery)) ||
-           tags.any((tag) => tag.toLowerCase().contains(lowerQuery)) ||
-           locations.any((loc) =>
-               loc.name.toLowerCase().contains(lowerQuery) ||
-               loc.description.toLowerCase().contains(lowerQuery)) ||
-           organizations.any((org) =>
-               org.name.toLowerCase().contains(lowerQuery) ||
-               org.description.toLowerCase().contains(lowerQuery));
+        worldType.toLowerCase().contains(lowerQuery) ||
+        (era?.toLowerCase().contains(lowerQuery) ?? false) ||
+        (magicSystem?.toLowerCase().contains(lowerQuery) ?? false) ||
+        (technology?.toLowerCase().contains(lowerQuery) ?? false) ||
+        (geography?.toLowerCase().contains(lowerQuery) ?? false) ||
+        (history?.toLowerCase().contains(lowerQuery) ?? false) ||
+        rules.any((rule) => rule.toLowerCase().contains(lowerQuery)) ||
+        tags.any((tag) => tag.toLowerCase().contains(lowerQuery)) ||
+        locations.any((loc) =>
+            loc.name.toLowerCase().contains(lowerQuery) ||
+            loc.description.toLowerCase().contains(lowerQuery)) ||
+        organizations.any((org) =>
+            org.name.toLowerCase().contains(lowerQuery) ||
+            org.description.toLowerCase().contains(lowerQuery));
   }
 
   @override

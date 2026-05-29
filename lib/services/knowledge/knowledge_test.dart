@@ -8,7 +8,6 @@ import 'package:uuid/uuid.dart';
 ///
 /// 用于验证知识图谱引擎和语义搜索引擎的基本功能
 class KnowledgeFeatureTest {
-
   /// 测试知识图谱引擎
   static Future<Map<String, dynamic>> testKnowledgeGraphEngine() async {
     final results = <String, dynamic>{};
@@ -127,7 +126,6 @@ class KnowledgeFeatureTest {
       final exportedGraph = engine.exportGraph();
       await engine.importGraph(exportedGraph);
       results['exportImport'] = 'PASSED';
-
     } catch (e) {
       results['error'] = e.toString();
       return results;
@@ -236,7 +234,6 @@ class KnowledgeFeatureTest {
       final stats = engine.getIndexStatistics();
       results['indexStatistics'] = 'PASSED';
       results['totalIndexedItems'] = stats['totalItems'];
-
     } catch (e) {
       results['error'] = e.toString();
       return results;
@@ -287,7 +284,9 @@ class KnowledgeFeatureTest {
       'totalTests': totalTests,
       'passedTests': passedTests,
       'failedTests': totalTests - passedTests,
-      'successRate': totalTests > 0 ? (passedTests / totalTests * 100).toStringAsFixed(1) + '%' : '0%',
+      'successRate': totalTests > 0
+          ? (passedTests / totalTests * 100).toStringAsFixed(1) + '%'
+          : '0%',
     };
 
     print('\n测试总结:');

@@ -68,7 +68,8 @@ class StorageService implements BaseStorageService {
 
   void _ensureInitialized() {
     if (!isInitialized) {
-      throw StateError('StorageService not initialized. Call initialize() first.');
+      throw StateError(
+          'StorageService not initialized. Call initialize() first.');
     }
   }
 }

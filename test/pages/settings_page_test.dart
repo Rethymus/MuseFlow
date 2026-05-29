@@ -547,19 +547,19 @@ void main() {
         await tester.pumpAndSettle();
 
         // 验证所有主要图标都存在
-        expect(find.byIcon(Icons.palette), findsOneWidget);    // 主题
-        expect(find.byIcon(Icons.language), findsOneWidget);   // 语言
+        expect(find.byIcon(Icons.palette), findsOneWidget); // 主题
+        expect(find.byIcon(Icons.language), findsOneWidget); // 语言
         expect(find.byIcon(Icons.format_size), findsOneWidget); // 字体大小
-        expect(find.byIcon(Icons.save), findsOneWidget);       // 自动保存
+        expect(find.byIcon(Icons.save), findsOneWidget); // 自动保存
         expect(find.byIcon(Icons.spellcheck), findsOneWidget); // 拼写检查
         expect(find.byIcon(Icons.countertops), findsOneWidget); // 字数统计
-        expect(find.byIcon(Icons.psychology), findsOneWidget);  // AI模型
-        expect(find.byIcon(Icons.tune), findsOneWidget);        // AI创造力
+        expect(find.byIcon(Icons.psychology), findsOneWidget); // AI模型
+        expect(find.byIcon(Icons.tune), findsOneWidget); // AI创造力
         expect(find.byIcon(Icons.verified_user), findsOneWidget); // 意图确认
-        expect(find.byIcon(Icons.folder), findsOneWidget);      // 存储位置
-        expect(find.byIcon(Icons.backup), findsOneWidget);      // 数据备份
+        expect(find.byIcon(Icons.folder), findsOneWidget); // 存储位置
+        expect(find.byIcon(Icons.backup), findsOneWidget); // 数据备份
         expect(find.byIcon(Icons.cleaning_services), findsOneWidget); // 缓存管理
-        expect(find.byIcon(Icons.info), findsOneWidget);        // 版本信息
+        expect(find.byIcon(Icons.info), findsOneWidget); // 版本信息
         expect(find.byIcon(Icons.description), findsOneWidget); // 许可证
       });
 
@@ -632,7 +632,9 @@ void main() {
 
         // 验证所有SwitchListTile可访问
         final switches = find.byType(SwitchListTile);
-        for (int i = 0; i < tester.widgetList<SwitchListTile>(switches).length; i++) {
+        for (int i = 0;
+            i < tester.widgetList<SwitchListTile>(switches).length;
+            i++) {
           expect(switches.at(i), findsOneWidget);
         }
 

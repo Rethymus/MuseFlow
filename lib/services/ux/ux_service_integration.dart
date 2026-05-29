@@ -5,9 +5,24 @@ import 'immersive_mode.dart';
 import 'interaction_analyzer.dart';
 
 // 导出类型以方便使用
-export 'adaptive_ui_manager.dart' show AdaptiveUIManager, UIComponentRecommendation, Priority;
-export 'immersive_mode.dart' show ImmersiveMode, ImmersiveEnvironment, FlowStateSettings, ImmersiveSessionSummary;
-export 'interaction_analyzer.dart' show InteractionAnalyzer, InteractionEvent, InteractionPattern, UsageInsight, OptimizationSuggestion, InsightType, SuggestionCategory, SuggestionPriority;
+export 'adaptive_ui_manager.dart'
+    show AdaptiveUIManager, UIComponentRecommendation, Priority;
+export 'immersive_mode.dart'
+    show
+        ImmersiveMode,
+        ImmersiveEnvironment,
+        FlowStateSettings,
+        ImmersiveSessionSummary;
+export 'interaction_analyzer.dart'
+    show
+        InteractionAnalyzer,
+        InteractionEvent,
+        InteractionPattern,
+        UsageInsight,
+        OptimizationSuggestion,
+        InsightType,
+        SuggestionCategory,
+        SuggestionPriority;
 
 /// UX服务集成类 - 提供统一的UX服务接口
 class UXServiceIntegration {
@@ -16,7 +31,8 @@ class UXServiceIntegration {
   static bool _isInitialized = false;
   static final AdaptiveUIManager _uiManager = AdaptiveUIManager.instance;
   static final ImmersiveMode _immersiveMode = ImmersiveMode.instance;
-  static final InteractionAnalyzer _interactionAnalyzer = InteractionAnalyzer.instance;
+  static final InteractionAnalyzer _interactionAnalyzer =
+      InteractionAnalyzer.instance;
 
   /// 是否已初始化
   static bool get isInitialized => _isInitialized;
@@ -77,8 +93,10 @@ class UXServiceIntegration {
       },
       'interactionAnalyzer': {
         'isRecording': _interactionAnalyzer.getStatistics()['isRecording'],
-        'totalInteractions': _interactionAnalyzer.getStatistics()['totalInteractions'],
-        'identifiedPatterns': _interactionAnalyzer.getStatistics()['identifiedPatterns'],
+        'totalInteractions':
+            _interactionAnalyzer.getStatistics()['totalInteractions'],
+        'identifiedPatterns':
+            _interactionAnalyzer.getStatistics()['identifiedPatterns'],
       },
     };
   }

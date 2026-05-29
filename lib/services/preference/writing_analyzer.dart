@@ -126,9 +126,9 @@ class WritingAnalyzer {
     if (text.isEmpty) return ParagraphStructure.unknown;
 
     final paragraphs = text.split(RegExp(r'\n\s*\n'));
-    final avgParagraphLength = paragraphs
-        .map((p) => p.trim().length)
-        .reduce((a, b) => a + b) / max(paragraphs.length, 1);
+    final avgParagraphLength =
+        paragraphs.map((p) => p.trim().length).reduce((a, b) => a + b) /
+            max(paragraphs.length, 1);
 
     if (avgParagraphLength < 100) {
       return ParagraphStructure.shortParagraphs;
@@ -144,9 +144,9 @@ class WritingAnalyzer {
     if (text.isEmpty) return SentenceComplexity.unknown;
 
     final sentences = text.split(RegExp(r'[。.!?！？]'));
-    final avgSentenceLength = sentences
-        .map((s) => s.trim().length)
-        .reduce((a, b) => a + b) / max(sentences.length, 1);
+    final avgSentenceLength =
+        sentences.map((s) => s.trim().length).reduce((a, b) => a + b) /
+            max(sentences.length, 1);
 
     // 检测复杂句指示词
     final complexIndicators = [
@@ -176,16 +176,55 @@ class WritingAnalyzer {
     if (text.isEmpty) return [];
 
     // 分词
-    final words = text.toLowerCase()
+    final words = text
+        .toLowerCase()
         .replaceAll(RegExp(r'[^\w\s一-龥]'), '')
         .split(RegExp(r'\s+'));
 
     // 过滤停用词
     final stopWords = {
-      '的', '是', '在', '和', '或', '但', '与', '及', '等', '很', '也',
-      '有', '为', '不', '了', '我', '你', '他', '她', '它', '我们', '你们', '他们',
-      'the', 'is', 'and', 'or', 'but', 'with', 'very', 'also', 'this', 'that',
-      'have', 'been', 'were', 'are', 'was', 'be', 'do', 'does', 'did',
+      '的',
+      '是',
+      '在',
+      '和',
+      '或',
+      '但',
+      '与',
+      '及',
+      '等',
+      '很',
+      '也',
+      '有',
+      '为',
+      '不',
+      '了',
+      '我',
+      '你',
+      '他',
+      '她',
+      '它',
+      '我们',
+      '你们',
+      '他们',
+      'the',
+      'is',
+      'and',
+      'or',
+      'but',
+      'with',
+      'very',
+      'also',
+      'this',
+      'that',
+      'have',
+      'been',
+      'were',
+      'are',
+      'was',
+      'be',
+      'do',
+      'does',
+      'did',
     };
 
     // 统计词频
@@ -216,9 +255,13 @@ class WritingAnalyzer {
       'wordCount': words.length,
       'sentenceCount': sentences.length,
       'paragraphCount': paragraphs.length,
-      'avgSentenceLength': sentences.map((s) => s.length).reduce((a, b) => a + b) / max(sentences.length, 1),
+      'avgSentenceLength':
+          sentences.map((s) => s.length).reduce((a, b) => a + b) /
+              max(sentences.length, 1),
       'avgWordLength': text.length / max(words.length, 1),
-      'avgParagraphLength': paragraphs.map((p) => p.length).reduce((a, b) => a + b) / max(paragraphs.length, 1),
+      'avgParagraphLength':
+          paragraphs.map((p) => p.length).reduce((a, b) => a + b) /
+              max(paragraphs.length, 1),
       'punctuationRatio': _calculatePunctuationRatio(text),
       'uniqueWordRatio': _calculateUniqueWordRatio(words),
     };
@@ -296,7 +339,8 @@ class WritingAnalyzer {
 
   /// 提取词汇
   List<String> _extractWords(String text) {
-    return text.toLowerCase()
+    return text
+        .toLowerCase()
         .replaceAll(RegExp(r'[^\w\s一-龥]'), '')
         .split(RegExp(r'\s+'))
         .where((word) => word.length > 1)
@@ -310,7 +354,8 @@ class WritingAnalyzer {
     const modifiedWords = _extractWords(modified);
 
     final addedWords = modifiedWords.toSet().difference(originalWords.toSet());
-    final removedWords = originalWords.toSet().difference(modifiedWords.toSet());
+    final removedWords =
+        originalWords.toSet().difference(modifiedWords.toSet());
 
     return TextChangeAnalysis(
       similarity: similarity,
@@ -321,7 +366,8 @@ class WritingAnalyzer {
   }
 
   /// 分类文本变化类型
-  ModificationType _classifyChange(String original, String modified, double similarity) {
+  ModificationType _classifyChange(
+      String original, String modified, double similarity) {
     if (similarity > 0.95) {
       return ModificationType.grammar;
     } else if (similarity > 0.85) {
@@ -355,8 +401,8 @@ class TextChangeAnalysis {
   @override
   String toString() {
     return 'TextChangeAnalysis(similarity: $similarity, '
-           'modificationType: $modificationType, '
-           'addedWords: ${addedWords.length}, '
-           'removedWords: ${removedWords.length})';
+        'modificationType: $modificationType, '
+        'addedWords: ${addedWords.length}, '
+        'removedWords: ${removedWords.length})';
   }
 }

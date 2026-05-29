@@ -64,7 +64,8 @@ class _UXSettingsPageState extends State<UXSettingsPage> {
             const Divider(),
             ListTile(
               title: const Text('布局密度'),
-              subtitle: Text(_getLayoutDensityName(preferences['preferredLayoutDensity'])),
+              subtitle: Text(
+                  _getLayoutDensityName(preferences['preferredLayoutDensity'])),
               trailing: const Icon(Icons.arrow_drop_down),
               onTap: () => _showLayoutDensityDialog(),
             ),
@@ -274,18 +275,22 @@ class _UXSettingsPageState extends State<UXSettingsPage> {
             '紧凑',
             '舒适',
             '宽松',
-          ].map((density) => RadioListTile<String>(
-            title: Text(_getLayoutDensityName(density)),
-            value: density,
-            groupValue: _uiManager.getUserPreferences()['preferredLayoutDensity'],
-            onChanged: (value) {
-              if (value != null) {
-                _uiManager.trackUserBehavior('layout_density_changed', {'density': value});
-                Navigator.pop(context);
-                setState(() {});
-              }
-            },
-          )).toList(),
+          ]
+              .map((density) => RadioListTile<String>(
+                    title: Text(_getLayoutDensityName(density)),
+                    value: density,
+                    groupValue: _uiManager
+                        .getUserPreferences()['preferredLayoutDensity'],
+                    onChanged: (value) {
+                      if (value != null) {
+                        _uiManager.trackUserBehavior(
+                            'layout_density_changed', {'density': value});
+                        Navigator.pop(context);
+                        setState(() {});
+                      }
+                    },
+                  ))
+              .toList(),
         ),
       ),
     );
@@ -328,7 +333,8 @@ class _UXSettingsPageState extends State<UXSettingsPage> {
           ),
           TextButton(
             onPressed: () {
-              _uiManager.trackUserBehavior('font_size_changed', {'size': fontSize});
+              _uiManager
+                  .trackUserBehavior('font_size_changed', {'size': fontSize});
               Navigator.pop(context);
               setState(() {});
             },
@@ -380,28 +386,30 @@ class _UXSettingsPageState extends State<UXSettingsPage> {
         title: const Text('选择通知级别'),
         content: Column(
           mainAxisSize: MainAxisSize.min,
-          children: NotificationLevel.values.map((level) => RadioListTile<NotificationLevel>(
-            title: Text(_getNotificationLevelName(level)),
-            value: level,
-            groupValue: _immersiveMode.environment.notificationLevel,
-            onChanged: (value) {
-              if (value != null) {
-                final env = _immersiveMode.environment;
-                _immersiveMode.updateEnvironment(
-                  ImmersiveEnvironment(
-                    notificationLevel: value,
-                    brightness: env.brightness,
-                    soundProfile: env.soundProfile,
-                    autoOptimize: env.autoOptimize,
-                    hideUI: env.hideUI,
-                    reduceMotion: env.reduceMotion,
-                  ),
-                );
-                Navigator.pop(context);
-                setState(() {});
-              }
-            },
-          )).toList(),
+          children: NotificationLevel.values
+              .map((level) => RadioListTile<NotificationLevel>(
+                    title: Text(_getNotificationLevelName(level)),
+                    value: level,
+                    groupValue: _immersiveMode.environment.notificationLevel,
+                    onChanged: (value) {
+                      if (value != null) {
+                        final env = _immersiveMode.environment;
+                        _immersiveMode.updateEnvironment(
+                          ImmersiveEnvironment(
+                            notificationLevel: value,
+                            brightness: env.brightness,
+                            soundProfile: env.soundProfile,
+                            autoOptimize: env.autoOptimize,
+                            hideUI: env.hideUI,
+                            reduceMotion: env.reduceMotion,
+                          ),
+                        );
+                        Navigator.pop(context);
+                        setState(() {});
+                      }
+                    },
+                  ))
+              .toList(),
         ),
       ),
     );
@@ -415,28 +423,30 @@ class _UXSettingsPageState extends State<UXSettingsPage> {
         title: const Text('选择界面亮度'),
         content: Column(
           mainAxisSize: MainAxisSize.min,
-          children: Brightness.values.map((brightness) => RadioListTile<Brightness>(
-            title: Text(brightness == Brightness.dark ? '暗色' : '亮色'),
-            value: brightness,
-            groupValue: _immersiveMode.environment.brightness,
-            onChanged: (value) {
-              if (value != null) {
-                final env = _immersiveMode.environment;
-                _immersiveMode.updateEnvironment(
-                  ImmersiveEnvironment(
-                    notificationLevel: env.notificationLevel,
-                    brightness: value,
-                    soundProfile: env.soundProfile,
-                    autoOptimize: env.autoOptimize,
-                    hideUI: env.hideUI,
-                    reduceMotion: env.reduceMotion,
-                  ),
-                );
-                Navigator.pop(context);
-                setState(() {});
-              }
-            },
-          )).toList(),
+          children: Brightness.values
+              .map((brightness) => RadioListTile<Brightness>(
+                    title: Text(brightness == Brightness.dark ? '暗色' : '亮色'),
+                    value: brightness,
+                    groupValue: _immersiveMode.environment.brightness,
+                    onChanged: (value) {
+                      if (value != null) {
+                        final env = _immersiveMode.environment;
+                        _immersiveMode.updateEnvironment(
+                          ImmersiveEnvironment(
+                            notificationLevel: env.notificationLevel,
+                            brightness: value,
+                            soundProfile: env.soundProfile,
+                            autoOptimize: env.autoOptimize,
+                            hideUI: env.hideUI,
+                            reduceMotion: env.reduceMotion,
+                          ),
+                        );
+                        Navigator.pop(context);
+                        setState(() {});
+                      }
+                    },
+                  ))
+              .toList(),
         ),
       ),
     );

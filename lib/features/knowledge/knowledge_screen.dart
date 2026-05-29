@@ -290,8 +290,7 @@ class _CharacterTab extends StatelessWidget {
                 subtitle: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    if (character.age != null)
-                      Text('${character.age}岁'),
+                    if (character.age != null) Text('${character.age}岁'),
                     if (character.tags.isNotEmpty)
                       Wrap(
                         spacing: 4,
@@ -371,8 +370,7 @@ class _CharacterTab extends StatelessWidget {
                   context: context,
                   builder: (context) => AlertDialog(
                     title: const Text('确认删除'),
-                    content:
-                        Text('确定要删除角色 "${character.name}" 吗？'),
+                    content: Text('确定要删除角色 "${character.name}" 吗？'),
                     actions: [
                       TextButton(
                         onPressed: () => Navigator.pop(context, false),
@@ -464,9 +462,8 @@ class _CharacterDetailPanel extends StatelessWidget {
             Wrap(
               spacing: 8,
               runSpacing: 8,
-              children: character.tags
-                  .map((tag) => Chip(label: Text(tag)))
-                  .toList(),
+              children:
+                  character.tags.map((tag) => Chip(label: Text(tag))).toList(),
             ),
             const SizedBox(height: 16),
           ],
@@ -812,20 +809,23 @@ class _WorldDetailPanel extends StatelessWidget {
             Wrap(
               spacing: 8,
               runSpacing: 8,
-              children: world.tags
-                  .map((tag) => Chip(label: Text(tag)))
-                  .toList(),
+              children:
+                  world.tags.map((tag) => Chip(label: Text(tag))).toList(),
             ),
             const SizedBox(height: 16),
           ],
 
           // 基本信息行
-          if (world.era != null || world.magicSystem != null || world.technology != null)
+          if (world.era != null ||
+              world.magicSystem != null ||
+              world.technology != null)
             Row(
               children: [
                 if (world.era != null) _buildBadge('时代', world.era!),
-                if (world.magicSystem != null) _buildBadge('魔法', world.magicSystem!),
-                if (world.technology != null) _buildBadge('科技', world.technology!),
+                if (world.magicSystem != null)
+                  _buildBadge('魔法', world.magicSystem!),
+                if (world.technology != null)
+                  _buildBadge('科技', world.technology!),
               ],
             ),
 
@@ -896,7 +896,8 @@ class _WorldDetailPanel extends StatelessWidget {
                   leading: const Icon(Icons.groups),
                   title: Text(org.name),
                   subtitle: Text(org.description),
-                  trailing: org.leader != null ? Text('领袖: ${org.leader}') : null,
+                  trailing:
+                      org.leader != null ? Text('领袖: ${org.leader}') : null,
                 ),
               ),
             ),
@@ -1010,12 +1011,18 @@ class _CharacterFormScreenState extends State<CharacterFormScreen> {
   void initState() {
     super.initState();
     _nameController = TextEditingController(text: widget.character?.name ?? '');
-    _ageController = TextEditingController(text: widget.character?.age?.toString() ?? '');
-    _appearanceController = TextEditingController(text: widget.character?.appearance ?? '');
-    _personalityController = TextEditingController(text: widget.character?.personality ?? '');
-    _backgroundController = TextEditingController(text: widget.character?.background ?? '');
-    _speakingStyleController = TextEditingController(text: widget.character?.speakingStyle ?? '');
-    _notesController = TextEditingController(text: widget.character?.notes ?? '');
+    _ageController =
+        TextEditingController(text: widget.character?.age?.toString() ?? '');
+    _appearanceController =
+        TextEditingController(text: widget.character?.appearance ?? '');
+    _personalityController =
+        TextEditingController(text: widget.character?.personality ?? '');
+    _backgroundController =
+        TextEditingController(text: widget.character?.background ?? '');
+    _speakingStyleController =
+        TextEditingController(text: widget.character?.speakingStyle ?? '');
+    _notesController =
+        TextEditingController(text: widget.character?.notes ?? '');
     if (widget.character != null) {
       _relationships.addAll(widget.character!.relationships);
       _tags.addAll(widget.character!.tags);
@@ -1135,8 +1142,7 @@ class _CharacterFormScreenState extends State<CharacterFormScreen> {
                 labelText: '姓名',
                 border: OutlineInputBorder(),
               ),
-              validator: (value) =>
-                  value?.isEmpty ?? true ? '请输入姓名' : null,
+              validator: (value) => value?.isEmpty ?? true ? '请输入姓名' : null,
             ),
 
             const SizedBox(height: 16),
@@ -1224,7 +1230,8 @@ class _CharacterFormScreenState extends State<CharacterFormScreen> {
                   title: Text(rel),
                   trailing: IconButton(
                     icon: const Icon(Icons.close),
-                    onPressed: () => _removeRelationship(_relationships.indexOf(rel)),
+                    onPressed: () =>
+                        _removeRelationship(_relationships.indexOf(rel)),
                   ),
                 )),
 
@@ -1256,11 +1263,13 @@ class _CharacterFormScreenState extends State<CharacterFormScreen> {
             Wrap(
               spacing: 8,
               runSpacing: 8,
-              children: _tags.map((tag) => Chip(
-                label: Text(tag),
-                deleteIcon: const Icon(Icons.close),
-                onDeleted: () => _removeTag(_tags.indexOf(tag)),
-              )).toList(),
+              children: _tags
+                  .map((tag) => Chip(
+                        label: Text(tag),
+                        deleteIcon: const Icon(Icons.close),
+                        onDeleted: () => _removeTag(_tags.indexOf(tag)),
+                      ))
+                  .toList(),
             ),
 
             const SizedBox(height: 16),
@@ -1312,12 +1321,17 @@ class _WorldFormScreenState extends State<WorldFormScreen> {
   void initState() {
     super.initState();
     _nameController = TextEditingController(text: widget.world?.name ?? '');
-    _worldTypeController = TextEditingController(text: widget.world?.worldType ?? '奇幻');
+    _worldTypeController =
+        TextEditingController(text: widget.world?.worldType ?? '奇幻');
     _eraController = TextEditingController(text: widget.world?.era ?? '');
-    _magicSystemController = TextEditingController(text: widget.world?.magicSystem ?? '');
-    _technologyController = TextEditingController(text: widget.world?.technology ?? '');
-    _geographyController = TextEditingController(text: widget.world?.geography ?? '');
-    _historyController = TextEditingController(text: widget.world?.history ?? '');
+    _magicSystemController =
+        TextEditingController(text: widget.world?.magicSystem ?? '');
+    _technologyController =
+        TextEditingController(text: widget.world?.technology ?? '');
+    _geographyController =
+        TextEditingController(text: widget.world?.geography ?? '');
+    _historyController =
+        TextEditingController(text: widget.world?.history ?? '');
     _notesController = TextEditingController(text: widget.world?.notes ?? '');
 
     if (widget.world != null) {
@@ -1516,8 +1530,7 @@ class _WorldFormScreenState extends State<WorldFormScreen> {
                 labelText: '世界名称',
                 border: OutlineInputBorder(),
               ),
-              validator: (value) =>
-                  value?.isEmpty ?? true ? '请输入世界名称' : null,
+              validator: (value) => value?.isEmpty ?? true ? '请输入世界名称' : null,
             ),
 
             const SizedBox(height: 16),
@@ -1626,7 +1639,8 @@ class _WorldFormScreenState extends State<WorldFormScreen> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Text('主要地点', style: TextStyle(fontWeight: FontWeight.bold)),
+                const Text('主要地点',
+                    style: TextStyle(fontWeight: FontWeight.bold)),
                 TextButton.icon(
                   icon: const Icon(Icons.add),
                   label: const Text('添加地点'),
@@ -1659,7 +1673,8 @@ class _WorldFormScreenState extends State<WorldFormScreen> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Text('主要势力', style: TextStyle(fontWeight: FontWeight.bold)),
+                const Text('主要势力',
+                    style: TextStyle(fontWeight: FontWeight.bold)),
                 TextButton.icon(
                   icon: const Icon(Icons.add),
                   label: const Text('添加势力'),
@@ -1714,11 +1729,13 @@ class _WorldFormScreenState extends State<WorldFormScreen> {
             Wrap(
               spacing: 8,
               runSpacing: 8,
-              children: _tags.map((tag) => Chip(
-                label: Text(tag),
-                deleteIcon: const Icon(Icons.close),
-                onDeleted: () => _removeTag(_tags.indexOf(tag)),
-              )).toList(),
+              children: _tags
+                  .map((tag) => Chip(
+                        label: Text(tag),
+                        deleteIcon: const Icon(Icons.close),
+                        onDeleted: () => _removeTag(_tags.indexOf(tag)),
+                      ))
+                  .toList(),
             ),
 
             const SizedBox(height: 16),
@@ -1764,7 +1781,8 @@ class _LocationFormDialogState extends State<_LocationFormDialog> {
   void initState() {
     super.initState();
     _nameController = TextEditingController(text: widget.location?.name ?? '');
-    _descriptionController = TextEditingController(text: widget.location?.description ?? '');
+    _descriptionController =
+        TextEditingController(text: widget.location?.description ?? '');
     if (widget.location != null) {
       _relatedCharacters.addAll(widget.location!.relatedCharacters);
     }
@@ -1846,7 +1864,8 @@ class _OrganizationFormDialog extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  State<_OrganizationFormDialog> createState() => _OrganizationFormDialogState();
+  State<_OrganizationFormDialog> createState() =>
+      _OrganizationFormDialogState();
 }
 
 class _OrganizationFormDialogState extends State<_OrganizationFormDialog> {
@@ -1860,10 +1879,14 @@ class _OrganizationFormDialogState extends State<_OrganizationFormDialog> {
   @override
   void initState() {
     super.initState();
-    _nameController = TextEditingController(text: widget.organization?.name ?? '');
-    _descriptionController = TextEditingController(text: widget.organization?.description ?? '');
-    _leaderController = TextEditingController(text: widget.organization?.leader ?? '');
-    _philosophyController = TextEditingController(text: widget.organization?.philosophy ?? '');
+    _nameController =
+        TextEditingController(text: widget.organization?.name ?? '');
+    _descriptionController =
+        TextEditingController(text: widget.organization?.description ?? '');
+    _leaderController =
+        TextEditingController(text: widget.organization?.leader ?? '');
+    _philosophyController =
+        TextEditingController(text: widget.organization?.philosophy ?? '');
     if (widget.organization != null) {
       _members.addAll(widget.organization!.members);
     }

@@ -17,53 +17,121 @@ class SecurityConfig {
 
   // 文件类型安全配置
   static const Set<String> textFileExtensions = {
-    '.txt', '.md', '.json', '.csv', '.xml', '.yaml', '.yml',
-    '.html', '.css', '.js', '.ts', '.dart', '.py', '.java',
+    '.txt',
+    '.md',
+    '.json',
+    '.csv',
+    '.xml',
+    '.yaml',
+    '.yml',
+    '.html',
+    '.css',
+    '.js',
+    '.ts',
+    '.dart',
+    '.py',
+    '.java',
   };
 
   static const Set<String> imageFileExtensions = {
-    '.png', '.jpg', '.jpeg', '.gif', '.svg', '.webp', '.bmp', '.ico',
+    '.png',
+    '.jpg',
+    '.jpeg',
+    '.gif',
+    '.svg',
+    '.webp',
+    '.bmp',
+    '.ico',
   };
 
   static const Set<String> audioFileExtensions = {
-    '.mp3', '.wav', '.m4a', '.aac', '.ogg', '.flac', '.wma',
+    '.mp3',
+    '.wav',
+    '.m4a',
+    '.aac',
+    '.ogg',
+    '.flac',
+    '.wma',
   };
 
   static const Set<String> videoFileExtensions = {
-    '.mp4', '.mov', '.avi', '.mkv', '.webm', '.flv', '.wmv',
+    '.mp4',
+    '.mov',
+    '.avi',
+    '.mkv',
+    '.webm',
+    '.flv',
+    '.wmv',
   };
 
   static const Set<String> documentFileExtensions = {
-    '.pdf', '.doc', '.docx', '.xls', '.xlsx', '.ppt', '.pptx',
-    '.odt', '.ods', '.odp', '.rtf', '.tex',
+    '.pdf',
+    '.doc',
+    '.docx',
+    '.xls',
+    '.xlsx',
+    '.ppt',
+    '.pptx',
+    '.odt',
+    '.ods',
+    '.odp',
+    '.rtf',
+    '.tex',
   };
 
   static const Set<String> archiveFileExtensions = {
-    '.zip', '.tar', '.gz', '.7z', '.rar', '.bz2', '.xz',
+    '.zip',
+    '.tar',
+    '.gz',
+    '.7z',
+    '.rar',
+    '.bz2',
+    '.xz',
   };
 
   // 危险文件类型
   static const Set<String> executableExtensions = {
-    '.exe', '.bat', '.cmd', '.sh', '.ps1', '.vbs', '.js',
-    '.jar', '.app', '.deb', '.rpm', '.dmg', '.pkg',
-    '.msi', '.com', '.scr', '.pif', '.vb', '.vbe',
-    '.jse', '.wsf', '.wsh', '.ws', '.scf', '.lnk',
+    '.exe',
+    '.bat',
+    '.cmd',
+    '.sh',
+    '.ps1',
+    '.vbs',
+    '.js',
+    '.jar',
+    '.app',
+    '.deb',
+    '.rpm',
+    '.dmg',
+    '.pkg',
+    '.msi',
+    '.com',
+    '.scr',
+    '.pif',
+    '.vb',
+    '.vbe',
+    '.jse',
+    '.wsf',
+    '.wsh',
+    '.ws',
+    '.scf',
+    '.lnk',
   };
 
   // 系统文件模式
   static const List<String> systemFilePatterns = [
-    r'\.\.',           // 路径遍历
-    r'~\$',            // Windows临时文件
-    r'thumbs\.db',     // Windows缩略图缓存
-    r'\.ds_store',     // macOS系统文件
-    r'\._',            // macOS资源分叉
-    r'\.spotlight-',   // macOS索引文件
-    r'\.trash',        // 回收站
-    r'\.recycle',      // 回收站
-    r'desktop\.ini',   // Windows配置文件
-    r'\.git',          // Git目录
-    r'\.svn',          // SVN目录
-    r'\.hg',           // Mercurial目录
+    r'\.\.', // 路径遍历
+    r'~\$', // Windows临时文件
+    r'thumbs\.db', // Windows缩略图缓存
+    r'\.ds_store', // macOS系统文件
+    r'\._', // macOS资源分叉
+    r'\.spotlight-', // macOS索引文件
+    r'\.trash', // 回收站
+    r'\.recycle', // 回收站
+    r'desktop\.ini', // Windows配置文件
+    r'\.git', // Git目录
+    r'\.svn', // SVN目录
+    r'\.hg', // Mercurial目录
   ];
 
   // 路径安全配置 (使用 AppConstants 中的值)
@@ -82,8 +150,10 @@ class SecurityConfig {
   static const Duration auditLogRetention = AppConstants.auditLogRetention;
 
   // 性能配置 (使用 AppConstants 中的值)
-  static const int maxConcurrentFileOperations = AppConstants.maxConcurrentFileOperations;
-  static const Duration fileOperationTimeout = AppConstants.fileOperationTimeout;
+  static const int maxConcurrentFileOperations =
+      AppConstants.maxConcurrentFileOperations;
+  static const Duration fileOperationTimeout =
+      AppConstants.fileOperationTimeout;
 
   // 权限配置
   static const bool requireWritePermission = true;

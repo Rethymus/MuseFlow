@@ -142,9 +142,11 @@ class AICacheConfig {
   }) {
     return AICacheConfig(
       memoryMaxEntries: memoryMaxEntries ?? this.memoryMaxEntries,
-      memoryDefaultExpiration: memoryDefaultExpiration ?? this.memoryDefaultExpiration,
+      memoryDefaultExpiration:
+          memoryDefaultExpiration ?? this.memoryDefaultExpiration,
       diskMaxEntries: diskMaxEntries ?? this.diskMaxEntries,
-      diskDefaultExpiration: diskDefaultExpiration ?? this.diskDefaultExpiration,
+      diskDefaultExpiration:
+          diskDefaultExpiration ?? this.diskDefaultExpiration,
       diskMaxSizeBytes: diskMaxSizeBytes ?? this.diskMaxSizeBytes,
       cleanupInterval: cleanupInterval ?? this.cleanupInterval,
       statsUpdateInterval: statsUpdateInterval ?? this.statsUpdateInterval,
@@ -152,12 +154,17 @@ class AICacheConfig {
       enableStatistics: enableStatistics ?? this.enableStatistics,
       enableEventListening: enableEventListening ?? this.enableEventListening,
       targetHitRate: targetHitRate ?? this.targetHitRate,
-      targetRequestSavedRate: targetRequestSavedRate ?? this.targetRequestSavedRate,
-      systemPromptCacheDuration: systemPromptCacheDuration ?? this.systemPromptCacheDuration,
-      shortQueryCacheDuration: shortQueryCacheDuration ?? this.shortQueryCacheDuration,
-      longQueryCacheDuration: longQueryCacheDuration ?? this.longQueryCacheDuration,
+      targetRequestSavedRate:
+          targetRequestSavedRate ?? this.targetRequestSavedRate,
+      systemPromptCacheDuration:
+          systemPromptCacheDuration ?? this.systemPromptCacheDuration,
+      shortQueryCacheDuration:
+          shortQueryCacheDuration ?? this.shortQueryCacheDuration,
+      longQueryCacheDuration:
+          longQueryCacheDuration ?? this.longQueryCacheDuration,
       shortQueryThreshold: shortQueryThreshold ?? this.shortQueryThreshold,
-      enableAutoOptimization: enableAutoOptimization ?? this.enableAutoOptimization,
+      enableAutoOptimization:
+          enableAutoOptimization ?? this.enableAutoOptimization,
       enableWarmup: enableWarmup ?? this.enableWarmup,
     );
   }
@@ -190,20 +197,26 @@ class AICacheConfig {
   factory AICacheConfig.fromJson(Map<String, dynamic> json) {
     return AICacheConfig(
       memoryMaxEntries: json['memoryMaxEntries'] as int,
-      memoryDefaultExpiration: Duration(milliseconds: json['memoryDefaultExpiration'] as int),
+      memoryDefaultExpiration:
+          Duration(milliseconds: json['memoryDefaultExpiration'] as int),
       diskMaxEntries: json['diskMaxEntries'] as int,
-      diskDefaultExpiration: Duration(milliseconds: json['diskDefaultExpiration'] as int),
+      diskDefaultExpiration:
+          Duration(milliseconds: json['diskDefaultExpiration'] as int),
       diskMaxSizeBytes: json['diskMaxSizeBytes'] as int,
       cleanupInterval: Duration(milliseconds: json['cleanupInterval'] as int),
-      statsUpdateInterval: Duration(milliseconds: json['statsUpdateInterval'] as int),
+      statsUpdateInterval:
+          Duration(milliseconds: json['statsUpdateInterval'] as int),
       enableCaching: json['enableCaching'] as bool,
       enableStatistics: json['enableStatistics'] as bool,
       enableEventListening: json['enableEventListening'] as bool,
       targetHitRate: json['targetHitRate'] as double,
       targetRequestSavedRate: json['targetRequestSavedRate'] as double,
-      systemPromptCacheDuration: Duration(milliseconds: json['systemPromptCacheDuration'] as int),
-      shortQueryCacheDuration: Duration(milliseconds: json['shortQueryCacheDuration'] as int),
-      longQueryCacheDuration: Duration(milliseconds: json['longQueryCacheDuration'] as int),
+      systemPromptCacheDuration:
+          Duration(milliseconds: json['systemPromptCacheDuration'] as int),
+      shortQueryCacheDuration:
+          Duration(milliseconds: json['shortQueryCacheDuration'] as int),
+      longQueryCacheDuration:
+          Duration(milliseconds: json['longQueryCacheDuration'] as int),
       shortQueryThreshold: json['shortQueryThreshold'] as int,
       enableAutoOptimization: json['enableAutoOptimization'] as bool,
       enableWarmup: json['enableWarmup'] as bool,
@@ -219,16 +232,19 @@ class AICacheConfig {
     buffer.writeln('  Default Expiration: ${memoryDefaultExpiration.inHours}h');
     buffer.writeln('Disk Cache:');
     buffer.writeln('  Max Entries: $diskMaxEntries');
-    buffer.writeln('  Max Size: ${(diskMaxSizeBytes / 1024 / 1024).toStringAsFixed(1)}MB');
+    buffer.writeln(
+        '  Max Size: ${(diskMaxSizeBytes / 1024 / 1024).toStringAsFixed(1)}MB');
     buffer.writeln('  Default Expiration: ${diskDefaultExpiration.inDays}d');
     buffer.writeln('Performance Targets:');
     buffer.writeln('  Hit Rate: ${(targetHitRate * 100).toStringAsFixed(0)}%');
-    buffer.writeln('  Request Saved Rate: ${(targetRequestSavedRate * 100).toStringAsFixed(0)}%');
+    buffer.writeln(
+        '  Request Saved Rate: ${(targetRequestSavedRate * 100).toStringAsFixed(0)}%');
     buffer.writeln('Features:');
     buffer.writeln('  Caching: ${enableCaching ? "✓" : "✗"}');
     buffer.writeln('  Statistics: ${enableStatistics ? "✓" : "✗"}');
     buffer.writeln('  Event Listening: ${enableEventListening ? "✓" : "✗"}');
-    buffer.writeln('  Auto Optimization: ${enableAutoOptimization ? "✓" : "✗"}');
+    buffer
+        .writeln('  Auto Optimization: ${enableAutoOptimization ? "✓" : "✗"}');
     buffer.writeln('  Warmup: ${enableWarmup ? "✓" : "✗"}');
     return buffer.toString();
   }

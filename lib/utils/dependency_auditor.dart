@@ -23,7 +23,8 @@ class DependencyInfo {
     this.constraints = const [],
   });
 
-  bool get isOutdated => latestVersion != null && currentVersion != latestVersion;
+  bool get isOutdated =>
+      latestVersion != null && currentVersion != latestVersion;
 
   bool get hasLicenseCompliance => licenses.isNotEmpty;
 
@@ -44,7 +45,8 @@ class DependencyInfo {
           ? DateTime.parse(json['lastUpdated'] as String)
           : null,
       constraints: (json['constraints'] as List<dynamic>?)
-              ?.map((e) => DependencyConstraint.fromJson(e as Map<String, dynamic>))
+              ?.map((e) =>
+                  DependencyConstraint.fromJson(e as Map<String, dynamic>))
               .toList() ??
           [],
     );
@@ -138,9 +140,12 @@ class VersionConflict {
   factory VersionConflict.fromJson(Map<String, dynamic> json) {
     return VersionConflict(
       packageName: json['packageName'] as String,
-      conflictingVersions:
-          (json['conflictingVersions'] as List<dynamic>).map((e) => e as String).toList(),
-      dependents: (json['dependents'] as List<dynamic>).map((e) => e as String).toList(),
+      conflictingVersions: (json['conflictingVersions'] as List<dynamic>)
+          .map((e) => e as String)
+          .toList(),
+      dependents: (json['dependents'] as List<dynamic>)
+          .map((e) => e as String)
+          .toList(),
       resolution: json['resolution'] as String,
       severity: ConflictSeverity.values.firstWhere(
         (e) => e.name == json['severity'],
@@ -196,8 +201,10 @@ class DependencyHealthReport {
       conflicts: (json['conflicts'] as List<dynamic>)
           .map((e) => VersionConflict.fromJson(e as Map<String, dynamic>))
           .toList(),
-      warnings: (json['warnings'] as List<dynamic>).map((e) => e as String).toList(),
-      errors: (json['errors'] as List<dynamic>).map((e) => e as String).toList(),
+      warnings:
+          (json['warnings'] as List<dynamic>).map((e) => e as String).toList(),
+      errors:
+          (json['errors'] as List<dynamic>).map((e) => e as String).toList(),
       score: HealthScore.values.firstWhere(
         (e) => e.name == json['score'],
         orElse: () => HealthScore.good,
@@ -307,8 +314,10 @@ class DependencyAuditor {
   DependencyAuditor({required this.projectPath})
       : pubspecFile = File(path.join(projectPath, 'pubspec.yaml')),
         auditLog = File(path.join(projectPath, '.dependency_audit_log.json')),
-        healthReportFile = File(path.join(projectPath, '.dependency_health_report.json')),
-        constraintsFile = File(path.join(projectPath, '.dependency_constraints.json'));
+        healthReportFile =
+            File(path.join(projectPath, '.dependency_health_report.json')),
+        constraintsFile =
+            File(path.join(projectPath, '.dependency_constraints.json'));
 
   /// 解析 pubspec.yaml 获取依赖信息
   Future<List<DependencyInfo>> parseDependencies() async {
@@ -331,7 +340,10 @@ class DependencyAuditor {
         currentType = DependencyType.dev;
       } else if (line.startsWith('dependency_overrides:')) {
         currentType = DependencyType.overridden;
-      } else if (line.startsWith('#') || line.isEmpty || line.startsWith('environment:') || line.startsWith('flutter:')) {
+      } else if (line.startsWith('#') ||
+          line.isEmpty ||
+          line.startsWith('environment:') ||
+          line.startsWith('flutter:')) {
         continue;
       } else {
         final match = RegExp(r'^([\w_-]+):\s*([\d.]+)').firstMatch(line);
@@ -369,7 +381,8 @@ class DependencyAuditor {
 
     for (final entry in depMap.entries) {
       if (entry.value.length > 1) {
-        final versions = entry.value.map((d) => d.currentVersion).toSet().toList();
+        final versions =
+            entry.value.map((d) => d.currentVersion).toSet().toList();
         if (versions.length > 1) {
           conflicts.add(VersionConflict(
             packageName: entry.key,
@@ -391,7 +404,8 @@ class DependencyAuditor {
   }
 
   /// 检查已知的兼容性问题
-  List<VersionConflict> _checkKnownCompatibilityIssues(List<DependencyInfo> dependencies) {
+  List<VersionConflict> _checkKnownCompatibilityIssues(
+      List<DependencyInfo> dependencies) {
     final conflicts = <VersionConflict>[];
     final depMap = {for (var d in dependencies) d.name: d.currentVersion};
 
@@ -456,9 +470,12 @@ class DependencyAuditor {
 
     // 计算指标
     final totalDeps = dependencies.length;
-    final directDeps = dependencies.where((d) => d.type == DependencyType.direct).length;
-    final transitiveDeps = dependencies.where((d) => d.type == DependencyType.transitive).length;
-    final devDeps = dependencies.where((d) => d.type == DependencyType.dev).length;
+    final directDeps =
+        dependencies.where((d) => d.type == DependencyType.direct).length;
+    final transitiveDeps =
+        dependencies.where((d) => d.type == DependencyType.transitive).length;
+    final devDeps =
+        dependencies.where((d) => d.type == DependencyType.dev).length;
     final outdatedDeps = dependencies.where((d) => d.isOutdated).length;
 
     metrics['totalDependencies'] = totalDeps;
@@ -470,7 +487,8 @@ class DependencyAuditor {
     // 检查过时的依赖
     for (final dep in dependencies) {
       if (dep.isOutdated) {
-        warnings.add('${dep.name}: 当前版本 ${dep.currentVersion}, 最新版本 ${dep.latestVersion}');
+        warnings.add(
+            '${dep.name}: 当前版本 ${dep.currentVersion}, 最新版本 ${dep.latestVersion}');
       }
     }
 
@@ -491,7 +509,8 @@ class DependencyAuditor {
     }
 
     // 计算健康评分
-    final score = _calculateHealthScore(totalDeps, conflicts.length, warnings.length, errors.length);
+    final score = _calculateHealthScore(
+        totalDeps, conflicts.length, warnings.length, errors.length);
 
     final report = DependencyHealthReport(
       generatedAt: DateTime.now(),
@@ -508,7 +527,8 @@ class DependencyAuditor {
   }
 
   /// 计算健康评分
-  HealthScore _calculateHealthScore(int totalDeps, int conflicts, int warnings, int errors) {
+  HealthScore _calculateHealthScore(
+      int totalDeps, int conflicts, int warnings, int errors) {
     if (errors > 0) return HealthScore.critical;
     if (conflicts > 2) return HealthScore.poor;
     if (conflicts > 0 || warnings > 5) return HealthScore.fair;
@@ -577,13 +597,15 @@ class DependencyAuditor {
 
     // 基于冲突的建议
     for (final conflict in conflicts) {
-      suggestions.add('修复 ${conflict.packageName} 的版本冲突: ${conflict.resolution}');
+      suggestions
+          .add('修复 ${conflict.packageName} 的版本冲突: ${conflict.resolution}');
     }
 
     // 基于过时依赖的建议
     for (final dep in dependencies) {
       if (dep.isOutdated && dep.type == DependencyType.direct) {
-        suggestions.add('考虑升级 ${dep.name} 从 ${dep.currentVersion} 到 ${dep.latestVersion}');
+        suggestions.add(
+            '考虑升级 ${dep.name} 从 ${dep.currentVersion} 到 ${dep.latestVersion}');
       }
     }
 
@@ -672,7 +694,8 @@ class DependencyAuditor {
 
     buffer.writeln('📊 指标摘要:');
     buffer.writeln('  总依赖数: ${report.totalDependencies}');
-    buffer.writeln('  过时依赖: ${report.outdatedCount} (${report.outdatedPercentage.toStringAsFixed(1)}%)');
+    buffer.writeln(
+        '  过时依赖: ${report.outdatedCount} (${report.outdatedPercentage.toStringAsFixed(1)}%)');
     buffer.writeln('  版本冲突: ${report.conflictCount}');
     buffer.writeln('  警告数: ${report.warnings.length}');
     buffer.writeln('  错误数: ${report.errors.length}');
@@ -744,7 +767,13 @@ class DependencyUpdateAdvisor {
     final priorities = <UpdatePriority>[];
 
     // 安全更新（最高优先级）
-    final securityDeps = ['http', 'dio', 'flutter_secure_storage', 'encrypt', 'retry'];
+    final securityDeps = [
+      'http',
+      'dio',
+      'flutter_secure_storage',
+      'encrypt',
+      'retry'
+    ];
     for (final depName in securityDeps) {
       final dep = dependencies.firstWhereOrNull((d) => d.name == depName);
       if (dep != null && dep.isOutdated) {
@@ -761,7 +790,8 @@ class DependencyUpdateAdvisor {
     // 冲突解决（高优先级）
     for (final conflict in conflicts) {
       if (conflict.severity == ConflictSeverity.error) {
-        final dep = dependencies.firstWhereOrNull((d) => d.name == conflict.packageName);
+        final dep = dependencies
+            .firstWhereOrNull((d) => d.name == conflict.packageName);
         if (dep != null) {
           priorities.add(UpdatePriority(
             packageName: dep.name,

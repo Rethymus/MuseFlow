@@ -127,7 +127,8 @@ class NaturalLanguageProcessor {
     if (replacements.length == 1) return replacements[0];
 
     // 随机选择，避免机械性
-    return replacements[DateTime.now().millisecondsSinceEpoch % replacements.length];
+    return replacements[
+        DateTime.now().millisecondsSinceEpoch % replacements.length];
   }
 
   /// 修复过度结构化的文本
@@ -162,9 +163,8 @@ class NaturalLanguageProcessor {
     final sentences = text.split(RegExp(r'[。！？]'));
     if (sentences.length < 3) return text;
 
-    final shortSentenceCount = sentences
-        .where((s) => s.length > 0 && s.length < 15)
-        .length;
+    final shortSentenceCount =
+        sentences.where((s) => s.length > 0 && s.length < 15).length;
 
     if (shortSentenceCount / sentences.length > 0.7) {
       _stats.recordReplacement('sentence_length', '过多短句');
@@ -502,8 +502,8 @@ class NaturalLanguageABTester {
   NaturalLanguageABTester({
     required NaturalLanguageConfig configA,
     required NaturalLanguageConfig configB,
-  }) : processorA = NaturalLanguageProcessor(config: configA),
-       processorB = NaturalLanguageProcessor(config: configB);
+  })  : processorA = NaturalLanguageProcessor(config: configA),
+        processorB = NaturalLanguageProcessor(config: configB);
 
   Map<String, String> compare(String text) {
     return {

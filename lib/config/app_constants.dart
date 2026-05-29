@@ -44,35 +44,43 @@ class AppConstants {
 
   /// 文件操作超时时间
   static const int fileOperationTimeoutSeconds = 30;
-  static const Duration fileOperationTimeout = Duration(seconds: fileOperationTimeoutSeconds);
+  static const Duration fileOperationTimeout =
+      Duration(seconds: fileOperationTimeoutSeconds);
 
   /// 初始化延迟时间
   static const int initializationDelaySeconds = 1;
-  static const Duration initializationDelay = Duration(seconds: initializationDelaySeconds);
+  static const Duration initializationDelay =
+      Duration(seconds: initializationDelaySeconds);
 
   /// 网络请求超时时间
   static const int networkRequestTimeoutSeconds = 5;
-  static const Duration networkRequestTimeout = Duration(seconds: networkRequestTimeoutSeconds);
+  static const Duration networkRequestTimeout =
+      Duration(seconds: networkRequestTimeoutSeconds);
 
   /// 短延迟时间
   static const int shortDelayMilliseconds = 100;
-  static const Duration shortDelay = Duration(milliseconds: shortDelayMilliseconds);
+  static const Duration shortDelay =
+      Duration(milliseconds: shortDelayMilliseconds);
 
   /// 中等延迟时间
   static const int mediumDelayMilliseconds = 300;
-  static const Duration mediumDelay = Duration(milliseconds: mediumDelayMilliseconds);
+  static const Duration mediumDelay =
+      Duration(milliseconds: mediumDelayMilliseconds);
 
   /// 长延迟时间
   static const int longDelayMilliseconds = 500;
-  static const Duration longDelay = Duration(milliseconds: longDelayMilliseconds);
+  static const Duration longDelay =
+      Duration(milliseconds: longDelayMilliseconds);
 
   /// 额外长延迟时间
   static const int extraLongDelaySeconds = 2;
-  static const Duration extraLongDelay = Duration(seconds: extraLongDelaySeconds);
+  static const Duration extraLongDelay =
+      Duration(seconds: extraLongDelaySeconds);
 
   /// 模拟延迟时间（用于测试）
   static const int simulatedDelaySeconds = 3;
-  static const Duration simulatedDelay = Duration(seconds: simulatedDelaySeconds);
+  static const Duration simulatedDelay =
+      Duration(seconds: simulatedDelaySeconds);
 
   // ============================================
   // 性能和启动指标常量
@@ -114,19 +122,24 @@ class AppConstants {
 
   /// 动画持续时间
   static const int animationDurationMilliseconds = 200;
-  static const Duration animationDuration = Duration(milliseconds: animationDurationMilliseconds);
+  static const Duration animationDuration =
+      Duration(milliseconds: animationDurationMilliseconds);
 
   static const int fastAnimationDurationMilliseconds = 100;
-  static const Duration fastAnimationDuration = Duration(milliseconds: fastAnimationDurationMilliseconds);
+  static const Duration fastAnimationDuration =
+      Duration(milliseconds: fastAnimationDurationMilliseconds);
 
   static const int mediumAnimationDurationMilliseconds = 500;
-  static const Duration mediumAnimationDuration = Duration(milliseconds: mediumAnimationDurationMilliseconds);
+  static const Duration mediumAnimationDuration =
+      Duration(milliseconds: mediumAnimationDurationMilliseconds);
 
   static const int slowAnimationDurationMilliseconds = 800;
-  static const Duration slowAnimationDuration = Duration(milliseconds: slowAnimationDurationMilliseconds);
+  static const Duration slowAnimationDuration =
+      Duration(milliseconds: slowAnimationDurationMilliseconds);
 
   static const int extraSlowAnimationDurationMilliseconds = 1200;
-  static const Duration extraSlowAnimationDuration = Duration(milliseconds: extraSlowAnimationDurationMilliseconds);
+  static const Duration extraSlowAnimationDuration =
+      Duration(milliseconds: extraSlowAnimationDurationMilliseconds);
 
   // ============================================
   // 文本和编辑器常量
@@ -148,7 +161,8 @@ class AppConstants {
   static const int maxFragmentCount = 100;
   static const int maxRetries = 3;
   static const int debounceDelayMilliseconds = 300;
-  static const Duration debounceDelay = Duration(milliseconds: debounceDelayMilliseconds);
+  static const Duration debounceDelay =
+      Duration(milliseconds: debounceDelayMilliseconds);
 
   /// 思维碎片配置
   static const int fragmentPreviewLines = 3;
@@ -157,7 +171,8 @@ class AppConstants {
 
   /// 自动保存配置
   static const int autoSaveIntervalSeconds = 30;
-  static const Duration autoSaveInterval = Duration(seconds: autoSaveIntervalSeconds);
+  static const Duration autoSaveInterval =
+      Duration(seconds: autoSaveIntervalSeconds);
 
   // ============================================
   // UI间距和尺寸常量
@@ -189,7 +204,8 @@ class AppConstants {
   /// 重试配置
   static const int maxRetryAttempts = 3;
   static const int retryDelayMilliseconds = 1000;
-  static const Duration retryDelay = Duration(milliseconds: retryDelayMilliseconds);
+  static const Duration retryDelay =
+      Duration(milliseconds: retryDelayMilliseconds);
 
   /// API配置
   static const int defaultMaxTokens = 2000;
@@ -204,7 +220,8 @@ class AppConstants {
   static const Duration cacheExpiration = Duration(days: cacheExpirationDays);
 
   static const int auditLogRetentionDays = 30;
-  static const Duration auditLogRetention = Duration(days: auditLogRetentionDays);
+  static const Duration auditLogRetention =
+      Duration(days: auditLogRetentionDays);
 
   // ============================================
   // 并发和性能常量
@@ -258,14 +275,16 @@ class AppConstants {
   static String formatFileSize(int bytes) {
     if (bytes < 1024) return '$bytes B';
     if (bytes < 1024 * 1024) return '${(bytes / 1024).toStringAsFixed(1)} KB';
-    if (bytes < 1024 * 1024 * 1024) return '${(bytes / (1024 * 1024)).toStringAsFixed(1)} MB';
+    if (bytes < 1024 * 1024 * 1024)
+      return '${(bytes / (1024 * 1024)).toStringAsFixed(1)} MB';
     return '${(bytes / (1024 * 1024 * 1024)).toStringAsFixed(1)} GB';
   }
 
   /// 获取格式化的时间
   static String formatDuration(Duration duration) {
     if (duration.inSeconds < 60) return '${duration.inSeconds}s';
-    if (duration.inMinutes < 60) return '${duration.inMinutes}m ${duration.inSeconds % 60}s';
+    if (duration.inMinutes < 60)
+      return '${duration.inMinutes}m ${duration.inSeconds % 60}s';
     return '${duration.inHours}h ${duration.inMinutes % 60}m';
   }
 

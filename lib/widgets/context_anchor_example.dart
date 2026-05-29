@@ -96,13 +96,16 @@ class _ContextAnchorExampleState extends State<ContextAnchorExample> {
                 const SizedBox(height: 16),
                 Row(
                   children: [
-                    Icon(Icons.text_fields, size: 16, color: Colors.blue.shade700),
+                    Icon(Icons.text_fields,
+                        size: 16, color: Colors.blue.shade700),
                     const SizedBox(width: 4),
                     Text('${anchor.length} 字符'),
                     const SizedBox(width: 16),
-                    Icon(Icons.format_size, size: 16, color: Colors.blue.shade700),
+                    Icon(Icons.format_size,
+                        size: 16, color: Colors.blue.shade700),
                     const SizedBox(width: 4),
-                    Text('${anchor.split(RegExp(r'\s+')).where((s) => s.isNotEmpty).length} 词'),
+                    Text(
+                        '${anchor.split(RegExp(r'\s+')).where((s) => s.isNotEmpty).length} 词'),
                   ],
                 ),
               ],
@@ -163,13 +166,18 @@ class _ContextAnchorExampleState extends State<ContextAnchorExample> {
                           mainAxisSize: MainAxisSize.min,
                           children: [
                             Icon(
-                              anchor.isEmpty ? Icons.anchor_outlined : Icons.anchor,
-                              color: anchor.isNotEmpty ? Colors.blue.shade700 : null,
+                              anchor.isEmpty
+                                  ? Icons.anchor_outlined
+                                  : Icons.anchor,
+                              color: anchor.isNotEmpty
+                                  ? Colors.blue.shade700
+                                  : null,
                             ),
                             if (anchor.isNotEmpty) ...[
                               const SizedBox(width: 4),
                               Container(
-                                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 6, vertical: 2),
                                 decoration: BoxDecoration(
                                   color: Colors.blue.shade600,
                                   borderRadius: BorderRadius.circular(8),
@@ -216,7 +224,8 @@ class _ContextAnchorExampleState extends State<ContextAnchorExample> {
                       children: [
                         Row(
                           children: [
-                            Icon(Icons.info_outline, color: Colors.blue.shade700),
+                            Icon(Icons.info_outline,
+                                color: Colors.blue.shade700),
                             const SizedBox(width: 8),
                             Text(
                               '功能说明',
@@ -295,7 +304,8 @@ class _ContextAnchorExampleState extends State<ContextAnchorExample> {
                               icon: const Icon(Icons.add),
                               label: const Text('设置示例锚点'),
                               onPressed: () {
-                                _contextAnchor.value = '这是一个示例上下文锚点内容。\n\nAI将基于此内容进行理解和回复，确保上下文的连贯性和准确性。';
+                                _contextAnchor.value =
+                                    '这是一个示例上下文锚点内容。\n\nAI将基于此内容进行理解和回复，确保上下文的连贯性和准确性。';
                               },
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: Colors.blue.shade600,

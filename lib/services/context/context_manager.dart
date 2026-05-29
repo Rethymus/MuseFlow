@@ -182,7 +182,8 @@ class ContextManager {
   }
 
   /// 更新片段
-  bool updateSegment(String id, {
+  bool updateSegment(
+    String id, {
     String? content,
     double? importanceScore,
     bool? isLocked,
@@ -255,14 +256,17 @@ class ContextManager {
       return ContextStats(
         totalSegments: cacheStats.totalSegments,
         totalTokens: cacheStats.totalTokens,
-        userMessages: segments.where((s) => s.type == SegmentType.userMessage).length,
-        systemResponses: segments.where((s) => s.type == SegmentType.systemResponse).length,
+        userMessages:
+            segments.where((s) => s.type == SegmentType.userMessage).length,
+        systemResponses:
+            segments.where((s) => s.type == SegmentType.systemResponse).length,
         toolCalls: segments.where((s) => s.type == SegmentType.toolCall).length,
         cachedSegments: cacheStats.totalSegments,
         summarySegments: cacheStats.summarySegments,
         averageImportance: segments.isEmpty
             ? 0.0
-            : segments.fold(0.0, (sum, s) => sum + s.importanceScore) / segments.length,
+            : segments.fold(0.0, (sum, s) => sum + s.importanceScore) /
+                segments.length,
       );
     });
   }
@@ -288,7 +292,8 @@ class ContextManager {
 
       for (final segment in _cache.getAll()) {
         if (segment.content.toLowerCase().contains(lowerQuery) ||
-            segment.metadata.values.any((v) => v.toString().toLowerCase().contains(lowerQuery))) {
+            segment.metadata.values
+                .any((v) => v.toString().toLowerCase().contains(lowerQuery))) {
           results.add(segment);
           if (results.length >= limit) break;
         }
@@ -378,7 +383,8 @@ class ContextManager {
   void _performContextTrim() {
     final segments = _cache.getAll();
     final toRemove = <ContextSegment>[];
-    int tokensToRemove = segments.fold(0, (sum, s) => sum + s.estimatedTokens) - (_config.maxTokens * 0.7).round();
+    int tokensToRemove = segments.fold(0, (sum, s) => sum + s.estimatedTokens) -
+        (_config.maxTokens * 0.7).round();
 
     // 按重要性评分排序（低到高）
     final sorted = List<ContextSegment>.from(segments)
@@ -526,16 +532,15 @@ class ContextStats {
       : 0.0;
 
   /// 摘要比例
-  double get summaryRatio => totalSegments > 0
-      ? summarySegments / totalSegments
-      : 0.0;
+  double get summaryRatio =>
+      totalSegments > 0 ? summarySegments / totalSegments : 0.0;
 
   @override
   String toString() {
     return 'ContextStats(segments: $totalSegments, tokens: $totalTokens, '
-           'userMsgs: $userMessages, responses: $systemResponses, '
-           'tools: $toolCalls, summaries: $summarySegments, '
-           'avgImportance: ${averageImportance.toStringAsFixed(2)})';
+        'userMsgs: $userMessages, responses: $systemResponses, '
+        'tools: $toolCalls, summaries: $summarySegments, '
+        'avgImportance: ${averageImportance.toStringAsFixed(2)})';
   }
 
   /// 转换为JSON

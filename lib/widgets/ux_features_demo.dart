@@ -60,9 +60,12 @@ class _UXFeaturesDemoState extends State<UXFeaturesDemo> {
             Text('版本: ${status['version']}'),
             Text('初始化状态: ${status['isInitialized'] ? "已初始化" : "未初始化"}'),
             const SizedBox(height: 8),
-            Text('自适应UI: ${status['adaptiveUI']['isInitialized'] ? "运行中" : "未运行"}'),
-            Text('交互分析: ${status['interactionAnalyzer']['totalInteractions']} 个事件'),
-            Text('识别模式: ${status['interactionAnalyzer']['identifiedPatterns']} 种'),
+            Text(
+                '自适应UI: ${status['adaptiveUI']['isInitialized'] ? "运行中" : "未运行"}'),
+            Text(
+                '交互分析: ${status['interactionAnalyzer']['totalInteractions']} 个事件'),
+            Text(
+                '识别模式: ${status['interactionAnalyzer']['identifiedPatterns']} 种'),
           ],
         ),
       ),
@@ -188,7 +191,8 @@ class _UXFeaturesDemoState extends State<UXFeaturesDemo> {
 
   /// 显示自适应UI推荐
   void _showAdaptiveUIRecommendations() {
-    final recommendations = UXServiceIntegration.uiManager.getRecommendedComponents();
+    final recommendations =
+        UXServiceIntegration.uiManager.getRecommendedComponents();
 
     showDialog(
       context: context,
@@ -198,14 +202,16 @@ class _UXFeaturesDemoState extends State<UXFeaturesDemo> {
             ? const Text('暂无推荐，继续使用应用后将获得个性化建议。')
             : Column(
                 mainAxisSize: MainAxisSize.min,
-                children: recommendations.map((rec) => ListTile(
-                  leading: Icon(
-                    _getPriorityIcon(rec.priority),
-                    color: _getPriorityColor(rec.priority),
-                  ),
-                  title: Text(rec.componentId),
-                  subtitle: Text(rec.reason),
-                )).toList(),
+                children: recommendations
+                    .map((rec) => ListTile(
+                          leading: Icon(
+                            _getPriorityIcon(rec.priority),
+                            color: _getPriorityColor(rec.priority),
+                          ),
+                          title: Text(rec.componentId),
+                          subtitle: Text(rec.reason),
+                        ))
+                    .toList(),
               ),
         actions: [
           TextButton(
@@ -254,7 +260,8 @@ class _UXFeaturesDemoState extends State<UXFeaturesDemo> {
               title: const Text('自动优化'),
               subtitle: const Text('进入心流时自动调整环境'),
               trailing: Switch(
-                value: UXServiceIntegration.immersiveMode.environment.autoOptimize,
+                value:
+                    UXServiceIntegration.immersiveMode.environment.autoOptimize,
                 onChanged: (value) {
                   final env = UXServiceIntegration.immersiveMode.environment;
                   UXServiceIntegration.immersiveMode.updateEnvironment(
@@ -285,8 +292,10 @@ class _UXFeaturesDemoState extends State<UXFeaturesDemo> {
 
   /// 显示使用洞察
   void _showUsageInsights() {
-    final insights = UXServiceIntegration.interactionAnalyzer.getUsageInsights();
-    final suggestions = UXServiceIntegration.interactionAnalyzer.getOptimizationSuggestions();
+    final insights =
+        UXServiceIntegration.interactionAnalyzer.getUsageInsights();
+    final suggestions =
+        UXServiceIntegration.interactionAnalyzer.getOptimizationSuggestions();
 
     showDialog(
       context: context,
@@ -303,10 +312,10 @@ class _UXFeaturesDemoState extends State<UXFeaturesDemo> {
                 const Text('暂无足够数据生成洞察')
               else
                 ...insights.map((insight) => ListTile(
-                  leading: Icon(_getInsightIcon(insight.type)),
-                  title: Text(insight.title),
-                  subtitle: Text(insight.description),
-                )),
+                      leading: Icon(_getInsightIcon(insight.type)),
+                      title: Text(insight.title),
+                      subtitle: Text(insight.description),
+                    )),
               const Divider(),
               const Text('优化建议', style: TextStyle(fontWeight: FontWeight.bold)),
               const SizedBox(height: 8),
@@ -314,17 +323,18 @@ class _UXFeaturesDemoState extends State<UXFeaturesDemo> {
                 const Text('暂无优化建议')
               else
                 ...suggestions.take(5).map((suggestion) => ListTile(
-                  leading: Icon(_getSuggestionIcon(suggestion.category)),
-                  title: Text(suggestion.title),
-                  subtitle: Text(suggestion.description),
-                  trailing: Text(
-                    '${(suggestion.estimatedImpact * 100).toStringAsFixed(0)}%',
-                    style: TextStyle(
-                      color: _getSuggestionPriorityColor(suggestion.priority),
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                )),
+                      leading: Icon(_getSuggestionIcon(suggestion.category)),
+                      title: Text(suggestion.title),
+                      subtitle: Text(suggestion.description),
+                      trailing: Text(
+                        '${(suggestion.estimatedImpact * 100).toStringAsFixed(0)}%',
+                        style: TextStyle(
+                          color:
+                              _getSuggestionPriorityColor(suggestion.priority),
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    )),
             ],
           ),
         ),

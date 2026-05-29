@@ -15,7 +15,8 @@ class MainNavigationContainer extends StatefulWidget {
   const MainNavigationContainer({super.key});
 
   @override
-  State<MainNavigationContainer> createState() => _MainNavigationContainerState();
+  State<MainNavigationContainer> createState() =>
+      _MainNavigationContainerState();
 }
 
 class _MainNavigationContainerState extends State<MainNavigationContainer>

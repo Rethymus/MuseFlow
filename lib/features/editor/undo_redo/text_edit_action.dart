@@ -70,7 +70,8 @@ class TextInsertAction extends TextEditAction {
   String get actionType => 'insert';
 
   @override
-  String get description => '插入: "${insertedText.length > 20 ? insertedText.substring(0, 20) + '...' : insertedText}"';
+  String get description =>
+      '插入: "${insertedText.length > 20 ? insertedText.substring(0, 20) + '...' : insertedText}"';
 
   @override
   void execute() {
@@ -126,7 +127,8 @@ class TextDeleteAction extends TextEditAction {
   String get actionType => 'delete';
 
   @override
-  String get description => '删除: "${deletedText.length > 20 ? deletedText.substring(0, 20) + '...' : deletedText}"';
+  String get description =>
+      '删除: "${deletedText.length > 20 ? deletedText.substring(0, 20) + '...' : deletedText}"';
 
   @override
   void execute() {
@@ -163,8 +165,10 @@ class TextReplaceAction extends TextEditAction {
 
   @override
   String get description {
-    final oldPreview = oldText.length > 20 ? oldText.substring(0, 20) + '...' : oldText;
-    final newPreview = newText.length > 20 ? newText.substring(0, 20) + '...' : newText;
+    final oldPreview =
+        oldText.length > 20 ? oldText.substring(0, 20) + '...' : oldText;
+    final newPreview =
+        newText.length > 20 ? newText.substring(0, 20) + '...' : newText;
     return '替换: "$oldPreview" -> "$newPreview"';
   }
 

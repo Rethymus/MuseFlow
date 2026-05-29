@@ -80,7 +80,8 @@ class PerformanceValidator {
     await _generateValidationReport(results);
 
     Logger.debug('性能验证测试完成，共执行 ${results.length} 个测试');
-    Logger.debug('通过: ${results.where((r) => r.passed).length} / ${results.length}');
+    Logger.debug(
+        '通过: ${results.where((r) => r.passed).length} / ${results.length}');
 
     return results;
   }
@@ -107,9 +108,7 @@ class PerformanceValidator {
 
     // 检查是否达到优化目标
     final passed = totalTime <= optimizedThreshold;
-    final description = passed
-        ? '达到优化目标，启动时间减少50%'
-        : '未达到优化目标，但仍可接受';
+    final description = passed ? '达到优化目标，启动时间减少50%' : '未达到优化目标，但仍可接受';
 
     Logger.debug('启动时间测试: ${totalTime.toInt()}ms');
 
@@ -138,9 +137,7 @@ class PerformanceValidator {
 
     // 检查是否达到优化目标
     final passed = memoryUsage <= optimizedThreshold;
-    final description = passed
-        ? '达到优化目标，内存使用减少30%'
-        : '内存使用在可接受范围内';
+    final description = passed ? '达到优化目标，内存使用减少30%' : '内存使用在可接受范围内';
 
     Logger.debug('内存使用测试: ${memoryUsage.toInt()}MB');
 
@@ -190,15 +187,15 @@ class PerformanceValidator {
     await Future.delayed(const Duration(seconds: 1));
 
     final stats = preloadManager.getPerformanceStats();
-    final successRate = stats['successfulPreloads'] != null && stats['totalPreloadAttempts'] != null
-        ? (stats['successfulPreloads'] as int) / (stats['totalPreloadAttempts'] as int)
+    final successRate = stats['successfulPreloads'] != null &&
+            stats['totalPreloadAttempts'] != null
+        ? (stats['successfulPreloads'] as int) /
+            (stats['totalPreloadAttempts'] as int)
         : 0.0;
 
     // 检查是否达到优化目标
     final passed = successRate >= optimizedThreshold;
-    final description = passed
-        ? '预加载效率优秀'
-        : '预加载效率有待提升';
+    final description = passed ? '预加载效率优秀' : '预加载效率有待提升';
 
     Logger.debug('预加载效率测试: ${(successRate * 100).toStringAsFixed(1)}%');
 
@@ -227,9 +224,7 @@ class PerformanceValidator {
 
     // 检查是否达到优化目标
     final passed = leakCount <= optimizedThreshold;
-    final description = passed
-        ? '内存管理良好，无明显泄漏'
-        : '检测到可能的内存泄漏，需要关注';
+    final description = passed ? '内存管理良好，无明显泄漏' : '检测到可能的内存泄漏，需要关注';
 
     Logger.debug('内存泄漏测试: $leakCount 个潜在泄漏');
 
@@ -265,9 +260,7 @@ class PerformanceValidator {
 
     // 检查是否达到优化目标
     final passed = recoveredMemory >= optimizedThreshold;
-    final description = passed
-        ? '资源清理效率优秀'
-        : '资源清理效率有待提升';
+    final description = passed ? '资源清理效率优秀' : '资源清理效率有待提升';
 
     Logger.debug('资源清理效率测试: 恢复 ${recoveredMemory.toInt()}MB');
 
@@ -305,17 +298,20 @@ class PerformanceValidator {
 
     // 计算平均值和标准差
     final average = measurements.reduce((a, b) => a + b) / measurements.length;
-    final variance = measurements.map((x) => (x - average) * (x - average)).reduce((a, b) => a + b) / measurements.length;
+    final variance = measurements
+            .map((x) => (x - average) * (x - average))
+            .reduce((a, b) => a + b) /
+        measurements.length;
     final standardDeviation = variance > 0 ? variance : 0.0;
-    final coefficientOfVariation = average > 0 ? (standardDeviation / average) : 0.0;
+    final coefficientOfVariation =
+        average > 0 ? (standardDeviation / average) : 0.0;
 
     // 检查是否达到优化目标
     final passed = coefficientOfVariation <= optimizedThreshold;
-    final description = passed
-        ? '性能稳定性优秀'
-        : '性能波动较大，需要优化';
+    final description = passed ? '性能稳定性优秀' : '性能波动较大，需要优化';
 
-    Logger.debug('性能稳定性测试: 变异系数 ${(coefficientOfVariation * 100).toStringAsFixed(2)}%');
+    Logger.debug(
+        '性能稳定性测试: 变异系数 ${(coefficientOfVariation * 100).toStringAsFixed(2)}%');
 
     return PerformanceTestResult(
       testName: 'performance_stability',
@@ -328,7 +324,8 @@ class PerformanceValidator {
   }
 
   /// 生成验证报告
-  static Future<void> _generateValidationReport(List<PerformanceTestResult> results) async {
+  static Future<void> _generateValidationReport(
+      List<PerformanceTestResult> results) async {
     try {
       final report = {
         'timestamp': DateTime.now().toIso8601String(),
@@ -336,7 +333,8 @@ class PerformanceValidator {
           'totalTests': results.length,
           'passedTests': results.where((r) => r.passed).length,
           'failedTests': results.where((r) => !r.passed).length,
-          'overallStatus': results.every((r) => r.passed) ? 'EXCELLENT' : 'ACCEPTABLE',
+          'overallStatus':
+              results.every((r) => r.passed) ? 'EXCELLENT' : 'ACCEPTABLE',
         },
         'results': results.map((r) => r.toJson()).toList(),
         'recommendations': _generateRecommendations(results),
@@ -347,14 +345,14 @@ class PerformanceValidator {
       Logger.debug('总测试数: ${results.length}');
       Logger.debug('通过: ${results.where((r) => r.passed).length}');
       Logger.debug('失败: ${results.where((r) => !r.passed).length}');
-
     } catch (e) {
       Logger.debug('生成验证报告失败: $e');
     }
   }
 
   /// 生成优化建议
-  static List<String> _generateRecommendations(List<PerformanceTestResult> results) {
+  static List<String> _generateRecommendations(
+      List<PerformanceTestResult> results) {
     final recommendations = <String>[];
 
     for (final result in results) {
@@ -423,7 +421,8 @@ class PerformanceValidator {
     final results = {
       'timestamp': DateTime.now().toIso8601String(),
       'checks': {
-        'memoryHealth': memoryOptimizer.currentStats.state.toString().split('.').last,
+        'memoryHealth':
+            memoryOptimizer.currentStats.state.toString().split('.').last,
         'preloadActive': preloadManager.isEnabled,
         'metricsRecording': performanceMetrics.getTotalDataPointCount() > 0,
         'startupOptimized': ProgressiveInitializer.instance.isInitialized,
@@ -431,7 +430,8 @@ class PerformanceValidator {
       'quickMetrics': {
         'memoryUsageMB': memoryOptimizer.currentStats.usedMemoryMB,
         'memoryUsagePercentage': memoryOptimizer.currentStats.usagePercentage,
-        'preloadAttempts': preloadManager.getPerformanceStats()['totalPreloadAttempts'],
+        'preloadAttempts':
+            preloadManager.getPerformanceStats()['totalPreloadAttempts'],
         'metricsDataPoints': performanceMetrics.getTotalDataPointCount(),
       },
       'duration': DateTime.now().difference(startTime).inMilliseconds,

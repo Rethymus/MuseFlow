@@ -44,7 +44,8 @@ void main() {
         final retrievedNote = retrievedNotes.firstWhere((n) => n.id == noteId);
 
         expect(retrievedNote.title, equals('Encrypted Test Note'));
-        expect(retrievedNote.content, equals('This content should be encrypted'));
+        expect(
+            retrievedNote.content, equals('This content should be encrypted'));
         expect(retrievedNote.tags, contains('test'));
       });
 
@@ -107,14 +108,16 @@ void main() {
       test('should save multiple notes efficiently', () async {
         await storageService.clearAllData();
 
-        final notes = List.generate(50, (i) => Note(
-          id: 'batch-note-$i',
-          title: 'Batch Note $i',
-          content: 'Content for batch note $i',
-          createdAt: DateTime.now(),
-          updatedAt: DateTime.now(),
-          tags: ['batch', 'test'],
-        ));
+        final notes = List.generate(
+            50,
+            (i) => Note(
+                  id: 'batch-note-$i',
+                  title: 'Batch Note $i',
+                  content: 'Content for batch note $i',
+                  createdAt: DateTime.now(),
+                  updatedAt: DateTime.now(),
+                  tags: ['batch', 'test'],
+                ));
 
         final stopwatch = Stopwatch()..start();
         await storageService.bulkSaveNotes(notes);
@@ -130,13 +133,15 @@ void main() {
       test('should handle large batch operations', () async {
         await storageService.clearAllData();
 
-        final notes = List.generate(200, (i) => Note(
-          id: 'large-batch-$i',
-          title: 'Large Batch Note $i',
-          content: 'A' * 1000, // 1KB per note
-          createdAt: DateTime.now(),
-          updatedAt: DateTime.now(),
-        ));
+        final notes = List.generate(
+            200,
+            (i) => Note(
+                  id: 'large-batch-$i',
+                  title: 'Large Batch Note $i',
+                  content: 'A' * 1000, // 1KB per note
+                  createdAt: DateTime.now(),
+                  updatedAt: DateTime.now(),
+                ));
 
         await storageService.bulkSaveNotes(notes);
 
@@ -200,7 +205,8 @@ void main() {
       });
 
       test('should return empty for non-existent terms', () async {
-        final results = await storageService.searchNotes('nonexistentterm12345');
+        final results =
+            await storageService.searchNotes('nonexistentterm12345');
 
         expect(results, isEmpty);
       });
@@ -306,14 +312,16 @@ void main() {
       test('should handle batch import', () async {
         await storageService.clearAllData();
 
-        final importData = List.generate(20, (i) => {
-          'id': 'import-batch-$i',
-          'title': 'Batch Import $i',
-          'content': 'Content $i',
-          'created_at': DateTime.now().toIso8601String(),
-          'updated_at': DateTime.now().toIso8601String(),
-          'tags': ['batch-import'],
-        });
+        final importData = List.generate(
+            20,
+            (i) => {
+                  'id': 'import-batch-$i',
+                  'title': 'Batch Import $i',
+                  'content': 'Content $i',
+                  'created_at': DateTime.now().toIso8601String(),
+                  'updated_at': DateTime.now().toIso8601String(),
+                  'tags': ['batch-import'],
+                });
 
         await storageService.importNotes(importData);
 
@@ -333,7 +341,8 @@ void main() {
       });
 
       test('should return default value for non-existent settings', () async {
-        final value = await storageService.getSetting('nonexistent', defaultValue: 'default');
+        final value = await storageService.getSetting('nonexistent',
+            defaultValue: 'default');
 
         expect(value, equals('default'));
       });
@@ -352,13 +361,15 @@ void main() {
       test('should provide accurate statistics', () async {
         await storageService.clearAllData();
 
-        final notes = List.generate(10, (i) => Note(
-          id: 'stats-$i',
-          title: 'Stats Note $i',
-          content: 'Content $i',
-          createdAt: DateTime.now(),
-          updatedAt: DateTime.now(),
-        ));
+        final notes = List.generate(
+            10,
+            (i) => Note(
+                  id: 'stats-$i',
+                  title: 'Stats Note $i',
+                  content: 'Content $i',
+                  createdAt: DateTime.now(),
+                  updatedAt: DateTime.now(),
+                ));
 
         await storageService.bulkSaveNotes(notes);
         await storageService.setSetting('test', 'value');
@@ -461,13 +472,15 @@ void main() {
         await storageService.clearAllData();
 
         // Create 1000 notes
-        final notes = List.generate(1000, (i) => Note(
-          id: 'perf-$i',
-          title: 'Performance Note $i',
-          content: 'A' * 500, // 500 bytes per note
-          createdAt: DateTime.now(),
-          updatedAt: DateTime.now(),
-        ));
+        final notes = List.generate(
+            1000,
+            (i) => Note(
+                  id: 'perf-$i',
+                  title: 'Performance Note $i',
+                  content: 'A' * 500, // 500 bytes per note
+                  createdAt: DateTime.now(),
+                  updatedAt: DateTime.now(),
+                ));
 
         final saveStopwatch = Stopwatch()..start();
         await storageService.bulkSaveNotes(notes);
@@ -478,8 +491,10 @@ void main() {
         loadStopwatch.stop();
 
         expect(loadedNotes.length, equals(1000));
-        expect(saveStopwatch.elapsedMilliseconds, lessThan(10000)); // < 10s for 1000 notes
-        expect(loadStopwatch.elapsedMilliseconds, lessThan(5000)); // < 5s to load
+        expect(saveStopwatch.elapsedMilliseconds,
+            lessThan(10000)); // < 10s for 1000 notes
+        expect(
+            loadStopwatch.elapsedMilliseconds, lessThan(5000)); // < 5s to load
       });
 
       test('should maintain performance with encryption overhead', () async {

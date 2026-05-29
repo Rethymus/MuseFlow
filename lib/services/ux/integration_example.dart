@@ -171,16 +171,17 @@ class _IntegrationGuidePageState extends State<IntegrationGuidePage> {
             ),
             const SizedBox(height: 12),
             ...instructions.map((instruction) => Padding(
-              padding: const EdgeInsets.only(left: 8, bottom: 4),
-              child: Text(instruction, style: const TextStyle(fontSize: 14)),
-            )),
+                  padding: const EdgeInsets.only(left: 8, bottom: 4),
+                  child:
+                      Text(instruction, style: const TextStyle(fontSize: 14)),
+                )),
             const SizedBox(height: 16),
             const Text('功能支持：', style: TextStyle(fontWeight: FontWeight.bold)),
             const SizedBox(height: 8),
             ...features.map((feature) => Padding(
-              padding: const EdgeInsets.only(left: 8, bottom: 4),
-              child: Text(feature, style: const TextStyle(fontSize: 14)),
-            )),
+                  padding: const EdgeInsets.only(left: 8, bottom: 4),
+                  child: Text(feature, style: const TextStyle(fontSize: 14)),
+                )),
           ],
         ),
       ),

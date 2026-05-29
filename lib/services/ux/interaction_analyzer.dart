@@ -39,7 +39,8 @@ class InteractionAnalyzer {
       try {
         final List<dynamic> decoded = json.decode(historyJson) as List<dynamic>;
         _interactionHistory.addAll(
-          decoded.map((e) => InteractionEvent.fromJson(e as Map<String, dynamic>)),
+          decoded
+              .map((e) => InteractionEvent.fromJson(e as Map<String, dynamic>)),
         );
       } catch (e) {
         debugPrint('Failed to load interaction history: $e');
@@ -52,9 +53,11 @@ class InteractionAnalyzer {
     final patternsJson = _prefs?.getString(_patternsKey);
     if (patternsJson != null) {
       try {
-        final Map<String, dynamic> decoded = json.decode(patternsJson) as Map<String, dynamic>;
+        final Map<String, dynamic> decoded =
+            json.decode(patternsJson) as Map<String, dynamic>;
         decoded.forEach((key, value) {
-          _patterns[key] = InteractionPattern.fromJson(value as Map<String, dynamic>);
+          _patterns[key] =
+              InteractionPattern.fromJson(value as Map<String, dynamic>);
         });
       } catch (e) {
         debugPrint('Failed to load patterns: $e');
@@ -92,9 +95,8 @@ class InteractionAnalyzer {
   /// 分析新模式
   Future<void> _analyzeNewPattern(InteractionEvent event) async {
     // 按事件类型分组
-    final typeEvents = _interactionHistory
-        .where((e) => e.type == event.type)
-        .toList();
+    final typeEvents =
+        _interactionHistory.where((e) => e.type == event.type).toList();
 
     if (typeEvents.length < 3) return; // 需要足够的数据点
 
@@ -147,9 +149,8 @@ class InteractionAnalyzer {
     };
 
     for (var i = 0; i < events.length - 1; i++) {
-      final duration = events[i + 1].timestamp
-          .difference(events[i].timestamp)
-          .inMinutes;
+      final duration =
+          events[i + 1].timestamp.difference(events[i].timestamp).inMinutes;
 
       if (duration < 5) {
         durations['short']!.add(duration.toDouble());
@@ -176,9 +177,8 @@ class InteractionAnalyzer {
 
     double totalInterval = 0;
     for (var i = 0; i < events.length - 1; i++) {
-      totalInterval += events[i + 1].timestamp
-          .difference(events[i].timestamp)
-          .inSeconds;
+      totalInterval +=
+          events[i + 1].timestamp.difference(events[i].timestamp).inSeconds;
     }
 
     return totalInterval / (events.length - 1);
@@ -189,14 +189,13 @@ class InteractionAnalyzer {
     final insights = <UsageInsight>[];
 
     // 分析写作时间偏好
-    final writingEvents = _interactionHistory
-        .where((e) => e.type == 'writing_session')
-        .toList();
+    final writingEvents =
+        _interactionHistory.where((e) => e.type == 'writing_session').toList();
 
     if (writingEvents.isNotEmpty) {
       final hourStats = _analyzeHourlyPatterns(writingEvents);
-      final peakHour = hourStats.entries
-          .reduce((a, b) => a.value > b.value ? a : b);
+      final peakHour =
+          hourStats.entries.reduce((a, b) => a.value > b.value ? a : b);
 
       insights.add(UsageInsight(
         type: InsightType.writingHabit,
@@ -220,8 +219,8 @@ class InteractionAnalyzer {
 
     // 分析功能使用
     final featureUsage = _analyzeFeatureUsage();
-    final mostUsed = featureUsage.entries
-        .reduce((a, b) => a.value > b.value ? a : b);
+    final mostUsed =
+        featureUsage.entries.reduce((a, b) => a.value > b.value ? a : b);
 
     insights.add(UsageInsight(
       type: InsightType.featurePreference,
@@ -311,7 +310,9 @@ class InteractionAnalyzer {
         category: SuggestionCategory.personalization,
         title: '当前时间建议',
         description: '基于您的历史使用，现在可能适合使用 $bestFeature',
-        priority: maxRelevance > 0.6 ? SuggestionPriority.high : SuggestionPriority.medium,
+        priority: maxRelevance > 0.6
+            ? SuggestionPriority.high
+            : SuggestionPriority.medium,
         estimatedImpact: maxRelevance,
       );
     }
@@ -329,7 +330,8 @@ class InteractionAnalyzer {
     for (var i = 0; i < _interactionHistory.length - 1; i++) {
       if (_interactionHistory[i].type == currentAction) {
         final nextAction = _interactionHistory[i + 1].type;
-        subsequentActions[nextAction] = (subsequentActions[nextAction] ?? 0) + 1;
+        subsequentActions[nextAction] =
+            (subsequentActions[nextAction] ?? 0) + 1;
       }
     }
 
@@ -347,7 +349,8 @@ class InteractionAnalyzer {
   /// 保存交互历史
   Future<void> _saveInteractionHistory() async {
     if (_interactionHistory.length > 100) {
-      final toSave = _interactionHistory.skip(_interactionHistory.length - 100).toList();
+      final toSave =
+          _interactionHistory.skip(_interactionHistory.length - 100).toList();
       await _prefs?.setString(
         _interactionsKey,
         json.encode(toSave.map((e) => e.toJson()).toList()),
@@ -383,10 +386,7 @@ class InteractionAnalyzer {
       'totalInteractions': _interactionHistory.length,
       'identifiedPatterns': _patterns.length,
       'isRecording': _isRecording,
-      'eventTypes': _interactionHistory
-          .map((e) => e.type)
-          .toSet()
-          .toList(),
+      'eventTypes': _interactionHistory.map((e) => e.type).toSet().toList(),
     };
   }
 }
@@ -510,11 +510,17 @@ class OptimizationSuggestion {
   });
 
   @override
-  String toString() => '[$priority] $title: $description (影响: ${(estimatedImpact * 100).toStringAsFixed(0)}%)';
+  String toString() =>
+      '[$priority] $title: $description (影响: ${(estimatedImpact * 100).toStringAsFixed(0)}%)';
 }
 
 /// 建议分类枚举
-enum SuggestionCategory { efficiency, personalization, performance, accessibility }
+enum SuggestionCategory {
+  efficiency,
+  personalization,
+  performance,
+  accessibility
+}
 
 /// 建议优先级枚举
 enum SuggestionPriority { high, medium, low }

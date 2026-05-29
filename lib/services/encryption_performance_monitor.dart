@@ -7,13 +7,15 @@ import 'secure_data_service.dart';
 /// Tracks encryption/decryption performance metrics and provides
 /// analytics for optimization and security monitoring.
 class EncryptionPerformanceMonitor {
-  static final EncryptionPerformanceMonitor instance = EncryptionPerformanceMonitor._internal();
+  static final EncryptionPerformanceMonitor instance =
+      EncryptionPerformanceMonitor._internal();
   factory EncryptionPerformanceMonitor() => instance;
   EncryptionPerformanceMonitor._internal();
 
   // Performance metrics
   final List<OperationMetric> _metrics = [];
-  final StreamController<OperationMetric> _metricsController = StreamController<OperationMetric>.broadcast();
+  final StreamController<OperationMetric> _metricsController =
+      StreamController<OperationMetric>.broadcast();
 
   // Statistics
   int _totalOperations = 0;
@@ -99,8 +101,10 @@ class EncryptionPerformanceMonitor {
       return PerformanceStats.empty();
     }
 
-    final encryptMetrics = _metrics.where((m) => m.operation == 'encrypt').toList();
-    final decryptMetrics = _metrics.where((m) => m.operation == 'decrypt').toList();
+    final encryptMetrics =
+        _metrics.where((m) => m.operation == 'encrypt').toList();
+    final decryptMetrics =
+        _metrics.where((m) => m.operation == 'decrypt').toList();
 
     final encryptStats = _calculateOperationStats('encrypt', encryptMetrics);
     final decryptStats = _calculateOperationStats('decrypt', decryptMetrics);
@@ -119,7 +123,8 @@ class EncryptionPerformanceMonitor {
   }
 
   /// Calculate statistics for specific operation type
-  OperationStats _calculateOperationStats(String operation, List<OperationMetric> metrics) {
+  OperationStats _calculateOperationStats(
+      String operation, List<OperationMetric> metrics) {
     if (metrics.isEmpty) {
       return OperationStats(operation: operation);
     }
@@ -135,7 +140,8 @@ class EncryptionPerformanceMonitor {
     final max = durations.last;
 
     final totalBytes = metrics.fold<int>(0, (sum, m) => sum + m.dataSize);
-    final avgThroughput = totalBytes / durations.reduce((a, b) => a + b) * 1000; // bytes/second
+    final avgThroughput =
+        totalBytes / durations.reduce((a, b) => a + b) * 1000; // bytes/second
 
     return OperationStats(
       operation: operation,
@@ -350,7 +356,8 @@ class PerformanceTimer {
   }
 
   /// Stop the timer and record the metric
-  void stop({required int dataSize, bool success = true, String? errorMessage}) {
+  void stop(
+      {required int dataSize, bool success = true, String? errorMessage}) {
     _stopwatch.stop();
     _monitor.recordOperation(
       operation: _operation,

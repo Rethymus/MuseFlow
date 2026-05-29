@@ -1,5 +1,6 @@
 import '../../config/app_constants.dart';
 import '../../utils/logger.dart';
+
 /// MuseFlow上下文管理系统使用示例
 ///
 /// 演示如何使用上下文管理器的各种功能
@@ -62,9 +63,8 @@ void conversationManagementExample() {
   ];
 
   for (final (role, content) in conversation) {
-    final type = role == 'user'
-        ? SegmentType.userMessage
-        : SegmentType.systemResponse;
+    final type =
+        role == 'user' ? SegmentType.userMessage : SegmentType.systemResponse;
 
     manager.addSegment(
       type: type,

@@ -53,8 +53,10 @@ class SecurityReporter {
     final buffer = StringBuffer();
     buffer.writeln('🔒 MuseFlow 安全摘要');
     buffer.writeln(separator);
-    buffer.writeln('当前会话大小: ${securityStatus['current_session_size_formatted']}');
-    buffer.writeln('最大单文件大小: ${_formatBytes(securityStatus['max_single_file_size'])}');
+    buffer
+        .writeln('当前会话大小: ${securityStatus['current_session_size_formatted']}');
+    buffer.writeln(
+        '最大单文件大小: ${_formatBytes(securityStatus['max_single_file_size'])}');
     buffer.writeln('最大总大小: ${_formatBytes(securityStatus['max_total_size'])}');
     buffer.writeln(separator);
     buffer.writeln('最近24小时操作: ${auditStats['last_24_hours']}');
@@ -158,11 +160,15 @@ class SecurityReporter {
   static String _formatSecurityConfig() {
     final buffer = StringBuffer();
 
-    buffer.writeln('最大单文件大小: ${_formatBytes(FileSecurityValidator.maxSingleFileSize)}');
-    buffer.writeln('最大总大小: ${_formatBytes(FileSecurityValidator.maxTotalSize)}');
+    buffer.writeln(
+        '最大单文件大小: ${_formatBytes(FileSecurityValidator.maxSingleFileSize)}');
+    buffer
+        .writeln('最大总大小: ${_formatBytes(FileSecurityValidator.maxTotalSize)}');
     buffer.writeln('最大文件名长度: ${FileSecurityValidator.maxFileNameLength}字符');
-    buffer.writeln('允许的文件扩展名: ${FileSecurityValidator.allowedExtensions.length}种');
-    buffer.writeln('禁止的文件扩展名: ${FileSecurityValidator.dangerousExtensions.length}种');
+    buffer.writeln(
+        '允许的文件扩展名: ${FileSecurityValidator.allowedExtensions.length}种');
+    buffer.writeln(
+        '禁止的文件扩展名: ${FileSecurityValidator.dangerousExtensions.length}种');
 
     return buffer.toString();
   }
@@ -272,7 +278,8 @@ class SecurityReporter {
         if (!result.isValid) dangerousBlocked++;
       }
 
-      if (safeAllowed == safeFiles.length && dangerousBlocked == dangerousFiles.length) {
+      if (safeAllowed == safeFiles.length &&
+          dangerousBlocked == dangerousFiles.length) {
         return {
           'name': '文件类型验证',
           'status': 'PASS',
@@ -304,7 +311,8 @@ class SecurityReporter {
         return {
           'name': '文件大小限制',
           'status': 'PASS',
-          'details': '单文件限制: ${_formatBytes(maxSize)}, 总大小限制: ${_formatBytes(totalSize)}',
+          'details':
+              '单文件限制: ${_formatBytes(maxSize)}, 总大小限制: ${_formatBytes(totalSize)}',
         };
       } else {
         return {
@@ -406,7 +414,8 @@ class SecurityReporter {
   static String _formatBytes(int bytes) {
     if (bytes < 1024) return '$bytes B';
     if (bytes < 1024 * 1024) return '${(bytes / 1024).toStringAsFixed(1)} KB';
-    if (bytes < 1024 * 1024 * 1024) return '${(bytes / (1024 * 1024)).toStringAsFixed(1)} MB';
+    if (bytes < 1024 * 1024 * 1024)
+      return '${(bytes / (1024 * 1024)).toStringAsFixed(1)} MB';
     return '${(bytes / (1024 * 1024 * 1024)).toStringAsFixed(1)} GB';
   }
 

@@ -117,7 +117,7 @@ class GlobalSearchService extends ChangeNotifier {
   // 搜索缓存
   final Map<String, List<GlobalSearchResult>> _searchCache = {};
   static const int _maxCacheSize = 50;
-  static const Duration _cacheExpiration = Duration(minutes:5);
+  static const Duration _cacheExpiration = Duration(minutes: 5);
 
   String get query => _query;
   List<GlobalSearchResult> get results => _results;
@@ -129,7 +129,8 @@ class GlobalSearchService extends ChangeNotifier {
   int get lastSearchDuration => _lastSearchDuration;
   int get totalSearches => _totalSearches;
   int get totalResults => _totalResults;
-  Map<GlobalSearchResultType, int> get lastSearchCounts => Map.unmodifiable(_lastSearchCounts);
+  Map<GlobalSearchResultType, int> get lastSearchCounts =>
+      Map.unmodifiable(_lastSearchCounts);
 
   // 按类型分组的结果
   Map<GlobalSearchResultType, List<GlobalSearchResult>> get groupedResults {
@@ -149,9 +150,9 @@ class GlobalSearchService extends ChangeNotifier {
     required SecureStorageService storageService,
     required CharacterService characterService,
     required WorldService worldService,
-  }) : _storageService = storageService,
-       _characterService = characterService,
-       _worldService = worldService;
+  })  : _storageService = storageService,
+        _characterService = characterService,
+        _worldService = worldService;
 
   /// 初始化服务
   Future<void> initialize() async {
@@ -200,7 +201,8 @@ class GlobalSearchService extends ChangeNotifier {
         _searchNotes(query),
         _searchCharacters(query),
         _searchWorlds(query),
-      ], eagerError: false).timeout(
+      ], eagerError: false)
+          .timeout(
         const Duration(seconds: 5),
         onTimeout: () => [],
       );
@@ -219,7 +221,6 @@ class GlobalSearchService extends ChangeNotifier {
 
       // 添加到搜索历史
       await _addToSearchHistory(query, results.length);
-
     } catch (e) {
       Logger.debug('搜索过程中发生错误: $e');
       _results.clear();
@@ -237,17 +238,19 @@ class GlobalSearchService extends ChangeNotifier {
   Future<List<GlobalSearchResult>> _searchNotes(String query) async {
     try {
       final notes = await _storageService.searchNotes(query);
-      return notes.map((note) => GlobalSearchResult(
-        id: note.id,
-        title: note.title,
-        content: note.content,
-        subtitle: _getNoteSubtitle(note),
-        type: GlobalSearchResultType.note,
-        data: note,
-        createdAt: note.createdAt,
-        updatedAt: note.updatedAt,
-        tags: note.tags,
-      )).toList();
+      return notes
+          .map((note) => GlobalSearchResult(
+                id: note.id,
+                title: note.title,
+                content: note.content,
+                subtitle: _getNoteSubtitle(note),
+                type: GlobalSearchResultType.note,
+                data: note,
+                createdAt: note.createdAt,
+                updatedAt: note.updatedAt,
+                tags: note.tags,
+              ))
+          .toList();
     } catch (e) {
       Logger.debug('笔记搜索失败: $e');
       return [];
@@ -258,17 +261,19 @@ class GlobalSearchService extends ChangeNotifier {
   Future<List<GlobalSearchResult>> _searchCharacters(String query) async {
     try {
       final characters = _characterService.searchCharacters(query);
-      return characters.map((character) => GlobalSearchResult(
-        id: character.id,
-        title: character.name,
-        content: _getCharacterContent(character),
-        subtitle: _getCharacterSubtitle(character),
-        type: GlobalSearchResultType.character,
-        data: character,
-        createdAt: character.createdAt,
-        updatedAt: character.updatedAt,
-        tags: character.tags,
-      )).toList();
+      return characters
+          .map((character) => GlobalSearchResult(
+                id: character.id,
+                title: character.name,
+                content: _getCharacterContent(character),
+                subtitle: _getCharacterSubtitle(character),
+                type: GlobalSearchResultType.character,
+                data: character,
+                createdAt: character.createdAt,
+                updatedAt: character.updatedAt,
+                tags: character.tags,
+              ))
+          .toList();
     } catch (e) {
       Logger.debug('角色搜索失败: $e');
       return [];
@@ -287,7 +292,8 @@ class GlobalSearchService extends ChangeNotifier {
           id: world.id,
           title: world.name,
           content: _getWorldContent(world),
-          subtitle: '${world.worldType}${world.era != null ? ' · ${world.era}' : ''}',
+          subtitle:
+              '${world.worldType}${world.era != null ? ' · ${world.era}' : ''}',
           type: GlobalSearchResultType.world,
           data: world,
           createdAt: world.createdAt,
@@ -336,40 +342,43 @@ class GlobalSearchService extends ChangeNotifier {
   }
 
   /// 按相关性排序
-  List<GlobalSearchResult> _sortByRelevance(List<GlobalSearchResult> results, String query) {
+  List<GlobalSearchResult> _sortByRelevance(
+      List<GlobalSearchResult> results, String query) {
     final lowerQuery = query.toLowerCase();
 
-    return results..sort((a, b) {
-      // 优先匹配标题
-      final aTitleMatch = a.title.toLowerCase().contains(lowerQuery) ? 1 : 0;
-      final bTitleMatch = b.title.toLowerCase().contains(lowerQuery) ? 1 : 0;
+    return results
+      ..sort((a, b) {
+        // 优先匹配标题
+        final aTitleMatch = a.title.toLowerCase().contains(lowerQuery) ? 1 : 0;
+        final bTitleMatch = b.title.toLowerCase().contains(lowerQuery) ? 1 : 0;
 
-      if (aTitleMatch != bTitleMatch) {
-        return bTitleMatch - aTitleMatch;
-      }
+        if (aTitleMatch != bTitleMatch) {
+          return bTitleMatch - aTitleMatch;
+        }
 
-      // 其次匹配内容
-      final aContentIndex = a.content.toLowerCase().indexOf(lowerQuery);
-      final bContentIndex = b.content.toLowerCase().indexOf(lowerQuery);
+        // 其次匹配内容
+        final aContentIndex = a.content.toLowerCase().indexOf(lowerQuery);
+        final bContentIndex = b.content.toLowerCase().indexOf(lowerQuery);
 
-      if (aContentIndex != bContentIndex) {
-        if (aContentIndex == -1) return 1;
-        if (bContentIndex == -1) return -1;
-        return aContentIndex.compareTo(bContentIndex);
-      }
+        if (aContentIndex != bContentIndex) {
+          if (aContentIndex == -1) return 1;
+          if (bContentIndex == -1) return -1;
+          return aContentIndex.compareTo(bContentIndex);
+        }
 
-      // 最后按更新时间排序
-      final aTime = a.updatedAt ?? a.createdAt ?? DateTime(0);
-      final bTime = b.updatedAt ?? b.createdAt ?? DateTime(0);
-      return bTime.compareTo(aTime);
-    });
+        // 最后按更新时间排序
+        final aTime = a.updatedAt ?? a.createdAt ?? DateTime(0);
+        final bTime = b.updatedAt ?? b.createdAt ?? DateTime(0);
+        return bTime.compareTo(aTime);
+      });
   }
 
   /// 更新结果数量统计
   void _updateResultCounts() {
     _lastSearchCounts.clear();
     for (final result in _results) {
-      _lastSearchCounts[result.type] = (_lastSearchCounts[result.type] ?? 0) + 1;
+      _lastSearchCounts[result.type] =
+          (_lastSearchCounts[result.type] ?? 0) + 1;
     }
   }
 
@@ -405,10 +414,11 @@ class GlobalSearchService extends ChangeNotifier {
     final combinedQuery = '$_query $additionalQuery';
     final lowerAdditionalQuery = additionalQuery.toLowerCase();
 
-    final filteredResults = _results.where((result) =>
-      result.title.toLowerCase().contains(lowerAdditionalQuery) ||
-      result.content.toLowerCase().contains(lowerAdditionalQuery)
-    ).toList();
+    final filteredResults = _results
+        .where((result) =>
+            result.title.toLowerCase().contains(lowerAdditionalQuery) ||
+            result.content.toLowerCase().contains(lowerAdditionalQuery))
+        .toList();
 
     _query = combinedQuery;
     _results = filteredResults;
@@ -498,11 +508,13 @@ class GlobalSearchService extends ChangeNotifier {
     _searchHistory.removeWhere((item) => item.query == query);
 
     // 添加新项
-    _searchHistory.insert(0, SearchHistoryItem(
-      query: query,
-      timestamp: DateTime.now(),
-      resultCount: resultCount,
-    ));
+    _searchHistory.insert(
+        0,
+        SearchHistoryItem(
+          query: query,
+          timestamp: DateTime.now(),
+          resultCount: resultCount,
+        ));
 
     // 限制历史记录数量
     if (_searchHistory.length > 20) {
@@ -536,7 +548,8 @@ class GlobalSearchService extends ChangeNotifier {
       if (historyJson.isNotEmpty) {
         final List<dynamic> historyList = _decodeJson(historyJson);
         _searchHistory = historyList
-            .map((json) => SearchHistoryItem.fromJson(json as Map<String, dynamic>))
+            .map((json) =>
+                SearchHistoryItem.fromJson(json as Map<String, dynamic>))
             .toList();
       }
     } catch (e) {
@@ -548,7 +561,8 @@ class GlobalSearchService extends ChangeNotifier {
   /// 保存搜索历史
   Future<void> _saveSearchHistory() async {
     try {
-      final historyJson = _encodeJson(_searchHistory.map((item) => item.toJson()).toList());
+      final historyJson =
+          _encodeJson(_searchHistory.map((item) => item.toJson()).toList());
       await _storageService.setSetting('search_history', historyJson);
     } catch (e) {
       Logger.debug('保存搜索历史失败: $e');

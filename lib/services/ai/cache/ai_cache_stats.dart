@@ -179,10 +179,12 @@ class AICacheStats {
     buffer.writeln('Cache Hits: $cacheHits');
     buffer.writeln('Cache Misses: $cacheMisses');
     buffer.writeln('Hit Rate: ${hitRatePercentage.toStringAsFixed(2)}%');
-    buffer.writeln('Avg Response Time: ${avgResponseTime.toStringAsFixed(2)}ms');
+    buffer
+        .writeln('Avg Response Time: ${avgResponseTime.toStringAsFixed(2)}ms');
     buffer.writeln('Tokens Saved: $tokensSaved');
     buffer.writeln('Requests Saved: $requestsSaved');
-    buffer.writeln('Efficiency Status: ${isEfficient ? "✓ EFFICIENT" : "✗ NEEDS IMPROVEMENT"}');
+    buffer.writeln(
+        'Efficiency Status: ${isEfficient ? "✓ EFFICIENT" : "✗ NEEDS IMPROVEMENT"}');
     buffer.writeln('Requests/Hour: ${requestsPerHour.toStringAsFixed(1)}');
     buffer.writeln('Last Updated: ${lastUpdated.toIso8601String()}');
     return buffer.toString();
@@ -191,6 +193,6 @@ class AICacheStats {
   /// 生成简化的状态字符串
   String toStatusString() {
     return 'Cache: ${hitRatePercentage.toStringAsFixed(1)}% hit rate, '
-           '$requestsSaved requests saved, $tokensSaved tokens saved';
+        '$requestsSaved requests saved, $tokensSaved tokens saved';
   }
 }

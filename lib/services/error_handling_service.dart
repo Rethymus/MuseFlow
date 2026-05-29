@@ -24,7 +24,8 @@ class ErrorHandlingService {
   }
 
   final List<UserFriendlyError> _errorHistory = [];
-  final StreamController<UserFriendlyError> _errorStreamController = StreamController<UserFriendlyError>.broadcast();
+  final StreamController<UserFriendlyError> _errorStreamController =
+      StreamController<UserFriendlyError>.broadcast();
   int _errorCount = 0;
   int _criticalErrorCount = 0;
 
@@ -41,7 +42,8 @@ class ErrorHandlingService {
 
   /// 处理错误并返回用户友好的错误信息
   UserFriendlyError handleError(dynamic error, [dynamic stackTrace]) {
-    final userFriendlyError = userFriendlyErrorHandler.handleError(error, stackTrace);
+    final userFriendlyError =
+        userFriendlyErrorHandler.handleError(error, stackTrace);
 
     // 记录错误
     _recordError(userFriendlyError);
@@ -134,8 +136,10 @@ class ErrorHandlingService {
     final severityCounts = <ErrorSeverity, int>{};
 
     for (final error in recentErrors) {
-      categoryCounts[error.category] = (categoryCounts[error.category] ?? 0) + 1;
-      severityCounts[error.severity] = (severityCounts[error.severity] ?? 0) + 1;
+      categoryCounts[error.category] =
+          (categoryCounts[error.category] ?? 0) + 1;
+      severityCounts[error.severity] =
+          (severityCounts[error.severity] ?? 0) + 1;
     }
 
     return {
@@ -156,7 +160,8 @@ class ErrorHandlingService {
     final report = {
       'timestamp': DateTime.now().toIso8601String(),
       'statistics': getErrorStatistics(),
-      'recent_errors': getErrorHistory(limit: 20).map((error) => error.toJson()).toList(),
+      'recent_errors':
+          getErrorHistory(limit: 20).map((error) => error.toJson()).toList(),
       'system_info': _getSystemInfo(),
     };
 
@@ -182,7 +187,8 @@ class ErrorHandlingService {
     final file = File('${directory.path}/museflow/$fileName');
 
     await file.create(recursive: true);
-    await file.writeAsString(const JsonEncoder.withIndent('  ').convert(report));
+    await file
+        .writeAsString(const JsonEncoder.withIndent('  ').convert(report));
 
     return file.path;
   }
@@ -231,12 +237,13 @@ class ErrorHandlingService {
     // 分析错误类别频率
     final categoryFrequency = <ErrorCategory, int>{};
     for (final error in recentErrors) {
-      categoryFrequency[error.category] = (categoryFrequency[error.category] ?? 0) + 1;
+      categoryFrequency[error.category] =
+          (categoryFrequency[error.category] ?? 0) + 1;
     }
 
     // 找出最常见的错误类别
-    final mostCommonCategory = categoryFrequency.entries
-        .reduce((a, b) => a.value > b.value ? a : b);
+    final mostCommonCategory =
+        categoryFrequency.entries.reduce((a, b) => a.value > b.value ? a : b);
 
     // 分析错误趋势
     final recentTrend = _analyzeErrorTrend(recentErrors);
@@ -246,7 +253,8 @@ class ErrorHandlingService {
       'most_common_category_count': mostCommonCategory.value,
       'total_recent_errors': recentErrors.length,
       'trend': recentTrend,
-      'recommendations': _generateRecommendations(categoryFrequency, recentTrend),
+      'recommendations':
+          _generateRecommendations(categoryFrequency, recentTrend),
     };
   }
 
@@ -257,13 +265,11 @@ class ErrorHandlingService {
     final recentErrors = errors.take(10).toList();
     final olderErrors = errors.skip(10).take(10).toList();
 
-    final recentCriticalCount = recentErrors
-        .where((e) => e.severity == ErrorSeverity.critical)
-        .length;
+    final recentCriticalCount =
+        recentErrors.where((e) => e.severity == ErrorSeverity.critical).length;
 
-    final olderCriticalCount = olderErrors
-        .where((e) => e.severity == ErrorSeverity.critical)
-        .length;
+    final olderCriticalCount =
+        olderErrors.where((e) => e.severity == ErrorSeverity.critical).length;
 
     if (recentCriticalCount > olderCriticalCount * 2) {
       return '错误严重程度在增加';
@@ -282,8 +288,8 @@ class ErrorHandlingService {
     final recommendations = <String>[];
 
     // 基于最常见错误类别的建议
-    final mostCommon = categoryFrequency.entries
-        .reduce((a, b) => a.value > b.value ? a : b);
+    final mostCommon =
+        categoryFrequency.entries.reduce((a, b) => a.value > b.value ? a : b);
 
     switch (mostCommon.key) {
       case ErrorCategory.fileSystem:

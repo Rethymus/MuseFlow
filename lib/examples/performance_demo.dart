@@ -65,7 +65,8 @@ class PerformanceDemo {
 
     // 获取当前状态
     final stats = memoryOptimizer.currentStats;
-    Logger.debug('📊 当前内存状态: ${stats.usedMemoryMB}MB / ${stats.totalMemoryMB}MB (${stats.usagePercentage.toStringAsFixed(1)}%)');
+    Logger.debug(
+        '📊 当前内存状态: ${stats.usedMemoryMB}MB / ${stats.totalMemoryMB}MB (${stats.usagePercentage.toStringAsFixed(1)}%)');
 
     // 获取建议
     final suggestions = memoryOptimizer.getOptimizationSuggestions();
@@ -178,8 +179,10 @@ class PerformanceDemo {
 
     Logger.debug('📈 关键指标:');
     Logger.debug('   - 内存使用: ${quickCheck['quickMetrics']['memoryUsageMB']}MB');
-    Logger.debug('   - 内存使用率: ${quickCheck['quickMetrics']['memoryUsagePercentage'].toString().replaceAll('%', '')}%');
-    Logger.debug('   - 数据点数量: ${quickCheck['quickMetrics']['metricsDataPoints']}');
+    Logger.debug(
+        '   - 内存使用率: ${quickCheck['quickMetrics']['memoryUsagePercentage'].toString().replaceAll('%', '')}%');
+    Logger.debug(
+        '   - 数据点数量: ${quickCheck['quickMetrics']['metricsDataPoints']}');
 
     // 获取优化摘要
     final summary = PerformanceValidator.getOptimizationSummary();
@@ -240,9 +243,11 @@ class PerformanceDemo {
       await Future.delayed(const Duration(seconds: 1));
 
       final stats = memoryOptimizer.currentStats;
-      final timestamp = DateTime.now().toIso8601String().split('T').last.substring(0, 8);
+      final timestamp =
+          DateTime.now().toIso8601String().split('T').last.substring(0, 8);
 
-      Logger.debug('[$timestamp] 内存: ${stats.usedMemoryMB}MB (${stats.usagePercentage.toStringAsFixed(1)}%) - 状态: ${stats.state.toString().split('.').last}');
+      Logger.debug(
+          '[$timestamp] 内存: ${stats.usedMemoryMB}MB (${stats.usagePercentage.toStringAsFixed(1)}%) - 状态: ${stats.state.toString().split('.').last}');
     }
 
     Logger.debug('实时监控结束');

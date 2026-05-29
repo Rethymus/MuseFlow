@@ -75,7 +75,10 @@ class _ContextAnchorIndicatorState extends State<ContextAnchorIndicator>
   }
 
   int _getWordCount() {
-    return widget.anchorContent.split(RegExp(r'\s+')).where((s) => s.isNotEmpty).length;
+    return widget.anchorContent
+        .split(RegExp(r'\s+'))
+        .where((s) => s.isNotEmpty)
+        .length;
   }
 
   @override
@@ -96,7 +99,8 @@ class _ContextAnchorIndicatorState extends State<ContextAnchorIndicator>
               child: GestureDetector(
                 onTap: widget.onTap,
                 child: Container(
-                  margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                  margin:
+                      const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                   decoration: BoxDecoration(
                     gradient: LinearGradient(
                       begin: Alignment.topLeft,
@@ -151,7 +155,8 @@ class _ContextAnchorIndicatorState extends State<ContextAnchorIndicator>
                                   // 标题和状态
                                   Expanded(
                                     child: Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
                                       children: [
                                         Text(
                                           '上下文锚点已设置',
@@ -278,19 +283,21 @@ class _ContextAnchorIndicatorState extends State<ContextAnchorIndicator>
                                     const SizedBox(height: 8),
 
                                     // 预览内容
-                                    ..._getContentPreview().map((line) => Padding(
-                                      padding: const EdgeInsets.only(bottom: 4),
-                                      child: Text(
-                                        line,
-                                        style: TextStyle(
-                                          fontSize: 13,
-                                          color: Colors.blue.shade900,
-                                          height: 1.4,
-                                        ),
-                                        maxLines: 1,
-                                        overflow: TextOverflow.ellipsis,
-                                      ),
-                                    )),
+                                    ..._getContentPreview()
+                                        .map((line) => Padding(
+                                              padding: const EdgeInsets.only(
+                                                  bottom: 4),
+                                              child: Text(
+                                                line,
+                                                style: TextStyle(
+                                                  fontSize: 13,
+                                                  color: Colors.blue.shade900,
+                                                  height: 1.4,
+                                                ),
+                                                maxLines: 1,
+                                                overflow: TextOverflow.ellipsis,
+                                              ),
+                                            )),
                                   ],
                                 ),
                               ),

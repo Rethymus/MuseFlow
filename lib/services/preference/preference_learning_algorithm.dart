@@ -167,7 +167,8 @@ class PreferenceLearningAlgorithm {
     adjusted = _adjustForLanguageStyle(adjusted, preference.languageStyle);
 
     // 根据句式复杂度偏好调整结构
-    adjusted = _adjustForSentenceComplexity(adjusted, preference.sentenceComplexity);
+    adjusted =
+        _adjustForSentenceComplexity(adjusted, preference.sentenceComplexity);
 
     return adjusted;
   }
@@ -185,7 +186,8 @@ class PreferenceLearningAlgorithm {
     final feedbackValue = feedback.isPositive ? 1.0 : 0.0;
 
     // 使用指数移动平均更新接受率
-    final newValue = currentValue + learningRate * (feedbackValue - currentValue);
+    final newValue =
+        currentValue + learningRate * (feedbackValue - currentValue);
     updatedRates[type] = newValue;
 
     return updatedRates;
@@ -443,9 +445,11 @@ class PreferenceLearningAlgorithm {
 
     for (final entry in entries) {
       if (entry.value > 0.7) {
-        suggestions.add('用户倾向于接受 ${_describeModificationType(entry.key)} 类型的修改');
+        suggestions
+            .add('用户倾向于接受 ${_describeModificationType(entry.key)} 类型的修改');
       } else if (entry.value < 0.3) {
-        suggestions.add('用户倾向于拒绝 ${_describeModificationType(entry.key)} 类型的修改');
+        suggestions
+            .add('用户倾向于拒绝 ${_describeModificationType(entry.key)} 类型的修改');
       }
     }
 
@@ -460,7 +464,11 @@ class PreferenceLearningAlgorithm {
     final entries = topics.entries.toList()
       ..sort((a, b) => b.value.compareTo(a.value));
 
-    return entries.take(10).where((e) => e.value > 0.3).map((e) => e.key).toList();
+    return entries
+        .take(10)
+        .where((e) => e.value > 0.3)
+        .map((e) => e.key)
+        .toList();
   }
 
   /// 根据详细程度调整建议
@@ -489,7 +497,8 @@ class PreferenceLearningAlgorithm {
   }
 
   /// 根据句式复杂度调整建议
-  String _adjustForSentenceComplexity(String text, SentenceComplexity complexity) {
+  String _adjustForSentenceComplexity(
+      String text, SentenceComplexity complexity) {
     switch (complexity) {
       case SentenceComplexity.simple:
         return _simplifySentences(text);
@@ -583,7 +592,10 @@ class PreferenceLearningAlgorithm {
 
   /// 提取单词
   List<String> _extractWords(String text) {
-    return text.toLowerCase().replaceAll(RegExp(r'[^\w\s]'), '').split(RegExp(r'\s+'));
+    return text
+        .toLowerCase()
+        .replaceAll(RegExp(r'[^\w\s]'), '')
+        .split(RegExp(r'\s+'));
   }
 
   /// 判断是否为重要词汇
@@ -592,8 +604,25 @@ class PreferenceLearningAlgorithm {
 
     // 过滤常见停用词
     final stopWords = {
-      '的', '是', '在', '和', '或', '但', '与', '及', '等', '很', '也',
-      'the', 'is', 'and', 'or', 'but', 'with', 'very', 'also',
+      '的',
+      '是',
+      '在',
+      '和',
+      '或',
+      '但',
+      '与',
+      '及',
+      '等',
+      '很',
+      '也',
+      'the',
+      'is',
+      'and',
+      'or',
+      'but',
+      'with',
+      'very',
+      'also',
     };
 
     return !stopWords.contains(word);

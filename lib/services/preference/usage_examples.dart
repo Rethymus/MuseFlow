@@ -30,7 +30,6 @@ class PreferenceLearningExample {
       final stats = preferenceManager.getLearningStats();
       Logger.debug('学习数据点: ${stats['learningDataPoints']}');
       Logger.debug('置信度: ${stats['confidenceScore']}');
-
     } catch (e) {
       Logger.debug('❌ 初始化失败: $e');
     }
@@ -62,7 +61,6 @@ class PreferenceLearningExample {
       await preferenceManager.addFeedback(feedback);
 
       Logger.debug('✅ 反馈记录成功: ${feedback.feedbackType}');
-
     } catch (e) {
       Logger.debug('❌ 反馈记录失败: $e');
     }
@@ -90,7 +88,6 @@ class PreferenceLearningExample {
       Logger.debug('句式复杂度: ${analysis.detectedSentenceComplexity}');
       Logger.debug('关键词: ${analysis.keywords.join(', ')}');
       Logger.debug('分析置信度: ${analysis.confidence}');
-
     } catch (e) {
       Logger.debug('❌ 写作分析失败: $e');
     }
@@ -121,7 +118,6 @@ class PreferenceLearningExample {
       if (response.metadata?['personalized'] == true) {
         Logger.debug('✨ 已应用用户个性化偏好');
       }
-
     } catch (e) {
       Logger.debug('❌ AI服务调用失败: $e');
     }
@@ -154,7 +150,6 @@ class PreferenceLearningExample {
 
       // 结束会话
       autoCollector.endSession(sessionId);
-
     } catch (e) {
       Logger.debug('❌ 编辑会话记录失败: $e');
     }
@@ -173,7 +168,6 @@ class PreferenceLearningExample {
       suggestions.forEach((key, value) {
         Logger.debug('$key: $value');
       });
-
     } catch (e) {
       Logger.debug('❌ 获取建议失败: $e');
     }
@@ -197,7 +191,6 @@ class PreferenceLearningExample {
       // 清除过期数据
       await preferenceManager.clearExpiredData();
       Logger.debug('✅ 过期数据已清除');
-
     } catch (e) {
       Logger.debug('❌ 隐私管理失败: $e');
     }
@@ -225,7 +218,6 @@ class PreferenceLearningExample {
 
       await preferenceManager.updateConfig(updatedConfig);
       Logger.debug('✅ 配置已更新');
-
     } catch (e) {
       Logger.debug('❌ 配置管理失败: $e');
     }
@@ -239,7 +231,6 @@ class PreferenceLearningExample {
       // 重置偏好（保留配置）
       await preferenceManager.resetPreferences();
       Logger.debug('✅ 偏好数据已重置');
-
     } catch (e) {
       Logger.debug('❌ 重置失败: $e');
     }
@@ -283,7 +274,6 @@ class PreferenceLearningExample {
       Logger.debug('📊 置信度: ${stats['confidenceScore']}');
 
       Logger.debug('✨ 完整流程执行成功');
-
     } catch (e) {
       Logger.debug('❌ 流程执行失败: $e');
     }
@@ -371,8 +361,10 @@ class _PreferenceLearningExampleWidgetState
   }
 
   Widget _buildLearningProgressCard() {
-    final progress = (_learningStats!['learningProgress'] as num?)?.toDouble() ?? 0.0;
-    final confidence = (_learningStats!['confidenceScore'] as num?)?.toDouble() ?? 0.0;
+    final progress =
+        (_learningStats!['learningProgress'] as num?)?.toDouble() ?? 0.0;
+    final confidence =
+        (_learningStats!['confidenceScore'] as num?)?.toDouble() ?? 0.0;
 
     return Card(
       child: Padding(
@@ -428,7 +420,8 @@ class _PreferenceLearningExampleWidgetState
 
   Widget _buildStatisticsCard() {
     final dataPoints = _learningStats!['learningDataPoints'] as int? ?? 0;
-    final acceptanceRate = (_learningStats!['overallAcceptanceRate'] as num?)?.toDouble() ?? 0.0;
+    final acceptanceRate =
+        (_learningStats!['overallAcceptanceRate'] as num?)?.toDouble() ?? 0.0;
 
     return Card(
       child: Padding(

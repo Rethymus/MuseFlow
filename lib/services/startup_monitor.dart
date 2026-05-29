@@ -23,8 +23,8 @@ class StartupPerformanceMetrics {
   /// 判断是否满足性能目标
   bool meetsTarget() {
     return timeToComplete.inMilliseconds < 2000 &&
-           timeToBasicUI.inMilliseconds < 500 &&
-           timeToCoreServices.inMilliseconds < 1200;
+        timeToBasicUI.inMilliseconds < 500 &&
+        timeToCoreServices.inMilliseconds < 1200;
   }
 
   /// 获取性能报告
@@ -215,21 +215,21 @@ ${metrics.meetsTarget() ? '✓ 所有目标已达成' : '✗ 部分目标未达�
     if (metrics.timeToBasicUI.inMilliseconds >= 500) {
       issues.add(
         '基础UI渲染时间过长: ${metrics.timeToBasicUI.inMilliseconds}ms '
-            '(目标: <500ms)',
+        '(目标: <500ms)',
       );
     }
 
     if (metrics.timeToCoreServices.inMilliseconds >= 1200) {
       issues.add(
         '核心服务初始化时间过长: ${metrics.timeToCoreServices.inMilliseconds}ms '
-            '(目标: <1200ms)',
+        '(目标: <1200ms)',
       );
     }
 
     if (metrics.timeToComplete.inMilliseconds >= 2000) {
       issues.add(
         '总启动时间过长: ${metrics.timeToComplete.inMilliseconds}ms '
-            '(目标: <2000ms)',
+        '(目标: <2000ms)',
       );
     }
 

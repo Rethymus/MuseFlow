@@ -146,7 +146,8 @@ void main() {
 
       expect(results, containsPair('results', isA<List>()));
       expect(results, containsPair('statistics', isA<Map>()));
-      expect(results['statistics'], containsPair('totalReplacements', isA<int>()));
+      expect(
+          results['statistics'], containsPair('totalReplacements', isA<int>()));
     });
   });
 

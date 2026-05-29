@@ -37,7 +37,8 @@ class AIActionHandler {
   AIConfig? _currentConfig;
 
   // 流式响应控制器
-  final StreamController<String> _responseStreamController = StreamController<String>.broadcast();
+  final StreamController<String> _responseStreamController =
+      StreamController<String>.broadcast();
 
   // 取消令牌
   bool _isCancelled = false;
@@ -64,7 +65,8 @@ class AIActionHandler {
     _naturalLanguageProcessor = NaturalLanguageProcessor(
       config: nlConfig ?? NaturalLanguageConfig.defaultConfig(),
     );
-    _intentAnalyzer = IntentAnalyzer(config: intentConfig ?? const IntentAnalyzerConfig());
+    _intentAnalyzer =
+        IntentAnalyzer(config: intentConfig ?? const IntentAnalyzerConfig());
     _initializeAIService();
   }
 
@@ -359,10 +361,10 @@ class AIActionHandler {
   bool _shouldApplyNaturalLanguageProcessing(String operationType) {
     // 对以下操作类型应用自然语言处理
     const treatableTypes = {
-      'polish',      // 润色
-      'expand',      // 扩写
-      'summarize',   // 摘要
-      'change_style',// 风格转换
+      'polish', // 润色
+      'expand', // 扩写
+      'summarize', // 摘要
+      'change_style', // 风格转换
     };
 
     return treatableTypes.contains(operationType);
@@ -422,8 +424,8 @@ class AIActionHandler {
   bool _shouldUseStreamResponse() {
     // 根据配置决定是否使用流式响应
     return _currentConfig?.model == 'gpt-4' ||
-           _currentConfig?.model == 'gpt-4-turbo' ||
-           _currentConfig?.model?.startsWith('claude-3') == true;
+        _currentConfig?.model == 'gpt-4-turbo' ||
+        _currentConfig?.model?.startsWith('claude-3') == true;
   }
 
   /// 执行流式请求
@@ -498,7 +500,8 @@ class AIActionHandler {
       case 'summarize':
         return _mockSummarizeResult(operation.text);
       case 'change_style':
-        return _mockStyleChangeResult(operation.text, operation.additionalData?['style'] ?? '正式');
+        return _mockStyleChangeResult(
+            operation.text, operation.additionalData?['style'] ?? '正式');
       case 'smart_replace':
         final find = operation.additionalData?['find'] ?? '';
         final replace = operation.additionalData?['replace'] ?? '';
@@ -611,7 +614,8 @@ class AIActionHandler {
   }
 
   // 构建智能替换提示词
-  String _buildSmartReplacePrompt(String text, String findText, String replaceWith) {
+  String _buildSmartReplacePrompt(
+      String text, String findText, String replaceWith) {
     final buffer = StringBuffer();
 
     buffer.writeln('请进行智能文本替换：');
@@ -691,7 +695,8 @@ class AIActionHandler {
   int get pendingOperations => _operationQueue.length;
 
   /// 执行已确认的意图
-  Future<void> executeConfirmedIntent(IntentConfirmation confirmedIntent) async {
+  Future<void> executeConfirmedIntent(
+      IntentConfirmation confirmedIntent) async {
     // 记录反馈
     _intentAnalyzer.recordFeedback(
       IntentConfirmationFeedback(
@@ -736,14 +741,16 @@ class AIActionHandler {
       case AIActionType.changeStyle:
         await changeStyle(
           text: confirmedIntent.originalText,
-          targetStyle: confirmedIntent.parameters['target_style']?.toString() ?? '正式',
+          targetStyle:
+              confirmedIntent.parameters['target_style']?.toString() ?? '正式',
         );
         break;
       case AIActionType.smartReplace:
         await smartReplace(
           text: confirmedIntent.originalText,
           findText: confirmedIntent.parameters['find_text']?.toString() ?? '',
-          replaceWith: confirmedIntent.parameters['replace_with']?.toString() ?? '',
+          replaceWith:
+              confirmedIntent.parameters['replace_with']?.toString() ?? '',
         );
         break;
     }

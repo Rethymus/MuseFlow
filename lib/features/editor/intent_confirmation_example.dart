@@ -11,7 +11,8 @@ class IntentConfirmationExample extends StatefulWidget {
   const IntentConfirmationExample({super.key});
 
   @override
-  State<IntentConfirmationExample> createState() => _IntentConfirmationExampleState();
+  State<IntentConfirmationExample> createState() =>
+      _IntentConfirmationExampleState();
 }
 
 class _IntentConfirmationExampleState extends State<IntentConfirmationExample> {
@@ -102,23 +103,23 @@ class _IntentConfirmationExampleState extends State<IntentConfirmationExample> {
                     Text(
                       '最近的操作',
                       style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.bold,
-                      ),
+                            fontWeight: FontWeight.bold,
+                          ),
                     ),
                     const SizedBox(height: 12),
                     if (_operationHistory.isEmpty)
                       const Text('暂无操作记录')
                     else
                       ..._operationHistory.map((operation) => Padding(
-                        padding: const EdgeInsets.only(bottom: 8),
-                        child: Row(
-                          children: [
-                            const Icon(Icons.history, size: 16),
-                            const SizedBox(width: 8),
-                            Expanded(child: Text(operation)),
-                          ],
-                        ),
-                      )),
+                            padding: const EdgeInsets.only(bottom: 8),
+                            child: Row(
+                              children: [
+                                const Icon(Icons.history, size: 16),
+                                const SizedBox(width: 8),
+                                Expanded(child: Text(operation)),
+                              ],
+                            ),
+                          )),
                   ],
                 ),
               ),
@@ -136,8 +137,8 @@ class _IntentConfirmationExampleState extends State<IntentConfirmationExample> {
         Text(
           title,
           style: Theme.of(context).textTheme.titleLarge?.copyWith(
-            fontWeight: FontWeight.bold,
-          ),
+                fontWeight: FontWeight.bold,
+              ),
         ),
         const SizedBox(height: 12),
         ...children,
@@ -164,8 +165,8 @@ class _IntentConfirmationExampleState extends State<IntentConfirmationExample> {
                     Text(
                       title,
                       style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.bold,
-                      ),
+                            fontWeight: FontWeight.bold,
+                          ),
                     ),
                     const SizedBox(height: 4),
                     Text(
@@ -315,7 +316,8 @@ class _IntentConfirmationExampleState extends State<IntentConfirmationExample> {
     );
   }
 
-  Widget _buildAnalysisItem(String title, IntentConfirmation Function() builder) {
+  Widget _buildAnalysisItem(
+      String title, IntentConfirmation Function() builder) {
     final intent = builder();
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,

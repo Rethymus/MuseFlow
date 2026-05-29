@@ -286,7 +286,8 @@ void main() {
       );
 
       expect(feedback.adjustedDescription, '调整后的描述');
-      expect(feedback.adjustedParameters, containsPair('custom_param', 'value'));
+      expect(
+          feedback.adjustedParameters, containsPair('custom_param', 'value'));
     });
 
     test('应该正确生成预期效果描述', () {
