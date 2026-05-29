@@ -567,7 +567,6 @@ class _CharacterDetailPanel extends StatelessWidget {
       ),
     );
   }
-
 }
 
 /// 世界观标签页
@@ -938,7 +937,6 @@ class _WorldDetailPanel extends StatelessWidget {
       ),
     );
   }
-
 }
 
 /// 角色表单屏幕
