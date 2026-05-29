@@ -691,7 +691,8 @@ class DependencyAuditor {
 
     buffer.writeln('=== MuseFlow 依赖健康报告 ===');
     buffer.writeln('生成时间: ${report.generatedAt.toIso8601String()}');
-    buffer.writeln('健康评分: ${_getScoreEmoji(report.score)} ${report.score.name}');
+    buffer
+        .writeln('健康评分: ${_getScoreEmoji(report.score)} ${report.score.name}');
     buffer.writeln();
 
     buffer.writeln('📊 指标摘要:');

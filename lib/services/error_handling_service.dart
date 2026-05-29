@@ -112,7 +112,8 @@ class ErrorHandlingService {
     ErrorDisplayWidgets.showErrorBanner(
       context,
       userFriendlyError,
-      onAction: () => ErrorDisplayWidgets.showErrorDialog(context, userFriendlyError),
+      onAction: () =>
+          ErrorDisplayWidgets.showErrorDialog(context, userFriendlyError),
     );
   }
 

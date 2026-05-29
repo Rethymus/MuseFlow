@@ -23,7 +23,7 @@ class AppTheme {
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(8),
           borderSide: BorderSide(
-            color: Colors.grey.withOpacity( 0.3),
+            color: Colors.grey.withOpacity(0.3),
           ),
         ),
         filled: true,
@@ -45,7 +45,7 @@ class AppTheme {
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(12),
           side: BorderSide(
-            color: Colors.white.withOpacity( 0.1),
+            color: Colors.white.withOpacity(0.1),
             width: 1,
           ),
         ),
@@ -54,7 +54,7 @@ class AppTheme {
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(8),
           borderSide: BorderSide(
-            color: Colors.white.withOpacity( 0.1),
+            color: Colors.white.withOpacity(0.1),
           ),
         ),
         filled: true,

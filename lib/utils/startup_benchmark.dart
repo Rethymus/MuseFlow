@@ -262,12 +262,9 @@ class StartupBenchmark {
     final basicUI = result['basicUI']! as Map<String, dynamic>;
     final coreServices = result['coreServices']! as Map<String, dynamic>;
     final complete = result['complete']! as Map<String, dynamic>;
-    Logger.debug(
-        '基础UI: ${basicUI['time']}ms (${basicUI['status']})');
-    Logger.debug(
-        '核心服务: ${coreServices['time']}ms (${coreServices['status']})');
-    Logger.debug(
-        '完整启动: ${complete['time']}ms (${complete['status']})');
+    Logger.debug('基础UI: ${basicUI['time']}ms (${basicUI['status']})');
+    Logger.debug('核心服务: ${coreServices['time']}ms (${coreServices['status']})');
+    Logger.debug('完整启动: ${complete['time']}ms (${complete['status']})');
     Logger.debug('总体状态: ${result['overall']}');
 
     return result;

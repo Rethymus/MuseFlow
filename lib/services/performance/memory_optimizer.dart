@@ -315,8 +315,7 @@ class MemoryOptimizer {
                   (_compressionConfig.targetSizeReductionPercentage / 100))
               .toInt();
 
-          Logger.debug(
-              '压缩资源类型: $type, 预计节省: ${reductionSize}MB');
+          Logger.debug('压缩资源类型: $type, 预计节省: ${reductionSize}MB');
           compressedSize += reductionSize;
         }
       }
