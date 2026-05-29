@@ -57,14 +57,14 @@ class NetworkException extends AIException {
         );
 }
 
-/// 超时异常
-class TimeoutException extends AIException {
-  TimeoutException({
+/// AI请求超时异常
+class AITimeoutException extends AIException {
+  AITimeoutException({
     String? message,
     int? statusCode,
     dynamic originalError,
   }) : super(
-          message: message ?? 'Request timeout',
+          message: message ?? 'AI request timeout',
           statusCode: statusCode,
           originalError: originalError,
         );
@@ -220,7 +220,7 @@ abstract class BaseAIAdapter implements AIAdapter {
       );
     }
 
-    if (error is NetworkException || error is TimeoutException) {
+    if (error is NetworkException || error is AITimeoutException) {
       throw error;
     }
 

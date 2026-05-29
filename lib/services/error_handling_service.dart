@@ -199,11 +199,14 @@ class ErrorHandlingService {
       'operating_system': Platform.operatingSystem,
       'operating_system_version': Platform.operatingSystemVersion,
       'locale': Platform.localName,
-      'executable': Platform.executable,
-      'resolved_executable': Platform.resolvedExecutable,
-      'script': Platform.script.path,
       'path_separator': Platform.pathSeparator,
       'number_of_processors': Platform.numberOfProcessors,
+      // 安全修复：生产环境中移除敏感路径信息
+      if (kDebugMode) ...{
+        'executable': Platform.executable,
+        'resolved_executable': Platform.resolvedExecutable,
+        'script': Platform.script.path,
+      },
     };
   }
 

@@ -29,6 +29,8 @@ class AIService {
   Timer? _cleanupTimer;
   final CacheManager _cacheManager;
   bool _enableCaching;
+  // 性能优化：缓存加密密钥，避免重复平台通道调用
+  String? _cachedEncryptionKey;
 
   AIService._({
     FlutterSecureStorage? secureStorage,
@@ -119,8 +121,12 @@ class AIService {
       final encrypted = encrypter.encrypt(apiKey);
       return encrypted.base64;
     } catch (e) {
-      // 如果加密失败，返回原始key（用于调试）
-      return apiKey;
+      // 安全修复：加密失败时抛出异常，不返回明文
+      Logger.error('API密钥加密失败: $e', tag: 'Security');
+      throw AIServiceException(
+        message: 'API密钥加密失败，无法安全存储',
+        originalError: e,
+      );
     }
   }
 
@@ -146,16 +152,26 @@ class AIService {
       final decrypted = encrypter.decrypt64(encryptedKey);
       return decrypted;
     } catch (e) {
-      // 如果解密失败，返回原始key
-      return encryptedKey;
+      // 安全修复：解密失败时抛出异常，不返回密文
+      Logger.error('API密钥解密失败: $e', tag: 'Security');
+      throw AIServiceException(
+        message: 'API密钥解密失败，密钥可能已损坏',
+        originalError: e,
+      );
     }
   }
 
-  /// 获取加密密钥
+  /// 获取加密密钥（带缓存）
   Future<encrypt.Key> _getEncryptionKey() async {
+    // 性能优化：使用缓存避免重复平台通道调用
+    if (_cachedEncryptionKey != null) {
+      return encrypt.Key.fromUtf8(_cachedEncryptionKey!);
+    }
+
     final storedKey = await _secureStorage.read(key: _encryptionKey);
 
     if (storedKey != null) {
+      _cachedEncryptionKey = storedKey;
       return encrypt.Key.fromUtf8(storedKey);
     }
 
@@ -166,6 +182,7 @@ class AIService {
       value: newKey,
     );
 
+    _cachedEncryptionKey = newKey;
     return encrypt.Key.fromUtf8(newKey);
   }
 
@@ -192,7 +209,8 @@ class AIService {
   Future<void> _saveConfig(AIConfig config) async {
     final key = 'ai_config_${config.id}';
     final json = config.toJson();
-    await _secureStorage.write(key: key, value: json.toString());
+    // 安全修复：使用jsonEncode而不是Map.toString()，确保是有效JSON
+    await _secureStorage.write(key: key, value: jsonEncode(json));
   }
 
   /// 获取配置列表
@@ -389,7 +407,7 @@ class AIService {
   /// 判断是否应该重试
   bool _shouldRetry(dynamic error) {
     if (error is NetworkException) return true;
-    if (error is TimeoutException) return true;
+    if (error is AITimeoutException) return true;
     if (error is RateLimitException) return true;
     return false;
   }

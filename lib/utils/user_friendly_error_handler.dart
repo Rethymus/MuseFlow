@@ -186,7 +186,7 @@ class UserFriendlyErrorHandler {
     }
 
     // 超时错误
-    if (error is TimeoutException) {
+    if (error is AppTimeoutException) {
       return _handleTimeoutError(error);
     }
 
@@ -409,7 +409,7 @@ class UserFriendlyErrorHandler {
   }
 
   /// 处理超时错误
-  UserFriendlyError _handleTimeoutError(TimeoutException error) {
+  UserFriendlyError _handleTimeoutError(AppTimeoutException error) {
     return UserFriendlyError(
       title: '操作超时',
       description: '操作执行时间过长，已自动中止',
@@ -718,11 +718,11 @@ class PermissionDeniedException implements Exception {
 }
 
 /// 超时异常
-class TimeoutException implements Exception {
+class AppTimeoutException implements Exception {
   final String message;
   final Duration? duration;
 
-  TimeoutException(this.message, [this.duration]);
+  AppTimeoutException(this.message, [this.duration]);
 
   @override
   String toString() =>

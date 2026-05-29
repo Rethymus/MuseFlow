@@ -103,7 +103,7 @@ class ClaudeAdapter extends BaseAIAdapterImpl {
           .timeout(
         Duration(seconds: config.effectiveTimeout),
         onTimeout: () {
-          throw TimeoutException(
+          throw AITimeoutException(
             message: 'Request timeout after ${config.effectiveTimeout} seconds',
           );
         },

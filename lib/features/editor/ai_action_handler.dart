@@ -474,7 +474,7 @@ class AIActionHandler {
       return Exception('请求频率过高，请稍后再试');
     } else if (error is QuotaException) {
       return Exception('API配额已用完，请充值后重试');
-    } else if (error is TimeoutException) {
+    } else if (error is AITimeoutException) {
       return Exception('请求超时，请检查网络连接');
     } else if (error is NetworkException) {
       return Exception('网络连接失败，请检查网络设置');

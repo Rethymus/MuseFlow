@@ -59,8 +59,15 @@ class SecureDataService {
     if (existingKey != null && existingSalt != null) {
       // Load existing key and salt
       _cachedKey = encrypt.Key.fromBase64(existingKey);
-      _cachedSalt = Uint8List.fromList(
-          existingSalt.codeUnits.map((c) => c as int).toList());
+      // 安全修复：使用base64UrlDecode读取salt，兼容新旧格式
+      try {
+        _cachedSalt = base64UrlDecode(existingSalt);
+      } catch (e) {
+        // 兼容旧格式：如果是旧的String.fromCharCodes格式
+        _cachedSalt = Uint8List.fromList(
+          existingSalt.codeUnits.map((c) => c as int).toList()
+        );
+      }
     } else {
       // Generate new key and salt
       final salt = _generateRandomBytes(_saltLength);
@@ -71,9 +78,10 @@ class SecureDataService {
         key: _masterKeyName,
         value: base64UrlEncode(masterKey),
       );
+      // 安全修复：使用base64UrlEncode存储salt，避免>127字节值损坏
       await _secureStorage.write(
         key: _masterSaltName,
-        value: String.fromCharCodes(salt),
+        value: base64UrlEncode(salt),
       );
 
       _cachedKey = encrypt.Key(masterKey);
