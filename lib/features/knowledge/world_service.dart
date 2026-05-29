@@ -275,7 +275,7 @@ class WorldService with ChangeNotifier {
       if (file.path == null) return 0;
 
       // 1. 验证文件路径
-      final pathValidation = await fileSecurityValidator.validatePath(
+      final pathValidation = await FileSecurityValidator.instance.validatePath(
         file.path!,
         requireExistence: true,
       );
@@ -288,7 +288,7 @@ class WorldService with ChangeNotifier {
       final validatedPath = pathValidation.sanitizedPath ?? file.path!;
 
       // 2. 验证文件类型
-      final typeValidation = fileSecurityValidator.validateFileType(validatedPath);
+      final typeValidation = FileSecurityValidator.instance.validateFileType(validatedPath);
       if (!typeValidation.isValid) {
         Logger.debug('导入失败：${typeValidation.errorMessage}');
         return 0;
@@ -312,7 +312,7 @@ class WorldService with ChangeNotifier {
 
       // 6. 更新会话大小
       if (count > 0) {
-        fileSecurityValidator.updateSessionSize(fileSize);
+        FileSecurityValidator.instance.updateSessionSize(fileSize);
       }
 
       return count;
@@ -346,7 +346,7 @@ class WorldService with ChangeNotifier {
       if (outputPath == null) return false;
 
       // 3. 验证文件路径
-      final validation = await fileSecurityValidator.validateFile(
+      final validation = await FileSecurityValidator.instance.validateFile(
         outputPath,
         checkWritePermission: true,
         checkType: true,
@@ -356,13 +356,13 @@ class WorldService with ChangeNotifier {
         Logger.debug('导出失败：${validation.errorMessage}');
 
         // 使用安全路径作为后备
-        final safePath = await fileSecurityValidator.createSafeOutputPath(
+        final safePath = await FileSecurityValidator.instance.createSafeOutputPath(
           'worlds_${DateTime.now().toIso8601String()}.json',
           'exports',
         );
 
         await File(safePath).writeAsString(jsonString);
-        fileSecurityValidator.updateSessionSize(contentSize);
+        FileSecurityValidator.instance.updateSessionSize(contentSize);
 
         Logger.debug('使用安全路径导出: $safePath');
         return true;
@@ -370,7 +370,7 @@ class WorldService with ChangeNotifier {
 
       // 4. 写入用户选择的路径
       await File(outputPath).writeAsString(jsonString);
-      fileSecurityValidator.updateSessionSize(contentSize);
+      FileSecurityValidator.instance.updateSessionSize(contentSize);
 
       Logger.debug('世界观导出成功: $outputPath');
       return true;

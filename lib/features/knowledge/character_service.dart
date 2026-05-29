@@ -297,7 +297,7 @@ class CharacterService with ChangeNotifier {
       if (file.path == null) return 0;
 
       // 1. 验证文件路径
-      final pathValidation = await fileSecurityValidator.validatePath(
+      final pathValidation = await FileSecurityValidator.instance.validatePath(
         file.path!,
         requireExistence: true,
       );
@@ -311,7 +311,7 @@ class CharacterService with ChangeNotifier {
 
       // 2. 验证文件类型
       final typeValidation =
-          fileSecurityValidator.validateFileType(validatedPath);
+          FileSecurityValidator.instance.validateFileType(validatedPath);
       if (!typeValidation.isValid) {
         Logger.debug('导入失败：${typeValidation.errorMessage}');
         return 0;
@@ -335,7 +335,7 @@ class CharacterService with ChangeNotifier {
 
       // 6. 更新会话大小
       if (count > 0) {
-        fileSecurityValidator.updateSessionSize(fileSize);
+        FileSecurityValidator.instance.updateSessionSize(fileSize);
       }
 
       return count;
@@ -369,7 +369,7 @@ class CharacterService with ChangeNotifier {
       if (outputPath == null) return false;
 
       // 3. 验证文件路径
-      final validation = await fileSecurityValidator.validateFile(
+      final validation = await FileSecurityValidator.instance.validateFile(
         outputPath,
         checkWritePermission: true,
         checkType: true,
@@ -379,13 +379,13 @@ class CharacterService with ChangeNotifier {
         Logger.debug('导出失败：${validation.errorMessage}');
 
         // 使用安全路径作为后备
-        final safePath = await fileSecurityValidator.createSafeOutputPath(
+        final safePath = await FileSecurityValidator.instance.createSafeOutputPath(
           'characters_${DateTime.now().toIso8601String()}.json',
           'exports',
         );
 
         await File(safePath).writeAsString(jsonString);
-        fileSecurityValidator.updateSessionSize(contentSize);
+        FileSecurityValidator.instance.updateSessionSize(contentSize);
 
         Logger.debug('使用安全路径导出: $safePath');
         return true;
@@ -393,7 +393,7 @@ class CharacterService with ChangeNotifier {
 
       // 4. 写入用户选择的路径
       await File(outputPath).writeAsString(jsonString);
-      fileSecurityValidator.updateSessionSize(contentSize);
+      FileSecurityValidator.instance.updateSessionSize(contentSize);
 
       Logger.debug('角色卡导出成功: $outputPath');
       return true;

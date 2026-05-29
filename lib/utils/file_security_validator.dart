@@ -69,17 +69,6 @@ class SecurityAuditLog {
            'Allowed: $allowed, Reason: $reason, Size: $fileSize';
   }
 
-  Map<String, dynamic> toJson() {
-    return {
-      'timestamp': timestamp.toIso8601String(),
-      'operation': operation,
-      'file_path': filePath,
-      'allowed': allowed,
-      'reason': reason,
-      'file_size': fileSize,
-    };
-  }
-
   factory SecurityAuditLog.fromJson(Map<String, dynamic> json) {
     return SecurityAuditLog(
       timestamp: DateTime.parse(json['timestamp'] as String),
