@@ -32,11 +32,9 @@ dependencies:
 
   # File Operations
   file_picker: 8.1.3
-  share_plus: 10.0.2
 
   # HTTP & API
   http: 1.2.2
-  dio: 5.7.0
 
   # Security
   flutter_secure_storage: 9.2.2
@@ -57,7 +55,6 @@ dev_dependencies:
 
   # Testing
   mockito: 5.4.4
-  hive_flutter: 1.1.0
   integration_test:
     sdk: flutter
 
