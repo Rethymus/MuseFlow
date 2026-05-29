@@ -94,8 +94,8 @@ void main() {
       final appState = AppState();
 
       // Attempting to load notes should throw an error
-      expect(() async => await appState.loadNotes(),
-          throwsA(isA<StateError>()));
+      expect(
+          () async => await appState.loadNotes(), throwsA(isA<StateError>()));
     });
   });
 }
