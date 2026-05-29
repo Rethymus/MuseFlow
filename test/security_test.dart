@@ -1,8 +1,9 @@
 import 'dart:io';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:flutter/foundation.dart';
 import 'package:path_provider/path_provider.dart';
-import '../lib/utils/file_security_validator.dart';
-import '../lib/services/security_audit_service.dart';
+import 'package:museflow/utils/file_security_validator.dart';
+import 'package:museflow/services/security_audit_service.dart';
 
 void main() {
   group('FileSecurityValidator Tests', () {
