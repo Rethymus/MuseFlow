@@ -10,9 +10,11 @@ env:
   FLUTTER_VERSION: '3.24.0'
   JAVA_VERSION: '17'
 
-# 设置默认权限
+# 设置默认权限 - 所有作业需要的权限
 permissions:
   contents: read
+  security-events: write
+  actions: read
 
 jobs:
   analyze:
