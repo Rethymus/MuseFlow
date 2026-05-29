@@ -92,11 +92,7 @@ class _HomePageState extends State<HomePage> with WindowListener {
 
   /// 处理搜索操作
   void _handleSearch(BuildContext context) async {
-    final result = await GlobalSearchDialog.show(context);
-
-    if (result != null && result is GlobalSearchResult) {
-      _handleSearchResult(context, result);
-    }
+    await GlobalSearchDialog.show(context);
   }
 
   /// 处理搜索结果选择

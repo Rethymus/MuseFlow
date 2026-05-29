@@ -39,7 +39,7 @@ class ErrorHandlingDemoScreen extends StatefulWidget {
 }
 
 class _ErrorHandlingDemoScreenState extends State<ErrorHandlingDemoScreen> {
-  final List<UserFriendlyError> _errors = [];
+  final List<UserFriendlyErrorHandler.UserFriendlyError> _errors = [];
 
   @override
   void initState() {
@@ -228,7 +228,7 @@ class _ErrorHandlingDemoScreenState extends State<ErrorHandlingDemoScreen> {
     }
   }
 
-  void _showErrorDetails(UserFriendlyError error) {
+  void _showErrorDetails(UserFriendlyErrorHandler.UserFriendlyError error) {
     errorHandlingService.showError(context, error);
   }
 

@@ -1,4 +1,5 @@
 import '../utils/logger.dart';
+import '../models/note.dart';
 import '../config/app_constants.dart';
 import 'dart:convert';
 import 'dart:io';

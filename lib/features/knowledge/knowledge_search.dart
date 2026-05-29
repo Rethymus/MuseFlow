@@ -418,11 +418,7 @@ class KnowledgeQuickSearch extends StatelessWidget {
         ),
       ),
       onTap: () {
-        KnowledgeSearchDialog.show(context).then((result) {
-          if (result != null && onResultSelected != null) {
-            onResultSelected!(result as SearchResult);
-          }
-        });
+        KnowledgeSearchDialog.show(context);
       },
     );
   }

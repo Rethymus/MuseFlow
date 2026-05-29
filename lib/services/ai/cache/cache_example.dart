@@ -1,5 +1,5 @@
-import '../../config/app_constants.dart';
-import '../../utils/logger.dart';
+import '../../../config/app_constants.dart';
+import '../../../utils/logger.dart';
 import 'package:museflow/services/ai/ai_service.dart';
 import 'package:museflow/models/ai_message.dart';
 import 'package:museflow/models/ai_config.dart';

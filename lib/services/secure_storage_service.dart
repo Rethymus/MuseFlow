@@ -1,4 +1,5 @@
 import 'package:hive_flutter/hive_flutter.dart';
+import '../models/note.dart';
 import '../models/app_state.dart';
 import '../config/app_constants.dart';
 import '../utils/logger.dart';

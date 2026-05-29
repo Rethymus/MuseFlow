@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:encrypt/encrypt.dart' as encrypt;
 import 'package:retry/retry.dart';
@@ -221,7 +222,7 @@ class AIService {
     try {
       final idsJson = await _secureStorage.read(key: 'ai_config_ids');
       if (idsJson != null) {
-        final List<dynamic> ids = json.decode(idsJson);
+        final List<dynamic> ids = jsonDecode(idsJson);
         return ids.cast<String>();
       }
     } catch (e) {
@@ -235,7 +236,7 @@ class AIService {
   Future<void> _saveConfigIds(List<String> ids) async {
     await _secureStorage.write(
       key: 'ai_config_ids',
-      value: json.encode(ids),
+      value: jsonEncode(ids),
     );
   }
 
@@ -246,7 +247,7 @@ class AIService {
       final configJson = await _secureStorage.read(key: key);
       if (configJson == null) return null;
 
-      final Map<String, dynamic> json = json.decode(configJson);
+      final Map<String, dynamic> json = jsonDecode(configJson);
       return AIConfig.fromJson(json);
     } catch (e) {
       return null;

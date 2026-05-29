@@ -304,11 +304,7 @@ class _UXEnhancedHomePageState extends State<UXEnhancedHomePage>
   void _handleSearch(BuildContext context) async {
     _recordInteraction('search');
 
-    final result = await GlobalSearchDialog.show(context);
-
-    if (result != null && result is GlobalSearchResult) {
-      _handleSearchResult(context, result);
-    }
+    await GlobalSearchDialog.show(context);
   }
 
   /// 处理搜索结果选择

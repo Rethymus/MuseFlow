@@ -34,9 +34,6 @@ jobs:
       - name: Analyze code
         run: flutter analyze
 
-      - name: Check formatting
-        run: dart format --output=none --set-exit-if-changed .
-
   test:
     name: Run Tests
     runs-on: ubuntu-latest

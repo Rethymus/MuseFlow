@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../models/user_preference.dart';
@@ -124,13 +125,13 @@ class PrivacyManager {
     try {
       final feedbackJson = _preferences.getString(finalKey);
       if (feedbackJson != null) {
-        final List<dynamic> data = json.decode(feedbackJson);
+        final List<dynamic> data = jsonDecode(feedbackJson);
         final validFeedbacks = data.where((item) {
           final feedback = UserFeedback.fromJson(item as Map<String, dynamic>);
           return feedback.timestamp.isAfter(cutoffDate);
         }).toList();
 
-        await _preferences.setString(finalKey, json.encode(validFeedbacks));
+        await _preferences.setString(finalKey, jsonEncode(validFeedbacks));
       }
     } catch (e) {
       // 忽略错误
@@ -145,13 +146,13 @@ class PrivacyManager {
     try {
       final analyticsJson = _preferences.getString(finalKey);
       if (analyticsJson != null) {
-        final List<dynamic> data = json.decode(analyticsJson);
+        final List<dynamic> data = jsonDecode(analyticsJson);
         final validAnalytics = data.where((item) {
           final analysis = WritingAnalysis.fromJson(item as Map<String, dynamic>);
           return analysis.timestamp.isAfter(cutoffDate);
         }).toList();
 
-        await _preferences.setString(finalKey, json.encode(validAnalytics));
+        await _preferences.setString(finalKey, jsonEncode(validAnalytics));
       }
     } catch (e) {
       // 忽略错误
@@ -206,13 +207,13 @@ class PrivacyManager {
 
       final feedbackJson = _preferences.getString(feedbackKey ?? feedKey);
       if (feedbackJson != null) {
-        final List<dynamic> data = json.decode(feedbackJson);
+        final List<dynamic> data = jsonDecode(feedbackJson);
         feedbackCount = data.length;
       }
 
       final analyticsJson = _preferences.getString(analyticsKey ?? analyticKey);
       if (analyticsJson != null) {
-        final List<dynamic> data = json.decode(analyticsJson);
+        final List<dynamic> data = jsonDecode(analyticsJson);
         analyticsCount = data.length;
       }
 
@@ -241,13 +242,13 @@ class PrivacyManager {
       // 导出偏好数据
       final preferenceData = await _secureStorage.read(key: 'user_preference_data');
       if (preferenceData != null) {
-        userData['preference'] = json.decode(preferenceData);
+        userData['preference'] = jsonDecode(preferenceData);
       }
 
       // 导出反馈历史（匿名化）
       final feedbackData = _preferences.getString('user_feedback_history');
       if (feedbackData != null) {
-        final feedbacks = json.decode(feedbackData);
+        final feedbacks = jsonDecode(feedbackData);
         userData['feedbackHistory'] = anonymize
             ? await Future.wait(
                 (feedbacks as List).map((f) => anonymizeData(f as Map<String, dynamic>)),
@@ -258,7 +259,7 @@ class PrivacyManager {
       // 导出分析数据（匿名化）
       final analyticsData = _preferences.getString('writing_analytics_data');
       if (analyticsData != null) {
-        final analytics = json.decode(analyticsData);
+        final analytics = jsonDecode(analyticsData);
         userData['writingAnalytics'] = anonymize
             ? await Future.wait(
                 (analytics as List).map((a) => anonymizeData(a as Map<String, dynamic>)),

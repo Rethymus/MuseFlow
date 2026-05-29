@@ -2,6 +2,7 @@ import '../utils/logger.dart';
 import '../config/app_constants.dart';
 import 'package:flutter/foundation.dart';
 import '../models/app_state.dart';
+import '../models/note.dart';
 import 'secure_storage_service.dart';
 import 'encryption_performance_monitor.dart';
 

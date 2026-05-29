@@ -533,13 +533,13 @@ class _GlobalErrorMonitoringState extends State<GlobalErrorMonitoring> {
       });
 
       // 可以根据错误严重程度采取不同行动
-      if (error.severity == ErrorSeverity.critical) {
+      if (error.severity == UserFriendlyErrorHandler.ErrorSeverity.critical) {
         _handleCriticalError(error);
       }
     });
   }
 
-  void _handleCriticalError(UserFriendlyError error) {
+  void _handleCriticalError(UserFriendlyErrorHandler.UserFriendlyError error) {
     // 处理严重错误
     showDialog(
       context: context,
