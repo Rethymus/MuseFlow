@@ -131,7 +131,7 @@ class DataMigrationScript {
       await _migrationService.migrateToEncryption().last;
       Logger.debug('Quick migration completed successfully', tag: 'MIGRATION');
     } catch (e) {
-      Logger.debug('Quick migration failed: $e', tag: 'MIGRATION', error: e);
+      Logger.debug('Quick migration failed: $e', tag: 'MIGRATION');
     }
   }
 

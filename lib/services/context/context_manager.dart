@@ -4,7 +4,6 @@
 library;
 
 import 'dart:async';
-import 'dart:collection';
 import 'context_segment.dart';
 import 'context_cache.dart';
 
@@ -57,7 +56,7 @@ class ContextManager {
   /// 私有构造函数
   ContextManager._(this._config) {
     _cache = ContextCache(_config.toCacheConfig());
-    _segmentQueue = ListQueue<ContextSegment>();
+    _segmentQueue = <ContextSegment>[];
   }
 
   /// 获取单例实例
@@ -81,7 +80,7 @@ class ContextManager {
   late final ContextCache _cache;
 
   // 片段队列（保持插入顺序）
-  late final ListQueue<ContextSegment> _segmentQueue;
+  late final List<ContextSegment> _segmentQueue;
 
   // 线程安全锁
   // ignore: unused_field

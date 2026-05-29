@@ -237,7 +237,7 @@ class WorldService with ChangeNotifier {
   }
 
   /// 批量导出世界观
-  Map<String, dynamic> exportToJson({List<String>? ids}) async {
+  Future<Map<String, dynamic>> exportToJson({List<String>? ids}) async {
     final List<Map<String, dynamic>> worldsData = [];
 
     final worldsToExport =

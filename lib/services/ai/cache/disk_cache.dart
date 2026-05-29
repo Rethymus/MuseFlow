@@ -401,14 +401,14 @@ class DiskCache {
 
   /// 检查是否会超过最大大小
   Future<bool> _wouldExceedMaxSize(AICacheEntry entry) async {
-    final currentSize = await currentSize;
+    final curSize = await currentSize;
     final entrySize = entry.content.length + 200; // 内容 + 元数据估算
-    return currentSize + entrySize > maxSizeBytes;
+    return curSize + entrySize > maxSizeBytes;
   }
 
   /// 需要时驱逐条目
   Future<void> _evictIfNeeded(int requiredSpace) async {
-    while (await currentSize + requiredSpace > maxSizeBytes) {
+    while ((await currentSize) + requiredSpace > maxSizeBytes) {
       await _evictOldest();
     }
   }

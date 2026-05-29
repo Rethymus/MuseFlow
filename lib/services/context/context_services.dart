@@ -12,6 +12,8 @@ export 'context_segment.dart';
 export 'context_cache.dart';
 export 'context_manager.dart';
 
+import 'context_manager.dart';
+
 /// 上下文管理服务版本
 const String contextVersion = '1.0.0';
 

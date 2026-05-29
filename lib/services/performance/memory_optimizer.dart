@@ -311,13 +311,13 @@ class MemoryOptimizer {
         if (_compressionConfig.compressibleTypes.contains(type)) {
           // 模拟压缩
           final originalSize = _estimateResourceSize(type);
-          final compressedSize = (originalSize *
+          final reductionSize = (originalSize *
                   (_compressionConfig.targetSizeReductionPercentage / 100))
               .toInt();
-          compressedSize += (originalSize - compressedSize);
 
           Logger.debug(
-              '压缩资源类型: $type, 预计节省: ${originalSize - compressedSize}MB');
+              '压缩资源类型: $type, 预计节省: ${reductionSize}MB');
+          compressedSize += reductionSize;
         }
       }
 
@@ -500,11 +500,7 @@ class MemoryOptimizer {
       // 尝试使用Flutter的内存信息
       if (kDebugMode) {
         // 在调试模式下，我们可以获取更多信息
-        developer.Service.getIsolateInfo().then((info) {
-          // 这里可以获取更详细的内存信息
-        }).catchError((e) {
-          Logger.debug('获取隔离信息失败: $e');
-        });
+        // dart:developer API 在此版本中不提供 getIsolateInfo
       }
 
       // 估算内存使用（基于平台）
@@ -525,7 +521,7 @@ class MemoryOptimizer {
   }
 
   /// 估算内存使用
-  Map<String, int> _estimateMemoryUsage() {
+  Map<String, num> _estimateMemoryUsage() {
     // 这是一个简化的实现，实际应用中应该使用平台特定的API
     // 或者使用Flutter的内存信息获取方法
 

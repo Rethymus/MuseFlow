@@ -80,8 +80,8 @@ class UserPreferenceManager {
   Future<void> loadPreference() async {
     try {
       final preferenceJson = await _secureStorage.read(key: _preferenceKey);
-      if (preferanceJson != null) {
-        final data = json.decode(preferenceJson);
+      if (preferenceJson != null) {
+        final data = json.decode(preferenceJson) as Map<String, dynamic>;
         _currentPreference = UserPreference.fromJson(data);
       } else {
         // 创建新的偏好配置

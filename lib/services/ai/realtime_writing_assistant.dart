@@ -453,7 +453,7 @@ class RealTimeWritingAssistant {
     final textAdded = currentText.length - session.currentContent.length;
     final writingSpeed = timeElapsed.inMilliseconds > 0
         ? textAdded / timeElapsed.inMilliseconds * 1000 // 字符/秒
-        : 0;
+        : 0.0;
 
     // 分析编辑模式
     final editPattern = _analyzeEditPattern(session, currentText);
@@ -562,6 +562,13 @@ class RealTimeWritingAssistant {
             type: ActionType.strengthenArgument,
             description: '加强论证',
             priority: ActionPriority.medium,
+          ));
+          break;
+        default:
+          actions.add(SuggestedAction(
+            type: ActionType.continueWriting,
+            description: '继续当前写作',
+            priority: ActionPriority.low,
           ));
           break;
       }

@@ -271,7 +271,7 @@ class InteractionAnalyzer {
     }
 
     // 按优先级排序
-    suggestions.sort((a, b) => b.priority.compareTo(a.priority));
+    suggestions.sort((a, b) => b.priority.index.compareTo(a.priority.index));
 
     return suggestions;
   }

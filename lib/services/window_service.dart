@@ -43,7 +43,7 @@ class WindowService {
 
   /// 检查当前平台是否为桌面平台
   bool _isDesktopPlatform() {
-    final platform = Theme.of().platform;
+    final platform = defaultTargetPlatform;
     return platform == TargetPlatform.windows ||
         platform == TargetPlatform.linux ||
         platform == TargetPlatform.macOS;

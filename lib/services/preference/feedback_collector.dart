@@ -400,7 +400,6 @@ class AutoFeedbackCollector {
     await _collector.recordAcceptance(
       originalText: session.initialText,
       modifiedText: suggestion,
-      finalText: result,
       modificationType: modificationType,
       context: session.id,
       topics: topics,

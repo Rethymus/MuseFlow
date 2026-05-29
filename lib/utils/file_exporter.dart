@@ -6,6 +6,7 @@ import 'package:file_picker/file_picker.dart';
 import 'file_security_validator.dart';
 
 class FileExporter {
+  static const String _defaultFileName_ = 'museflow_notes';
   /// 将笔记导出为JSON字符串
   static Future<String> exportToJSON(List<Note> notes) async {
     final List<Map<String, dynamic>> notesJson = notes
@@ -146,7 +147,7 @@ class FileExporter {
   static Future<List<Note>> importFromFile() async {
     try {
       // 1. 使用文件选择器选择文件
-      final FileResult? result = await FilePicker.platform.pickFiles(
+      final result = await FilePicker.platform.pickFiles(
         type: FileType.custom,
         allowedExtensions: ['json'],
       );

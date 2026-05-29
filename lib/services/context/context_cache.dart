@@ -66,6 +66,9 @@ class CacheStats {
   /// 总token数
   final int totalTokens;
 
+  /// 最大token数
+  final int maxTokens;
+
   /// 缓存命中次数
   final int hitCount;
 
@@ -84,6 +87,7 @@ class CacheStats {
   const CacheStats({
     required this.totalSegments,
     required this.totalTokens,
+    required this.maxTokens,
     required this.hitCount,
     required this.missCount,
     required this.trimCount,
@@ -204,6 +208,7 @@ class ContextCache {
     return CacheStats(
       totalSegments: segments.length,
       totalTokens: segments.fold(0, (sum, seg) => sum + seg.estimatedTokens),
+      maxTokens: _config.maxTokens,
       hitCount: _hitCount,
       missCount: _missCount,
       trimCount: _trimCount,

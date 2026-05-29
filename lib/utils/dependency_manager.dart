@@ -54,6 +54,15 @@ class DependencyManager {
       return DependencyAuditResult(
         success: false,
         duration: stopwatch.elapsed,
+        healthReport: DependencyHealthReport(
+          generatedAt: DateTime.now(),
+          dependencies: [],
+          conflicts: [],
+          warnings: [],
+          errors: [e.toString()],
+          score: HealthScore.critical,
+          metrics: {},
+        ),
         errorMessage: e.toString(),
         errorStack: stackTrace.toString(),
       );
@@ -295,12 +304,12 @@ class DependencyAuditResult {
   const DependencyAuditResult({
     required this.success,
     required this.duration,
-    required this.dependencies,
-    required this.conflicts,
+    this.dependencies = const [],
+    this.conflicts = const [],
     required this.healthReport,
-    required this.suggestions,
-    required this.priorityUpdates,
-    required this.constraintsValid,
+    this.suggestions = const [],
+    this.priorityUpdates = const [],
+    this.constraintsValid = true,
     this.errorMessage,
     this.errorStack,
   });

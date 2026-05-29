@@ -177,7 +177,7 @@ class ImmersiveMode extends ChangeNotifier {
     // 降低通知干扰
     _environment.notificationLevel = NotificationLevel.minimal;
     // 调整光线
-    _environment.brightness = Brightness.dim;
+    _environment.brightness = Brightness.dark;
   }
 
   /// 更新专注度评分
@@ -188,7 +188,7 @@ class ImmersiveMode extends ChangeNotifier {
     }
 
     final recentSpeed =
-        _typingSpeedHistory.takeLast(10).reduce((a, b) => a + b) / 10;
+        _typingSpeedHistory.reversed.take(10).reduce((a, b) => a + b) / 10;
     final speedFactor = (recentSpeed / 10.0).clamp(0.0, 1.0);
 
     final durationFactor = (_sessionDuration / 60.0).clamp(0.0, 1.0);

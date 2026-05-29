@@ -112,7 +112,7 @@ class ErrorHandlingService {
     ErrorDisplayWidgets.showErrorBanner(
       context,
       userFriendlyError,
-      onAction: () => showErrorDialog(context, userFriendlyError),
+      onAction: () => ErrorDisplayWidgets.showErrorDialog(context, userFriendlyError),
     );
   }
 
@@ -197,7 +197,7 @@ class ErrorHandlingService {
     return {
       'operating_system': Platform.operatingSystem,
       'operating_system_version': Platform.operatingSystemVersion,
-      'locale': Platform.localName,
+      'locale': Platform.localeName,
       'path_separator': Platform.pathSeparator,
       'number_of_processors': Platform.numberOfProcessors,
       // 安全修复：生产环境中移除敏感路径信息

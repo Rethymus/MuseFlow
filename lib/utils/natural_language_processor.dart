@@ -144,7 +144,7 @@ class NaturalLanguageProcessor {
 
     if (structurePattern.hasMatch(result)) {
       _stats.recordReplacement('structure', '过度结构化');
-      result = result.replaceAll(structurePattern, (match) {
+      result = result.replaceAllMapped(structurePattern, (match) {
         final matchedText = match.group(0)!;
         // 移除明显的结构标记
         return matchedText

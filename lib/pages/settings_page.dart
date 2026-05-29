@@ -202,9 +202,9 @@ class _SettingsPageState extends State<SettingsPage> {
       leading: const Icon(Icons.language),
       title: const Text('语言'),
       subtitle: const Text('选择界面语言'),
-      trailing: const DropdownButton<String>(
+      trailing: DropdownButton<String>(
         value: '中文',
-        items: [
+        items: const [
           DropdownMenuItem(
             value: '中文',
             child: Text('中文'),
@@ -282,9 +282,9 @@ class _SettingsPageState extends State<SettingsPage> {
       leading: const Icon(Icons.psychology),
       title: const Text('AI模型'),
       subtitle: const Text('选择AI处理模型'),
-      trailing: const DropdownButton<String>(
+      trailing: DropdownButton<String>(
         value: 'Claude 3.5',
-        items: [
+        items: const [
           DropdownMenuItem(value: 'Claude 3.5', child: Text('Claude 3.5')),
           DropdownMenuItem(value: 'GPT-4', child: Text('GPT-4')),
           DropdownMenuItem(value: '本地模型', child: Text('本地模型')),

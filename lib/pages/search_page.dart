@@ -54,12 +54,8 @@ class _SearchPageState extends State<SearchPage> {
   }
 
   void _navigateToHome() {
-    // 找到MainNavigationContainer并切换到首页
-    final navigationController =
-        context.findAncestorStateOfType<_MainNavigationContainerState>();
-    if (navigationController != null) {
-      navigationController._onDestinationSelected(0);
-    }
+    // 使用Navigator回到首页
+    Navigator.of(context).popUntil((route) => route.isFirst);
   }
 
   @override
@@ -191,7 +187,7 @@ class _SearchPageState extends State<SearchPage> {
           spacing: 8,
           runSpacing: 8,
           children: searchService.searchHistory.take(8).map((item) {
-            return ActionChip(
+            return InputChip(
               label: Text(item.query),
               deleteIcon: const Icon(Icons.close, size: 16),
               onDeleted: () {

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter/foundation.dart';
 import '../utils/user_friendly_error_handler.dart';
 
@@ -565,7 +566,7 @@ class ErrorHandlingWidget extends SingleChildRenderObjectWidget {
 class _ErrorHandlingRenderObject extends RenderProxyBox {
   void Function(dynamic error, StackTrace stackTrace) onError;
 
-  _ErrorHandlingRenderObject(this.onError);
+  _ErrorHandlingRenderObject(this.onError, [RenderBox? child]) : super(child);
 
   @override
   void performLayout() {

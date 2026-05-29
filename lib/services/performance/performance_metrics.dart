@@ -155,6 +155,9 @@ class PerformanceStatistics {
     return sortedValues[index.clamp(0, sortedValues.length - 1)];
   }
 
+  /// 获取P95百分位数
+  double get p95 => getPercentile(95);
+
   Map<String, dynamic> toJson() {
     return {
       'metricName': metricName,

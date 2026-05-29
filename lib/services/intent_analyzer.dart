@@ -11,7 +11,7 @@ class IntentAnalyzer {
   // 反馈历史（用于学习和改进）
   final List<IntentConfirmationFeedback> _feedbackHistory = [];
 
-  const IntentAnalyzer({this.config = const IntentAnalyzerConfig()});
+  IntentAnalyzer({this.config = const IntentAnalyzerConfig()});
 
   /// 分析AI操作请求并生成意图确认
   IntentConfirmation analyzeRequest({

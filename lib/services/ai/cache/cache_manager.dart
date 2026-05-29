@@ -207,7 +207,7 @@ class CacheManager {
 
     // 检查内存使用
     final cacheSize = await _cache.getCacheSize();
-    if (cacheSize['memory_entries'] > 900) {
+    if ((cacheSize['memory_entries'] as int? ?? 0) > 900) {
       suggestions.add('内存缓存接近容量上限，考虑增加内存缓存大小或启用更激进的清理策略');
     }
 

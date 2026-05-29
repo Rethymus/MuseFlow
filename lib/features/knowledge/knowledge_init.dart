@@ -7,6 +7,7 @@ import 'world_model.dart';
 import 'character_service.dart';
 import 'world_service.dart';
 import 'knowledge_screen.dart';
+import 'knowledge_search.dart';
 
 /// 知识库功能初始化和配置
 class KnowledgeFeature {
@@ -28,7 +29,7 @@ class KnowledgeFeature {
   }
 
   /// 获取知识库功能的Provider配置
-  static List<SingleChildWidget> getProviders() {
+  static List<Widget> getProviders() {
     return [
       ChangeNotifierProvider<CharacterService>(
         create: (_) => CharacterService(),
