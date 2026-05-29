@@ -4,6 +4,11 @@ import '../utils/user_friendly_error_handler.dart';
 import '../widgets/error_display_widgets.dart';
 import '../services/error_handling_service.dart';
 
+// Type aliases for nested types
+typedef UserFriendlyError = UserFriendlyErrorHandler.UserFriendlyError;
+typedef ErrorSeverity = UserFriendlyErrorHandler.ErrorSeverity;
+typedef ErrorCategory = UserFriendlyErrorHandler.ErrorCategory;
+
 /// 错误处理集成示例
 ///
 /// 展示如何在应用中集成和使用用户友好的错误处理系统
@@ -38,7 +43,7 @@ class ErrorHandlingDemoScreen extends StatefulWidget {
 }
 
 class _ErrorHandlingDemoScreenState extends State<ErrorHandlingDemoScreen> {
-  final List<UserFriendlyErrorHandler.UserFriendlyError> _errors = [];
+  final List<UserFriendlyError> _errors = [];
 
   @override
   void initState() {
@@ -185,7 +190,7 @@ class _ErrorHandlingDemoScreenState extends State<ErrorHandlingDemoScreen> {
   void _triggerNetworkError() {
     try {
       // 模拟网络错误
-      throw SocketException('连接失败', uri: Uri.parse('https://example.com'));
+      throw SocketException('连接失败');
     } catch (e, stackTrace) {
       errorHandlingService.showError(context, e, stackTrace);
     }
@@ -227,7 +232,7 @@ class _ErrorHandlingDemoScreenState extends State<ErrorHandlingDemoScreen> {
     }
   }
 
-  void _showErrorDetails(UserFriendlyErrorHandler.UserFriendlyError error) {
+  void _showErrorDetails(UserFriendlyError error) {
     errorHandlingService.showError(context, error);
   }
 

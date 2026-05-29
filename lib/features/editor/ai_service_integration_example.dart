@@ -7,8 +7,8 @@ import 'package:flutter/material.dart';
 import '../../services/ai/ai_service.dart';
 import '../../services/ai/adapters/openai_adapter.dart';
 import '../../services/ai/adapters/claude_adapter.dart';
-import '../models/ai_config.dart';
-import '../models/ai_message.dart';
+import '../../models/ai_config.dart';
+import '../../models/ai_message.dart';
 import 'ai_action_handler.dart';
 
 /// AI服务集成示例
