@@ -1,3 +1,5 @@
+import 'package:flutter/foundation.dart';
+
 /// 文本编辑动作抽象类
 /// 定义所有可撤销/重做的编辑操作的基本接口
 abstract class TextEditAction {

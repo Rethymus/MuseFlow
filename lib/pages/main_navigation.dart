@@ -208,7 +208,7 @@ class _MainNavigationContainerState extends State<MainNavigationContainer>
 
   Widget _buildNavigationItem({
     required Widget icon,
-    required Widget selectedIcon,
+    Widget? selectedIcon,
     required String label,
     required bool isSelected,
     required VoidCallback onTap,
@@ -227,12 +227,14 @@ class _MainNavigationContainerState extends State<MainNavigationContainer>
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(
-              isSelected ? (selectedIcon as Icon) : (icon as Icon),
-              size: 24,
-              color: isSelected
-                  ? Theme.of(context).colorScheme.primary
-                  : Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
+            IconTheme(
+              data: IconThemeData(
+                size: 24,
+                color: isSelected
+                    ? Theme.of(context).colorScheme.primary
+                    : Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
+              ),
+              child: isSelected ? (selectedIcon ?? icon) : icon,
             ),
             if (isSelected) ...[
               const SizedBox(width: 8),

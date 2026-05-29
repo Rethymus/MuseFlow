@@ -181,7 +181,7 @@ class HistoryPanel extends StatelessWidget {
             : null,
       ),
       child: ListTile(
-        leading: _getActionIcon(item.actionType),
+        leading: Icon(_getActionIcon(item.actionType)),
         title: Text(
           item.description,
           style: TextStyle(

@@ -64,7 +64,7 @@ class _UndoRedoExampleState extends State<UndoRedoExample> {
     );
   }
 
-  KeyEventResult _handleKeyEvent(KeyEvent event) {
+  KeyEventResult _handleKeyEvent(FocusNode node, KeyEvent event) {
     if (event is! KeyDownEvent) return KeyEventResult.ignored;
 
     final isControlPressed = HardwareKeyboard.instance.isControlPressed;

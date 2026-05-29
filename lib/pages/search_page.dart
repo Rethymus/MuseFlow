@@ -188,7 +188,7 @@ class _SearchPageState extends State<SearchPage> {
           spacing: 8,
           runSpacing: 8,
           children: searchService.searchHistory.take(8).map((item) {
-            return Chip(
+            return ActionChip(
               label: Text(item.query),
               deleteIcon: const Icon(Icons.close, size: 16),
               onDeleted: () {
@@ -336,13 +336,5 @@ class _SearchPageState extends State<SearchPage> {
         );
       },
     );
-  }
-}
-
-// 为了访问导航容器的私有状态，我们需要一个全局key或公共方法
-// 这里我们创建一个简单的解决方案
-class _MainNavigationContainerState extends State {
-  void _onDestinationSelected(int index) {
-    // 这个方法应该从MainNavigationContainer中暴露
   }
 }

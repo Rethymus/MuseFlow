@@ -715,8 +715,6 @@ class _EditorScreenState extends State<EditorScreen> {
           height: 1.6,
           fontSize: 16,
         ),
-        onSelectionChanged: _handleSelectionChanged,
-        selectionControls: _textController.selectionControls,
       ),
     );
   }
