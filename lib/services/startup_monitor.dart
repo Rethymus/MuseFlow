@@ -180,8 +180,10 @@ class StartupMonitor {
     }
 
     final metrics = _lastMetrics!;
-    final basicUIStatus = metrics.timeToBasicUI.inMilliseconds < 500 ? '✓' : '✗';
-    final coreStatus = metrics.timeToCoreServices.inMilliseconds < 1200 ? '✓' : '✗';
+    final basicUIStatus =
+        metrics.timeToBasicUI.inMilliseconds < 500 ? '✓' : '✗';
+    final coreStatus =
+        metrics.timeToCoreServices.inMilliseconds < 1200 ? '✓' : '✗';
     const completeStatus = '✓'; // 总是根据实际时间
 
     return '''
@@ -211,15 +213,24 @@ ${metrics.meetsTarget() ? '✓ 所有目标已达成' : '✗ 部分目标未达�
     final metrics = _lastMetrics!;
 
     if (metrics.timeToBasicUI.inMilliseconds >= 500) {
-      issues.add('基础UI渲染时间过长: ${metrics.timeToBasicUI.inMilliseconds}ms (目标: <500ms)');
+      issues.add(
+        '基础UI渲染时间过长: ${metrics.timeToBasicUI.inMilliseconds}ms '
+            '(目标: <500ms)',
+      );
     }
 
     if (metrics.timeToCoreServices.inMilliseconds >= 1200) {
-      issues.add('核心服务初始化时间过长: ${metrics.timeToCoreServices.inMilliseconds}ms (目标: <1200ms)');
+      issues.add(
+        '核心服务初始化时间过长: ${metrics.timeToCoreServices.inMilliseconds}ms '
+            '(目标: <1200ms)',
+      );
     }
 
     if (metrics.timeToComplete.inMilliseconds >= 2000) {
-      issues.add('总启动时间过长: ${metrics.timeToComplete.inMilliseconds}ms (目标: <2000ms)');
+      issues.add(
+        '总启动时间过长: ${metrics.timeToComplete.inMilliseconds}ms '
+            '(目标: <2000ms)',
+      );
     }
 
     // 检查各个任务执行时间

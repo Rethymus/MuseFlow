@@ -34,17 +34,26 @@ class StartupAnalyzer {
         'basicUI': {
           'time': metrics.timeToBasicUI.inMilliseconds,
           'target': AppConstants.startupBasicUIThresholdMs,
-          'status': metrics.timeToBasicUI.inMilliseconds < AppConstants.startupBasicUIThresholdMs ? 'pass' : 'fail',
+          'status': metrics.timeToBasicUI.inMilliseconds <
+                  AppConstants.startupBasicUIThresholdMs
+              ? 'pass'
+              : 'fail',
         },
         'coreServices': {
           'time': metrics.timeToCoreServices.inMilliseconds,
           'target': AppConstants.startupCoreServicesThresholdMs,
-          'status': metrics.timeToCoreServices.inMilliseconds < AppConstants.startupCoreServicesThresholdMs ? 'pass' : 'fail',
+          'status': metrics.timeToCoreServices.inMilliseconds <
+                  AppConstants.startupCoreServicesThresholdMs
+              ? 'pass'
+              : 'fail',
         },
         'complete': {
           'time': metrics.timeToComplete.inMilliseconds,
           'target': AppConstants.startupCompleteThresholdMs,
-          'status': metrics.timeToComplete.inMilliseconds < AppConstants.startupCompleteThresholdMs ? 'pass' : 'fail',
+          'status': metrics.timeToComplete.inMilliseconds <
+                  AppConstants.startupCompleteThresholdMs
+              ? 'pass'
+              : 'fail',
         },
       },
       'overall_status': metrics.meetsTarget() ? 'pass' : 'fail',
@@ -55,7 +64,10 @@ class StartupAnalyzer {
     metrics.taskDurations.forEach((task, duration) {
       taskAnalysis[task] = {
         'time': duration.inMilliseconds,
-        'status': duration.inMilliseconds < AppConstants.startupSlowOperationThresholdMs ? 'good' : 'slow',
+        'status': duration.inMilliseconds <
+                AppConstants.startupSlowOperationThresholdMs
+            ? 'good'
+            : 'slow',
       };
     });
 
@@ -70,7 +82,8 @@ class StartupAnalyzer {
     final recommendations = <String>[];
 
     // 检查基础UI时间
-    if (metrics.timeToBasicUI.inMilliseconds >= AppConstants.startupBasicUIThresholdMs) {
+    if (metrics.timeToBasicUI.inMilliseconds >=
+        AppConstants.startupBasicUIThresholdMs) {
       recommendations.add('基础UI渲染时间过长，建议：');
       recommendations.add('  - 减少初始widget复杂度');
       recommendations.add('  - 延迟加载非关键UI组件');
@@ -78,7 +91,8 @@ class StartupAnalyzer {
     }
 
     // 检查核心服务时间
-    if (metrics.timeToCoreServices.inMilliseconds >= AppConstants.startupCoreServicesThresholdMs) {
+    if (metrics.timeToCoreServices.inMilliseconds >=
+        AppConstants.startupCoreServicesThresholdMs) {
       recommendations.add('核心服务初始化时间过长，建议：');
       recommendations.add('  - 实施真正的延迟加载');
       recommendations.add('  - 优化数据库查询');
@@ -86,7 +100,8 @@ class StartupAnalyzer {
     }
 
     // 检查总时间
-    if (metrics.timeToComplete.inMilliseconds >= AppConstants.startupCompleteThresholdMs) {
+    if (metrics.timeToComplete.inMilliseconds >=
+        AppConstants.startupCompleteThresholdMs) {
       recommendations.add('总启动时间过长，建议：');
       recommendations.add('  - 重新评估初始化顺序');
       recommendations.add('  - 将更多服务移到后台初始化');
@@ -95,13 +110,17 @@ class StartupAnalyzer {
 
     // 分析任务执行时间
     final slowTasks = metrics.taskDurations.entries
-        .where((entry) => entry.value.inMilliseconds > AppConstants.startupSlowOperationThresholdMs)
+        .where((entry) =>
+            entry.value.inMilliseconds >
+            AppConstants.startupSlowOperationThresholdMs)
         .toList();
 
     if (slowTasks.isNotEmpty) {
       recommendations.add('以下任务执行时间较长，建议优化：');
       for (final entry in slowTasks) {
-        recommendations.add('  - ${entry.key}: ${entry.value.inMilliseconds}ms');
+        recommendations.add(
+          '  - ${entry.key}: ${entry.value.inMilliseconds}ms',
+        );
       }
     }
 
@@ -131,24 +150,40 @@ class StartupAnalyzer {
     // 基础UI性能
     buffer.writeln('\n📊 基础UI性能:');
     final basicUI = metrics['basicUI'] as Map<String, dynamic>;
-    buffer.writeln('  时间: ${basicUI['time']}ms / ${basicUI['target']}ms');
-    buffer.writeln('  状态: ${_getStatusIcon(basicUI['status'])} ${basicUI['status']}');
+    buffer.writeln(
+      '  时间: ${basicUI['time']}ms / ${basicUI['target']}ms',
+    );
+    buffer.writeln(
+      '  状态: ${_getStatusIcon(basicUI['status'])} ${basicUI['status']}',
+    );
 
     // 核心服务性能
     buffer.writeln('\n🔧 核心服务性能:');
     final coreServices = metrics['coreServices'] as Map<String, dynamic>;
-    buffer.writeln('  时间: ${coreServices['time']}ms / ${coreServices['target']}ms');
-    buffer.writeln('  状态: ${_getStatusIcon(coreServices['status'])} ${coreServices['status']}');
+    buffer.writeln(
+      '  时间: ${coreServices['time']}ms / ${coreServices['target']}ms',
+    );
+    buffer.writeln(
+      '  状态: ${_getStatusIcon(coreServices['status'])} '
+          '${coreServices['status']}',
+    );
 
     // 完整启动性能
     buffer.writeln('\n🚀 完整启动性能:');
     final complete = metrics['complete'] as Map<String, dynamic>;
-    buffer.writeln('  时间: ${complete['time']}ms / ${complete['target']}ms');
-    buffer.writeln('  状态: ${_getStatusIcon(complete['status'])} ${complete['status']}');
+    buffer.writeln(
+      '  时间: ${complete['time']}ms / ${complete['target']}ms',
+    );
+    buffer.writeln(
+      '  状态: ${_getStatusIcon(complete['status'])} ${complete['status']}',
+    );
 
     // 总体状态
     buffer.writeln('\n📈 总体状态:');
-    buffer.writeln('  ${_getOverallStatusIcon(analysis['overall_status'])} ${analysis['overall_status']}');
+    buffer.writeln(
+      '  ${_getOverallStatusIcon(analysis['overall_status'])} '
+          '${analysis['overall_status']}',
+    );
 
     // 任务详情
     if (analysis.containsKey('tasks')) {
@@ -156,7 +191,9 @@ class StartupAnalyzer {
       final tasks = analysis['tasks'] as Map<String, dynamic>;
       tasks.forEach((task, data) {
         final taskData = data as Map<String, dynamic>;
-        buffer.writeln('  $task: ${taskData['time']}ms (${taskData['status']})');
+        buffer.writeln(
+          '  $task: ${taskData['time']}ms (${taskData['status']})',
+        );
       });
     }
 
@@ -211,19 +248,19 @@ class StartupAnalyzer {
         'previous': previous.timeToBasicUI.inMilliseconds,
         'current': current.timeToBasicUI.inMilliseconds,
         'diff': current.timeToBasicUI.inMilliseconds -
-                previous.timeToBasicUI.inMilliseconds,
+            previous.timeToBasicUI.inMilliseconds,
       },
       'coreServices': {
         'previous': previous.timeToCoreServices.inMilliseconds,
         'current': current.timeToCoreServices.inMilliseconds,
         'diff': current.timeToCoreServices.inMilliseconds -
-                previous.timeToCoreServices.inMilliseconds,
+            previous.timeToCoreServices.inMilliseconds,
       },
       'complete': {
         'previous': previous.timeToComplete.inMilliseconds,
         'current': current.timeToComplete.inMilliseconds,
         'diff': current.timeToComplete.inMilliseconds -
-                previous.timeToComplete.inMilliseconds,
+            previous.timeToComplete.inMilliseconds,
       },
     };
 
@@ -232,9 +269,9 @@ class StartupAnalyzer {
     comparison['improvement'] = improved;
     comparison['improvement_percentage'] =
         ((previous.timeToComplete.inMilliseconds -
-                  current.timeToComplete.inMilliseconds) /
-              previous.timeToComplete.inMilliseconds *
-              100)
+                    current.timeToComplete.inMilliseconds) /
+                previous.timeToComplete.inMilliseconds *
+                100)
             .toStringAsFixed(1);
 
     return comparison;
@@ -256,8 +293,9 @@ class StartupAnalyzer {
         'timestamp': current.timestamp.toIso8601String(),
         'basicUI_change': current.timeToBasicUI.inMilliseconds -
             previous.timeToBasicUI.inMilliseconds,
-        'coreServices_change': current.timeToCoreServices.inMilliseconds -
-            previous.timeToCoreServices.inMilliseconds,
+        'coreServices_change':
+            current.timeToCoreServices.inMilliseconds -
+                previous.timeToCoreServices.inMilliseconds,
         'complete_change': current.timeToComplete.inMilliseconds -
             previous.timeToComplete.inMilliseconds,
       };
@@ -285,7 +323,7 @@ class StartupAnalyzer {
     if (basicUI['status'] == 'fail') {
       issues.add(
         '基础UI加载时间过长: ${basicUI['time']}ms '
-        '(目标: ${basicUI['target']}ms)',
+            '(目标: ${basicUI['target']}ms)',
       );
     }
 
@@ -294,7 +332,7 @@ class StartupAnalyzer {
     if (coreServices['status'] == 'fail') {
       issues.add(
         '核心服务初始化时间过长: ${coreServices['time']}ms '
-        '(目标: ${coreServices['target']}ms)',
+            '(目标: ${coreServices['target']}ms)',
       );
     }
 
@@ -303,7 +341,7 @@ class StartupAnalyzer {
     if (complete['status'] == 'fail') {
       issues.add(
         '完整启动时间过长: ${complete['time']}ms '
-        '(目标: ${complete['target']}ms)',
+            '(目标: ${complete['target']}ms)',
       );
     }
 
