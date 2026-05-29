@@ -225,16 +225,15 @@ class SecurityReporter {
     return buffer.toString();
   }
 
-  static Map<String, dynamic> _checkPathTraversalProtection() {
+  static Future<Map<String, dynamic>> _checkPathTraversalProtection() async {
     try {
       // 测试路径遍历检测
       final testPaths = ['../../../etc/passwd', '..\\..\\system32'];
       int detected = 0;
 
       for (final path in testPaths) {
-        fileSecurityValidator.validatePath(path).then((result) {
-          if (!result.isValid) detected++;
-        });
+        final result = await fileSecurityValidator.validatePath(path);
+        if (!result.isValid) detected++;
       }
 
       if (detected == testPaths.length) {
