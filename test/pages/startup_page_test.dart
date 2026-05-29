@@ -5,6 +5,8 @@ import 'package:museflow/pages/startup_page.dart';
 import 'package:museflow/services/progressive_initializer.dart';
 
 void main() {
+  // 确保Flutter测试绑定初始化
+  TestWidgetsFlutterBinding.ensureInitialized();
   group('StartupPage Widget测试', () {
     late List<String> completionCallbacks;
     late VoidCallback onInitializationComplete;

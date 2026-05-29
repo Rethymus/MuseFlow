@@ -3,18 +3,18 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:provider/provider.dart';
 import 'package:museflow/models/app_state.dart';
 import 'package:museflow/pages/settings_page.dart';
-import 'package:museflow/services/storage_service.dart';
+import 'package:museflow/services/secure_storage_service.dart';
 
 /// SettingsPage Widget测试
 /// 验证设置页面的UI组件交互、状态管理和对话框功能
 void main() {
   group('SettingsPage Widget测试', () {
     late AppState mockAppState;
-    late StorageService mockStorageService;
+    late SecureStorageService mockStorageService;
 
     setUp(() {
-      // 初始化服务实例
-      mockStorageService = StorageService.instance;
+      // 使用SecureStorageService而不是StorageService
+      mockStorageService = SecureStorageService();
       mockAppState = AppState(storageService: mockStorageService);
     });
 

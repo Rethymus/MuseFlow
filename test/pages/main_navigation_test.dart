@@ -11,6 +11,8 @@ import 'package:museflow/services/global_search_service.dart';
 /// MainNavigationContainer Widget测试
 /// 完整覆盖主导航容器的功能测试
 void main() {
+  // 确保Flutter测试绑定初始化
+  TestWidgetsFlutterBinding.ensureInitialized();
   group('MainNavigationContainer基础测试', () {
     late AppState mockAppState;
     late GlobalSearchService mockSearchService;

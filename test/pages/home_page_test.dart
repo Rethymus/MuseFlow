@@ -13,6 +13,8 @@ import 'package:museflow/widgets/note_list.dart';
 import 'package:museflow/widgets/note_editor.dart';
 
 void main() {
+  // 确保Flutter测试绑定初始化
+  TestWidgetsFlutterBinding.ensureInitialized();
   group('HomePage Widget测试', () {
     late AppState mockAppState;
     late GlobalSearchService mockSearchService;

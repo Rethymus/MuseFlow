@@ -4,6 +4,8 @@ import 'package:museflow/models/note.dart';
 /// Note模型测试
 /// 验证Note对象的完整生命周期
 void main() {
+  // 确保Flutter测试绑定初始化
+  TestWidgetsFlutterBinding.ensureInitialized();
   group('Note模型测试', () {
     late Note note;
 

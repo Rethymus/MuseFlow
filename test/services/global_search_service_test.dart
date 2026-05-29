@@ -1,5 +1,8 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:museflow/services/global_search_service.dart';
+import 'package:museflow/services/secure_storage_service.dart';
+import 'package:museflow/features/knowledge/character_service.dart';
+import 'package:museflow/features/knowledge/world_service.dart';
 
 /// GlobalSearchService测试
 /// 验证全局搜索服务的核心功能
@@ -8,7 +11,16 @@ void main() {
     late GlobalSearchService searchService;
 
     setUp(() {
-      searchService = GlobalSearchService();
+      // 创建服务实例，不依赖Hive初始化
+      final storageService = SecureStorageService();
+      final characterService = CharacterService();
+      final worldService = WorldService();
+
+      searchService = GlobalSearchService(
+        storageService: storageService,
+        characterService: characterService,
+        worldService: worldService,
+      );
     });
 
     test('搜索服务初始化', () {
@@ -40,7 +52,15 @@ void main() {
     late GlobalSearchService searchService;
 
     setUp(() {
-      searchService = GlobalSearchService();
+      final storageService = SecureStorageService();
+      final characterService = CharacterService();
+      final worldService = WorldService();
+
+      searchService = GlobalSearchService(
+        storageService: storageService,
+        characterService: characterService,
+        worldService: worldService,
+      );
     });
 
     test('搜索笔记功能', () async {
@@ -89,7 +109,15 @@ void main() {
     late GlobalSearchService searchService;
 
     setUp(() {
-      searchService = GlobalSearchService();
+      final storageService = SecureStorageService();
+      final characterService = CharacterService();
+      final worldService = WorldService();
+
+      searchService = GlobalSearchService(
+        storageService: storageService,
+        characterService: characterService,
+        worldService: worldService,
+      );
     });
 
     test('搜索响应时间测试', () async {
@@ -121,7 +149,15 @@ void main() {
     late GlobalSearchService searchService;
 
     setUp(() {
-      searchService = GlobalSearchService();
+      final storageService = SecureStorageService();
+      final characterService = CharacterService();
+      final worldService = WorldService();
+
+      searchService = GlobalSearchService(
+        storageService: storageService,
+        characterService: characterService,
+        worldService: worldService,
+      );
     });
 
     test('缓存功能验证', () async {
