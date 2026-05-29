@@ -384,7 +384,8 @@ class ContextualAIService {
       prompt.writeln('\n文档信息：');
       prompt.writeln('- 文档ID: ${docContext.documentId}');
       prompt.writeln('- 风格特征: ${docContext.styleProfile.primaryStyle}');
-      prompt.writeln('- 语言风格: ${docContext.styleAnalysis.detectedLanguageStyle}');
+      prompt
+          .writeln('- 语言风格: ${docContext.styleAnalysis.detectedLanguageStyle}');
       prompt.writeln('- 详细程度: ${docContext.styleAnalysis.detectedDetailLevel}');
     }
 
@@ -429,9 +430,10 @@ class ContextualAIService {
       averageSentenceLength: avgSentenceLength,
       averageParagraphLength: avgParagraphLength,
       sentenceLengthVariance: _calculateVariance(sentenceLengths),
-      usesFormalLanguage: writingAnalysis.detectedLanguageStyle == LanguageStyle.formal,
-      usesComplexStructures:
-          writingAnalysis.detectedSentenceComplexity == SentenceComplexity.complex,
+      usesFormalLanguage:
+          writingAnalysis.detectedLanguageStyle == LanguageStyle.formal,
+      usesComplexStructures: writingAnalysis.detectedSentenceComplexity ==
+          SentenceComplexity.complex,
       emotionTone: _detectEmotionTone(content),
     );
   }
