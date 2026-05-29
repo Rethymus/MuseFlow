@@ -179,9 +179,6 @@ void main() {
       ];
 
       for (final size in testSizes) {
-        // 重置状态
-        tester.reset();
-
         await tester.binding.setSurfaceSize(size);
         await tester.pumpWidget(createStartupPageUnderTest());
         await tester.pumpAndSettle();
@@ -638,9 +635,6 @@ void main() {
         );
 
         await tester.pumpAndSettle();
-
-        // 清理
-        tester.reset();
       }
 
       // 最后一次构建应该仍然正常工作

@@ -7,7 +7,7 @@ void main() {
     late IntentAnalyzer intentAnalyzer;
 
     setUp(() {
-      intentAnalyzer = const IntentAnalyzer();
+      intentAnalyzer = IntentAnalyzer();
     });
 
     test('应该正确分析润色意图', () {

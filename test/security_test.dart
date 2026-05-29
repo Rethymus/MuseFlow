@@ -86,7 +86,7 @@ void main() {
         '._file',
         '.spotlight-v100',
         '.Trash',
-        '~$temporary.doc',
+        '~\$temporary.doc',
       ];
 
       for (final pattern in forbiddenPatterns) {

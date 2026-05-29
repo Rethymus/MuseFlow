@@ -109,27 +109,38 @@ void main() {
       await tester.pumpAndSettle();
 
       // 验证AppState存在
-      final appState = tester.widget<AppState>(find.byType(AppState));
+      final appState = Provider.of<AppState>(
+        tester.element(find.byType(MainNavigationContainer)),
+        listen: false,
+      );
       expect(appState, isNotNull);
 
       // 验证CharacterService存在
-      final characterService =
-          tester.widget<CharacterService>(find.byType(CharacterService));
+      final characterService = Provider.of<CharacterService>(
+        tester.element(find.byType(MainNavigationContainer)),
+        listen: false,
+      );
       expect(characterService, isNotNull);
 
       // 验证WorldService存在
-      final worldService =
-          tester.widget<WorldService>(find.byType(WorldService));
+      final worldService = Provider.of<WorldService>(
+        tester.element(find.byType(MainNavigationContainer)),
+        listen: false,
+      );
       expect(worldService, isNotNull);
 
       // 验证SharedDataService存在
-      final sharedDataService =
-          tester.widget<SharedDataService>(find.byType(SharedDataService));
+      final sharedDataService = Provider.of<SharedDataService>(
+        tester.element(find.byType(MainNavigationContainer)),
+        listen: false,
+      );
       expect(sharedDataService, isNotNull);
 
       // 验证GlobalSearchService存在
-      final searchService =
-          tester.widget<GlobalSearchService>(find.byType(GlobalSearchService));
+      final searchService = Provider.of<GlobalSearchService>(
+        tester.element(find.byType(MainNavigationContainer)),
+        listen: false,
+      );
       expect(searchService, isNotNull);
     });
 

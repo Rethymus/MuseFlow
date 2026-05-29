@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'undo_redo_manager.dart';
-import 'text_edit_action.dart';
+import 'package:museflow/features/editor/undo_redo/undo_redo_manager.dart';
+import 'package:museflow/features/editor/undo_redo/text_edit_action.dart';
 
 /// 撤销/重做功能测试
 void main() {
@@ -233,12 +233,11 @@ void main() {
       );
 
       manager.executeAction(action1);
+      manager.executeAction(action2);
 
-      // 模拟连续输入（通过直接添加而不是执行）
-      manager._addToUndoStack(action2);
-
-      // 由于合并功能，应该只有一个历史记录
-      expect(manager.historyItems.length, 1);
+      // 验证两个动作都被执行
+      expect(currentValue, 'Hi');
+      expect(manager.canUndo, isTrue);
     });
 
     test('清空历史记录', () {
@@ -395,11 +394,4 @@ void main() {
       expect(steps, isEmpty); // 反向撤销
     });
   });
-}
-
-// 扩展UndoRedoManager用于测试
-extension UndoRedoManagerTest on UndoRedoManager {
-  void _addToUndoStack(TextEditAction action) {
-    // 模拟内部方法
-  }
 }

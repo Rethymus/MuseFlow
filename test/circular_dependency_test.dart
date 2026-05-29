@@ -95,7 +95,7 @@ void main() {
 
       // Attempting to load notes should throw an error
       expect(() async => await appState.loadNotes(),
-          throwsA(isA<StateException>()));
+          throwsA(isA<StateError>()));
     });
   });
 }
