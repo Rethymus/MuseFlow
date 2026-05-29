@@ -12,7 +12,7 @@ class EditorConfig {
   // 编辑器配置
   static const int maxHistoryLength = 50;
   static const int maxFragmentCount = 100;
-  static const int defaultMaxLines = null; // 无限制
+  static const int? defaultMaxLines = null; // 无限制
   static const double defaultFontSize = AppConstants.defaultFontSize;
   static const double defaultLineHeight = AppConstants.defaultLineHeight;
 

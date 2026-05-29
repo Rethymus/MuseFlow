@@ -526,6 +526,8 @@ class _GlobalErrorMonitoringState extends State<GlobalErrorMonitoring> {
 
     // 监听全局错误流
     _errorSubscription = ErrorHandlingService.instance.errorStream.listen((error) {
+      if (error == null) return;
+
       setState(() {
         _recentErrors.add(error.title);
       });

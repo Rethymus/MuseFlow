@@ -13,7 +13,7 @@ import 'ai_action_handler.dart';
 
 /// AI服务集成示例
 class AIServiceIntegrationExample {
-  static const String example = '''
+  static String example = '''
   // 1. 初始化AI服务
   final aiService = await AIService.initialize();
 
@@ -314,20 +314,8 @@ class ErrorHandlingExample {
 
       await aiService.sendMessage(messages);
     } catch (e) {
-      // 处理不同类型的错误
-      if (e is ApiKeyException) {
-        Logger.debug('API密钥错误: ${e.message}');
-      } else if (e is RateLimitException) {
-        Logger.debug('请求频率限制: ${e.message}');
-      } else if (e is QuotaException) {
-        Logger.debug('配额用完: ${e.message}');
-      } else if (e is TimeoutException) {
-        Logger.debug('请求超时: ${e.message}');
-      } else if (e is NetworkException) {
-        Logger.debug('网络错误: ${e.message}');
-      } else {
-        Logger.debug('未知错误: $e');
-      }
+      // 处理错误
+      Logger.debug('发生错误: $e');
     }
   }
 }

@@ -487,7 +487,7 @@ class _EditorScreenState extends State<EditorScreen> {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       Icon(
-                        anchor.isEmpty ? Icons.anchor_outline : Icons.anchor,
+                        anchor.isEmpty ? Icons.bookmark_border : Icons.bookmark,
                         color: anchor.isNotEmpty ? Colors.blue.shade700 : null,
                       ),
                       if (anchor.isNotEmpty) ...[
