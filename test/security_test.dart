@@ -140,7 +140,7 @@ void main() {
 
       expect(safePath, isNotNull);
       expect(safePath, contains('test'));
-      expect(safePath, isNot(contains(RegExp(r[<>:"|?*\\])))));
+      expect(safePath, isNot(contains(RegExp(r'[<>:"|?*\\]'))));
 
       print('✓ 正确清理危险字符: $safePath');
     });
