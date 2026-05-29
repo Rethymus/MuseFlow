@@ -1,3 +1,4 @@
+import 'dart:math';
 import 'package:flutter/foundation.dart';
 import '../../features/knowledge/character_model.dart';
 import '../../features/knowledge/world_model.dart';
@@ -140,7 +141,7 @@ class SimpleTFIDFEmbedding implements VectorEmbeddingInterface {
     for (final value in vector) {
       sum += value * value;
     }
-    return sum > 0 ? sum.sqrt() : 1.0;
+    return sum > 0 ? sqrt(sum) : 1.0;
   }
 }
 

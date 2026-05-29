@@ -118,7 +118,7 @@ class _CacheNode {
 
 /// 上下文缓存实现
 class ContextCache {
-  final CacheConfig _config;
+  CacheConfig _config;
 
   // LRU双向链表
   _CacheNode? _head;

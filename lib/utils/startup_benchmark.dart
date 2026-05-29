@@ -1,6 +1,7 @@
 import '../utils/logger.dart';
 import 'package:flutter/foundation.dart';
 import 'dart:async';
+import 'dart:math';
 import '../services/startup_monitor.dart';
 import '../services/progressive_initializer.dart';
 import '../config/app_constants.dart';
@@ -201,7 +202,7 @@ class StartupBenchmark {
     final variance =
         values.map((v) => (v - avg) * (v - avg)).reduce((a, b) => a + b) /
             values.length;
-    return variance > 0 ? variance.sqrt() : 0.0;
+    return variance > 0 ? sqrt(variance) : 0.0;
   }
 
   /// 计算通过率

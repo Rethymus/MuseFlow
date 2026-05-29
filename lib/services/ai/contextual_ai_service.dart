@@ -416,13 +416,13 @@ class ContextualAIService {
         .toList();
 
     final avgSentenceLength = sentenceLengths.isEmpty
-        ? 0
+        ? 0.0
         : sentenceLengths.reduce((a, b) => a + b) / sentenceLengths.length;
 
     // 分析段落长度
     final paragraphs = content.split(RegExp(r'\n\n+'));
     final avgParagraphLength = paragraphs.isEmpty
-        ? 0
+        ? 0.0
         : paragraphs.map((p) => p.length).reduce((a, b) => a + b) /
             paragraphs.length;
 
@@ -569,9 +569,12 @@ class ContextualAIService {
 
     // 保留最后几轮对话作为上下文
     final recentTurns = min(5, context.contextHistory.length ~/ 2);
-    context.contextHistory = context.contextHistory.sublist(
+    final recentHistory = context.contextHistory.sublist(
       context.contextHistory.length - recentTurns * 2,
     );
+    context.contextHistory
+      ..clear()
+      ..addAll(recentHistory);
     context.turnCount = recentTurns;
   }
 

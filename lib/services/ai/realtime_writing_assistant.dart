@@ -13,8 +13,8 @@ import '../preference/writing_analyzer.dart';
 /// 提供预测性写作辅助和实时建议
 class RealTimeWritingAssistant {
   static RealTimeWritingAssistant? _instance;
-  final ContextualAIService _contextualService;
-  final WritingAnalyzer _writingAnalyzer;
+  ContextualAIService _contextualService;
+  WritingAnalyzer _writingAnalyzer;
 
   // 预测和分析状态
   final Map<String, WritingSession> _activeSessions = {};

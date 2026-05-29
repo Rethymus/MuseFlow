@@ -1,6 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
-import 'dart:path.dart' as path;
+import 'package:path/path.dart' as path;
 import 'package:flutter/foundation.dart';
 import 'package:path_provider/path_provider.dart';
 import '../config/app_constants.dart';
@@ -187,7 +187,6 @@ class FileSecurityValidator {
     '.img',
     '.bin',
     '.toast',
-    '.dmg',
   };
 
   // 禁止的文件名模式

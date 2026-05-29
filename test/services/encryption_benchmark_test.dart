@@ -1,5 +1,6 @@
 // ignore_for_file: avoid_print
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:museflow/services/secure_data_service.dart';
 import 'package:museflow/services/encryption_performance_monitor.dart';

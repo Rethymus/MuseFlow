@@ -21,7 +21,7 @@ import '../preference/writing_analyzer.dart';
 /// 在基础AI服务上集成用户偏好学习功能
 class PersonalizedAIService {
   static PersonalizedAIService? _instance;
-  final AIService _baseService;
+  AIService _baseService;
   UserPreferenceManager? _preferenceManager;
   FeedbackCollector? _feedbackCollector;
   WritingAnalyzer? _writingAnalyzer;

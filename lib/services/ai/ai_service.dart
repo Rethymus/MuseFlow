@@ -348,7 +348,7 @@ class AIService {
     final retries = retryCount ?? effectiveConfig.effectiveRetryCount;
 
     final response = await retry(
-      maxRetries: retries,
+      maxAttempts: retries,
       retryIf: (e) => _shouldRetry(e),
       onRetry: (e) {
         Logger.warning('Retry request after error: $e', tag: 'AI');
