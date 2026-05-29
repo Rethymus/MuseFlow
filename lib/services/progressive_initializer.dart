@@ -214,8 +214,8 @@ class ProgressiveInitializer {
       // 快速执行UI相关的最小初始化
       // 这些操作应该在500ms内完成
 
-      await Future.delayed(
-          const Duration(milliseconds: 50)); // 模拟最小初始化时间 - 保持不变，这是极短延迟
+      // 性能优化：移除无用的50ms延迟，减少启动时间
+      // await Future.delayed(const Duration(milliseconds: 50));
 
       final phaseTime = DateTime.now().difference(phaseStart);
       Logger.debug('阶段1完成: ${phaseTime.inMilliseconds}ms');
@@ -282,7 +282,8 @@ class ProgressiveInitializer {
       _updateState(progress: 0.9, message: 'AI服务就绪');
 
       // 其他辅助服务可以在这里添加
-      await Future.delayed(AppConstants.shortDelay);
+      // 性能优化：移除无用的shortDelay延迟，减少启动时间
+      // await Future.delayed(AppConstants.shortDelay);
 
       final phaseTime = DateTime.now().difference(phaseStart);
       Logger.debug('阶段3完成: ${phaseTime.inMilliseconds}ms');

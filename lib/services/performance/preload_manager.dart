@@ -370,6 +370,7 @@ class PreloadManager {
   final PreloadCache _cache;
   Timer? _backgroundLoadTimer;
   Timer? _cleanupTimer;
+  Timer? _saveTimer; // 防抖定时器
 
   // 性能统计
   int _totalPreloadAttempts = 0;
@@ -426,7 +427,16 @@ class PreloadManager {
   /// 记录页面访问（用于学习用户模式）
   void recordPageVisit(String pageId) {
     _usagePattern.recordPageVisit(pageId);
-    _saveUsagePattern();
+    // 性能优化：防抖磁盘写入，30秒无新访问后才写入
+    _saveUsagePatternDebounced();
+  }
+
+  /// 防抖保存使用模式
+  void _saveUsagePatternDebounced() {
+    _saveTimer?.cancel();
+    _saveTimer = Timer(const Duration(seconds: 30), () {
+      _saveUsagePattern();
+    });
   }
 
   /// 预测并预加载下一个可能访问的页面
