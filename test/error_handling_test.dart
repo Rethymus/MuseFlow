@@ -16,9 +16,9 @@ void main() {
       final userError = handler.handleError(error);
 
       expect(userError.title, contains('文件'));
-      expect(userError.category, UserFriendlyErrorHandler.ErrorCategory.fileSystem);
+      expect(userError.category, ErrorCategory.fileSystem);
       expect(userError.solutions.length, greaterThan(0));
-      expect(userError.severity, UserFriendlyErrorHandler.ErrorSeverity.error);
+      expect(userError.severity, ErrorSeverity.error);
     });
 
     test('应该正确处理网络异常', () {
@@ -26,7 +26,7 @@ void main() {
       final userError = handler.handleError(error);
 
       expect(userError.title, contains('网络'));
-      expect(userError.category, UserFriendlyErrorHandler.ErrorCategory.network);
+      expect(userError.category, ErrorCategory.network);
       expect(userError.solutions.length, greaterThan(0));
     });
 
@@ -35,7 +35,7 @@ void main() {
       final userError = handler.handleError(error);
 
       expect(userError.title, contains('权限'));
-      expect(userError.category, UserFriendlyErrorHandler.ErrorCategory.permission);
+      expect(userError.category, ErrorCategory.permission);
       expect(userError.solutions.length, greaterThan(0));
     });
 
@@ -44,8 +44,8 @@ void main() {
       final userError = handler.handleError(error);
 
       expect(userError.title, contains('超时'));
-      expect(userError.category, UserFriendlyErrorHandler.ErrorCategory.system);
-      expect(userError.severity, UserFriendlyErrorHandler.ErrorSeverity.warning);
+      expect(userError.category, ErrorCategory.system);
+      expect(userError.severity, ErrorSeverity.warning);
     });
 
     test('应该正确处理格式异常', () {
@@ -53,7 +53,7 @@ void main() {
       final userError = handler.handleError(error);
 
       expect(userError.title, contains('格式'));
-      expect(userError.category, UserFriendlyErrorHandler.ErrorCategory.data);
+      expect(userError.category, ErrorCategory.data);
       expect(userError.solutions.length, greaterThan(0));
     });
 
@@ -64,7 +64,7 @@ void main() {
       expect(userError.title.isNotEmpty, true);
       expect(userError.description.isNotEmpty, true);
       expect(userError.solutions.length, greaterThan(0));
-      expect(userError.severity, UserFriendlyErrorHandler.ErrorSeverity.critical);
+      expect(userError.severity, ErrorSeverity.critical);
     });
 
     test('应该正确处理字符串错误消息', () {
@@ -130,7 +130,7 @@ void main() {
       final error = Exception('严重系统错误');
       final userError = service.handleError(error);
 
-      expect(userError.severity, UserFriendlyErrorHandler.ErrorSeverity.critical);
+      expect(userError.severity, ErrorSeverity.critical);
       expect(service.hasCriticalErrors(), true);
     });
 
@@ -170,21 +170,21 @@ void main() {
       final error = FileSystemException('文件不存在', '/path/to/file.txt');
       final userError = handler.handleError(error);
 
-      expect(userError.category, UserFriendlyErrorHandler.ErrorCategory.fileSystem);
+      expect(userError.category, ErrorCategory.fileSystem);
     });
 
     test('网络错误应该正确分类', () {
       final error = SocketException('网络连接失败');
       final userError = handler.handleError(error);
 
-      expect(userError.category, UserFriendlyErrorHandler.ErrorCategory.network);
+      expect(userError.category, ErrorCategory.network);
     });
 
     test('权限错误应该正确分类', () {
       final error = PermissionDeniedException('没有访问权限');
       final userError = handler.handleError(error);
 
-      expect(userError.category, UserFriendlyErrorHandler.ErrorCategory.permission);
+      expect(userError.category, ErrorCategory.permission);
     });
 
     test('AI服务错误应该正确分类', () {
@@ -193,7 +193,7 @@ void main() {
 
       // AI相关错误会被分类为aiService
       if (error.toString().toLowerCase().contains('ai')) {
-        expect(userError.category, UserFriendlyErrorHandler.ErrorCategory.aiService);
+        expect(userError.category, ErrorCategory.aiService);
       }
     });
   });
@@ -205,7 +205,7 @@ void main() {
       final error = FileSystemException('文件不存在', '/path/to/file.txt');
       final userError = handler.handleError(error);
 
-      expect(userError.severity, UserFriendlyErrorHandler.ErrorSeverity.error);
+      expect(userError.severity, ErrorSeverity.error);
     });
 
     test('网络超时应该是Warning级别', () {
@@ -214,8 +214,8 @@ void main() {
 
       // 超时相关错误通常是warning级别
       expect(
-        userError.severity == UserFriendlyErrorHandler.ErrorSeverity.warning ||
-        userError.severity == UserFriendlyErrorHandler.ErrorSeverity.error,
+        userError.severity == ErrorSeverity.warning ||
+        userError.severity == ErrorSeverity.error,
         true,
       );
     });
@@ -224,7 +224,7 @@ void main() {
       final error = Exception('完全未知的错误');
       final userError = handler.handleError(error);
 
-      expect(userError.severity, UserFriendlyErrorHandler.ErrorSeverity.critical);
+      expect(userError.severity, ErrorSeverity.critical);
     });
   });
 
