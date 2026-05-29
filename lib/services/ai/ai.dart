@@ -19,6 +19,3 @@ export 'adapters/ollama_adapter.dart';
 
 // 工具类
 export 'ai_config_manager.dart';
-
-// 使用示例（开发时参考）
-export 'ai_usage_example.dart';

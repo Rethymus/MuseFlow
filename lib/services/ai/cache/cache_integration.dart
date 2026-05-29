@@ -24,9 +24,6 @@ export 'cache_manager.dart';
 // 配置
 export 'cache_config.dart';
 
-// 使用示例
-export 'cache_example.dart';
-
 /// AI缓存系统初始化和配置
 class AICacheSystem {
   /// 初始化缓存系统

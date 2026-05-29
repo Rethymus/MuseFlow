@@ -3,4 +3,3 @@
 
 export 'thought_fragment/thought_fragment_widget.dart';
 export 'context_anchor_indicator.dart';
-export 'context_anchor_example.dart';
