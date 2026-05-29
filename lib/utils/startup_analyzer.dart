@@ -267,4 +267,37 @@ class StartupAnalyzer {
 
     return trends;
   }
+
+  /// 检查性能问题
+  List<String> checkPerformanceIssues() {
+    final analysis = analyzeStartup();
+    final issues = <String>[];
+
+    if (analysis.containsKey('error')) {
+      issues.add(analysis['error'] as String);
+      return issues;
+    }
+
+    final metrics = analysis['metrics'] as Map<String, dynamic>;
+
+    // 检查基础UI性能
+    final basicUI = metrics['basicUI'] as Map<String, dynamic>;
+    if (basicUI['status'] == 'fail') {
+      issues.add('基础UI加载时间过长: ${basicUI['time']}ms (目标: ${basicUI['target']}ms)');
+    }
+
+    // 检查核心服务性能
+    final coreServices = metrics['coreServices'] as Map<String, dynamic>;
+    if (coreServices['status'] == 'fail') {
+      issues.add('核心服务初始化时间过长: ${coreServices['time']}ms (目标: ${coreServices['target']}ms)');
+    }
+
+    // 检查完整启动性能
+    final complete = metrics['complete'] as Map<String, dynamic>;
+    if (complete['status'] == 'fail') {
+      issues.add('完整启动时间过长: ${complete['time']}ms (目标: ${complete['target']}ms)');
+    }
+
+    return issues;
+  }
 }

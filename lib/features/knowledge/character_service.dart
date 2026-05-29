@@ -430,14 +430,16 @@ class CharacterService with ChangeNotifier {
       return [];
     }
 
-    await _knowledgeGraph!._discoverCharacterRelationships(_characters);
+    await _knowledgeGraph!.discoverCharacterRelationships(_characters);
 
     // 返回发现的关系
     final List<Map<String, dynamic>> relationships = [];
-    for (final edge in _knowledgeGraph!._edges.values) {
+    final edgesMap = _knowledgeGraph!.edgesMap;
+    final nodesMap = _knowledgeGraph!.nodesMap;
+    for (final edge in edgesMap.values) {
       if (edge.properties['implicit'] == true) {
-        final sourceNode = _knowledgeGraph!._nodes[edge.sourceId];
-        final targetNode = _knowledgeGraph!._nodes[edge.targetId];
+        final sourceNode = nodesMap[edge.sourceId];
+        final targetNode = nodesMap[edge.targetId];
 
         if (sourceNode != null && targetNode != null) {
           relationships.add({
