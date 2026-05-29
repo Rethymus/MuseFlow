@@ -717,3 +717,8 @@ class TimeoutException implements Exception {
 
 /// 全局用户友好错误处理器实例
 final userFriendlyErrorHandler = UserFriendlyErrorHandler.instance;
+
+// Type aliases for nested types - makes them easier to use from outside this library
+typedef UserFriendlyError = UserFriendlyErrorHandler.UserFriendlyError;
+typedef ErrorSeverity = UserFriendlyErrorHandler.ErrorSeverity;
+typedef ErrorCategory = UserFriendlyErrorHandler.ErrorCategory;
