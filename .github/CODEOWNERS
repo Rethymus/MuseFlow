@@ -1,0 +1,15 @@
+# Code Owners
+
+# 所有代码变更需要以下人员批准
+* @Rethymus
+
+# 特定路径的代码所有者
+
+# docs/ 目录
+docs/ @Rethymus
+
+# 测试文件
+test/ @Rethymus
+
+# CI/CD配置
+.github/ @Rethymus

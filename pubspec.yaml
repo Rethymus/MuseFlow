@@ -54,6 +54,11 @@ dev_dependencies:
   hive_generator: 2.0.1
   json_serializable: 6.8.0
 
+  # Testing
+  mockito: 5.4.4
+  integration_test:
+    sdk: flutter
+
   # Linting
   flutter_lints: 4.0.0
 
