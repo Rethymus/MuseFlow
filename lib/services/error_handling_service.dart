@@ -64,7 +64,7 @@ class ErrorHandlingService {
     _errorHistory.add(error);
     _errorCount++;
 
-    if (error.severity == UserFriendlyErrorHandler.ErrorSeverity.critical) {
+    if (error.severity == ErrorSeverity.critical) {
       _criticalErrorCount++;
     }
 
@@ -129,8 +129,8 @@ class ErrorHandlingService {
   Map<String, dynamic> getErrorStatistics() {
     final recentErrors = getErrorHistory(limit: 100);
 
-    final categoryCounts = <UserFriendlyErrorHandler.ErrorCategory, int>{};
-    final severityCounts = <UserFriendlyErrorHandler.ErrorSeverity, int>{};
+    final categoryCounts = <ErrorCategory, int>{};
+    final severityCounts = <ErrorSeverity, int>{};
 
     for (final error in recentErrors) {
       categoryCounts[error.category] = (categoryCounts[error.category] ?? 0) + 1;
@@ -219,7 +219,7 @@ class ErrorHandlingService {
   /// 获取最近的严重错误
   List<UserFriendlyError> getRecentCriticalErrors() {
     return _errorHistory
-        .where((error) => error.severity == UserFriendlyErrorHandler.ErrorSeverity.critical)
+        .where((error) => error.severity == ErrorSeverity.critical)
         .toList();
   }
 
@@ -228,7 +228,7 @@ class ErrorHandlingService {
     final recentErrors = getErrorHistory(limit: 100);
 
     // 分析错误类别频率
-    final categoryFrequency = <UserFriendlyErrorHandler.ErrorCategory, int>{};
+    final categoryFrequency = <ErrorCategory, int>{};
     for (final error in recentErrors) {
       categoryFrequency[error.category] = (categoryFrequency[error.category] ?? 0) + 1;
     }
@@ -257,11 +257,11 @@ class ErrorHandlingService {
     final olderErrors = errors.skip(10).take(10).toList();
 
     final recentCriticalCount = recentErrors
-        .where((e) => e.severity == UserFriendlyErrorHandler.ErrorSeverity.critical)
+        .where((e) => e.severity == ErrorSeverity.critical)
         .length;
 
     final olderCriticalCount = olderErrors
-        .where((e) => e.severity == UserFriendlyErrorHandler.ErrorSeverity.critical)
+        .where((e) => e.severity == ErrorSeverity.critical)
         .length;
 
     if (recentCriticalCount > olderCriticalCount * 2) {
@@ -275,7 +275,7 @@ class ErrorHandlingService {
 
   /// 生成改进建议
   List<String> _generateRecommendations(
-    Map<UserFriendlyErrorHandler.ErrorCategory, int> categoryFrequency,
+    Map<ErrorCategory, int> categoryFrequency,
     String trend,
   ) {
     final recommendations = <String>[];
@@ -285,19 +285,19 @@ class ErrorHandlingService {
         .reduce((a, b) => a.value > b.value ? a : b);
 
     switch (mostCommon.key) {
-      case UserFriendlyErrorHandler.ErrorCategory.fileSystem:
+      case ErrorCategory.fileSystem:
         recommendations.add('建议检查文件访问权限和存储空间');
         recommendations.add('考虑增加文件操作的错误处理');
         break;
-      case UserFriendlyErrorHandler.ErrorCategory.network:
+      case ErrorCategory.network:
         recommendations.add('建议优化网络连接处理');
         recommendations.add('考虑添加离线模式支持');
         break;
-      case UserFriendlyErrorHandler.ErrorCategory.permission:
+      case ErrorCategory.permission:
         recommendations.add('建议检查应用权限设置');
         recommendations.add('考虑提供权限请求引导');
         break;
-      case UserFriendlyErrorHandler.ErrorCategory.aiService:
+      case ErrorCategory.aiService:
         recommendations.add('建议检查AI服务配置和API密钥');
         recommendations.add('考虑添加服务降级机制');
         break;

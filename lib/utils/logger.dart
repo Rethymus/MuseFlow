@@ -1,6 +1,15 @@
 import 'package:flutter/foundation.dart';
 import 'app_constants.dart';
 
+/// 日志级别枚举
+enum LogLevel {
+  DEBUG,
+  INFO,
+  WARNING,
+  ERROR,
+  FATAL,
+}
+
 /// 分层日志系统
 ///
 /// 提供基于环境配置的分层日志功能：
@@ -10,19 +19,10 @@ class Logger {
   // 私有构造函数，防止实例化
   Logger._();
 
-  /// 日志级别枚举
-  enum LogLevel {
-    DEBUG,
-    INFO,
-    WARNING,
-    ERROR,
-    FATAL,
-  }
-
   /// 当前日志级别 - 基于调试模式配置
   static LogLevel _currentLevel = AppConstants.enableDebugMode
-      ? Logger.Logger.LogLevel.DEBUG
-      : Logger.Logger.LogLevel.ERROR;
+      ? LogLevel.DEBUG
+      : LogLevel.ERROR;
 
   /// 设置日志级别
   static void setLogLevel(LogLevel level) {
@@ -47,8 +47,8 @@ class Logger {
 
   /// DEBUG级别日志 - 仅在开发模式输出
   static void debug(String message, {String? tag}) {
-    if (_shouldLog(Logger.LogLevel.DEBUG)) {
-      final formattedMessage = _formatMessage(Logger.LogLevel.DEBUG, message, tag: tag);
+    if (_shouldLog(LogLevel.DEBUG)) {
+      final formattedMessage = _formatMessage(LogLevel.DEBUG, message, tag: tag);
       if (kDebugMode) {
         print(formattedMessage);
       }
@@ -57,8 +57,8 @@ class Logger {
 
   /// INFO级别日志 - 仅在开发模式输出
   static void info(String message, {String? tag}) {
-    if (_shouldLog(Logger.LogLevel.INFO)) {
-      final formattedMessage = _formatMessage(Logger.LogLevel.INFO, message, tag: tag);
+    if (_shouldLog(LogLevel.INFO)) {
+      final formattedMessage = _formatMessage(LogLevel.INFO, message, tag: tag);
       if (kDebugMode) {
         print(formattedMessage);
       }
@@ -67,8 +67,8 @@ class Logger {
 
   /// WARNING级别日志 - 仅在开发模式输出
   static void warning(String message, {String? tag}) {
-    if (_shouldLog(Logger.LogLevel.WARNING)) {
-      final formattedMessage = _formatMessage(Logger.LogLevel.WARNING, message, tag: tag);
+    if (_shouldLog(LogLevel.WARNING)) {
+      final formattedMessage = _formatMessage(LogLevel.WARNING, message, tag: tag);
       if (kDebugMode) {
         print(formattedMessage);
       }
@@ -77,8 +77,8 @@ class Logger {
 
   /// ERROR级别日志 - 生产环境和开发环境都输出
   static void error(String message, {String? tag, Object? error, StackTrace? stackTrace}) {
-    if (_shouldLog(Logger.LogLevel.ERROR)) {
-      final formattedMessage = _formatMessage(Logger.LogLevel.ERROR, message, tag: tag);
+    if (_shouldLog(LogLevel.ERROR)) {
+      final formattedMessage = _formatMessage(LogLevel.ERROR, message, tag: tag);
       if (kDebugMode) {
         print(formattedMessage);
         if (error != null) {
@@ -99,8 +99,8 @@ class Logger {
 
   /// FATAL级别日志 - 生产环境和开发环境都输出
   static void fatal(String message, {String? tag, Object? error, StackTrace? stackTrace}) {
-    if (_shouldLog(Logger.LogLevel.FATAL)) {
-      final formattedMessage = _formatMessage(Logger.LogLevel.FATAL, message, tag: tag);
+    if (_shouldLog(LogLevel.FATAL)) {
+      final formattedMessage = _formatMessage(LogLevel.FATAL, message, tag: tag);
       if (kDebugMode) {
         print(formattedMessage);
         if (error != null) {

@@ -266,15 +266,15 @@ class ErrorDisplayWidgets {
   }
 
   /// 获取错误严重程度对应的颜色
-  static Color _getSeverityColor(UserFriendlyErrorHandler.ErrorSeverity severity) {
+  static Color _getSeverityColor(ErrorSeverity severity) {
     switch (severity) {
-      case UserFriendlyErrorHandler.ErrorSeverity.info:
+      case ErrorSeverity.info:
         return Colors.blue;
-      case UserFriendlyErrorHandler.ErrorSeverity.warning:
+      case ErrorSeverity.warning:
         return Colors.orange;
-      case UserFriendlyErrorHandler.ErrorSeverity.error:
+      case ErrorSeverity.error:
         return Colors.red;
-      case UserFriendlyErrorHandler.ErrorSeverity.critical:
+      case ErrorSeverity.critical:
         return Colors.purple;
     }
   }
@@ -423,7 +423,7 @@ class _ErrorDialog extends StatelessWidget {
           onPressed: () => Navigator.of(context).pop(),
           child: const Text('知道了'),
         ),
-        if (error.severity == UserFriendlyErrorHandler.ErrorSeverity.critical) ...[
+        if (error.severity == ErrorSeverity.critical) ...[
           TextButton(
             onPressed: () {
               Navigator.of(context).pop();

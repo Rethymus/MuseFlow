@@ -283,7 +283,7 @@ class ErrorHandlingBestPractices {
       // Crashlytics.instance.recordError(error, null);
 
       // 可以根据严重程度采取不同行动
-      if (error.severity == UserFriendlyErrorHandler.ErrorSeverity.critical) {
+      if (error.severity == ErrorSeverity.critical) {
         // 发送紧急通知
         Logger.error('严重错误发生！', tag: 'ERROR');
       }

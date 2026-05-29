@@ -3,6 +3,143 @@ import '../config/app_constants.dart';
 import 'package:flutter/foundation.dart';
 import 'dart:io';
 
+/// 错误严重程度
+enum ErrorSeverity {
+  /// 信息性 - 不影响功能，仅提示
+  info,
+
+  /// 警告 - 可能影响某些功能
+  warning,
+
+  /// 错误 - 功能无法使用
+  error,
+
+  /// 严重 - 应用核心功能受损
+  critical,
+}
+
+/// 错误分类
+enum ErrorCategory {
+  /// 文件相关错误
+  fileSystem,
+
+  /// 网络相关错误
+  network,
+
+  /// 权限相关错误
+  permission,
+
+  /// AI服务相关错误
+  aiService,
+
+  /// 数据相关错误
+  data,
+
+  /// UI相关错误
+  ui,
+
+  /// 系统相关错误
+  system,
+
+  /// 未知错误
+  unknown,
+}
+
+/// 用户友好的错误信息
+class UserFriendlyError {
+  final String title;
+  final String description;
+  final List<String> solutions;
+  final ErrorSeverity severity;
+  final ErrorCategory category;
+  final String? technicalDetails;
+  final String? helpLink;
+  final String? contactSupport;
+
+  const UserFriendlyError({
+    required this.title,
+    required this.description,
+    required this.solutions,
+    required this.severity,
+    required this.category,
+    this.technicalDetails,
+    this.helpLink,
+    this.contactSupport,
+  });
+
+  /// 获取显示用的图标
+  String get emoji {
+    switch (severity) {
+      case ErrorSeverity.info:
+        return 'ℹ️';
+      case ErrorSeverity.warning:
+        return '⚠️';
+      case ErrorSeverity.error:
+        return '❌';
+      case ErrorSeverity.critical:
+        return '🚨';
+    }
+  }
+
+  /// 获取颜色代码（用于日志）
+  String get colorCode {
+    switch (severity) {
+      case ErrorSeverity.info:
+        return '\x1B[34m'; // 蓝色
+      case ErrorSeverity.warning:
+        return '\x1B[33m'; // 黄色
+      case ErrorSeverity.error:
+        return '\x1B[31m'; // 红色
+      case ErrorSeverity.critical:
+        return '\x1B[35m'; // 紫色
+    }
+  }
+
+  /// 获取重置代码
+  String get resetCode => '\x1B[0m';
+
+  /// 格式化输出
+  String format() {
+    final buffer = StringBuffer();
+
+    buffer.writeln('$emoji $title');
+    buffer.writeln('$description');
+    buffer.writeln('\n解决方案：');
+
+    for (int i = 0; i < solutions.length; i++) {
+      buffer.writeln('${i + 1}. ${solutions[i]}');
+    }
+
+    if (helpLink != null) {
+      buffer.writeln('\n📚 帮助文档：$helpLink');
+    }
+
+    if (contactSupport != null) {
+      buffer.writeln('\n📞 技术支持：$contactSupport');
+    }
+
+    if (technicalDetails != null && kDebugMode) {
+      buffer.writeln('\n🔧 技术详情：$technicalDetails');
+    }
+
+    return buffer.toString();
+  }
+
+  /// 转换为JSON
+  Map<String, dynamic> toJson() {
+    return {
+      'title': title,
+      'description': description,
+      'solutions': solutions,
+      'severity': severity.toString(),
+      'category': category.toString(),
+      'technicalDetails': technicalDetails,
+      'helpLink': helpLink,
+      'contactSupport': contactSupport,
+    };
+  }
+}
+
 /// 用户友好的错误处理系统
 ///
 /// 将技术错误转换为用户友好的语言，提供具体的解决步骤和帮助信息
@@ -15,143 +152,6 @@ class UserFriendlyErrorHandler {
   }
 
   UserFriendlyErrorHandler._internal();
-
-  /// 错误严重程度
-  enum ErrorSeverity {
-    /// 信息性 - 不影响功能，仅提示
-    info,
-
-    /// 警告 - 可能影响某些功能
-    warning,
-
-    /// 错误 - 功能无法使用
-    error,
-
-    /// 严重 - 应用核心功能受损
-    critical,
-  }
-
-  /// 错误分类
-  enum ErrorCategory {
-    /// 文件相关错误
-    fileSystem,
-
-    /// 网络相关错误
-    network,
-
-    /// 权限相关错误
-    permission,
-
-    /// AI服务相关错误
-    aiService,
-
-    /// 数据相关错误
-    data,
-
-    /// UI相关错误
-    ui,
-
-    /// 系统相关错误
-    system,
-
-    /// 未知错误
-    unknown,
-  }
-
-  /// 用户友好的错误信息
-  class UserFriendlyError {
-    final String title;
-    final String description;
-    final List<String> solutions;
-    final ErrorSeverity severity;
-    final ErrorCategory category;
-    final String? technicalDetails;
-    final String? helpLink;
-    final String? contactSupport;
-
-    const UserFriendlyError({
-      required this.title,
-      required this.description,
-      required this.solutions,
-      required this.severity,
-      required this.category,
-      this.technicalDetails,
-      this.helpLink,
-      this.contactSupport,
-    });
-
-    /// 获取显示用的图标
-    String get emoji {
-      switch (severity) {
-        case ErrorSeverity.info:
-          return 'ℹ️';
-        case ErrorSeverity.warning:
-          return '⚠️';
-        case ErrorSeverity.error:
-          return '❌';
-        case ErrorSeverity.critical:
-          return '🚨';
-      }
-    }
-
-    /// 获取颜色代码（用于日志）
-    String get colorCode {
-      switch (severity) {
-        case ErrorSeverity.info:
-          return '\x1B[34m'; // 蓝色
-        case ErrorSeverity.warning:
-          return '\x1B[33m'; // 黄色
-        case ErrorSeverity.error:
-          return '\x1B[31m'; // 红色
-        case ErrorSeverity.critical:
-          return '\x1B[35m'; // 紫色
-      }
-    }
-
-    /// 获取重置代码
-    String get resetCode => '\x1B[0m';
-
-    /// 格式化输出
-    String format() {
-      final buffer = StringBuffer();
-
-      buffer.writeln('$emoji $title');
-      buffer.writeln('$description');
-      buffer.writeln('\n解决方案：');
-
-      for (int i = 0; i < solutions.length; i++) {
-        buffer.writeln('${i + 1}. ${solutions[i]}');
-      }
-
-      if (helpLink != null) {
-        buffer.writeln('\n📚 帮助文档：$helpLink');
-      }
-
-      if (contactSupport != null) {
-        buffer.writeln('\n📞 技术支持：$contactSupport');
-      }
-
-      if (technicalDetails != null && kDebugMode) {
-        buffer.writeln('\n🔧 技术详情：$technicalDetails');
-      }
-
-      return buffer.toString();
-    }
-
-    /// 转换为JSON
-    Map<String, dynamic> toJson() {
-      return {
-        'title': title,
-        'description': description,
-        'solutions': solutions,
-        'severity': severity.toString(),
-        'category': category.toString(),
-        'technicalDetails': technicalDetails,
-        'helpLink': helpLink,
-        'contactSupport': contactSupport,
-      };
-    }
-  }
 
   /// 将异常转换为用户友好的错误信息
   UserFriendlyError handleError(dynamic error, [dynamic stackTrace]) {
