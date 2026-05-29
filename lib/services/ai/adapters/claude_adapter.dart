@@ -82,7 +82,7 @@ class ClaudeAdapter extends BaseAIAdapterImpl {
     }
   }
 
-  Future<http.StreamedResponse> _makeRequest(
+  Future<http.Response> _makeRequest(
     List<AIMessage> messages,
     AIConfig config, {
     bool stream = false,
@@ -91,12 +91,12 @@ class ClaudeAdapter extends BaseAIAdapterImpl {
 
     final requestBody = _buildRequestBody(messages, config, stream);
 
-    final request = http.Request('POST', url);
-    request.headers.addAll(_buildHeaders(config));
-    request.body = jsonEncode(requestBody);
-
     final response = await executeRequest(
-      () => client.send(request).timeout(
+      () => client.post(
+        url,
+        headers: _buildHeaders(config),
+        body: jsonEncode(requestBody),
+      ).timeout(
         Duration(seconds: config.effectiveTimeout),
         onTimeout: () {
           throw TimeoutException(
@@ -107,8 +107,7 @@ class ClaudeAdapter extends BaseAIAdapterImpl {
     );
 
     if (response.statusCode != 200) {
-      final responseBody = await response.stream.bytesToString();
-      _handleErrorResponse(response.statusCode, responseBody);
+      _handleErrorResponse(response.statusCode, response.body);
     }
 
     return response;
@@ -183,12 +182,11 @@ class ClaudeAdapter extends BaseAIAdapterImpl {
     handleError(message, statusCode);
   }
 
-  Future<AIResponse> _parseResponse(
-    http.StreamedResponse response,
+  AIResponse _parseResponse(
+    http.Response response,
     AIConfig config,
-  ) async {
-    final responseBody = await response.stream.bytesToString();
-    final data = jsonDecode(responseBody);
+  ) {
+    final data = jsonDecode(response.body);
 
     try {
       return AIResponse(
@@ -197,8 +195,8 @@ class ClaudeAdapter extends BaseAIAdapterImpl {
         model: data['model'] ?? config.model,
         inputTokens: data['usage']?['input_tokens'],
         outputTokens: data['usage']?['output_tokens'],
-        totalTokens: data['usage']?['input_tokens'] + data['usage']?['output_tokens'],
-        stopReason: data['stop_reason'],
+        totalTokens: (data['usage']?['input_tokens'] as int? ?? 0) + (data['usage']?['output_tokens'] as int? ?? 0),
+        finishReason: data['stop_reason'],
         timestamp: DateTime.now(),
       );
     } catch (e) {
@@ -207,51 +205,47 @@ class ClaudeAdapter extends BaseAIAdapterImpl {
   }
 
   Stream<AIStreamChunk> _parseStreamResponse(
-    http.StreamedResponse response,
+    http.Response response,
     AIConfig config,
   ) async* {
-    final stream = response.stream.transform(utf8.decoder);
+    final lines = response.body.split('\n');
     String fullContent = '';
 
-    await for (final line in stream) {
-      final lines = line.split('\n');
+    for (final line in lines) {
+      if (line.isEmpty || line.startsWith(':')) continue;
 
-      for (final line in lines) {
-        if (line.isEmpty || line.startsWith(':')) continue;
+      if (line.startsWith('data: ')) {
+        try {
+          final jsonStr = line.substring(6);
+          final data = jsonDecode(jsonStr);
 
-        if (line.startsWith('data: ')) {
-          try {
-            final jsonStr = line.substring(6);
-            final data = jsonDecode(jsonStr);
+          if (data['type'] == 'content_block_delta') {
+            final delta = data['delta'];
+            final content = delta?['text']?.toString() ?? '';
 
-            if (data['type'] == 'content_block_delta') {
-              final delta = data['delta'];
-              final content = delta?['text']?.toString() ?? '';
-
-              if (content.isNotEmpty) {
-                fullContent += content;
-                yield AIStreamChunk.incomplete(content);
-              }
-            } else if (data['type'] == 'message_stop') {
+            if (content.isNotEmpty) {
+              fullContent += content;
+              yield AIStreamChunk.incomplete(content);
+            }
+          } else if (data['type'] == 'message_stop') {
+            yield AIStreamChunk.complete(
+              content: fullContent,
+              finishReason: 'stop',
+            );
+          } else if (data['type'] == 'message_delta') {
+            final usage = data['usage'];
+            if (usage != null) {
               yield AIStreamChunk.complete(
                 content: fullContent,
                 finishReason: 'stop',
+                inputTokens: usage['input_tokens'],
+                outputTokens: usage['output_tokens'],
               );
-            } else if (data['type'] == 'message_delta') {
-              final usage = data['usage'];
-              if (usage != null) {
-                yield AIStreamChunk.complete(
-                  content: fullContent,
-                  finishReason: 'stop',
-                  inputTokens: usage['input_tokens'],
-                  outputTokens: usage['output_tokens'],
-                );
-              }
             }
-          } catch (e) {
-            // Skip malformed JSON
-            continue;
           }
+        } catch (e) {
+          // Skip malformed JSON
+          continue;
         }
       }
     }

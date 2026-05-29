@@ -299,7 +299,7 @@ class IntentStatisticsWidget extends StatelessWidget {
           const SizedBox(height: 8),
           _buildStatItem(
             '确认率',
-            '${((statistics['confirmation_rate'] as double?) * 100).toStringAsFixed(1)}%',
+            '${(((statistics['confirmation_rate'] as double?) ?? 0.0) * 100).toStringAsFixed(1)}%',
             isHighlighted: true,
           ),
         ],

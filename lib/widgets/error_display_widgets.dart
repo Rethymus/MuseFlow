@@ -551,8 +551,8 @@ class ErrorHandlingWidget extends SingleChildRenderObjectWidget {
   }
 
   @override
-  void updateRenderObject(BuildContext context, _ErrorHandlingRenderObject renderObject) {
-    renderObject.onError = onError;
+  void updateRenderObject(BuildContext context, RenderObject renderObject) {
+    (renderObject as _ErrorHandlingRenderObject).onError = onError;
   }
 }
 

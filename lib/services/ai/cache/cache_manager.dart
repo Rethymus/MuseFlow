@@ -125,7 +125,7 @@ class CacheManager {
   /// 获取缓存性能指标
   Future<CachePerformanceMetrics> getPerformanceMetrics() async {
     final health = await getHealthStatus();
-    final stats = get.stats;
+    final cacheStats = stats;
     final cacheSize = await _cache.getCacheSize();
 
     return CachePerformanceMetrics(
@@ -194,7 +194,7 @@ class CacheManager {
   Future<List<String>> getSuggestions() async {
     final suggestions = <String>[];
     final health = await getHealthStatus();
-    final stats = get.stats;
+    final cacheStats = stats;
 
     // 检查命中率
     if (health['hit_rate'] < 0.45) {
@@ -213,7 +213,7 @@ class CacheManager {
     }
 
     // 检查平均响应时间
-    if (stats.avgResponseTime > 1000) {
+    if (cacheStats.avgResponseTime > 1000) {
       suggestions.add('平均响应时间超过1秒，考虑优化缓存键生成或增加内存缓存');
     }
 

@@ -48,7 +48,7 @@ class RealTimeWritingAssistant {
     service._writingAnalyzer = writingAnalyzer ?? WritingAnalyzer.instance;
 
     // 确保上下文服务已初始化
-    if (service._contextualService._baseService == null) {
+    if (!service._contextualService.isInitialized) {
       await ContextualAIService.initialize();
     }
 

@@ -109,7 +109,7 @@ class CharacterService with ChangeNotifier {
     // 同步到知识图谱
     if (_knowledgeGraph != null) {
       try {
-        await _knowledgeGraph!._addCharacterNode(character);
+        await _knowledgeGraph!.addCharacterNode(character);
       } catch (e) {
         Logger.debug('知识图谱同步失败: $e');
       }
@@ -118,7 +118,7 @@ class CharacterService with ChangeNotifier {
     // 同步到语义搜索
     if (_semanticSearch != null) {
       try {
-        await _semanticSearch!._indexCharacter(character);
+        await _semanticSearch!.indexCharacter(character);
       } catch (e) {
         Logger.debug('语义搜索索引失败: $e');
       }
@@ -152,7 +152,7 @@ class CharacterService with ChangeNotifier {
     // 同步到知识图谱
     if (_knowledgeGraph != null) {
       try {
-        await _knowledgeGraph!._addCharacterNode(updated);
+        await _knowledgeGraph!.addCharacterNode(updated);
       } catch (e) {
         Logger.debug('知识图谱同步失败: $e');
       }
@@ -161,7 +161,7 @@ class CharacterService with ChangeNotifier {
     // 同步到语义搜索
     if (_semanticSearch != null) {
       try {
-        await _semanticSearch!._indexCharacter(updated);
+        await _semanticSearch!.indexCharacter(updated);
       } catch (e) {
         Logger.debug('语义搜索索引失败: $e');
       }
@@ -260,7 +260,7 @@ class CharacterService with ChangeNotifier {
   }
 
   /// 批量导出角色
-  Map<String, dynamic> exportToJson({List<String>? ids}) async {
+  Future<Map<String, dynamic>> exportToJson({List<String>? ids}) async {
     final List<Map<String, dynamic>> charactersData = [];
 
     final charactersToExport = ids != null

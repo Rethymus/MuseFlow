@@ -3,8 +3,30 @@ import 'package:provider/provider.dart';
 
 import '../models/app_state.dart';
 
-class NoteEditor extends StatelessWidget {
+class NoteEditor extends StatefulWidget {
   const NoteEditor({super.key});
+
+  @override
+  State<NoteEditor> createState() => _NoteEditorState();
+}
+
+class _NoteEditorState extends State<NoteEditor> {
+  late TextEditingController _titleController;
+  late TextEditingController _contentController;
+
+  @override
+  void initState() {
+    super.initState();
+    _titleController = TextEditingController();
+    _contentController = TextEditingController();
+  }
+
+  @override
+  void dispose() {
+    _titleController.dispose();
+    _contentController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -24,12 +46,20 @@ class NoteEditor extends StatelessWidget {
           );
         }
 
+        // Update controllers if note changed
+        if (_titleController.text != note.title) {
+          _titleController.text = note.title;
+        }
+        if (_contentController.text != note.content) {
+          _contentController.text = note.content;
+        }
+
         return Padding(
           padding: const EdgeInsets.all(16.0),
           child: Column(
             children: [
               TextField(
-                initialValue: note.title,
+                controller: _titleController,
                 decoration: const InputDecoration(
                   hintText: 'Note Title',
                   border: OutlineInputBorder(),
@@ -42,7 +72,7 @@ class NoteEditor extends StatelessWidget {
               const SizedBox(height: 16),
               Expanded(
                 child: TextField(
-                  initialValue: note.content,
+                  controller: _contentController,
                   decoration: const InputDecoration(
                     hintText: 'Start writing...',
                     border: OutlineInputBorder(),

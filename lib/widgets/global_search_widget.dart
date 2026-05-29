@@ -211,7 +211,7 @@ class _GlobalSearchDialogState extends State<GlobalSearchDialog> {
   }
 
   Widget _buildHistoryChip(SearchHistoryItem item, ThemeData theme) {
-    return Chip(
+    return ActionChip(
       label: Text(item.query),
       deleteIcon: const Icon(Icons.close, size: AppConstants.smallIconSize),
       onDeleted: () {

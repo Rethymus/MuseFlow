@@ -217,7 +217,7 @@ abstract class BaseAIAdapter implements AIAdapter {
     }
 
     if (error is NetworkException || error is TimeoutException) {
-      rethrow;
+      throw error;
     }
 
     // 默认网络异常

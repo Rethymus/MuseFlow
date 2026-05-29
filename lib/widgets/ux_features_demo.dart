@@ -12,8 +12,6 @@ class UXFeaturesDemo extends StatefulWidget {
 class _UXFeaturesDemoState extends State<UXFeaturesDemo> {
   @override
   Widget build(BuildContext context) {
-    final uxService = UXServiceIntegration;
-
     return Scaffold(
       appBar: AppBar(
         title: const Text('UX功能演示'),
@@ -32,7 +30,7 @@ class _UXFeaturesDemoState extends State<UXFeaturesDemo> {
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
-          _buildStatusCard(uxService),
+          _buildStatusCard(),
           const SizedBox(height: 16),
           _buildAdaptiveUISection(),
           const SizedBox(height: 16),
@@ -45,8 +43,8 @@ class _UXFeaturesDemoState extends State<UXFeaturesDemo> {
   }
 
   /// 构建状态卡片
-  Widget _buildStatusCard(UXServiceIntegration uxService) {
-    final status = uxService.getStatusSummary();
+  Widget _buildStatusCard() {
+    final status = UXServiceIntegration.getStatusSummary();
 
     return Card(
       child: Padding(

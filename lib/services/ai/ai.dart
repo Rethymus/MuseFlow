@@ -12,10 +12,10 @@ export 'ai_service.dart';
 export 'ai_adapter.dart';
 
 // 适配器实现
-export 'openai_adapter.dart';
-export 'claude_adapter.dart';
-export 'deepseek_adapter.dart';
-export 'ollama_adapter.dart';
+export 'adapters/openai_adapter.dart';
+export 'adapters/claude_adapter.dart';
+export 'adapters/deepseek_adapter.dart';
+export 'adapters/ollama_adapter.dart';
 
 // 工具类
 export 'ai_config_manager.dart';

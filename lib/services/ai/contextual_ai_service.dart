@@ -35,6 +35,9 @@ class ContextualAIService {
        _personalizedService = personalizedService ?? PersonalizedAIService.instance,
        _writingAnalyzer = writingAnalyzer ?? WritingAnalyzer.instance;
 
+  /// 是否已初始化
+  bool _initialized = false;
+
   /// 获取单例实例
   static ContextualAIService get instance {
     _instance ??= ContextualAIService._();
@@ -53,12 +56,16 @@ class ContextualAIService {
     service._writingAnalyzer = writingAnalyzer ?? WritingAnalyzer.instance;
 
     // 确保服务已初始化
-    if (service._personalizedService.currentPreference == null) {
+    if (!service._personalizedService.isInitialized) {
       await PersonalizedAIService.initialize();
     }
 
+    service._initialized = true;
     return service;
   }
+
+  /// 是否已初始化
+  bool get isInitialized => _initialized;
 
   /// 分析文档风格
   Future<DocumentStyleAnalysis> analyzeDocumentStyle(

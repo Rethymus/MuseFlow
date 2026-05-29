@@ -224,6 +224,11 @@ class SemanticSearchEngine with ChangeNotifier {
     notifyListeners();
   }
 
+  /// 索引单个角色（公共接口）
+  Future<void> indexCharacter(CharacterModel character) async {
+    await _indexCharacter(character);
+  }
+
   /// 索引单个角色
   Future<void> _indexCharacter(CharacterModel character) async {
     final List<SearchResultItem> items = [];

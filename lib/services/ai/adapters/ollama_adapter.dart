@@ -124,7 +124,7 @@ class OllamaAdapter extends BaseAIAdapterImpl {
   }) async {
     final url = Uri.parse('${config.effectiveBaseUrl}/chat');
 
-    final body = {
+    final body = <String, dynamic>{
       'model': config.model,
       'messages': messages.map((msg) => formatMessage(msg)).toList(),
       'stream': stream,

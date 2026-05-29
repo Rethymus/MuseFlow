@@ -133,6 +133,7 @@ class AppConstants {
   // ============================================
 
   /// 默认字体大小
+  static const double smallFontSize = 12.0;
   static const double defaultFontSize = 16.0;
   static const double largeFontSize = 18.0;
   static const double extraLargeFontSize = 20.0;

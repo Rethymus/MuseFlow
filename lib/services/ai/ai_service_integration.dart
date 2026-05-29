@@ -3,6 +3,8 @@ import 'ai_service.dart';
 import 'personalized_ai_service.dart';
 import 'contextual_ai_service.dart';
 import 'realtime_writing_assistant.dart';
+import 'cache/cache_manager.dart';
+import 'cache/ai_cache_stats.dart';
 import '../../models/ai_config.dart';
 import '../../models/ai_message.dart';
 import '../../models/ai_response.dart';
@@ -557,7 +559,7 @@ class AIServiceIntegration {
         final privacyReport = await _personalizedService.getPrivacyReport();
         healthStatus['personalization'] = {
           'enabled': _personalizedService.currentPreference?.enabled ?? false,
-          'confidence': _personalizedService.currentPreference?.confidence ?? 0.0,
+          'confidence': _personalizedService.currentPreference?.confidenceScore ?? 0.0,
         };
       } catch (e) {
         healthStatus['personalization'] = {'error': e.toString()};
@@ -609,9 +611,9 @@ class AIServiceIntegrationConfig {
       enableContextualService: true,
       enableWritingAssistant: true,
       enableCaching: true,
-      maxContextHistory = 100,
-      styleAnalysisThreshold = 0.5,
-      maxConversationTurns = 30,
+      maxContextHistory: 100,
+      styleAnalysisThreshold: 0.5,
+      maxConversationTurns: 30,
     );
   }
 

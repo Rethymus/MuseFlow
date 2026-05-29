@@ -5,6 +5,9 @@ library;
 import '../../../models/ai_message.dart';
 import '../../../models/ai_config.dart';
 import 'cache_config.dart';
+import 'ai_cache_stats.dart';
+import 'cache_manager.dart';
+import 'ai_request_cache.dart';
 
 // 核心缓存模型
 export 'ai_cache_entry.dart';

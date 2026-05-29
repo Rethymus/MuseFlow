@@ -4,6 +4,7 @@
 import 'dart:io';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:museflow/services/ai/ai_adapter.dart';
+import 'package:museflow/services/ai/adapters/base_ai_adapter.dart';
 import 'package:museflow/services/ai/adapters/openai_adapter.dart';
 import 'package:museflow/services/ai/adapters/claude_adapter.dart';
 import 'package:museflow/services/ai/adapters/deepseek_adapter.dart';

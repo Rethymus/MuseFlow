@@ -62,6 +62,9 @@ class PersonalizedAIService {
     }
   }
 
+  /// 是否已初始化
+  bool get isInitialized => _initialized;
+
   /// 发送个性化消息
   Future<AIResponse> sendPersonalizedMessage(
     List<AIMessage> messages, {
@@ -497,17 +500,4 @@ class PersonalizedAIService {
   Stream<CacheManagerEvent> get cacheEvents => _baseService.cacheEvents;
   Future<void> optimizeCacheStrategy() => _baseService.optimizeCacheStrategy();
   Future<void> warmupCache(List<AIMessage> commonMessages, AIConfig? config) => _baseService.warmupCache(commonMessages, config);
-}
-
-/// AI流式响应chunk
-class AIStreamChunk {
-  final String content;
-  final bool isComplete;
-  final Map<String, dynamic>? metadata;
-
-  AIStreamChunk({
-    required this.content,
-    this.isComplete = false,
-    this.metadata,
-  });
 }

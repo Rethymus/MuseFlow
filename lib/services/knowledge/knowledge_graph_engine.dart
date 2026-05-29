@@ -137,6 +137,25 @@ class KnowledgeGraphEngine with ChangeNotifier {
   int get nodeCount => _nodes.length;
   int get edgeCount => _edges.length;
 
+  /// 获取指定ID的节点
+  KnowledgeNode? getNodeById(String id) => _nodes[id];
+
+  /// 添加角色节点（公共接口）
+  Future<void> addCharacterNode(CharacterModel character) async {
+    await _addCharacterNode(character);
+  }
+
+  /// 发现角色间关系（公共接口）
+  Future<void> discoverCharacterRelationships(List<CharacterModel> characters) async {
+    await _discoverCharacterRelationships(characters);
+  }
+
+  /// 获取节点Map（用于查找关系）
+  Map<String, KnowledgeNode> get nodesMap => _nodes;
+
+  /// 获取边Map（用于查找关系）
+  Map<String, KnowledgeEdge> get edgesMap => _edges;
+
   /// 初始化知识图谱
   Future<void> initialize() async {
     Logger.debug('初始化知识图谱引擎');

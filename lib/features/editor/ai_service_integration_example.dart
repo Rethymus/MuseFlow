@@ -13,7 +13,7 @@ import 'ai_action_handler.dart';
 
 /// AI服务集成示例
 class AIServiceIntegrationExample {
-  static String example = '''
+  static String example = r'''
   // 1. 初始化AI服务
   final aiService = await AIService.initialize();
 

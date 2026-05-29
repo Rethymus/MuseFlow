@@ -15,6 +15,7 @@ import 'adapters/deepseek_adapter.dart';
 import 'adapters/ollama_adapter.dart';
 import 'cache/ai_request_cache.dart';
 import 'cache/cache_manager.dart';
+import 'cache/ai_cache_stats.dart';
 
 /// AI服务
 /// 提供统一的AI服务接口，管理多个AI适配器
@@ -171,7 +172,7 @@ class AIService {
   /// 生成加密密钥
   String _generateEncryptionKey() {
     // 生成32字节的密钥
-    final key = encrypt.Key.secureRandom(32);
+    final key = encrypt.Key.fromSecureRandom(32);
     return key.base64;
   }
 
@@ -328,7 +329,7 @@ class AIService {
     final retries = retryCount ?? effectiveConfig.effectiveRetryCount;
 
     final response = await retry(
-      retries: retries,
+      maxRetries: retries,
       retryIf: (e) => _shouldRetry(e),
       onRetry: (e) {
         Logger.warning('Retry request after error: $e', tag: 'AI');
@@ -363,17 +364,10 @@ class AIService {
     final retries = retryCount ?? effectiveConfig.effectiveRetryCount;
 
     String fullContent = '';
-    await for (final chunk in retry(
-      retries: retries,
-      retryIf: (e) => _shouldRetry(e),
-      onRetry: (e) {
-        Logger.warning('Retry stream request after error: $e', tag: 'AI');
-      },
-      () => adapter.sendMessageStream(
-        messages,
-        config: effectiveConfig,
-        onChunk: onChunk,
-      ),
+    await for (final chunk in adapter.sendMessageStream(
+      messages,
+      config: effectiveConfig,
+      onChunk: onChunk,
     )) {
       fullContent += chunk.content;
       yield chunk;
