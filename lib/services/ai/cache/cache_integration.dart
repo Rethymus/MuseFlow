@@ -2,6 +2,9 @@
 /// 导出所有缓存相关的组件和服务
 library;
 
+import '../../../models/ai_message.dart';
+import '../../../models/ai_config.dart';
+
 // 核心缓存模型
 export 'ai_cache_entry.dart';
 export 'ai_cache_stats.dart';

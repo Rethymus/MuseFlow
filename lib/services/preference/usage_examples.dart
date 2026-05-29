@@ -1,11 +1,12 @@
 import '../../config/app_constants.dart';
+import '../../models/ai_message.dart';
+import '../../models/user_preference.dart';
 import '../../utils/logger.dart';
 import 'package:flutter/material.dart';
-import '../models/user_preference.dart';
-import '../services/preference/user_preference_manager.dart';
-import '../services/preference/feedback_collector.dart';
-import '../services/preference/writing_analyzer.dart';
-import '../services/ai/personalized_ai_service.dart';
+import 'user_preference_manager.dart';
+import 'feedback_collector.dart';
+import 'writing_analyzer.dart';
+import '../ai/personalized_ai_service.dart';
 
 /// 用户偏好学习系统使用示例
 ///

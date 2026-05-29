@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'services/ux/ux_service_integration.dart';
+import 'ux_service_integration.dart';
 
 /// UX服务集成示例 - 展示如何在现有应用中逐步启用UX功能
 ///

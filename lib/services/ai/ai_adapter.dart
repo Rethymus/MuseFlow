@@ -1,6 +1,6 @@
-import '../models/ai_config.dart';
-import '../models/ai_message.dart';
-import '../models/ai_response.dart';
+import '../../models/ai_config.dart';
+import '../../models/ai_message.dart';
+import '../../models/ai_response.dart';
 
 /// AI异常基类
 abstract class AIException implements Exception {

@@ -1,9 +1,9 @@
 import 'dart:async';
 import 'dart:convert';
 import 'package:crypto/crypto.dart';
-import '../../models/ai_message.dart';
-import '../../models/ai_config.dart';
-import '../../models/ai_response.dart';
+import '../../../models/ai_message.dart';
+import '../../../models/ai_config.dart';
+import '../../../models/ai_response.dart';
 import 'ai_cache_entry.dart';
 import 'ai_cache_stats.dart';
 import 'memory_cache.dart';

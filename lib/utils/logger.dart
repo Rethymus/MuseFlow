@@ -1,5 +1,5 @@
 import 'package:flutter/foundation.dart';
-import 'app_constants.dart';
+import '../config/app_constants.dart';
 
 /// 日志级别枚举
 enum LogLevel {

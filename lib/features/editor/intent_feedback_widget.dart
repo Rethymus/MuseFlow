@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../models/intent_confirmation.dart';
+import '../../models/intent_confirmation.dart';
 import '../../config/app_constants.dart';
 
 /// 意图反馈收集Widget
