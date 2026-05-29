@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'dart:io';
 import '../utils/user_friendly_error_handler.dart';
 import '../widgets/error_display_widgets.dart';
 import '../services/error_handling_service.dart';
@@ -37,7 +38,7 @@ class ErrorHandlingDemoScreen extends StatefulWidget {
 }
 
 class _ErrorHandlingDemoScreenState extends State<ErrorHandlingDemoScreen> {
-  final List<UserFriendlyError> _errors = [];
+  final List<UserFriendlyErrorHandler.UserFriendlyError> _errors = [];
 
   @override
   void initState() {
@@ -79,7 +80,7 @@ class _ErrorHandlingDemoScreenState extends State<ErrorHandlingDemoScreen> {
           // 文件系统错误
           _createErrorButton(
             '文件不存在错误',
-            Icons.file_off,
+            Icons.error_outline,
             Colors.red,
             () => _triggerFileNotFoundError(),
           ),
@@ -175,7 +176,7 @@ class _ErrorHandlingDemoScreenState extends State<ErrorHandlingDemoScreen> {
   void _triggerFileNotFoundError() {
     try {
       // 模拟文件不存在错误
-      throw const FileSystemException('文件找不到', '/path/to/nonexistent/file.txt');
+      throw FileSystemException('文件找不到', '/path/to/nonexistent/file.txt');
     } catch (e, stackTrace) {
       errorHandlingService.showError(context, e, stackTrace);
     }
@@ -193,7 +194,7 @@ class _ErrorHandlingDemoScreenState extends State<ErrorHandlingDemoScreen> {
   void _triggerPermissionError() {
     try {
       // 模拟权限错误
-      throw const PermissionDeniedException('没有访问权限');
+      throw PermissionDeniedException('没有访问权限');
     } catch (e, stackTrace) {
       errorHandlingService.showError(context, e, stackTrace);
     }
@@ -226,7 +227,7 @@ class _ErrorHandlingDemoScreenState extends State<ErrorHandlingDemoScreen> {
     }
   }
 
-  void _showErrorDetails(UserFriendlyError error) {
+  void _showErrorDetails(UserFriendlyErrorHandler.UserFriendlyError error) {
     errorHandlingService.showError(context, error);
   }
 
@@ -439,7 +440,7 @@ class _ErrorHandlingBestPracticesState extends State<ErrorHandlingBestPractices>
   }
 
   void _handlePermissionError() {
-    final error = const PermissionDeniedException('没有访问权限');
+    final error = PermissionDeniedException('没有访问权限');
     errorHandlingService.showError(context, error);
   }
 
