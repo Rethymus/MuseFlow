@@ -6,7 +6,6 @@ import 'package:file_picker/file_picker.dart';
 import 'file_security_validator.dart';
 
 class FileExporter {
-
   /// 将笔记导出为JSON字符串
   static Future<String> exportToJSON(List<Note> notes) async {
     final List<Map<String, dynamic>> notesJson = notes
