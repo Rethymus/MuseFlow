@@ -178,7 +178,7 @@ void main() {
       mockAppState = AppState(storageService: mockStorageService);
     });
 
-    tearDown() {
+    tearDown(() {
       mockAppState.dispose();
       mockSearchService.dispose();
     }
@@ -449,7 +449,7 @@ void main() {
       mockAppState = AppState(storageService: mockStorageService);
     });
 
-    tearDown() {
+    tearDown(() {
       mockAppState.dispose();
       mockSearchService.dispose();
     }
@@ -632,7 +632,7 @@ void main() {
       mockAppState = AppState(storageService: mockStorageService);
     });
 
-    tearDown() {
+    tearDown(() {
       mockAppState.dispose();
       mockSearchService.dispose();
     }
@@ -810,7 +810,7 @@ void main() {
       mockAppState = AppState(storageService: mockStorageService);
     });
 
-    tearDown() {
+    tearDown(() {
       mockAppState.dispose();
       mockSearchService.dispose();
     }
@@ -976,7 +976,7 @@ void main() {
     late CharacterService mockCharacterService;
     late WorldService mockWorldService;
 
-    setUp() {
+    setUp(() {
       mockStorageService = SecureStorageService();
       mockCharacterService = CharacterService();
       mockWorldService = WorldService();
@@ -990,7 +990,7 @@ void main() {
       mockAppState = AppState(storageService: mockStorageService);
     }
 
-    tearDown() {
+    tearDown(() {
       mockAppState.dispose();
       mockSearchService.dispose();
     }
@@ -1148,7 +1148,7 @@ void main() {
     late CharacterService mockCharacterService;
     late WorldService mockWorldService;
 
-    setUp() {
+    setUp(() {
       mockStorageService = SecureStorageService();
       mockCharacterService = CharacterService();
       mockWorldService = WorldService();
@@ -1162,7 +1162,7 @@ void main() {
       mockAppState = AppState(storageService: mockStorageService);
     }
 
-    tearDown() {
+    tearDown(() {
       mockAppState.dispose();
       mockSearchService.dispose();
     }
@@ -1331,7 +1331,7 @@ void main() {
     late CharacterService mockCharacterService;
     late WorldService mockWorldService;
 
-    setUp() {
+    setUp(() {
       mockStorageService = SecureStorageService();
       mockCharacterService = CharacterService();
       mockWorldService = WorldService();
@@ -1345,7 +1345,7 @@ void main() {
       mockAppState = AppState(storageService: mockStorageService);
     }
 
-    tearDown() {
+    tearDown(() {
       mockAppState.dispose();
       mockSearchService.dispose();
     }
