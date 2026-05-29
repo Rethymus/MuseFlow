@@ -2,7 +2,6 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:museflow/models/note.dart';
 import 'package:museflow/services/storage_service.dart';
-import 'package:path_provider/path_provider.dart';
 
 /// StorageService测试
 /// 验证数据存储服务的核心功能
@@ -57,14 +56,12 @@ void main() {
         createdAt: DateTime(2024, 1, 1),
         updatedAt: DateTime(2024, 1, 2),
         tags: ['tag1', 'tag2'],
-        isEncrypted: false,
       );
 
       expect(note.id, 'test-1');
       expect(note.title, '测试笔记');
       expect(note.content, '测试内容');
       expect(note.tags, ['tag1', 'tag2']);
-      expect(note.isEncrypted, false);
     });
 
     test('Note时间戳验证', () {
