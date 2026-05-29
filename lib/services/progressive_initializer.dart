@@ -245,13 +245,13 @@ class ProgressiveInitializer {
       await _initializeEncryptionService();
       _updateState(progress: 0.4, message: '加密服务就绪');
 
-      // 初始化Hive存储服务 - 异步加载
-      await _initializeStorage();
-      _updateState(progress: 0.5, message: '存储服务就绪');
-
-      // 初始化数据库 - 可延迟到首次使用时
-      await _initializeDatabaseLazy();
-      _updateState(progress: 0.7, message: '数据库就绪');
+      // 性能优化：并行化独立的初始化任务
+      // 存储服务和数据库服务可以并行初始化
+      await Future.wait([
+        _initializeStorage(),
+        _initializeDatabaseLazy(),
+      ]);
+      _updateState(progress: 0.7, message: '存储和数据库就绪');
 
       final phaseTime = DateTime.now().difference(phaseStart);
       Logger.debug('阶段2完成: ${phaseTime.inMilliseconds}ms');
