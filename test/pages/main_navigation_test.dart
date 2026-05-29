@@ -988,7 +988,7 @@ void main() {
       );
 
       mockAppState = AppState(storageService: mockStorageService);
-    }
+    });
 
     tearDown(() {
       mockAppState.dispose();
@@ -1160,7 +1160,7 @@ void main() {
       );
 
       mockAppState = AppState(storageService: mockStorageService);
-    }
+    });
 
     tearDown(() {
       mockAppState.dispose();
@@ -1343,12 +1343,12 @@ void main() {
       );
 
       mockAppState = AppState(storageService: mockStorageService);
-    }
+    });
 
     tearDown(() {
       mockAppState.dispose();
       mockSearchService.dispose();
-    }
+    });
 
     Widget createMainNavigationUnderTest() {
       return MaterialApp(
