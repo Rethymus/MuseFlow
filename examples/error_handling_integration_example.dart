@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'dart:io';
+import 'dart:async';
 
 /// BuildContext扩展方法，用于显示错误
 extension BuildContextErrorExtension on BuildContext {
@@ -17,6 +18,26 @@ extension BuildContextErrorExtension on BuildContext {
       ),
     );
   }
+
+  void showErrorBanner(Object error, StackTrace? stackTrace) {
+    final message = error.toString();
+    ScaffoldMessenger.of(this).showSnackBar(
+      SnackBar(
+        content: Text('错误: $message'),
+        backgroundColor: Colors.orange,
+        duration: const Duration(seconds: 3),
+      ),
+    );
+  }
+}
+
+/// 权限拒绝异常
+class PermissionDeniedException implements Exception {
+  final String message;
+  PermissionDeniedException(this.message);
+
+  @override
+  String toString() => 'PermissionDeniedException: $message';
 }
 
 /// 实际项目中的错误处理集成示例
