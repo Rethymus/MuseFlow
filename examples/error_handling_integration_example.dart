@@ -1,6 +1,24 @@
 import 'package:flutter/material.dart';
 import 'dart:io';
 
+/// BuildContext扩展方法，用于显示错误
+extension BuildContextErrorExtension on BuildContext {
+  Future<void> showError(Object error, StackTrace? stackTrace) async {
+    final message = error.toString();
+    ScaffoldMessenger.of(this).showSnackBar(
+      SnackBar(
+        content: Text('发生错误: $message'),
+        backgroundColor: Colors.red,
+        action: SnackBarAction(
+          label: '确定',
+          textColor: Colors.white,
+          onPressed: () {},
+        ),
+      ),
+    );
+  }
+}
+
 /// 实际项目中的错误处理集成示例
 ///
 /// 这个文件展示了如何在MuseFlow项目的实际场景中
