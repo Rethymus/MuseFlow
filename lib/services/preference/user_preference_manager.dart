@@ -36,7 +36,7 @@ class UserPreferenceManager {
     FeedbackCollector? feedbackCollector,
     PreferenceLearningAlgorithm? learningAlgorithm,
   }) : _secureStorage = secureStorage ?? const FlutterSecureStorage(),
-       _preferences = preferences ?? throw ArgumentError('SharedPreferences required'),
+       _preferences = preferences ?? (throw ArgumentError('SharedPreferences required')),
        _writingAnalyzer = writingAnalyzer ?? WritingAnalyzer.instance,
        _feedbackCollector = feedbackCollector ?? FeedbackCollector.instance,
        _learningAlgorithm = learningAlgorithm ?? PreferenceLearningAlgorithm.instance;

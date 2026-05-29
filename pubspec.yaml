@@ -56,7 +56,7 @@ dev_dependencies:
 
   # Testing
   mockito: 5.4.4
-  hive_testing: ^2.0.0
+  hive_flutter: 1.1.0
   integration_test:
     sdk: flutter
 
