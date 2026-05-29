@@ -29,7 +29,7 @@ void main() {
         final result = await validator.validatePath(testCase);
         expect(result.isValid, false, reason: '应该拒绝路径: $testCase');
         expect(result.errorMessage, isNotNull, reason: '应该有错误信息');
-        print('✓ 正确检测到路径遍历攻击: $testCase');
+        debugPrint('✓ 正确检测到路径遍历攻击: $testCase');
       }
     });
 
@@ -47,7 +47,7 @@ void main() {
       for (final fileName in dangerousFiles) {
         final result = validator.validateFileType(fileName);
         expect(result.isValid, false, reason: '应该拒绝文件: $fileName');
-        print('✓ 正确检测到危险文件: $fileName');
+        debugPrint('✓ 正确检测到危险文件: $fileName');
       }
     });
 
@@ -66,7 +66,7 @@ void main() {
       for (final fileName in safeFiles) {
         final result = validator.validateFileType(fileName);
         expect(result.isValid, true, reason: '应该允许文件: $fileName');
-        print('✓ 正确允许安全文件: $fileName');
+        debugPrint('✓ 正确允许安全文件: $fileName');
       }
     });
 
@@ -75,7 +75,7 @@ void main() {
       final result = await validator.validatePath(longFileName);
       expect(result.isValid, false);
       expect(result.errorMessage, contains('文件名过长'));
-      print('✓ 正确检测到过长文件名');
+      debugPrint('✓ 正确检测到过长文件名');
     });
 
     test('应该检测禁止的文件名模式', () async {
@@ -91,7 +91,7 @@ void main() {
       for (final pattern in forbiddenPatterns) {
         final result = await validator.validatePath(pattern);
         expect(result.isValid, false, reason: '应该拒绝文件名: $pattern');
-        print('✓ 正确检测到禁止的文件名模式: $pattern');
+        debugPrint('✓ 正确检测到禁止的文件名模式: $pattern');
       }
     });
 
@@ -108,7 +108,7 @@ void main() {
         final result = await validator.validateFileSize(testFile.path);
         expect(result.isValid, false);
         expect(result.errorMessage, contains('文件过大'));
-        print('✓ 正确检测到文件大小超限');
+        debugPrint('✓ 正确检测到文件大小超限');
       } finally {
         // 清理测试文件
         if (await testFile.exists()) {
@@ -128,7 +128,7 @@ void main() {
       expect(safePath, contains('test_exports'));
       expect(safePath, endsWith('.txt'));
 
-      print('✓ 正确创建安全的输出路径: $safePath');
+      debugPrint('✓ 正确创建安全的输出路径: $safePath');
     });
 
     test('应该清理文件名中的危险字符', () async {
@@ -142,18 +142,18 @@ void main() {
       expect(safePath, contains('test'));
       expect(safePath, isNot(contains(RegExp(r'[<>:"|?*\\]'))));
 
-      print('✓ 正确清理危险字符: $safePath');
+      debugPrint('✓ 正确清理危险字符: $safePath');
     });
 
     test('应该维护会话大小限制', () async {
       final initialSize = validator.getCurrentSessionSize();
       validator.updateSessionSize(1024 * 1024); // 1MB
       expect(validator.getCurrentSessionSize(), initialSize + 1024 * 1024);
-      print('✓ 正确维护会话大小');
+      debugPrint('✓ 正确维护会话大小');
 
       validator.resetSessionSize();
       expect(validator.getCurrentSessionSize(), 0);
-      print('✓ 正确重置会话大小');
+      debugPrint('✓ 正确重置会话大小');
     });
 
     test('应该生成安全状态报告', () async {
@@ -166,9 +166,9 @@ void main() {
       expect(status, containsPair('safe_directories', isA<List>()));
       expect(status, containsPair('allowed_extensions', isA<List>()));
 
-      print('✓ 生成安全状态报告');
-      print('  安全目录数量: ${status['safe_directories'].length}');
-      print('  允许的扩展名数量: ${status['allowed_extensions'].length}');
+      debugPrint('✓ 生成安全状态报告');
+      debugPrint('  安全目录数量: ${status['safe_directories'].length}');
+      debugPrint('  允许的扩展名数量: ${status['allowed_extensions'].length}');
     });
 
     test('应该记录审计日志', () async {
@@ -182,8 +182,8 @@ void main() {
       final finalLogCount = validator.getAuditLogs().length;
       expect(finalLogCount, greaterThan(initialLogCount));
 
-      print('✓ 正确记录审计日志');
-      print('  记录的日志数量: ${finalLogCount - initialLogCount}');
+      debugPrint('✓ 正确记录审计日志');
+      debugPrint('  记录的日志数量: ${finalLogCount - initialLogCount}');
     });
   });
 
@@ -208,7 +208,7 @@ void main() {
       final finalCount = auditService.getRecentLogs().length;
       expect(finalCount, greaterThan(initialCount));
 
-      print('✓ 正确记录文件操作');
+      debugPrint('✓ 正确记录文件操作');
     });
 
     test('应该记录被拒绝的操作为安全事件', () {
@@ -224,7 +224,7 @@ void main() {
       final finalAlerts = auditService.getActiveAlerts().length;
       expect(finalAlerts, greaterThan(initialAlerts));
 
-      print('✓ 正确记录被拒绝的操作为安全事件');
+      debugPrint('✓ 正确记录被拒绝的操作为安全事件');
     });
 
     test('应该生成审计统计信息', () {
@@ -235,10 +235,10 @@ void main() {
       expect(stats, containsPair('total_alerts', isA<int>()));
       expect(stats, containsPair('active_alerts', isA<int>()));
 
-      print('✓ 正确生成审计统计信息');
-      print('  总日志数: ${stats['total_logs']}');
-      print('  总警报数: ${stats['total_alerts']}');
-      print('  活跃警报数: ${stats['active_alerts']}');
+      debugPrint('✓ 正确生成审计统计信息');
+      debugPrint('  总日志数: ${stats['total_logs']}');
+      debugPrint('  总警报数: ${stats['total_alerts']}');
+      debugPrint('  活跃警报数: ${stats['active_alerts']}');
     });
 
     test('应该能够导出审计报告', () async {
@@ -247,12 +247,12 @@ void main() {
         expect(reportPath, isNotNull);
         expect(await File(reportPath).exists(), true);
 
-        print('✓ 成功导出审计报告: $reportPath');
+        debugPrint('✓ 成功导出审计报告: $reportPath');
 
         // 清理测试文件
         await File(reportPath).delete();
       } catch (e) {
-        print('导出审计报告时出错: $e');
+        debugPrint('导出审计报告时出错: $e');
         rethrow;
       }
     });
@@ -271,7 +271,7 @@ void main() {
       await auditService.cleanupOldLogs(maxAge: const Duration(days: 1));
       final afterCleanup = auditService.getRecentLogs().length;
 
-      print('✓ 清理旧日志: 从 $beforeCleanup 到 $afterCleanup');
+      debugPrint('✓ 清理旧日志: 从 $beforeCleanup 到 $afterCleanup');
     });
   });
 
@@ -306,7 +306,7 @@ void main() {
       expect(securityStatus['allowed_operations'], greaterThan(0));
       expect(auditStats['total_logs'], greaterThan(0));
 
-      print('✓ 完整的安全验证流程测试通过');
+      debugPrint('✓ 完整的安全验证流程测试通过');
     });
   });
 }
