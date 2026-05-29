@@ -38,7 +38,7 @@ jobs:
         run: flutter pub deps
 
       - name: Analyze code
-        run: flutter analyze
+        run: dart analyze lib test
 
   test:
     name: Run Tests

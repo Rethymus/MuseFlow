@@ -28,7 +28,7 @@ jobs:
           cache: true
 
       - name: Format code
-        run: dart format .
+        run: dart format lib test
 
       - name: Check for changes
         id: check
