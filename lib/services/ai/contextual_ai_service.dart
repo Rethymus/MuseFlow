@@ -13,9 +13,9 @@ import '../preference/writing_analyzer.dart';
 /// 提供基于文档上下文的智能写作辅助
 class ContextualAIService {
   static ContextualAIService? _instance;
-  final AIService _baseService;
-  final PersonalizedAIService _personalizedService;
-  final WritingAnalyzer _writingAnalyzer;
+  AIService _baseService;
+  PersonalizedAIService _personalizedService;
+  WritingAnalyzer _writingAnalyzer;
 
   // 上下文历史记录
   final List<DocumentContext> _contextHistory = [];

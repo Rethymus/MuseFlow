@@ -34,7 +34,7 @@ class Location extends HiveObject {
       id: id ?? this.id,
       name: name ?? this.name,
       description: description ?? this.description,
-      relatedCharacters: relatedCharacters ?? List.from(relatedCharacters),
+      relatedCharacters: relatedCharacters ?? List.from(this.relatedCharacters),
     );
   }
 
@@ -101,7 +101,7 @@ class Organization extends HiveObject {
       name: name ?? this.name,
       description: description ?? this.description,
       leader: leader ?? this.leader,
-      members: members ?? List.from(members),
+      members: members ?? List.from(this.members),
       philosophy: philosophy ?? this.philosophy,
     );
   }
@@ -230,13 +230,13 @@ class WorldModel extends HiveObject {
       era: era ?? this.era,
       magicSystem: magicSystem ?? this.magicSystem,
       technology: technology ?? this.technology,
-      rules: rules ?? List.from(rules),
-      locations: locations ?? locations.map((l) => l.copyWith()).toList(),
+      rules: rules ?? List.from(this.rules),
+      locations: locations ?? this.locations.map((l) => l.copyWith()).toList(),
       organizations:
-          organizations ?? organizations.map((o) => o.copyWith()).toList(),
+          organizations ?? this.organizations.map((o) => o.copyWith()).toList(),
       geography: geography ?? this.geography,
       history: history ?? this.history,
-      tags: tags ?? List.from(tags),
+      tags: tags ?? List.from(this.tags),
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
       notes: notes ?? this.notes,

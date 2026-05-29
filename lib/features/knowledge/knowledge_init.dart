@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:provider/provider.dart';
 
+import 'character_model.dart';
+import 'world_model.dart';
 import 'character_service.dart';
 import 'world_service.dart';
 import 'knowledge_screen.dart';

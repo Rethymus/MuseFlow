@@ -1,6 +1,7 @@
 import '../utils/logger.dart';
 import 'dart:async';
 import 'package:flutter/foundation.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 import 'storage_service.dart';
 import 'lazy_storage_service.dart';
 import 'secure_data_service.dart';
