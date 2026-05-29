@@ -3,6 +3,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:provider/provider.dart';
 import 'package:museflow/models/app_state.dart';
 import 'package:museflow/pages/main_navigation.dart';
+import 'package:museflow/utils/page_transitions.dart';
 import 'package:museflow/services/secure_storage_service.dart';
 import 'package:museflow/features/knowledge/character_service.dart';
 import 'package:museflow/features/knowledge/world_service.dart';

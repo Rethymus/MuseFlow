@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import '../services/ux/adaptive_ui_manager.dart';
 import '../services/ux/immersive_mode.dart';
 import '../services/ux/interaction_analyzer.dart';
+import '../services/global_search_service.dart';
 import '../models/app_state.dart';
 import '../widgets/note_list.dart';
 import '../widgets/note_editor.dart';

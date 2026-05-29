@@ -5,6 +5,7 @@ import '../../../models/ai_response.dart';
 import 'ai_request_cache.dart';
 import 'ai_cache_stats.dart';
 import 'ai_cache_entry.dart';
+import 'memory_cache.dart';
 
 /// 缓存管理服务
 /// 提供高级缓存管理功能和监控

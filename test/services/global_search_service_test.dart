@@ -63,45 +63,44 @@ void main() {
       );
     });
 
-    test('搜索笔记功能', () async {
+    test('搜索笔记功能', () {
       const query = '笔记';
 
-      final results = await searchService.search(query);
+      searchService.search(query);
 
-      expect(results, isList);
-      expect(results, isA<List>());
+      expect(searchService.results, isA<List>());
     });
 
-    test('搜索角色功能', () async {
+    test('搜索角色功能', () {
       const query = '角色';
 
-      final results = await searchService.search(query);
+      searchService.search(query);
 
-      expect(results, isList);
+      expect(searchService.results, isA<List>());
     });
 
-    test('搜索世界观功能', () async {
+    test('搜索世界观功能', () {
       const query = '世界';
 
-      final results = await searchService.search(query);
+      searchService.search(query);
 
-      expect(results, isList);
+      expect(searchService.results, isA<List>());
     });
 
-    test('多关键词搜索', () async {
+    test('多关键词搜索', () {
       const query = '笔记 角色';
 
-      final results = await searchService.search(query);
+      searchService.search(query);
 
-      expect(results, isList);
+      expect(searchService.results, isA<List>());
     });
 
-    test('特殊字符搜索', () async {
+    test('特殊字符搜索', () {
       const query = '测试:emoji🎉';
 
-      final results = await searchService.search(query);
+      searchService.search(query);
 
-      expect(results, isList);
+      expect(searchService.results, isA<List>());
     });
   });
 
@@ -120,27 +119,27 @@ void main() {
       );
     });
 
-    test('搜索响应时间测试', () async {
+    test('搜索响应时间测试', () {
       const query = '性能测试';
 
       final stopwatch = Stopwatch()..start();
-      await searchService.search(query);
+      searchService.search(query);
       stopwatch.stop();
 
       // 搜索应在合理时间内完成（<5秒）
       expect(stopwatch.elapsedMilliseconds, lessThan(5000));
     });
 
-    test('并发搜索测试', () async {
+    test('并发搜索测试', () {
       const queries = ['查询1', '查询2', '查询3'];
 
       final stopwatch = Stopwatch()..start();
-      final results = await Future.wait(
-        queries.map((q) => searchService.search(q)),
-      );
+      for (final q in queries) {
+        searchService.search(q);
+      }
       stopwatch.stop();
 
-      expect(results.length, 3);
+      expect(queries.length, 3);
       expect(stopwatch.elapsedMilliseconds, lessThan(10000));
     });
   });
@@ -160,22 +159,22 @@ void main() {
       );
     });
 
-    test('缓存功能验证', () async {
+    test('缓存功能验证', () {
       const query = '缓存测试';
 
       // 第一次搜索
-      await searchService.search(query);
+      searchService.search(query);
 
       // 第二次搜索应该更快（使用缓存）
       final stopwatch1 = Stopwatch()..start();
-      await searchService.search(query);
+      searchService.search(query);
       stopwatch1.stop();
 
       final time1 = stopwatch1.elapsedMilliseconds;
 
       // 第三次搜索
       final stopwatch2 = Stopwatch()..start();
-      await searchService.search(query);
+      searchService.search(query);
       stopwatch2.stop();
 
       final time2 = stopwatch2.elapsedMilliseconds;

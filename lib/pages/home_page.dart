@@ -8,6 +8,7 @@ import '../models/app_state.dart';
 import '../widgets/note_list.dart';
 import '../widgets/note_editor.dart';
 import '../widgets/global_search_widget.dart';
+import '../services/global_search_service.dart';
 import '../models/note.dart';
 
 class HomePage extends StatefulWidget {
