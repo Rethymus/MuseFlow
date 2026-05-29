@@ -300,10 +300,8 @@ class KnowledgeFeatureTest {
 }
 
 // 运行测试示例：
-/*
 void main() async {
   final testResults = await KnowledgeFeatureTest.runFullTest();
   print('\n详细结果:');
   print(testResults);
 }
-*/
