@@ -1,6 +1,7 @@
 import 'dart:typed_data';
 import 'dart:math';
 import 'package:crypto/crypto.dart';
+import 'package:encrypt/encrypt.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 /// Secure data encryption service for user data protection.
@@ -38,7 +39,7 @@ class SecureDataService {
   );
 
   // Cached encryption keys for performance
-  encrypt.Key? _cachedKey;
+  Key? _cachedKey;
   Uint8List? _cachedSalt;
 
   /// Initialize the secure data service
@@ -56,7 +57,7 @@ class SecureDataService {
 
     if (existingKey != null && existingSalt != null) {
       // Load existing key and salt
-      _cachedKey = encrypt.Key.fromBase64(existingKey);
+      _cachedKey = Key.fromBase64(existingKey);
       // 安全修复：使用base64UrlDecode读取salt，兼容新旧格式
       try {
         _cachedSalt = base64UrlDecode(existingSalt);
@@ -81,7 +82,7 @@ class SecureDataService {
         value: base64UrlEncode(salt),
       );
 
-      _cachedKey = encrypt.Key(masterKey);
+      _cachedKey = Key(masterKey);
       _cachedSalt = salt;
     }
   }
@@ -139,13 +140,13 @@ class SecureDataService {
     final derivedKey = dataId != null ? _deriveKey(dataId) : _cachedKey!.bytes;
 
     // Create encrypter with GCM mode
-    final encrypter = encrypt.Encrypter(
-        encrypt.AES(encrypt.Key(derivedKey), mode: encrypt.AESMode.gcm));
+    final encrypter =
+        Encrypter(AES(Key(derivedKey), mode: AESMode.gcm));
 
     // Encrypt the data
     final encrypted = encrypter.encryptBytes(
       plainText.codeUnits,
-      iv: encrypt.IV(iv),
+      iv: IV(iv),
     );
 
     // Combine IV and encrypted data
@@ -183,13 +184,13 @@ class SecureDataService {
           dataId != null ? _deriveKey(dataId) : _cachedKey!.bytes;
 
       // Create decrypter with GCM mode
-      final decrypter = encrypt.Encrypter(
-          encrypt.AES(encrypt.Key(derivedKey), mode: encrypt.AESMode.gcm));
+      final decrypter =
+          Encrypter(AES(Key(derivedKey), mode: AESMode.gcm));
 
       // Decrypt the data
       final decrypted = decrypter.decryptBytes(
-        encrypt.Encrypted(data),
-        iv: encrypt.IV(iv),
+        Encrypted(data),
+        iv: IV(iv),
       );
 
       // Convert back to string
@@ -357,7 +358,7 @@ class SecurityException implements Exception {
 List<int> pbkdf2(Hmac hmac, List<int> password, List<int> salt, int iterations,
     int keyLength) {
   final dk = <int>[];
-  final blockCount = (keyLength / hmac.hash.digestSize).ceil();
+  final blockCount = (keyLength + hmac.hash.digestSize - 1) ~/ hmac.hash.digestSize;
 
   for (int i = 1; i <= blockCount; i++) {
     final block = Uint8List(hmac.hash.digestSize);
