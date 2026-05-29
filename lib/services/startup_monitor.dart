@@ -4,15 +4,15 @@ import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'progressive_initializer.dart';
 
-/// 性能指标
-class PerformanceMetrics {
+/// 启动性能指标
+class StartupPerformanceMetrics {
   final DateTime timestamp;
   final Duration timeToBasicUI;
   final Duration timeToCoreServices;
   final Duration timeToComplete;
   final Map<String, Duration> taskDurations;
 
-  PerformanceMetrics({
+  StartupPerformanceMetrics({
     required this.timestamp,
     required this.timeToBasicUI,
     required this.timeToCoreServices,
@@ -57,7 +57,7 @@ class PerformanceMetrics {
 /// 监控应用启动性能，收集性能指标
 class StartupMonitor {
   static StartupMonitor? _instance;
-  PerformanceMetrics? _lastMetrics;
+  StartupPerformanceMetrics? _lastMetrics;
   final Map<String, DateTime> _taskStartTimes = {};
   final Map<String, Duration> _taskDurations = {};
 
@@ -158,7 +158,7 @@ class StartupMonitor {
       return;
     }
 
-    _lastMetrics = PerformanceMetrics(
+    _lastMetrics = StartupPerformanceMetrics(
       timestamp: _appStartTime!,
       timeToBasicUI: _basicUITime!.difference(_appStartTime!),
       timeToCoreServices: _coreServicesTime!.difference(_appStartTime!),
@@ -171,7 +171,7 @@ class StartupMonitor {
   }
 
   /// 获取最后的性能指标
-  PerformanceMetrics? get lastMetrics => _lastMetrics;
+  StartupPerformanceMetrics? get lastMetrics => _lastMetrics;
 
   /// 获取性能摘要
   String getPerformanceSummary() {

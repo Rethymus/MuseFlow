@@ -66,7 +66,7 @@ class StartupAnalyzer {
   }
 
   /// 生成优化建议
-  List<String> _generateRecommendations(PerformanceMetrics metrics) {
+  List<String> _generateRecommendations(StartupPerformanceMetrics metrics) {
     final recommendations = <String>[];
 
     // 检查基础UI时间
@@ -200,7 +200,7 @@ class StartupAnalyzer {
   }
 
   /// 比较两次启动性能
-  Map<String, dynamic> compareWithPrevious(PerformanceMetrics previous) {
+  Map<String, dynamic> compareWithPrevious(StartupPerformanceMetrics previous) {
     final current = StartupMonitor.instance.lastMetrics;
     if (current == null) {
       return {'error': '没有当前性能数据'};
@@ -242,7 +242,7 @@ class StartupAnalyzer {
 
   /// 生成性能趋势分析
   List<Map<String, dynamic>> generateTrendAnalysis(
-    List<PerformanceMetrics> history,
+    List<StartupPerformanceMetrics> history,
   ) {
     if (history.isEmpty) return [];
 
