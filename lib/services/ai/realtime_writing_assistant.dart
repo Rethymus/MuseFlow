@@ -1,10 +1,5 @@
 import 'dart:async';
 import 'dart:math';
-import '../../models/ai_message.dart';
-import '../../models/ai_response.dart';
-import '../../models/ai_config.dart';
-import '../../models/user_preference.dart';
-import 'ai_service.dart';
 import 'ai_types.dart';
 import 'contextual_ai_service.dart';
 import '../preference/writing_analyzer.dart';

@@ -6,14 +6,12 @@ import 'package:retry/retry.dart';
 import '../../models/ai_config.dart';
 import '../../models/ai_message.dart';
 import '../../models/ai_response.dart';
-import '../../config/app_constants.dart';
 import '../../utils/logger.dart';
 import 'ai_adapter.dart';
 import 'adapters/openai_adapter.dart';
 import 'adapters/claude_adapter.dart';
 import 'adapters/deepseek_adapter.dart';
 import 'adapters/ollama_adapter.dart';
-import 'cache/ai_request_cache.dart';
 import 'cache/cache_manager.dart';
 import 'cache/ai_cache_stats.dart';
 
@@ -69,7 +67,6 @@ class AIService {
   }
 
   void _cleanupInactiveAdapters() {
-    final now = DateTime.now();
     _adapters.removeWhere((id, adapter) {
       // 这里可以添加逻辑来清理不活跃的适配器
       // 暂时保留所有适配器

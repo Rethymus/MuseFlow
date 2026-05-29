@@ -1,9 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:window_manager/window_manager.dart';
 import 'package:provider/provider.dart';
 
-import 'pages/home_page.dart';
 import 'pages/startup_page.dart';
 import 'pages/main_navigation.dart';
 import 'services/progressive_initializer.dart';

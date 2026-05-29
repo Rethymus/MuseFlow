@@ -1,5 +1,4 @@
 import '../../utils/logger.dart';
-import '../../config/app_constants.dart';
 import 'package:hive/hive.dart';
 import 'package:uuid/uuid.dart';
 import 'dart:convert';
@@ -17,6 +16,7 @@ class WorldService with ChangeNotifier {
   static const String _boxName = 'worlds';
   Box<WorldModel>? _box;
 
+  // ignore: unused_field
   List<WorldModel> _worlds = [];
   WorldModel? _currentWorld;
   String? _currentProjectId;
@@ -168,7 +168,6 @@ class WorldService with ChangeNotifier {
   List<WorldModel> searchWorlds(String query) {
     if (query.isEmpty) return _worlds;
 
-    final lowerQuery = query.toLowerCase();
     return _worlds.where((world) {
       return world.matchesQuery(query);
     }).toList();

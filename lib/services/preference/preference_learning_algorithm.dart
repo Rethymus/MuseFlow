@@ -6,7 +6,9 @@ import '../../models/user_preference.dart';
 class PreferenceLearningAlgorithm {
   static PreferenceLearningAlgorithm? _instance;
 
+  // ignore: unused_field
   final Random _random = Random();
+  // ignore: unused_field
   final Map<String, double> _styleWeights = {};
 
   PreferenceLearningAlgorithm._();

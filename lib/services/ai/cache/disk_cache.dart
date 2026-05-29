@@ -2,17 +2,13 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 import 'package:path_provider/path_provider.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:flutter/foundation.dart';
 import 'ai_cache_entry.dart';
-import '../../../config/app_constants.dart';
 import '../../../utils/logger.dart';
 import '../../../utils/file_security_validator.dart';
 
 /// 磁盘缓存实现
 /// 持久化缓存到本地存储，提供跨会话缓存能力
 class DiskCache {
-  final FlutterSecureStorage _secureStorage;
   final int maxEntries;
   final Duration defaultExpiration;
   final int maxSizeBytes;
@@ -20,11 +16,10 @@ class DiskCache {
   int _currentSize = 0;
 
   DiskCache({
-    FlutterSecureStorage? secureStorage,
     this.maxEntries = 500,
     this.defaultExpiration = const Duration(days: 7),
     this.maxSizeBytes = 100 * 1024 * 1024, // 100MB
-  }) : _secureStorage = secureStorage ?? const FlutterSecureStorage();
+  });
 
   /// 初始化磁盘缓存
   Future<void> initialize() async {

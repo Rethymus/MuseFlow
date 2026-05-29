@@ -1,9 +1,7 @@
 import '../utils/logger.dart';
-import 'package:flutter/foundation.dart';
 import 'dart:async';
 import 'dart:math';
 import '../services/startup_monitor.dart';
-import '../services/progressive_initializer.dart';
 import '../config/app_constants.dart';
 import 'startup_analyzer.dart';
 

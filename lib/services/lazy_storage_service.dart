@@ -1,10 +1,7 @@
 import '../utils/logger.dart';
 import '../models/note.dart';
-import '../config/app_constants.dart';
 import 'dart:async';
-import 'package:flutter/foundation.dart';
 import 'package:hive_flutter/hive_flutter.dart';
-import '../models/app_state.dart';
 
 /// 延迟加载的存储服务
 ///
@@ -17,7 +14,6 @@ class LazyStorageService {
   LazyStorageService._internal();
 
   // 存储状态
-  bool _isInitialized = false;
   bool _isBasicReady = false;
   bool _isFullReady = false;
 
@@ -169,8 +165,6 @@ class LazyStorageService {
   /// 更新最近使用的笔记
   Future<void> _updateRecentNotes(String noteId) async {
     try {
-      final recentNotesJson =
-          await getSetting('recent_notes', defaultValue: '[]');
       final List<String> recentNotes = [];
 
       // 添加到开头

@@ -1,5 +1,4 @@
 import '../utils/logger.dart';
-import '../config/app_constants.dart';
 import 'package:flutter/foundation.dart';
 import 'note.dart';
 import '../services/storage_service.dart';

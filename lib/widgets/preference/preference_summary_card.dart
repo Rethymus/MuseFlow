@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import '../../models/user_preference.dart';
 
 /// 偏好摘要卡片
 /// 显示用户偏好学习的关键指标

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:provider/provider.dart';
-import 'package:window_manager/window_manager.dart';
 import 'package:museflow/models/app_state.dart';
 import 'package:museflow/models/note.dart';
 import 'package:museflow/pages/home_page.dart';
@@ -204,6 +203,7 @@ void main() {
       await tester.pumpWidget(createHomePageUnderTest());
 
       // 模拟角色搜索结果
+      // ignore: unused_local_variable
       final characterResult = GlobalSearchResult(
         id: 'char-1',
         title: '测试角色',
@@ -228,6 +228,7 @@ void main() {
       await tester.pumpWidget(createHomePageUnderTest());
 
       // 模拟世界观搜索结果
+      // ignore: unused_local_variable
       final worldResult = GlobalSearchResult(
         id: 'world-1',
         title: '奇幻世界',
@@ -252,6 +253,7 @@ void main() {
       await tester.pumpWidget(createHomePageUnderTest());
 
       // 模拟地点搜索结果
+      // ignore: unused_local_variable
       final locationResult = GlobalSearchResult(
         id: 'location-1',
         title: '王都',
@@ -276,6 +278,7 @@ void main() {
       await tester.pumpWidget(createHomePageUnderTest());
 
       // 模拟组织搜索结果
+      // ignore: unused_local_variable
       final organizationResult = GlobalSearchResult(
         id: 'org-1',
         title: '魔法师协会',

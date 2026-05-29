@@ -14,7 +14,6 @@ import 'package:museflow/features/knowledge/character_service.dart';
 import 'package:museflow/features/knowledge/world_service.dart';
 import 'package:museflow/services/shared_data_service.dart';
 import 'package:museflow/services/global_search_service.dart';
-import 'package:museflow/services/secure_storage_service.dart';
 
 /// 主应用集成测试
 /// 验证所有模块正确集成到主应用中

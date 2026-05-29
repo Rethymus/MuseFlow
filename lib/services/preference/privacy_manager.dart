@@ -200,7 +200,6 @@ class PrivacyManager {
     String? feedbackKey,
     String? analyticsKey,
   }) async {
-    const prefKey = 'user_preference_data';
     const feedKey = 'user_feedback_history';
     const analyticKey = 'writing_analytics_data';
 

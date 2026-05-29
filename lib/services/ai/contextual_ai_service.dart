@@ -13,6 +13,7 @@ import '../preference/writing_analyzer.dart';
 /// 提供基于文档上下文的智能写作辅助
 class ContextualAIService {
   static ContextualAIService? _instance;
+  // ignore: unused_field
   AIService _baseService;
   PersonalizedAIService _personalizedService;
   WritingAnalyzer _writingAnalyzer;

@@ -19,6 +19,7 @@ class UserPreferenceManager {
   final FlutterSecureStorage _secureStorage;
   final SharedPreferences _preferences;
   final WritingAnalyzer _writingAnalyzer;
+  // ignore: unused_field
   final FeedbackCollector _feedbackCollector;
   final PreferenceLearningAlgorithm _learningAlgorithm;
 

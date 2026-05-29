@@ -216,6 +216,7 @@ class AICacheSystem {
   static Future<String> generateSystemReport() async {
     final health = await checkHealth();
     final metrics = await getPerformanceMetrics();
+    // ignore: unused_local_variable
     final stats = getStatistics();
     final cacheSize = await getCacheSizeInfo();
     final suggestions = await getOptimizationSuggestions();

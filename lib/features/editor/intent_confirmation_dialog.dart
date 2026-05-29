@@ -22,7 +22,6 @@ class IntentConfirmationDialog extends StatefulWidget {
 
 class _IntentConfirmationDialogState extends State<IntentConfirmationDialog> {
   late IntentConfirmation _currentIntent;
-  bool _isExpanded = false;
 
   @override
   void initState() {

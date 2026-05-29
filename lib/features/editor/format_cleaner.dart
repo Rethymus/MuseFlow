@@ -1,18 +1,6 @@
-import 'dart:convert';
-
 /// 格式清洗工具
 /// 用于清理Markdown格式残留和其他格式问题
 class FormatCleaner {
-  // 需要保留的Markdown元素
-  static const List<String> _preservedPatterns = [
-    r'^#{1,6}\s+', // 标题
-    r'^\s*[-*+]\s+', // 列表
-    r'^\s*\d+\.\s+', // 有序列表
-    r'^>\s+', // 引用
-    r'```', // 代码块
-    r'`[^`]+`', // 行内代码
-  ];
-
   // 需要清洗的格式模式
   static final List<_CleanRule> _cleanRules = [
     // 清除多余空行

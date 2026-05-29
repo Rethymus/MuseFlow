@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 
-import '../models/app_state.dart';
 import '../features/editor/editor_screen.dart';
 import '../features/knowledge/knowledge_screen.dart';
 import 'home_page.dart';
@@ -87,8 +85,6 @@ class _MainNavigationContainerState extends State<MainNavigationContainer>
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-
     return Scaffold(
       body: Stack(
         children: [

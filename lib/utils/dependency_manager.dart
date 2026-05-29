@@ -1,7 +1,6 @@
 import 'dependency_auditor.dart';
 export 'dependency_auditor.dart'
     show ConflictSeverity, HealthScore, UpdatePriorityLevel;
-import 'dart:io';
 
 /// 依赖管理器 - 主入口类
 ///

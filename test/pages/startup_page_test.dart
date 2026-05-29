@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:museflow/config/app_constants.dart';
 import 'package:museflow/pages/startup_page.dart';
 import 'package:museflow/services/progressive_initializer.dart';
 
@@ -74,6 +73,7 @@ void main() {
       await tester.pumpWidget(createStartupPageUnderTest());
 
       // 查找包含Icon的Container
+      // ignore: unused_local_variable
       final containerWithIcon = find.descendant(
         of: find.byType(Container),
         matching: find.byType(InkWell),

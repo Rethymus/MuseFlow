@@ -5,7 +5,6 @@ import 'dart:async';
 import 'character_service.dart';
 import 'character_model.dart';
 import 'world_service.dart';
-import 'world_model.dart';
 import '../../config/app_constants.dart';
 
 /// 搜索结果类型

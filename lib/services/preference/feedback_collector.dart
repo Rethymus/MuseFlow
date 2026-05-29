@@ -1,6 +1,5 @@
 import 'dart:async';
 import '../../models/user_preference.dart';
-import '../../config/app_constants.dart';
 import '../../utils/logger.dart';
 
 /// 反馈收集器

@@ -1,17 +1,13 @@
 import '../../utils/logger.dart';
 import 'dart:async';
 import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
 import '../../utils/natural_language_processor.dart';
 import '../../services/intent_analyzer.dart';
 import '../../models/intent_confirmation.dart';
 import '../../config/app_constants.dart';
 import '../../services/ai/ai_service.dart';
-import '../../services/ai/adapters/openai_adapter.dart';
-import '../../services/ai/adapters/claude_adapter.dart';
 import '../../models/ai_config.dart';
 import '../../models/ai_message.dart';
-import '../../models/ai_response.dart';
 import '../../services/ai/ai_adapter.dart';
 
 /// AI操作处理器
@@ -46,9 +42,6 @@ class AIActionHandler {
   // 操作队列
   final List<_AIOperation> _operationQueue = [];
   bool _isProcessing = false;
-
-  // 超时设置
-  static const Duration _defaultTimeout = AppConstants.aiTimeout;
 
   // 配置
   final bool enableIntentConfirmation;
@@ -435,7 +428,7 @@ class AIActionHandler {
   ) async {
     final buffer = StringBuffer();
 
-    await for (final chunk in _aiService!.sendMessageStream(
+    await for (final _ in _aiService!.sendMessageStream(
       messages,
       config: _currentConfig,
       onChunk: (chunk) {

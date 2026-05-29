@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-import '../ai_adapter.dart';
 import '../../../models/ai_config.dart';
 import '../../../models/ai_message.dart';
 import '../../../models/ai_response.dart';

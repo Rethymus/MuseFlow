@@ -125,7 +125,6 @@ class CacheManager {
   /// 获取缓存性能指标
   Future<CachePerformanceMetrics> getPerformanceMetrics() async {
     final health = await getHealthStatus();
-    final cacheStats = stats;
     final cacheSize = await _cache.getCacheSize();
 
     return CachePerformanceMetrics(

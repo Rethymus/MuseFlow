@@ -1,10 +1,8 @@
 import '../utils/logger.dart';
-import '../config/app_constants.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../models/app_state.dart';
-import '../services/storage_service.dart';
 
 /// 设置页面
 /// 管理应用的各种设置和配置
@@ -31,7 +29,6 @@ class _SettingsPageState extends State<SettingsPage> {
     });
 
     try {
-      final appState = context.read<AppState>();
       // 这里可以加载各种设置项
       // 目前只是示例结构
     } catch (e) {

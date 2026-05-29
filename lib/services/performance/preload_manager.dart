@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:io';
 import 'dart:convert';
-import 'package:flutter/foundation.dart';
 import 'package:path_provider/path_provider.dart';
 import '../../utils/logger.dart';
 
@@ -360,6 +359,7 @@ class PreloadCache {
 class PreloadManager {
   static PreloadManager? _instance;
   static const String _usagePatternFileName = 'user_usage_pattern.json';
+  // ignore: unused_field
   static const String _cacheFileName = 'preload_cache.json';
 
   final Map<String, PreloadTask> _pendingTasks = {};
@@ -738,6 +738,7 @@ class PreloadManager {
       final file = File('${directory.path}/$_usagePatternFileName');
 
       if (await file.exists()) {
+        // ignore: unused_local_variable
         final json = jsonDecode(await file.readAsString());
         // 注意：这里不能直接替换 _usagePattern，因为它在构造函数中被初始化
         // 实际应用中需要更复杂的数据合并逻辑

@@ -1,7 +1,4 @@
-import 'package:flutter/foundation.dart';
-import '../models/app_state.dart';
 import '../models/note.dart';
-import '../config/app_constants.dart';
 import '../utils/logger.dart';
 import 'secure_data_service.dart';
 import 'secure_storage_service.dart';

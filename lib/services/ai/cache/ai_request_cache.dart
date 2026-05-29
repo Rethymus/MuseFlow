@@ -283,6 +283,7 @@ class AIRequestCache {
   /// 生成性能报告
   Future<String> generateReport() async {
     final health = await getHealthStatus();
+    // ignore: unused_local_variable
     final detailedStats = await getDetailedStats();
 
     final buffer = StringBuffer();

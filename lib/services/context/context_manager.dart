@@ -84,6 +84,7 @@ class ContextManager {
   late final ListQueue<ContextSegment> _segmentQueue;
 
   // 线程安全锁
+  // ignore: unused_field
   final _lock = Object();
 
   // 变化通知控制器

@@ -1,8 +1,5 @@
 import '../utils/logger.dart';
-import '../config/app_constants.dart';
 import 'dart:async';
-import 'package:flutter/foundation.dart';
-import 'progressive_initializer.dart';
 
 /// 启动性能指标
 class StartupPerformanceMetrics {

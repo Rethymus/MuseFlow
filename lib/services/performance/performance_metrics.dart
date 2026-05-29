@@ -236,6 +236,7 @@ class OptimizationReport {
 class PerformanceMetrics {
   static PerformanceMetrics? _instance;
   static const String _metricsFileName = 'performance_metrics.json';
+  // ignore: unused_field
   static const String _reportsFileName = 'optimization_reports.json';
 
   final Map<String, List<PerformanceDataPoint>> _metricsData = {};

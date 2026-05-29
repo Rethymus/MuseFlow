@@ -1,17 +1,9 @@
 import 'dart:async';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:encrypt/encrypt.dart' as encrypt;
-import 'package:retry/retry.dart';
 import '../../models/ai_config.dart';
 import '../../models/ai_message.dart';
 import '../../models/ai_response.dart';
 import '../../models/user_preference.dart';
 import 'ai_adapter.dart';
-import 'adapters/openai_adapter.dart';
-import 'adapters/claude_adapter.dart';
-import 'adapters/deepseek_adapter.dart';
-import 'adapters/ollama_adapter.dart';
-import 'cache/ai_request_cache.dart';
 import 'cache/cache_manager.dart';
 import '../preference/user_preference_manager.dart';
 import '../preference/feedback_collector.dart';
@@ -24,6 +16,7 @@ class PersonalizedAIService {
   AIService _baseService;
   UserPreferenceManager? _preferenceManager;
   FeedbackCollector? _feedbackCollector;
+  // ignore: unused_field
   WritingAnalyzer? _writingAnalyzer;
   bool _initialized = false;
 

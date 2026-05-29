@@ -1,6 +1,5 @@
 import 'package:hive_flutter/hive_flutter.dart';
 import '../models/note.dart';
-import '../models/app_state.dart';
 import 'secure_data_service.dart';
 import 'secure_storage_service.dart';
 import 'dart:convert';
@@ -273,8 +272,6 @@ class EncryptionMigrationService {
   ///
   /// Use this only if you need to re-encrypt data with new keys
   Future<void> forceReMigration() async {
-    final state = await getMigrationState();
-
     // Clear migration state to allow re-migration
     await _migrationBox.put(_migrationStateKey, STATE_NOT_STARTED);
     await _migrationBox.delete(_migrationBackupKey);

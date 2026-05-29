@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'package:uuid/uuid.dart';
 import '../../models/ai_config.dart';
-import 'ai_service.dart';
 
 /// AI配置管理器
 /// 提供便捷的配置创建和管理功能

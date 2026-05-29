@@ -1,8 +1,6 @@
 import 'dart:typed_data';
 import 'dart:math';
-import 'package:encrypt/encrypt.dart' as encrypt;
 import 'package:crypto/crypto.dart';
-import 'package:uuid/uuid.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 /// Secure data encryption service for user data protection.

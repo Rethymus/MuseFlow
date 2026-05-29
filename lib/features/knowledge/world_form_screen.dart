@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:uuid/uuid.dart' show Uuid;
 
 import 'world_model.dart';
 import 'world_service.dart';

@@ -307,7 +307,9 @@ class DependencyAuditor {
   final File healthReportFile;
   final File constraintsFile;
 
+  // ignore: unused_field
   List<DependencyInfo>? _cachedDependencies;
+  // ignore: unused_field
   List<VersionConflict>? _cachedConflicts;
   List<DependencyChangeLog>? _cachedChangeLog;
 

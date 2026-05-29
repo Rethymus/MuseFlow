@@ -83,8 +83,7 @@ class _ContextAnchorIndicatorState extends State<ContextAnchorIndicator>
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
+    final colorScheme = Theme.of(context).colorScheme;
 
     return AnimatedBuilder(
       animation: _animationController,
@@ -380,8 +379,6 @@ class _ContextAnchorDialogState extends State<ContextAnchorDialog> {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-
     return AlertDialog(
       title: Row(
         children: [

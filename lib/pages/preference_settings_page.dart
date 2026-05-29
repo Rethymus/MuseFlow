@@ -347,6 +347,7 @@ class _PreferenceSettingsPageState extends State<PreferenceSettingsPage> {
   Future<void> _exportData() async {
     try {
       final manager = context.read<UserPreferenceManager>();
+      // ignore: unused_local_variable
       final data = await manager.exportData();
       // 这里可以实现数据导出逻辑
       // 例如：保存到文件或分享

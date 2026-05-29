@@ -1,5 +1,4 @@
 import '../../utils/logger.dart';
-import '../../config/app_constants.dart';
 import 'package:hive/hive.dart';
 import 'package:uuid/uuid.dart';
 import 'dart:convert';
@@ -17,6 +16,7 @@ class CharacterService with ChangeNotifier {
   static const String _boxName = 'characters';
   Box<CharacterModel>? _box;
 
+  // ignore: unused_field
   List<CharacterModel> _characters = [];
   CharacterModel? _currentCharacter;
   String? _currentProjectId;
@@ -201,7 +201,6 @@ class CharacterService with ChangeNotifier {
   List<CharacterModel> searchCharacters(String query) {
     if (query.isEmpty) return _characters;
 
-    final lowerQuery = query.toLowerCase();
     return _characters.where((character) {
       return character.matchesQuery(query);
     }).toList();

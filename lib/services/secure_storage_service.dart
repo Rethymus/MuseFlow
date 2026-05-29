@@ -1,12 +1,8 @@
 import 'package:hive_flutter/hive_flutter.dart';
 import '../models/note.dart';
-import '../models/app_state.dart';
-import '../config/app_constants.dart';
 import '../utils/logger.dart';
 import 'secure_data_service.dart';
 import 'base_storage_service.dart';
-import 'package:uuid/uuid.dart';
-import 'package:flutter/foundation.dart';
 
 /// Secure storage service that provides encrypted data persistence.
 ///

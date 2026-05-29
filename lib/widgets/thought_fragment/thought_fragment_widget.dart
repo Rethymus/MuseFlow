@@ -194,8 +194,6 @@ class _ThoughtFragmentDialogState extends State<ThoughtFragmentDialog> {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-
     return AlertDialog(
       title: const Text('添加思维碎片'),
       content: SizedBox(

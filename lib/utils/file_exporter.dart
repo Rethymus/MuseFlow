@@ -1,16 +1,11 @@
 import '../utils/logger.dart';
 import '../models/note.dart';
-import '../config/app_constants.dart';
 import 'dart:convert';
 import 'dart:io';
 import 'package:file_picker/file_picker.dart';
-import 'package:path_provider/path_provider.dart';
-import 'package:flutter/foundation.dart';
-import '../models/app_state.dart';
 import 'file_security_validator.dart';
 
 class FileExporter {
-  static const String _defaultFileName = 'museflow_notes';
 
   /// 将笔记导出为JSON字符串
   static Future<String> exportToJSON(List<Note> notes) async {

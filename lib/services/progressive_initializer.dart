@@ -1,8 +1,6 @@
 import '../utils/logger.dart';
 import 'dart:async';
-import 'package:flutter/foundation.dart';
 import 'package:hive_flutter/hive_flutter.dart';
-import 'storage_service.dart';
 import 'lazy_storage_service.dart';
 import 'secure_data_service.dart';
 import 'database_service.dart';
@@ -87,10 +85,13 @@ class PhaseConfig {
 class ProgressiveInitializer {
   static ProgressiveInitializer? _instance;
   // 使用 AppConstants 中的启动性能阈值
+  // ignore: unused_field
   static const Duration _phase1Target =
       Duration(milliseconds: AppConstants.startupBasicUIThresholdMs);
+  // ignore: unused_field
   static const Duration _phase2Target =
       Duration(milliseconds: AppConstants.startupCoreServicesThresholdMs);
+  // ignore: unused_field
   static const Duration _phase3Target =
       Duration(milliseconds: AppConstants.startupCompleteThresholdMs);
 
@@ -108,6 +109,7 @@ class ProgressiveInitializer {
   // 性能监控
   DateTime? _performanceStartTime;
   Map<String, Duration> _phaseDurations = {};
+  // ignore: unused_field
   final Map<String, Stopwatch> _phaseTimers = {};
 
   ProgressiveInitializer._internal() {
