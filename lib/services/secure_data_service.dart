@@ -140,8 +140,7 @@ class SecureDataService {
     final derivedKey = dataId != null ? _deriveKey(dataId) : _cachedKey!.bytes;
 
     // Create encrypter with GCM mode
-    final encrypter =
-        Encrypter(AES(Key(derivedKey), mode: AESMode.gcm));
+    final encrypter = Encrypter(AES(Key(derivedKey), mode: AESMode.gcm));
 
     // Encrypt the data
     final encrypted = encrypter.encryptBytes(
@@ -184,8 +183,7 @@ class SecureDataService {
           dataId != null ? _deriveKey(dataId) : _cachedKey!.bytes;
 
       // Create decrypter with GCM mode
-      final decrypter =
-          Encrypter(AES(Key(derivedKey), mode: AESMode.gcm));
+      final decrypter = Encrypter(AES(Key(derivedKey), mode: AESMode.gcm));
 
       // Decrypt the data
       final decrypted = decrypter.decryptBytes(
@@ -358,7 +356,8 @@ class SecurityException implements Exception {
 List<int> pbkdf2(Hmac hmac, List<int> password, List<int> salt, int iterations,
     int keyLength) {
   final dk = <int>[];
-  final blockCount = (keyLength + hmac.hash.digestSize - 1) ~/ hmac.hash.digestSize;
+  final blockCount =
+      (keyLength + hmac.hash.digestSize - 1) ~/ hmac.hash.digestSize;
 
   for (int i = 1; i <= blockCount; i++) {
     final block = Uint8List(hmac.hash.digestSize);
