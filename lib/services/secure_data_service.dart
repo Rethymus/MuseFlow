@@ -65,8 +65,7 @@ class SecureDataService {
       } catch (e) {
         // 兼容旧格式：如果是旧的String.fromCharCodes格式
         _cachedSalt = Uint8List.fromList(
-          existingSalt.codeUnits.map((c) => c as int).toList()
-        );
+            existingSalt.codeUnits.map((c) => c as int).toList());
       }
     } else {
       // Generate new key and salt
