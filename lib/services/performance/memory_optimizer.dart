@@ -506,11 +506,11 @@ class MemoryOptimizer {
       final estimatedUsage = _estimateMemoryUsage();
 
       return MemoryUsageStats(
-        totalMemoryMB: estimatedUsage['total'] ?? 1024,
-        usedMemoryMB: estimatedUsage['used'] ?? 100,
-        freeMemoryMB: estimatedUsage['free'] ?? 924,
-        usagePercentage: estimatedUsage['percentage'] ?? 10.0,
-        state: _determineMemoryState(estimatedUsage['percentage'] ?? 10.0),
+        totalMemoryMB: (estimatedUsage['total'] ?? 1024).toInt(),
+        usedMemoryMB: (estimatedUsage['used'] ?? 100).toInt(),
+        freeMemoryMB: (estimatedUsage['free'] ?? 924).toInt(),
+        usagePercentage: (estimatedUsage['percentage'] ?? 10.0).toDouble(),
+        state: _determineMemoryState((estimatedUsage['percentage'] ?? 10.0).toDouble()),
         timestamp: DateTime.now(),
       );
     } catch (e) {

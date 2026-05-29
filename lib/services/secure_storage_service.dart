@@ -1,4 +1,5 @@
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:uuid/uuid.dart';
 import '../models/note.dart';
 import '../utils/logger.dart';
 import 'secure_data_service.dart';

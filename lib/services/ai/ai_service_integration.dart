@@ -12,7 +12,9 @@ import '../../models/user_preference.dart';
 import '../../utils/logger.dart';
 
 // 导出所有必要的类型，以便外部使用
-export 'ai_service.dart' show AIService, AIAdapter, AIStreamChunk;
+export 'ai_service.dart' show AIService;
+export 'ai_adapter.dart' show AIAdapter;
+export '../../models/ai_response.dart' show AIStreamChunk;
 export 'ai_types.dart' show SuggestionType, EmotionTone, ContextualSuggestion;
 export 'personalized_ai_service.dart' show PersonalizedAIService;
 export 'contextual_ai_service.dart' show ContextualAIService;

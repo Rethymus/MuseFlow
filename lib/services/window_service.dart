@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import 'package:window_manager/window_manager.dart';
 import '../config/app_constants.dart';
 
