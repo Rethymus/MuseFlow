@@ -4,6 +4,7 @@ import '../../models/ai_message.dart';
 import '../../models/ai_response.dart';
 import '../../models/user_preference.dart';
 import 'ai_adapter.dart';
+import 'ai_service.dart';
 import 'cache/cache_manager.dart';
 import '../preference/user_preference_manager.dart';
 import '../preference/feedback_collector.dart';

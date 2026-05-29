@@ -1,6 +1,7 @@
 import '../utils/logger.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:window_manager/window_manager.dart';
 
 import '../models/app_state.dart';
 import '../widgets/note_list.dart';
