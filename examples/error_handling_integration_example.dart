@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:museflow/services/error_handling_service.dart';
+import 'package:museflow/utils/user_friendly_error_handler.dart';
 import 'dart:io';
 import 'dart:async';
 
@@ -28,6 +30,16 @@ extension BuildContextErrorExtension on BuildContext {
         duration: const Duration(seconds: 3),
       ),
     );
+  }
+
+  /// 安全执行异步操作，自动处理错误
+  Future<T> safeAsync<T>(Future<T> Function() operation) async {
+    try {
+      return await operation();
+    } catch (error, stackTrace) {
+      await showError(error, stackTrace);
+      rethrow;
+    }
   }
 }
 
@@ -90,19 +102,19 @@ class ErrorHandlingIntegrationExample {
       if (context.mounted) {
         await context.showError(e, stackTrace);
       }
-      throw;
+      throw e;
     } on TimeoutException catch (e, stackTrace) {
       // 超时错误会被识别并提供超时相关的解决方案
       if (context.mounted) {
         await context.showError(e, stackTrace);
       }
-      throw;
+      throw e;
     } catch (error, stackTrace) {
       // 其他错误也会被适当处理
       if (context.mounted) {
         await context.showError(error, stackTrace);
       }
-      throw;
+      throw error;
     }
   }
 
@@ -303,7 +315,7 @@ class ErrorHandlingIntegrationExample {
           if (context.mounted) {
             await context.showError(error, stackTrace);
           }
-          throw;
+          throw error;
         }
 
         // 显示重试提示
