@@ -439,7 +439,7 @@ void main() {
           Note(
             id: 'special-chars',
             title: '!@#\$%^&*()',
-            content: 'Special: \n\t\r ',
+            content: 'Special: \\n\\t\\r',
             createdAt: DateTime.now(),
             updatedAt: DateTime.now(),
           ),
