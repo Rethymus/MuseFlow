@@ -310,7 +310,8 @@ class CharacterService with ChangeNotifier {
       final validatedPath = pathValidation.sanitizedPath ?? file.path!;
 
       // 2. 验证文件类型
-      final typeValidation = fileSecurityValidator.validateFileType(validatedPath);
+      final typeValidation =
+          fileSecurityValidator.validateFileType(validatedPath);
       if (!typeValidation.isValid) {
         Logger.debug('导入失败：${typeValidation.errorMessage}');
         return 0;
@@ -457,12 +458,15 @@ class CharacterService with ChangeNotifier {
   }
 
   /// 获取角色关联推荐
-  List<Map<String, dynamic>> getRelationshipRecommendations(String characterId) {
+  List<Map<String, dynamic>> getRelationshipRecommendations(
+    String characterId,
+  ) {
     if (_knowledgeGraph == null) {
       return [];
     }
 
-    final recommendations = _knowledgeGraph!.generateRecommendations(characterId);
+    final recommendations =
+        _knowledgeGraph!.generateRecommendations(characterId);
     final nodesMap = _knowledgeGraph!.nodesMap;
     final List<Map<String, dynamic>> results = [];
 
