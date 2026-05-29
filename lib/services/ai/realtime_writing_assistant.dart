@@ -5,6 +5,7 @@ import '../../models/ai_response.dart';
 import '../../models/ai_config.dart';
 import '../../models/user_preference.dart';
 import 'ai_service.dart';
+import 'ai_types.dart';
 import 'contextual_ai_service.dart';
 import '../preference/writing_analyzer.dart';
 
@@ -400,7 +401,7 @@ class RealTimeWritingAssistant {
       currentTopic: _detectCurrentTopic(currentText),
       writingStyle: analysis.languageStyle,
       contentStructure: _analyzeContentStructure(currentText),
-      emotionalTone: _detectEmotionalTone(currentText),
+      emotionalTone: _detectEmotionTone(currentText),
     );
   }
 
@@ -728,16 +729,16 @@ class RealTimeWritingAssistant {
     );
   }
 
-  EmotionalTone _detectEmotionalTone(String text) {
+  EmotionTone _detectEmotionTone(String text) {
     final positiveWords = ['高兴', '愉快', '满意', '成功'];
     final negativeWords = ['失望', '难过', '失败', '遗憾'];
 
     final hasPositive = positiveWords.any((word) => text.contains(word));
     final hasNegative = negativeWords.any((word) => text.contains(word));
 
-    if (hasPositive) return EmotionalTone.positive;
-    if (hasNegative) return EmotionalTone.negative;
-    return EmotionalTone.neutral;
+    if (hasPositive) return EmotionTone.positive;
+    if (hasNegative) return EmotionTone.negative;
+    return EmotionTone.neutral;
   }
 
   bool _shouldSuggestVocabulary(String text, dynamic analysis) {
@@ -961,7 +962,7 @@ class ContextUnderstanding {
   final String currentTopic;
   final dynamic writingStyle;
   final ContentStructure contentStructure;
-  final EmotionalTone emotionalTone;
+  final EmotionTone emotionalTone;
 
   ContextUnderstanding({
     required this.currentTopic,
@@ -984,13 +985,6 @@ class ContentStructure {
     required this.hasConclusion,
     required this.hasBody,
   });
-}
-
-/// 情感基调
-enum EmotionalTone {
-  positive,
-  negative,
-  neutral,
 }
 
 /// 写作预测
@@ -1281,38 +1275,4 @@ class WritingSessionSummary {
         'finalContent': finalContent,
         'metadata': metadata,
       };
-}
-
-/// 上下文建议
-class ContextualSuggestion {
-  final SuggestionType type;
-  final String title;
-  final String description;
-  final double confidence;
-  final String? applicableText;
-
-  ContextualSuggestion({
-    required this.type,
-    required this.title,
-    required this.description,
-    required this.confidence,
-    this.applicableText,
-  });
-
-  Map<String, dynamic> toJson() => {
-        'type': type.toString(),
-        'title': title,
-        'description': description,
-        'confidence': confidence,
-        'applicableText': applicableText,
-      };
-}
-
-/// 建议类型
-enum SuggestionType {
-  style,
-  vocabulary,
-  grammar,
-  structure,
-  content,
 }

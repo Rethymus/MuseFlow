@@ -5,6 +5,7 @@ import '../../models/ai_response.dart';
 import '../../models/ai_config.dart';
 import '../../models/user_preference.dart';
 import 'ai_service.dart';
+import 'ai_types.dart';
 import 'personalized_ai_service.dart';
 import '../preference/writing_analyzer.dart';
 
@@ -877,35 +878,4 @@ class VocabularyAnalysis {
     required this.technicalTerms,
     required this.metaphorUsage,
   });
-}
-
-/// 上下文建议
-class ContextualSuggestion {
-  final SuggestionType type;
-  final String title;
-  final String description;
-  final double confidence;
-  final DateTime timestamp = DateTime.now();
-
-  ContextualSuggestion({
-    required this.type,
-    required this.title,
-    required this.description,
-    required this.confidence,
-  });
-}
-
-/// 建议类型
-enum SuggestionType {
-  style,
-  vocabulary,
-  grammar,
-  structure,
-  content,
-}
-
-/// 情感基调
-enum EmotionTone {
-  emotional,
-  neutral,
 }
