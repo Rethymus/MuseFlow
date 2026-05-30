@@ -6,7 +6,7 @@ import 'undo_redo/text_edit_action.dart';
 /// 自定义编辑器文本控制器
 /// 扩展TextEditingController以支持编辑器特有功能
 class EditorTextController extends TextEditingController {
-  EditorTextController({String? text}) : super(text: text) {
+  EditorTextController({super.text}) {
     _initializeUndoRedo();
   }
 

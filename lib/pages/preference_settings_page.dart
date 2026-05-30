@@ -12,7 +12,7 @@ import '../widgets/preference/privacy_control_panel.dart';
 /// 用户偏好设置页面
 /// 显示和管理用户偏好学习数据和隐私设置
 class PreferenceSettingsPage extends StatefulWidget {
-  const PreferenceSettingsPage({Key? key}) : super(key: key);
+  const PreferenceSettingsPage({super.key});
 
   @override
   State<PreferenceSettingsPage> createState() => _PreferenceSettingsPageState();

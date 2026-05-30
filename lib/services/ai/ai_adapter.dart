@@ -22,13 +22,9 @@ abstract class AIException implements Exception {
 class ApiKeyException extends AIException {
   ApiKeyException({
     String? message,
-    int? statusCode,
-    dynamic originalError,
-  }) : super(
-          message: message ?? 'Invalid or missing API key',
-          statusCode: statusCode,
-          originalError: originalError,
-        );
+    super.statusCode,
+    super.originalError,
+  }) : super(message: message ?? 'Invalid or missing API key');
 }
 
 /// 速率限制异常

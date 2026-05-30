@@ -8,7 +8,7 @@ import 'character_service.dart';
 class CharacterFormScreen extends StatefulWidget {
   final CharacterModel? character;
 
-  const CharacterFormScreen({Key? key, this.character}) : super(key: key);
+  const CharacterFormScreen({super.key, this.character});
 
   @override
   State<CharacterFormScreen> createState() => _CharacterFormScreenState();

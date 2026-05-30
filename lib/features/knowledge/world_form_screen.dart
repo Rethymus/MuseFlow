@@ -10,7 +10,7 @@ import 'organization_form_dialog.dart';
 class WorldFormScreen extends StatefulWidget {
   final WorldModel? world;
 
-  const WorldFormScreen({Key? key, this.world}) : super(key: key);
+  const WorldFormScreen({super.key, this.world});
 
   @override
   State<WorldFormScreen> createState() => _WorldFormScreenState();

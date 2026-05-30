@@ -12,7 +12,7 @@ import 'world_form_screen.dart';
 
 /// 知识库主界面
 class KnowledgeScreen extends StatefulWidget {
-  const KnowledgeScreen({Key? key}) : super(key: key);
+  const KnowledgeScreen({super.key});
 
   @override
   State<KnowledgeScreen> createState() => _KnowledgeScreenState();

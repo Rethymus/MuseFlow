@@ -169,10 +169,10 @@ class SearchResultTile extends StatelessWidget {
   final VoidCallback onTap;
 
   const SearchResultTile({
-    Key? key,
+    super.key,
     required this.result,
     required this.onTap,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -221,7 +221,7 @@ class SearchResultTile extends StatelessWidget {
 
 /// 知识库搜索对话框
 class KnowledgeSearchDialog extends StatefulWidget {
-  const KnowledgeSearchDialog({Key? key}) : super(key: key);
+  const KnowledgeSearchDialog({super.key});
 
   @override
   State<KnowledgeSearchDialog> createState() => _KnowledgeSearchDialogState();
@@ -400,10 +400,10 @@ class KnowledgeQuickSearch extends StatelessWidget {
   final Function(SearchResult)? onResultSelected;
 
   const KnowledgeQuickSearch({
-    Key? key,
+    super.key,
     this.hintText,
     this.onResultSelected,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
