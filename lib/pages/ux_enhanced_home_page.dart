@@ -27,7 +27,7 @@ class _UXEnhancedHomePageState extends State<UXEnhancedHomePage>
   final InteractionAnalyzer _interactionAnalyzer = InteractionAnalyzer.instance;
 
   bool _isInitialized = false;
-  bool _showUXRecommendations = false;
+  final bool _showUXRecommendations = false;
 
   @override
   void initState() {

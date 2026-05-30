@@ -17,7 +17,7 @@ class CharacterService with ChangeNotifier {
   Box<CharacterModel>? _box;
 
   // ignore: unused_field
-  List<CharacterModel> _characters = [];
+  final List<CharacterModel> _characters = [];
   CharacterModel? _currentCharacter;
   String? _currentProjectId;
 
@@ -412,6 +412,7 @@ class CharacterService with ChangeNotifier {
   }
 
   /// 关闭服务
+  @override
   Future<void> dispose() async {
     if (_box != null && _box!.isOpen) {
       await _box!.close();

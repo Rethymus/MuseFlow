@@ -17,7 +17,7 @@ class WorldService with ChangeNotifier {
   Box<WorldModel>? _box;
 
   // ignore: unused_field
-  List<WorldModel> _worlds = [];
+  final List<WorldModel> _worlds = [];
   WorldModel? _currentWorld;
   String? _currentProjectId;
 
@@ -389,6 +389,7 @@ class WorldService with ChangeNotifier {
   }
 
   /// 关闭服务
+  @override
   Future<void> dispose() async {
     if (_box != null && _box!.isOpen) {
       await _box!.close();

@@ -35,10 +35,10 @@ class _EditorScreenState extends State<EditorScreen> {
   // 布局控制
   bool _showSidebar = true;
   bool _showHistory = false;
-  double _sidebarWidth = 280;
+  final double _sidebarWidth = 280;
 
   // 意图确认配置
-  bool _enableIntentConfirmation = true;
+  final bool _enableIntentConfirmation = true;
 
   @override
   void initState() {

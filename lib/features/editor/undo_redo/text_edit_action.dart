@@ -30,7 +30,9 @@ abstract class TextEditAction {
 
 /// 基础文本编辑动作
 class BasicTextEditAction extends TextEditAction {
+  @override
   final String actionType;
+  @override
   final String description;
   final VoidCallback onExecute;
   final VoidCallback onUndo;
