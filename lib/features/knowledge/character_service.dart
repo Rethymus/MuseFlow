@@ -321,7 +321,7 @@ class CharacterService with ChangeNotifier {
       final fileSize = await fileObj.length();
 
       if (fileSize > FileSecurityValidator.maxSingleFileSize) {
-        Logger.debug('导入失败：文件过大 (${fileSize} bytes)');
+        Logger.debug('导入失败：文件过大 ($fileSize bytes)');
         return 0;
       }
 

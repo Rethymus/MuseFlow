@@ -10,6 +10,7 @@ linter:
     - unnecessary_new
     - avoid_unnecessary_containers
     - prefer_relative_imports
+    - unnecessary_this
 
 analyzer:
   exclude:

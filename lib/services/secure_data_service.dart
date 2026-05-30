@@ -61,7 +61,7 @@ class SecureDataService {
       _cachedKey = Key.fromBase64(existingKey);
       // 安全修复：使用base64UrlDecode读取salt，兼容新旧格式
       try {
-        _cachedSalt = base64UrlDecode(existingSalt);
+        _cachedSalt = const Base64Decoder().convert(existingSalt);
       } catch (e) {
         // 兼容旧格式：如果是旧的String.fromCharCodes格式
         _cachedSalt = Uint8List.fromList(
@@ -169,7 +169,7 @@ class SecureDataService {
 
     try {
       // Decode base64
-      final combined = base64UrlDecode(encryptedData);
+      final combined = const Base64Decoder().convert(encryptedData);
 
       if (combined.length < _ivLength) {
         throw ArgumentError('Invalid encrypted data format');
@@ -357,11 +357,10 @@ class SecurityException implements Exception {
 List<int> pbkdf2(Hmac hmac, List<int> password, List<int> salt, int iterations,
     int keyLength) {
   final dk = <int>[];
-  final blockCount =
-      (keyLength + hmac.hash.digestSize - 1) ~/ hmac.hash.digestSize;
+  final blockCount = (keyLength + hmac.digestSize - 1) ~/ hmac.digestSize;
 
   for (int i = 1; i <= blockCount; i++) {
-    final block = Uint8List(hmac.hash.digestSize);
+    final block = Uint8List(hmac.digestSize);
     final iBytes = _intToBytes(i);
 
     // U1 = PRF(password, salt || INT_32_BE(i))

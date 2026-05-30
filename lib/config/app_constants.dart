@@ -273,18 +273,26 @@ class AppConstants {
 
   /// 获取格式化的文件大小
   static String formatFileSize(int bytes) {
-    if (bytes < 1024) return '$bytes B';
-    if (bytes < 1024 * 1024) return '${(bytes / 1024).toStringAsFixed(1)} KB';
-    if (bytes < 1024 * 1024 * 1024)
+    if (bytes < 1024) {
+      return '$bytes B';
+    }
+    if (bytes < 1024 * 1024) {
+      return '${(bytes / 1024).toStringAsFixed(1)} KB';
+    }
+    if (bytes < 1024 * 1024 * 1024) {
       return '${(bytes / (1024 * 1024)).toStringAsFixed(1)} MB';
+    }
     return '${(bytes / (1024 * 1024 * 1024)).toStringAsFixed(1)} GB';
   }
 
   /// 获取格式化的时间
   static String formatDuration(Duration duration) {
-    if (duration.inSeconds < 60) return '${duration.inSeconds}s';
-    if (duration.inMinutes < 60)
+    if (duration.inSeconds < 60) {
+      return '${duration.inSeconds}s';
+    }
+    if (duration.inMinutes < 60) {
       return '${duration.inMinutes}m ${duration.inSeconds % 60}s';
+    }
     return '${duration.inHours}h ${duration.inMinutes % 60}m';
   }
 

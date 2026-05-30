@@ -106,7 +106,7 @@ class _MainNavigationContainerState extends State<MainNavigationContainer>
   Widget _buildCurrentPage() {
     // 为每个页面添加内边距，避免被导航栏遮挡
     return Padding(
-      padding: EdgeInsets.only(
+      padding: const EdgeInsets.only(
         bottom: 80, // 为底部导航栏留出空间
       ),
       child: _buildPageContent(),

@@ -182,8 +182,10 @@ class PersonalizedAIService {
 
       // 创建调整后的消息
       personalizedMessages.add(AIMessage(
+        id: message.id,
         role: message.role,
         content: adjustedContent,
+        timestamp: message.timestamp,
         metadata: {
           ...?message.metadata,
           'personalized': true,

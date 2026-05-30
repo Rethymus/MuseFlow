@@ -106,8 +106,8 @@ class _UXEnhancedHomePageState extends State<UXEnhancedHomePage>
       child: Scaffold(
         appBar: _buildAppBar(),
         body: Row(
-          children: [
-            const Expanded(flex: 1, child: NoteList()),
+          children: const [
+            Expanded(flex: 1, child: NoteList()),
             Expanded(flex: 2, child: NoteEditor()),
           ],
         ),

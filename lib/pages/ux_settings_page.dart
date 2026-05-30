@@ -230,10 +230,10 @@ class _UXSettingsPageState extends State<UXSettingsPage> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Row(
-              children: [
-                const Icon(Icons.settings_suggest),
-                const SizedBox(width: 8),
-                const Text(
+              children: const [
+                Icon(Icons.settings_suggest),
+                SizedBox(width: 8),
+                Text(
                   '高级选项',
                   style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                 ),

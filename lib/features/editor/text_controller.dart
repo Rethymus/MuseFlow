@@ -62,12 +62,12 @@ class EditorTextController extends TextEditingController {
           insertedText: diff.text,
           onInsert: (text) {
             _isProcessingChange = true;
-            final currentValue = this.value;
+            final currentValue = value;
             final currentText = currentValue.text;
             final newText = currentText.substring(0, diff.position) +
                 text +
                 currentText.substring(diff.position);
-            this.value = TextEditingValue(
+            value = TextEditingValue(
               text: newText,
               selection:
                   TextSelection.collapsed(offset: diff.position + text.length),
@@ -76,11 +76,11 @@ class EditorTextController extends TextEditingController {
           },
           onRemove: () {
             _isProcessingChange = true;
-            final currentValue = this.value;
+            final currentValue = value;
             final currentText = currentValue.text;
             final newText = currentText.substring(0, diff.position) +
                 currentText.substring(diff.position + diff.text.length);
-            this.value = TextEditingValue(
+            value = TextEditingValue(
               text: newText,
               selection: TextSelection.collapsed(offset: diff.position),
             );
@@ -95,12 +95,12 @@ class EditorTextController extends TextEditingController {
           deletedText: diff.text,
           onRestore: (text) {
             _isProcessingChange = true;
-            final currentValue = this.value;
+            final currentValue = value;
             final currentText = currentValue.text;
             final newText = currentText.substring(0, diff.position) +
                 text +
                 currentText.substring(diff.position);
-            this.value = TextEditingValue(
+            value = TextEditingValue(
               text: newText,
               selection:
                   TextSelection.collapsed(offset: diff.position + text.length),
@@ -109,11 +109,11 @@ class EditorTextController extends TextEditingController {
           },
           onDelete: () {
             _isProcessingChange = true;
-            final currentValue = this.value;
+            final currentValue = value;
             final currentText = currentValue.text;
             final newText = currentText.substring(0, diff.position) +
                 currentText.substring(diff.position + diff.text.length);
-            this.value = TextEditingValue(
+            value = TextEditingValue(
               text: newText,
               selection: TextSelection.collapsed(offset: diff.position),
             );

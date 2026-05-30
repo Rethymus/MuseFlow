@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'ai_service.dart';
+import 'ai_types.dart';
 import 'personalized_ai_service.dart';
 import 'contextual_ai_service.dart';
 import 'realtime_writing_assistant.dart';
