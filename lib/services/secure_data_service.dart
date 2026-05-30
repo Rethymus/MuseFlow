@@ -357,10 +357,12 @@ class SecurityException implements Exception {
 List<int> pbkdf2(Hmac hmac, List<int> password, List<int> salt, int iterations,
     int keyLength) {
   final dk = <int>[];
-  final blockCount = (keyLength + hmac.digestSize - 1) ~/ hmac.digestSize;
+  // SHA-256 digest size is 32 bytes
+  const digestSize = 32;
+  final blockCount = (keyLength + digestSize - 1) ~/ digestSize;
 
   for (int i = 1; i <= blockCount; i++) {
-    final block = Uint8List(hmac.digestSize);
+    final block = Uint8List(digestSize);
     final iBytes = _intToBytes(i);
 
     // U1 = PRF(password, salt || INT_32_BE(i))
