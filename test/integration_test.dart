@@ -211,18 +211,14 @@ void main() {
   group('导航响应性测试', () {
     testWidgets('导航栏在移动端显示在底部', (WidgetTester tester) async {
       // 设置移动端尺寸
-      tester.binding.window.physicalSizeTestValue = const Size(400, 800);
-      tester.binding.window.devicePixelRatioTestValue = 1.0;
+      tester.binding.platformDispatcher.views.first.physicalSize = const Size(400, 800);
+      tester.binding.platformDispatcher.views.first.devicePixelRatio = 1.0;
 
       await tester.pumpWidget(const MuseFlowApp());
       await tester.pumpAndSettle();
 
       // 验证底部导航栏存在
       expect(find.byType(NavigationBar), findsOneWidget);
-
-      // 重置窗口尺寸
-      tester.binding.window.clearPhysicalSizeTestValue();
-      tester.binding.window.clearDevicePixelRatioTestValue();
     });
   });
 }

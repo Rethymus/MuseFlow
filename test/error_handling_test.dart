@@ -77,7 +77,7 @@ void main() {
     });
 
     test('应该正确格式化错误信息', () {
-      final error = FileSystemException('文件不存在', '/path/to/file.txt');
+      const error = FileSystemException('文件不存在', '/path/to/file.txt');
       final userError = handler.handleError(error);
       final formatted = userError.format();
 
@@ -88,7 +88,7 @@ void main() {
     });
 
     test('应该正确转换错误为JSON', () {
-      final error = FileSystemException('文件不存在', '/path/to/file.txt');
+      const error = FileSystemException('文件不存在', '/path/to/file.txt');
       final userError = handler.handleError(error);
       final json = userError.toJson();
 
@@ -112,7 +112,7 @@ void main() {
     });
 
     test('应该正确记录错误', () {
-      final error = FileSystemException('文件不存在', '/path/to/file.txt');
+      const error = FileSystemException('文件不存在', '/path/to/file.txt');
       service.handleError(error);
 
       final history = service.getErrorHistory();
@@ -136,8 +136,8 @@ void main() {
     });
 
     test('应该正确分析错误模式', () {
-      service.handleError(FileSystemException('文件不存在', '/path/to/file.txt'));
-      service.handleError(SocketException('网络连接失败'));
+      service.handleError(const FileSystemException('文件不存在', '/path/to/file.txt'));
+      service.handleError(const SocketException('网络连接失败'));
 
       final patterns = service.analyzeErrorPatterns();
       expect(patterns['most_common_category'], isNotNull);
@@ -168,14 +168,14 @@ void main() {
     final handler = UserFriendlyErrorHandler.instance;
 
     test('文件系统错误应该正确分类', () {
-      final error = FileSystemException('文件不存在', '/path/to/file.txt');
+      const error = FileSystemException('文件不存在', '/path/to/file.txt');
       final userError = handler.handleError(error);
 
       expect(userError.category, ErrorCategory.fileSystem);
     });
 
     test('网络错误应该正确分类', () {
-      final error = SocketException('网络连接失败');
+      const error = SocketException('网络连接失败');
       final userError = handler.handleError(error);
 
       expect(userError.category, ErrorCategory.network);
@@ -203,14 +203,14 @@ void main() {
     final handler = UserFriendlyErrorHandler.instance;
 
     test('文件不存在应该是Error级别', () {
-      final error = FileSystemException('文件不存在', '/path/to/file.txt');
+      const error = FileSystemException('文件不存在', '/path/to/file.txt');
       final userError = handler.handleError(error);
 
       expect(userError.severity, ErrorSeverity.error);
     });
 
     test('网络超时应该是Warning级别', () {
-      final error = SocketException('连接超时');
+      const error = SocketException('连接超时');
       final userError = handler.handleError(error);
 
       // 超时相关错误通常是warning级别
@@ -233,7 +233,7 @@ void main() {
     final handler = UserFriendlyErrorHandler.instance;
 
     test('文件错误应该生成文件相关解决方案', () {
-      final error = FileSystemException('文件不存在', '/path/to/file.txt');
+      const error = FileSystemException('文件不存在', '/path/to/file.txt');
       final userError = handler.handleError(error);
 
       expect(userError.solutions.length, greaterThan(0));
@@ -244,7 +244,7 @@ void main() {
     });
 
     test('网络错误应该生成网络相关解决方案', () {
-      final error = SocketException('网络连接失败');
+      const error = SocketException('网络连接失败');
       final userError = handler.handleError(error);
 
       expect(userError.solutions.length, greaterThan(0));
@@ -269,7 +269,7 @@ void main() {
   group('错误显示测试', () {
     test('错误信息应该包含表情符号', () {
       final handler = UserFriendlyErrorHandler.instance;
-      final error = FileSystemException('文件不存在', '/path/to/file.txt');
+      const error = FileSystemException('文件不存在', '/path/to/file.txt');
       final userError = handler.handleError(error);
 
       expect(userError.emoji, isNotEmpty);
@@ -277,7 +277,7 @@ void main() {
 
     test('错误信息应该正确格式化', () {
       final handler = UserFriendlyErrorHandler.instance;
-      final error = FileSystemException('文件不存在', '/path/to/file.txt');
+      const error = FileSystemException('文件不存在', '/path/to/file.txt');
       final userError = handler.handleError(error);
       final formatted = userError.format();
 
