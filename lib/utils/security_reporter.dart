@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'file_security_validator.dart';
 import '../services/security_audit_service.dart';
+import '../services/security_audit_service.dart' show AlertSeverity;
 
 /// 安全状态报告器
 ///
@@ -411,9 +412,8 @@ class SecurityReporter {
   static String _formatBytes(int bytes) {
     if (bytes < 1024) return '$bytes B';
     if (bytes < 1024 * 1024) return '${(bytes / 1024).toStringAsFixed(1)} KB';
-    if (bytes < 1024 * 1024 * 1024) {
+    if (bytes < 1024 * 1024 * 1024)
       return '${(bytes / (1024 * 1024)).toStringAsFixed(1)} MB';
-    }
     return '${(bytes / (1024 * 1024 * 1024)).toStringAsFixed(1)} GB';
   }
 

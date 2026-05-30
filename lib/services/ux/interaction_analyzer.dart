@@ -12,7 +12,7 @@ class InteractionAnalyzer {
 
   SharedPreferences? _prefs;
   final List<InteractionEvent> _interactionHistory = [];
-  final Map<String, InteractionPattern> _patterns = {};
+  Map<String, InteractionPattern> _patterns = {};
   bool _isRecording = false;
 
   // 私有构造函数

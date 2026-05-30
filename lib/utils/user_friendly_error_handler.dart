@@ -103,7 +103,7 @@ class UserFriendlyError {
     final buffer = StringBuffer();
 
     buffer.writeln('$emoji $title');
-    buffer.writeln(description);
+    buffer.writeln('$description');
     buffer.writeln('\n解决方案：');
 
     for (int i = 0; i < solutions.length; i++) {
@@ -205,7 +205,7 @@ class UserFriendlyErrorHandler {
 
   /// 处理文件系统错误
   UserFriendlyError _handleFileSystemError(FileSystemException error) {
-    final message = (error.message ?? '').toLowerCase();
+    final message = error.message?.toLowerCase() ?? '';
     final path = error.path ?? '未知文件';
 
     // 文件不存在
@@ -580,7 +580,7 @@ class UserFriendlyErrorHandler {
 
     Logger.debug(
         '${error.colorCode}[$severityTag] ${error.emoji} ${error.title}${error.resetCode}');
-    Logger.debug(error.description);
+    Logger.debug('${error.description}');
 
     if (error.technicalDetails != null && kDebugMode) {
       Logger.debug('技术详情: ${error.technicalDetails}');

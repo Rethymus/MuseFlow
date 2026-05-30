@@ -10,13 +10,13 @@ class PreferenceSummaryCard extends StatelessWidget {
   final bool hasSufficientConfidence;
 
   const PreferenceSummaryCard({
-    super.key,
+    Key? key,
     required this.learningDataPoints,
     required this.confidenceScore,
     required this.learningProgress,
     required this.overallAcceptanceRate,
     required this.hasSufficientConfidence,
-  });
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {

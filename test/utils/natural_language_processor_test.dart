@@ -63,20 +63,20 @@ void main() {
     });
 
     test('默认配置应该正确', () {
-      final config = NaturalLanguageConfig.defaultConfig();
+      const config = NaturalLanguageConfig.defaultConfig();
       expect(config.enabledRules, contains('connector'));
       expect(config.enabledRules, contains('mechanical'));
       expect(config.processingIntensity, 0.7);
     });
 
     test('最小配置应该只处理基本规则', () {
-      final config = NaturalLanguageConfig.minimalConfig();
+      const config = NaturalLanguageConfig.minimalConfig();
       expect(config.enabledRules.length, lessThan(4));
       expect(config.enabledRules, contains('connector'));
     });
 
     test('激进配置应该启用所有规则', () {
-      final config = NaturalLanguageConfig.aggressiveConfig();
+      const config = NaturalLanguageConfig.aggressiveConfig();
       expect(config.enabledRules.length, greaterThan(4));
       expect(config.processingIntensity, 1.0);
       expect(config.preserveFormatting, false);

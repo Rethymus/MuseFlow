@@ -258,8 +258,8 @@ void main() {
         cacheKey: 'expired_key',
         content: 'Expired content',
         model: 'claude-3-5-sonnet-20241022',
-        createdAt: now.subtract(const Duration(hours: 25)),
-        expiresAt: now.subtract(const Duration(hours: 1)),
+        createdAt: now.subtract(Duration(hours: 25)),
+        expiresAt: now.subtract(Duration(hours: 1)),
         lastAccessAt: now,
       );
 
@@ -270,7 +270,7 @@ void main() {
         content: 'Valid content',
         model: 'claude-3-5-sonnet-20241022',
         createdAt: now,
-        expiresAt: now.add(const Duration(hours: 1)),
+        expiresAt: now.add(Duration(hours: 1)),
         lastAccessAt: now,
       );
 
@@ -378,7 +378,7 @@ void main() {
         content: 'Test content',
         model: 'claude-3-5-sonnet-20241022',
         createdAt: DateTime.now(),
-        expiresAt: DateTime.now().add(const Duration(hours: 1)),
+        expiresAt: DateTime.now().add(Duration(hours: 1)),
         lastAccessAt: DateTime.now(),
       );
 
@@ -419,7 +419,7 @@ void main() {
         content: 'New content',
         model: 'claude-3-5-sonnet-20241022',
         createdAt: DateTime.now(),
-        expiresAt: DateTime.now().add(const Duration(hours: 1)),
+        expiresAt: DateTime.now().add(Duration(hours: 1)),
         lastAccessAt: DateTime.now(),
       );
 
@@ -437,7 +437,7 @@ void main() {
         content: 'Expired content',
         model: 'claude-3-5-sonnet-20241022',
         createdAt: DateTime.now(),
-        expiresAt: DateTime.now().subtract(const Duration(minutes: 1)),
+        expiresAt: DateTime.now().subtract(Duration(minutes: 1)),
         lastAccessAt: DateTime.now(),
       );
 

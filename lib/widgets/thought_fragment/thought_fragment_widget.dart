@@ -494,7 +494,7 @@ class ThoughtFragmentListView extends StatelessWidget {
       context: context,
       builder: (context) => AlertDialog(
         title: const Text('确认删除'),
-        content: const Text('确定要删除这个思维碎片吗？'),
+        content: Text('确定要删除这个思维碎片吗？'),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),

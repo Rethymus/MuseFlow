@@ -518,7 +518,9 @@ class PreloadManager {
       'successfulPreloads': _successfulPreloads,
       'failedPreloads': _failedPreloads,
       'successRate': _totalPreloadAttempts > 0
-          ? '${(_successfulPreloads / _totalPreloadAttempts * 100).toStringAsFixed(2)}%'
+          ? (_successfulPreloads / _totalPreloadAttempts * 100)
+                  .toStringAsFixed(2) +
+              '%'
           : 'N/A',
       'averagePreloadTimeMs': _successfulPreloads > 0
           ? (_totalPreloadTime.inMilliseconds / _successfulPreloads)
@@ -527,7 +529,9 @@ class PreloadManager {
       'cacheHits': _cacheHits,
       'cacheMisses': _cacheMisses,
       'cacheHitRate': (_cacheHits + _cacheMisses) > 0
-          ? '${(_cacheHits / (_cacheHits + _cacheMisses) * 100).toStringAsFixed(2)}%'
+          ? (_cacheHits / (_cacheHits + _cacheMisses) * 100)
+                  .toStringAsFixed(2) +
+              '%'
           : 'N/A',
       'pendingTasks': _pendingTasks.length,
       'completedTasks': _completedTasks.length,

@@ -4,17 +4,11 @@ import 'package:flutter/foundation.dart';
 import '../config/app_constants.dart';
 
 /// 日志级别枚举
-// ignore: constant_identifier_names
 enum LogLevel {
-  // ignore: constant_identifier_names
   DEBUG,
-  // ignore: constant_identifier_names
   INFO,
-  // ignore: constant_identifier_names
   WARNING,
-  // ignore: constant_identifier_names
   ERROR,
-  // ignore: constant_identifier_names
   FATAL,
 }
 

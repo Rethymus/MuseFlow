@@ -16,7 +16,7 @@ class PrivacyControlPanel extends StatefulWidget {
   })? onPrivacyChanged;
 
   const PrivacyControlPanel({
-    super.key,
+    Key? key,
     required this.dataStoredLocally,
     required this.dataStoredInSecureStorage,
     required this.feedbackHistorySize,
@@ -24,7 +24,7 @@ class PrivacyControlPanel extends StatefulWidget {
     required this.dataRetentionDays,
     required this.anonymizeData,
     this.onPrivacyChanged,
-  });
+  }) : super(key: key);
 
   @override
   State<PrivacyControlPanel> createState() => _PrivacyControlPanelState();

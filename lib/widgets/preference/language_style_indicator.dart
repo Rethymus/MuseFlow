@@ -10,12 +10,12 @@ class LanguageStyleIndicator extends StatelessWidget {
   final SentenceComplexity sentenceComplexity;
 
   const LanguageStyleIndicator({
-    super.key,
+    Key? key,
     required this.languageStyle,
     required this.detailLevel,
     required this.paragraphStructure,
     required this.sentenceComplexity,
-  });
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {

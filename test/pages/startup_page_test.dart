@@ -386,9 +386,9 @@ void main() {
       // 注意：这需要ProgressiveInitializer提供重置方法
 
       await tester.pumpWidget(
-        const MaterialApp(
+        MaterialApp(
           home: StartupScreenWrapper(
-            child: Scaffold(
+            child: const Scaffold(
               body: Text('主应用内容'),
             ),
           ),
@@ -405,9 +405,9 @@ void main() {
       // 注意：这需要ProgressiveInitializer提供设置初始化状态的方法
 
       await tester.pumpWidget(
-        const MaterialApp(
+        MaterialApp(
           home: StartupScreenWrapper(
-            child: Scaffold(
+            child: const Scaffold(
               body: Text('主应用内容'),
             ),
           ),
@@ -420,9 +420,9 @@ void main() {
 
     testWidgets('包装器基本渲染验证', (WidgetTester tester) async {
       await tester.pumpWidget(
-        const MaterialApp(
+        MaterialApp(
           home: StartupScreenWrapper(
-            child: Scaffold(
+            child: const Scaffold(
               body: Center(
                 child: Text('测试内容'),
               ),

@@ -113,7 +113,7 @@ class IntentAnalyzer {
 
     // 生成预期效果
     final expansionRatio = (targetLength / text.length).toStringAsFixed(1);
-    String expectedOutcome = '扩写后的文本将保持原文核心观点，内容扩充约$expansionRatio倍';
+    String expectedOutcome = '扩写后的文本将保持原文核心观点，内容扩充约${expansionRatio}倍';
     if (analysis.isAbstract) {
       expectedOutcome += '，包含具体的例子和细节';
     }
@@ -122,7 +122,7 @@ class IntentAnalyzer {
     return IntentConfirmation(
       id: IntentConfirmation.generateId(),
       actionType: AIActionType.expand,
-      description: '对选中文本进行扩写，目标长度约$targetLength字',
+      description: '对选中文本进行扩写，目标长度约${targetLength}字',
       originalText: text,
       parameters: {
         'context': context,
@@ -151,7 +151,7 @@ class IntentAnalyzer {
         'total_sentences': actualSentences,
         'numbering_style': 'numeric',
       },
-      explanation: '我将分析全文内容（约$actualSentences个句子），提取主要观点和论据，按逻辑层次生成结构化大纲。',
+      explanation: '我将分析全文内容（约${actualSentences}个句子），提取主要观点和论据，按逻辑层次生成结构化大纲。',
       expectedOutcome:
           '生成的大纲将使用数字编号，包含${actualSentences.clamp(3, maxItems)}个要点，层次清晰，简洁明了。',
     );
@@ -174,8 +174,8 @@ class IntentAnalyzer {
         'original_length': textLength,
         'compression_ratio': compressionRatio,
       },
-      explanation: '我将提取文本的核心信息，保持逻辑连贯，将$textLength字的原文压缩为约$maxLength字的摘要。',
-      expectedOutcome: '摘要将包含文本的核心信息，逻辑连贯，简洁明确，压缩率约$compressionRatio%。',
+      explanation: '我将提取文本的核心信息，保持逻辑连贯，将${textLength}字的原文压缩为约$maxLength字的摘要。',
+      expectedOutcome: '摘要将包含文本的核心信息，逻辑连贯，简洁明确，压缩率约${compressionRatio}%。',
     );
   }
 

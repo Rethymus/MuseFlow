@@ -52,7 +52,7 @@ void main() {
     test('在光标位置插入文本', () {
       controller.text = 'Hello World';
       controller.value = controller.value.copyWith(
-        selection: const TextSelection.collapsed(offset: 5),
+        selection: TextSelection.collapsed(offset: 5),
       );
 
       controller.insertAtCursor(' Beautiful');
@@ -62,7 +62,7 @@ void main() {
     test('替换选中的文本', () {
       controller.text = 'Hello World';
       controller.value = controller.value.copyWith(
-        selection: const TextSelection(baseOffset: 0, extentOffset: 5),
+        selection: TextSelection(baseOffset: 0, extentOffset: 5),
       );
 
       controller.replaceSelection('Hi');
@@ -72,7 +72,7 @@ void main() {
     test('获取当前段落', () {
       controller.text = 'First paragraph\n\nSecond paragraph\nThird paragraph';
       controller.value = controller.value.copyWith(
-        selection: const TextSelection.collapsed(offset: 20),
+        selection: TextSelection.collapsed(offset: 20),
       );
 
       final paragraph = controller.getCurrentParagraph();
@@ -82,7 +82,7 @@ void main() {
     test('扩展到完整单词', () {
       controller.text = 'Hello World Test';
       controller.value = controller.value.copyWith(
-        selection: const TextSelection.collapsed(offset: 7),
+        selection: TextSelection.collapsed(offset: 7),
       );
 
       final word = controller.expandToWord();
@@ -102,49 +102,49 @@ void main() {
     });
 
     test('清除多余空行', () {
-      const input = 'Line 1\n\n\n\nLine 2';
+      final input = 'Line 1\n\n\n\nLine 2';
       final output = cleaner.cleanMarkdown(input);
       expect(output, equals('Line 1\n\nLine 2'));
     });
 
     test('清除行尾空格', () {
-      const input = 'Line 1   \nLine 2\t';
+      final input = 'Line 1   \nLine 2\t';
       final output = cleaner.cleanMarkdown(input);
       expect(output, equals('Line 1\nLine 2'));
     });
 
     test('清除粗体标记', () {
-      const input = 'This is **bold** text';
+      final input = 'This is **bold** text';
       final output = cleaner.cleanMarkdown(input);
       expect(output, equals('This is bold text'));
     });
 
     test('清除斜体标记', () {
-      const input = 'This is *italic* text';
+      final input = 'This is *italic* text';
       final output = cleaner.cleanMarkdown(input);
       expect(output, equals('This is italic text'));
     });
 
     test('清除链接语法', () {
-      const input = 'Check [this link](https://example.com)';
+      final input = 'Check [this link](https://example.com)';
       final output = cleaner.cleanMarkdown(input);
       expect(output, equals('Check this link'));
     });
 
     test('保留标题标记', () {
-      const input = '# Title 1\n## Title 2\n### Title 3';
+      final input = '# Title 1\n## Title 2\n### Title 3';
       final output = cleaner.cleanMarkdown(input);
       expect(output, equals(input));
     });
 
     test('保留列表标记', () {
-      const input = '- Item 1\n- Item 2\n1. Numbered item';
+      final input = '- Item 1\n- Item 2\n1. Numbered item';
       final output = cleaner.cleanMarkdown(input);
       expect(output, equals(input));
     });
 
     test('转换为纯文本', () {
-      const input = '''# Title
+      final input = '''# Title
 *Italic* and **bold** text
 - List item
 [Link](url)''';
@@ -160,7 +160,7 @@ void main() {
     });
 
     test('智能清洗保留结构', () {
-      const input = '''# Main Title
+      final input = '''# Main Title
 
 This is *important* text.
 
@@ -177,13 +177,13 @@ This is *important* text.
     });
 
     test('轻量清洗只清理明显问题', () {
-      const input = 'Text  \n\n\n\nMore text';
+      final input = 'Text  \n\n\n\nMore text';
       final output = cleaner.cleanLight(input);
       expect(output, equals('Text\n\nMore text'));
     });
 
     test('格式信息检测', () {
-      const markdownText = '''# Title
+      final markdownText = '''# Title
 * Item 1
 * Item 2''';
 
@@ -194,14 +194,14 @@ This is *important* text.
     });
 
     test('HTML标签检测', () {
-      const htmlText = '<p>Paragraph</p>\n<div>Content</div>';
+      final htmlText = '<p>Paragraph</p>\n<div>Content</div>';
       final info = cleaner.detectFormat(htmlText);
       expect(info.hasHTML, isTrue);
       expect(info.htmlTagCount, equals(2));
     });
 
     test('清洗预览生成', () {
-      const input = 'Text with **bold** and *italic*\n\n\n\nExtra spaces';
+      final input = 'Text with **bold** and *italic*\n\n\n\nExtra spaces';
       final previews = cleaner.getCleanPreview(input);
 
       expect(previews, isNotEmpty);
@@ -220,7 +220,7 @@ This is *important* text.
 
       // 2. 选择和替换
       controller.value = controller.value.copyWith(
-        selection: const TextSelection(baseOffset: 10, extentOffset: 17),
+        selection: TextSelection(baseOffset: 10, extentOffset: 17),
       );
       controller.replaceSelection('clean');
 
@@ -243,7 +243,7 @@ This is *important* text.
 
       // 2. 在光标位置插入碎片
       controller.value = controller.value.copyWith(
-        selection: const TextSelection.collapsed(offset: 22),
+        selection: TextSelection.collapsed(offset: 22),
       );
 
       const fragment = 'Key insight: AI is changing the world.';
@@ -325,7 +325,7 @@ This is *important* text.
     test('特殊字符处理', () {
       final cleaner = FormatCleaner();
 
-      const specialChars = 'Test with 🎉 emojis, 中文, and "quotes".';
+      final specialChars = 'Test with 🎉 emojis, 中文, and "quotes".';
       final cleaned = cleaner.cleanMarkdown(specialChars);
 
       expect(cleaned, contains('🎉'));

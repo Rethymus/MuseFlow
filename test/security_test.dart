@@ -72,7 +72,7 @@ void main() {
     });
 
     test('应该检测过长文件名', () async {
-      final longFileName = '${'a' * 300}.txt';
+      final longFileName = 'a' * 300 + '.txt';
       final result = await validator.validatePath(longFileName);
       expect(result.isValid, false);
       expect(result.errorMessage, contains('文件名过长'));
@@ -282,7 +282,7 @@ void main() {
       final auditService = SecurityAuditService.instance;
 
       // 模拟完整的文件操作安全检查
-      const filePath = '/test/path/document.txt';
+      final filePath = '/test/path/document.txt';
 
       // 1. 路径验证
       final pathResult = await validator.validatePath(filePath);
