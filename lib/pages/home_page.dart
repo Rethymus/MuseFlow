@@ -75,7 +75,7 @@ class _HomePageState extends State<HomePage> with WindowListener {
           ),
         ],
       ),
-      body: Row(
+      body: const Row(
         children: const [
           Expanded(flex: 1, child: NoteList()),
           Expanded(flex: 2, child: NoteEditor()),

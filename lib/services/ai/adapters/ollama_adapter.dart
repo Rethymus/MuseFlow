@@ -28,7 +28,7 @@ class OllamaAdapter extends BaseAIAdapterImpl {
         Uri.parse('${config.effectiveBaseUrl}/tags'),
       )
           .timeout(
-        Duration(seconds: 5),
+        const Duration(seconds: 5),
         onTimeout: () {
           throw TimeoutException(
             'Ollama service not responding',

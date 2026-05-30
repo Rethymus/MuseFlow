@@ -105,7 +105,7 @@ class _UXEnhancedHomePageState extends State<UXEnhancedHomePage>
     final adaptiveLayout = _uiManager.buildAdaptiveLayout(
       child: Scaffold(
         appBar: _buildAppBar(),
-        body: Row(
+        body: const Row(
           children: const [
             Expanded(flex: 1, child: NoteList()),
             Expanded(flex: 2, child: NoteEditor()),

@@ -42,7 +42,7 @@ class AIServiceIntegration {
   };
 
   // 配置
-  AIServiceIntegrationConfig _config = AIServiceIntegrationConfig();
+  AIServiceIntegrationConfig _config = const AIServiceIntegrationConfig();
 
   AIServiceIntegration._();
 
@@ -61,7 +61,7 @@ class AIServiceIntegration {
     AIServiceIntegrationConfig? config,
   }) async {
     final integration = instance;
-    integration._config = config ?? AIServiceIntegrationConfig();
+    integration._config = config ?? const AIServiceIntegrationConfig();
 
     try {
       // 1. 初始化基础AI服务

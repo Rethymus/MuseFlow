@@ -84,7 +84,7 @@ class StartupBenchmark {
 
     // 模拟阶段3：辅助功能初始化
     await Future.delayed(
-        Duration(milliseconds: AppConstants.animationDurationMilliseconds));
+        const Duration(milliseconds: AppConstants.animationDurationMilliseconds));
     StartupMonitor.instance.recordComplete();
   }
 

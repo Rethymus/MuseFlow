@@ -229,7 +229,7 @@ class _UXSettingsPageState extends State<UXSettingsPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Row(
+            const Row(
               children: const [
                 Icon(Icons.settings_suggest),
                 SizedBox(width: 8),
