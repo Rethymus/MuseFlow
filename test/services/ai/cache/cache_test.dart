@@ -59,8 +59,8 @@ void main() {
         cacheKey: 'expired_key',
         content: 'Expired content',
         model: 'claude-3-5-sonnet-20241022',
-        createdAt: now.subtract(Duration(hours: 49)),
-        expiresAt: now.subtract(Duration(hours: 1)),
+        createdAt: now.subtract(const Duration(hours: 49)),
+        expiresAt: now.subtract(const Duration(hours: 1)),
         lastAccessAt: now,
       );
       expect(expiredEntry.isExpired, isTrue);
@@ -70,7 +70,7 @@ void main() {
         content: 'Valid content',
         model: 'claude-3-5-sonnet-20241022',
         createdAt: now,
-        expiresAt: now.add(Duration(hours: 48)),
+        expiresAt: now.add(const Duration(hours: 48)),
         lastAccessAt: now,
       );
       expect(validEntry.isExpired, isFalse);
@@ -85,7 +85,7 @@ void main() {
         inputTokens: 100,
         outputTokens: 200,
         createdAt: DateTime.now(),
-        expiresAt: DateTime.now().add(Duration(hours: 24)),
+        expiresAt: DateTime.now().add(const Duration(hours: 24)),
         lastAccessAt: DateTime.now(),
       );
 
@@ -220,7 +220,7 @@ void main() {
         inputTokens: 100,
         outputTokens: 200,
         createdAt: now,
-        expiresAt: now.add(Duration(hours: 24)),
+        expiresAt: now.add(const Duration(hours: 24)),
         lastAccessAt: now,
       );
 
@@ -243,8 +243,8 @@ void main() {
         cacheKey: 'test_key',
         content: 'Test content',
         model: 'claude-3-5-sonnet-20241022',
-        createdAt: now.subtract(Duration(minutes: 30)),
-        expiresAt: now.add(Duration(hours: 24)),
+        createdAt: now.subtract(const Duration(minutes: 30)),
+        expiresAt: now.add(const Duration(hours: 24)),
         lastAccessAt: now,
       );
 
@@ -453,28 +453,12 @@ void main() {
     test('End-to-end cache workflow test', () async {
       final aiService = await AIService.initialize();
 
-      // 创建测试消息
-      final messages = [
-        AIMessage.user(
-          id: 'test_msg',
-          content: 'Test message for cache',
-        ),
-      ];
-
-      // 创建配置
-      final config = AIConfig(
-        id: 'test_config',
-        provider: AIProvider.anthropic,
-        apiKey: 'test_key',
-        model: 'claude-3-5-sonnet-20241022',
-      );
-
       // 检查缓存管理器
       final manager = aiService.cacheManager;
       expect(manager, isNotNull);
 
       // 检查统计信息
-      final stats = await manager.stats;
+      final stats = manager.stats;
       expect(stats, isNotNull);
 
       // 生成报告

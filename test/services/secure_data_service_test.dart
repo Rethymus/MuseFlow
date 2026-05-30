@@ -275,7 +275,7 @@ void main() {
       final encrypted = secureService.encrypt(originalText);
 
       // Tamper with the encrypted data
-      final tampered = encrypted.substring(0, encrypted.length - 2) + 'XX';
+      final tampered = '${encrypted.substring(0, encrypted.length - 2)}XX';
       final isValid = secureService.verifyEncryption(originalText, tampered);
 
       expect(isValid, isFalse);
@@ -431,8 +431,8 @@ void main() {
       const noteId = 'realistic-note-123';
 
       // Create note
-      final originalTitle = 'Initial Title';
-      final originalContent = 'Initial content for the note';
+      const originalTitle = 'Initial Title';
+      const originalContent = 'Initial content for the note';
       final encrypted1 = secureService.encryptNoteData(
         noteId: noteId,
         title: originalTitle,
@@ -449,8 +449,8 @@ void main() {
       expect(decrypted1['content'], equals(originalContent));
 
       // Update note
-      final updatedTitle = 'Updated Title';
-      final updatedContent = 'Updated content with more information';
+      const updatedTitle = 'Updated Title';
+      const updatedContent = 'Updated content with more information';
       final encrypted2 = secureService.encryptNoteData(
         noteId: noteId,
         title: updatedTitle,
@@ -471,7 +471,7 @@ void main() {
     test('should handle multi-language content', () async {
       await secureService.initialize();
 
-      final multiLangContent = '''
+      const multiLangContent = '''
 English: Hello World
 Chinese: 你好世界
 Japanese: こんにちは世界

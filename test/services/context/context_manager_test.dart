@@ -398,7 +398,7 @@ void main() {
 
     test('应该能创建摘要', () {
       // 添加一个长片段
-      final id = manager.addSegment(
+      manager.addSegment(
         type: SegmentType.userMessage,
         content: '这是第一句话。这是第二句话。这是第三句话。这是第四句话。这是第五句话。',
       );
@@ -410,10 +410,6 @@ void main() {
           content: 'message $i ' * 15,
         );
       }
-
-      // 检查是否创建了摘要
-      final segments = manager.getAllSegments();
-      final hasSummary = segments.any((s) => s.isSummary);
 
       // 注意：摘要创建依赖于具体的裁剪策略
       // 这里只验证不会崩溃

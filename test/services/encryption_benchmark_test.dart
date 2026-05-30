@@ -153,7 +153,7 @@ void main() {
 
     group('Batch Operations Performance', () {
       test('should handle batch encryption efficiently', () async {
-        final batchSize = 100;
+        const batchSize = 100;
         final notes = List.generate(
             batchSize,
             (i) => {
@@ -191,7 +191,7 @@ void main() {
       });
 
       test('should handle batch decryption efficiently', () async {
-        final batchSize = 100;
+        const batchSize = 100;
         final notes = List.generate(
             batchSize,
             (i) => {
@@ -276,7 +276,7 @@ void main() {
 
         debugPrint('Initial operations: ${initialMetrics.totalOperations}');
         debugPrint('Final operations: ${finalMetrics.totalOperations}');
-        debugPrint('Operations performed: ${iterations}');
+        debugPrint('Operations performed: $iterations');
 
         expect(finalMetrics.totalOperations - initialMetrics.totalOperations,
             greaterThanOrEqualTo(iterations));
@@ -370,7 +370,7 @@ void main() {
 
         // Simulate creating a note
         final createTimer = PerformanceTimer('create_note', performanceMonitor);
-        final noteId = 'user-workflow-1';
+        const noteId = 'user-workflow-1';
         final encryptedCreate = secureService.encryptNoteData(
           noteId: noteId,
           title: 'My First Note',

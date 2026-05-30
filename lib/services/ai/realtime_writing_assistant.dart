@@ -17,10 +17,10 @@ class RealTimeWritingAssistant {
       StreamController.broadcast();
 
   // 配置
-  int _predictionWindowSize = 50; // 预测窗口大小（字符数）
-  double _predictionConfidenceThreshold = 0.7;
-  int _suggestionDebounceMs = 300; // 建议防抖延迟（毫秒）
-  int _maxSessionDuration = 30 * 60 * 1000; // 最大会话时长（30分钟）
+  final int _predictionWindowSize = 50; // 预测窗口大小（字符数）
+  final double _predictionConfidenceThreshold = 0.7;
+  final int _suggestionDebounceMs = 300; // 建议防抖延迟（毫秒）
+  final int _maxSessionDuration = 30 * 60 * 1000; // 最大会话时长（30分钟）
 
   RealTimeWritingAssistant._({
     ContextualAIService? contextualService,

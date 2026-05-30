@@ -10,7 +10,7 @@ void main() {
     });
 
     test('应该能去除AI常用连接词', () {
-      final input = '首先，这是一个测试。其次，我们继续测试。最后，测试完成。';
+      const input = '首先，这是一个测试。其次，我们继续测试。最后，测试完成。';
       final result = processor.process(input);
 
       expect(result, isNot(contains('首先')));
@@ -19,7 +19,7 @@ void main() {
     });
 
     test('应该能替换机械表达', () {
-      final input = '随着技术的发展，在当前背景下，基于考虑这个问题。';
+      const input = '随着技术的发展，在当前背景下，基于考虑这个问题。';
       final result = processor.process(input);
 
       expect(result, contains('现在'));
@@ -27,7 +27,7 @@ void main() {
     });
 
     test('应该能调整语气从正式到口语', () {
-      final input = '实施这个计划，通过这种方式进行操作。';
+      const input = '实施这个计划，通过这种方式进行操作。';
       final result = processor.process(input);
 
       expect(result, isNot(contains('实施')));
@@ -35,7 +35,7 @@ void main() {
     });
 
     test('应该能处理过度结构化的文本', () {
-      final input = '首先，我们分析问题。其次，我们找到解决方案。最后，我们实施计划。';
+      const input = '首先，我们分析问题。其次，我们找到解决方案。最后，我们实施计划。';
       final result = processor.process(input);
 
       // 检查是否破坏了过度结构化
@@ -44,7 +44,7 @@ void main() {
     });
 
     test('应该能记录替换统计', () {
-      final input = '首先，然而，因此，此外，另外';
+      const input = '首先，然而，因此，此外，另外';
       processor.process(input);
 
       final stats = processor.getStatistics();
@@ -63,20 +63,20 @@ void main() {
     });
 
     test('默认配置应该正确', () {
-      final config = NaturalLanguageConfig.defaultConfig();
+      const config = NaturalLanguageConfig.defaultConfig();
       expect(config.enabledRules, contains('connector'));
       expect(config.enabledRules, contains('mechanical'));
       expect(config.processingIntensity, 0.7);
     });
 
     test('最小配置应该只处理基本规则', () {
-      final config = NaturalLanguageConfig.minimalConfig();
+      const config = NaturalLanguageConfig.minimalConfig();
       expect(config.enabledRules.length, lessThan(4));
       expect(config.enabledRules, contains('connector'));
     });
 
     test('激进配置应该启用所有规则', () {
-      final config = NaturalLanguageConfig.aggressiveConfig();
+      const config = NaturalLanguageConfig.aggressiveConfig();
       expect(config.enabledRules.length, greaterThan(4));
       expect(config.processingIntensity, 1.0);
       expect(config.preserveFormatting, false);
@@ -106,7 +106,7 @@ void main() {
         configB: NaturalLanguageConfig.aggressiveConfig(),
       );
 
-      final input = '首先，然而，因此';
+      const input = '首先，然而，因此';
       final results = tester.compare(input);
 
       expect(results, containsPair('original', input));
@@ -136,7 +136,7 @@ void main() {
 
     test('应该能返回批量处理统计', () {
       final processor = BatchNaturalLanguageProcessor();
-      final texts = [
+      const texts = [
         '首先，测试。',
         '然而，测试。',
         '因此，测试。',
@@ -159,7 +159,7 @@ void main() {
     });
 
     test('应该能处理真实的AI生成文本', () {
-      final aiGeneratedText = '''
+      const aiGeneratedText = '''
         首先，人工智能技术在近年来取得了显著进展。其次，深度学习算法的优化使得模型性能大幅提升。
         此外，计算资源的增加为大规模应用提供了基础。然而，数据隐私问题仍然需要重视。
         因此，建立完善的监管机制至关重要。最后，我们可以预见AI技术将在更多领域发挥重要作用。
@@ -188,7 +188,7 @@ void main() {
     });
 
     test('应该能保留原始内容的语义', () {
-      final input = '这是一个重要的概念。然而，很多人理解有误。';
+      const input = '这是一个重要的概念。然而，很多人理解有误。';
       final result = processor.process(input);
 
       // 检查关键信息被保留
@@ -199,7 +199,7 @@ void main() {
     });
 
     test('应该能处理混合内容', () {
-      final mixedContent = '''
+      const mixedContent = '''
         这是一段正常的文本。
 
         首先，这里是AI生成的内容。其次，这里有更多的AI内容。最后，这里是结论。
@@ -218,7 +218,7 @@ void main() {
     });
 
     test('应该能处理专业术语', () {
-      final technicalText = '''
+      const technicalText = '''
         在机器学习领域，首先需要理解基本概念。其次，要掌握常用算法。
         此外，实践经验同样重要。因此，建议从简单项目开始。
       ''';
@@ -244,7 +244,7 @@ void main() {
       );
 
       final processor = NaturalLanguageProcessor(config: config);
-      final input = '首先，实施这个计划。通过这种方式进行操作。';
+      const input = '首先，实施这个计划。通过这种方式进行操作。';
 
       final result = processor.process(input);
 
@@ -262,7 +262,7 @@ void main() {
       );
 
       final processor = NaturalLanguageProcessor(config: config);
-      final input = '首先考虑到这个问题很重要。首先，我们需要分析。';
+      const input = '首先考虑到这个问题很重要。首先，我们需要分析。';
 
       final result = processor.process(input);
 
@@ -279,7 +279,7 @@ void main() {
     });
 
     test('应该能处理只包含AI连接词的文本', () {
-      final input = '首先。其次。最后。然而。因此。';
+      const input = '首先。其次。最后。然而。因此。';
       final result = processor.process(input);
 
       // 应该被大幅修改

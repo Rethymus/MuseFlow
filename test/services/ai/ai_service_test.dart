@@ -148,14 +148,14 @@ void main() {
       expect(openai.defaultBaseUrl, 'https://api.openai.com/v1');
       expect(openai.defaultTimeout, 30);
 
-      final anthropic = AIProvider.anthropic;
+      const anthropic = AIProvider.anthropic;
       expect(anthropic.defaultBaseUrl, 'https://api.anthropic.com/v1');
       expect(anthropic.defaultTimeout, 60);
 
-      final deepseek = AIProvider.deepseek;
+      const deepseek = AIProvider.deepseek;
       expect(deepseek.defaultBaseUrl, 'https://api.deepseek.com/v1');
 
-      final ollama = AIProvider.ollama;
+      const ollama = AIProvider.ollama;
       expect(ollama.defaultBaseUrl, 'http://localhost:11434/v1');
     });
 
