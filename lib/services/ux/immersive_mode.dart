@@ -351,7 +351,7 @@ class ImmersiveSessionSummary {
 
   @override
   String toString() {
-    return '沉浸会话: ${duration}分钟, $wordCount字, 专注度${focusScore}%';
+    return '沉浸会话: $duration分钟, $wordCount字, 专注度$focusScore%';
   }
 }
 

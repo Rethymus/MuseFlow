@@ -149,7 +149,7 @@ class ErrorDisplayWidgets {
                   ],
                 ),
               );
-            }).toList(),
+            }),
             if (error.helpLink != null) ...[
               const SizedBox(height: 16),
               InkWell(
@@ -356,7 +356,7 @@ class _ErrorDialog extends StatelessWidget {
                   ],
                 ),
               );
-            }).toList(),
+            }),
             if (error.helpLink != null) ...[
               const SizedBox(height: 16),
               InkWell(
