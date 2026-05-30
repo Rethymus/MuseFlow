@@ -1,5 +1,5 @@
-/// AI服务共享类型定义
-/// 包含ContextualAIService和RealTimeWritingAssistant共用的类型
+// AI服务共享类型定义
+// 包含ContextualAIService和RealTimeWritingAssistant共用的类型
 
 /// 建议类型
 enum SuggestionType {

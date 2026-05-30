@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'dart:math';
 import 'undo_redo/undo_redo_manager.dart';
 import 'undo_redo/text_edit_action.dart';

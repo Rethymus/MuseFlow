@@ -659,13 +659,13 @@ class AIActionHandler {
     if (sentences.isEmpty) return text;
 
     final firstSentence = sentences.first.trim();
-    return '首先，${firstSentence}。此外，通过分析可以看出主要内容。总之，这是一个值得关注的要点。';
+    return '首先，$firstSentence。此外，通过分析可以看出主要内容。总之，这是一个值得关注的要点。';
   }
 
   // 模拟风格转换结果
   String _mockStyleChangeResult(String text, String style) {
     // 模拟风格转换，包含AI常用的表达
-    return '首先，${text}。然而，需要注意的是，这是$style风格的表达。此外，通过这种转换可以使文本更符合目标风格。因此，建议在使用时根据具体需求进行适当调整。';
+    return '首先，$text。然而，需要注意的是，这是$style风格的表达。此外，通过这种转换可以使文本更符合目标风格。因此，建议在使用时根据具体需求进行适当调整。';
   }
 
   // 模拟智能替换结果

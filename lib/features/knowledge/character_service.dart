@@ -353,7 +353,7 @@ class CharacterService with ChangeNotifier {
       // 1. 检查内容大小
       final contentSize = jsonString.length;
       if (contentSize > FileSecurityValidator.maxSingleFileSize) {
-        Logger.debug('导出失败：内容过大 (${contentSize} bytes)');
+        Logger.debug('导出失败：内容过大 ($contentSize bytes)');
         return false;
       }
 

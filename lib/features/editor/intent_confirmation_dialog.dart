@@ -217,7 +217,7 @@ class _IntentConfirmationDialogState extends State<IntentConfirmationDialog> {
               ],
             ),
           );
-        }).toList(),
+        }),
       ],
     );
   }
@@ -444,7 +444,7 @@ class _IntentAdjustmentDialogState extends State<_IntentAdjustmentDialog> {
                   const SizedBox(height: 12),
                 ],
               );
-            }).toList(),
+            }),
           ],
         ),
       ),
