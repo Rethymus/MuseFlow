@@ -139,7 +139,7 @@ class MemoryOptimizationStrategy {
 
   /// 获取保守策略（低内存设备）
   static MemoryOptimizationStrategy get conservative {
-    return MemoryOptimizationStrategy(
+    return const MemoryOptimizationStrategy(
       enableAggressiveCleanup: true,
       enableResourceCompression: true,
       enableLazyLoading: true,
@@ -151,7 +151,7 @@ class MemoryOptimizationStrategy {
 
   /// 获取激进策略（高性能设备）
   static MemoryOptimizationStrategy get aggressive {
-    return MemoryOptimizationStrategy(
+    return const MemoryOptimizationStrategy(
       enableAggressiveCleanup: false,
       enableResourceCompression: false,
       enableLazyLoading: false,
@@ -163,7 +163,7 @@ class MemoryOptimizationStrategy {
 
   /// 获取平衡策略
   static MemoryOptimizationStrategy get balanced {
-    return MemoryOptimizationStrategy();
+    return const MemoryOptimizationStrategy();
   }
 }
 

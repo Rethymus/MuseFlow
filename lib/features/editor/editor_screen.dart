@@ -507,7 +507,7 @@ class _EditorScreenState extends State<EditorScreen> {
                           ),
                           child: Text(
                             '已设置',
-                            style: TextStyle(
+                            style: const TextStyle(
                               color: Colors.white,
                               fontSize: 10,
                               fontWeight: FontWeight.bold,
@@ -616,7 +616,7 @@ class _EditorScreenState extends State<EditorScreen> {
             _contextAnchor.value = content;
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
-                content: Text('✓ 上下文锚点已设置'),
+                content: const Text('✓ 上下文锚点已设置'),
                 backgroundColor: Colors.blue.shade700,
                 behavior: SnackBarBehavior.floating,
                 duration: AppConstants.extraSlowAnimationDuration,

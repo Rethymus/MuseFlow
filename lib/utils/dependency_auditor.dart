@@ -561,7 +561,7 @@ class DependencyAuditor {
     existingLogs.add(changeLog);
 
     await auditLog.writeAsString(
-      JsonEncoder.withIndent('  ').convert(
+      const JsonEncoder.withIndent('  ').convert(
         existingLogs.map((e) => e.toJson()).toList(),
       ),
     );
@@ -681,7 +681,7 @@ class DependencyAuditor {
   /// 保存健康报告
   Future<void> _saveHealthReport(DependencyHealthReport report) async {
     await healthReportFile.writeAsString(
-      JsonEncoder.withIndent('  ').convert(report.toJson()),
+      const JsonEncoder.withIndent('  ').convert(report.toJson()),
     );
   }
 
