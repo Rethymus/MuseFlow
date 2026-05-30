@@ -13,9 +13,8 @@ class ImmersiveMode extends ChangeNotifier {
   int _sessionDuration = 0;
   int _wordCount = 0;
   int _focusScore = 0;
-  List<double> _typingSpeedHistory = [];
+  final List<double> _typingSpeedHistory = [];
   DateTime? _lastTypingTime;
-  DateTime? _sessionStartTime;
 
   // 环境设置
   ImmersiveEnvironment _environment = ImmersiveEnvironment();
@@ -56,7 +55,6 @@ class ImmersiveMode extends ChangeNotifier {
     if (_isActive) return;
 
     _isActive = true;
-    _sessionStartTime = DateTime.now();
     _sessionDuration = 0;
     _wordCount = 0;
     _focusScore = 0;
@@ -76,8 +74,14 @@ class ImmersiveMode extends ChangeNotifier {
   }
 
   /// 退出沉浸模式
-  Future<void> deactivate() async {
-    if (!_isActive) return;
+  Future<ImmersiveSessionSummary> deactivate() async {
+    if (!_isActive) return ImmersiveSessionSummary(
+      duration: _sessionDuration,
+      wordCount: _wordCount,
+      focusScore: _focusScore,
+      environment: _environment,
+      timestamp: DateTime.now(),
+    );
 
     _isActive = false;
     _isFlowState = false;
@@ -94,7 +98,7 @@ class ImmersiveMode extends ChangeNotifier {
 
     notifyListeners();
 
-    return Future.value(sessionData);
+    return sessionData;
   }
 
   /// 记录打字事件
@@ -353,7 +357,7 @@ class ImmersiveSessionSummary {
 
   @override
   String toString() {
-    return '沉浸会话: ${duration}分钟, $wordCount字, 专注度${focusScore}%';
+    return '沉浸会话: $duration分钟, $wordCount字, 专注度$focusScore%';
   }
 }
 

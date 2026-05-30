@@ -202,7 +202,7 @@ class StartupAnalyzer {
       buffer.writeln('  ${i + 1}. ${recommendations[i]}');
     }
 
-    buffer.writeln('\n' + '=' * 50);
+    buffer.writeln('\n${'=' * 50}');
 
     return buffer.toString();
   }

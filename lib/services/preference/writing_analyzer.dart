@@ -101,11 +101,11 @@ class WritingAnalyzer {
       RegExp(r'\b(?:主要|关键|核心|要点)\b'),
     ];
 
-    int detailedScore = detailedIndicators
+    final int detailedScore = detailedIndicators
         .map((p) => p.allMatches(text).length)
         .reduce((a, b) => a + b);
 
-    int conciseScore = conciseIndicators
+    final int conciseScore = conciseIndicators
         .map((p) => p.allMatches(text).length)
         .reduce((a, b) => a + b);
 
@@ -156,7 +156,7 @@ class WritingAnalyzer {
       RegExp(r'[，,]'), // 逗号表示从句
     ];
 
-    int complexScore = complexIndicators
+    final int complexScore = complexIndicators
         .map((p) => p.allMatches(text).length)
         .reduce((a, b) => a + b);
 

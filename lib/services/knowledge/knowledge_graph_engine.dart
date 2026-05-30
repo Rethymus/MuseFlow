@@ -130,7 +130,7 @@ class KnowledgeGraphEngine with ChangeNotifier {
   final Map<String, KnowledgeEdge> _edges = {};
 
   // 缓存分析结果
-  Map<String, List<RelationshipRecommendation>> _recommendationCache = {};
+  final Map<String, List<RelationshipRecommendation>> _recommendationCache = {};
 
   List<KnowledgeNode> get nodes => _nodes.values.toList();
   List<KnowledgeEdge> get edges => _edges.values.toList();

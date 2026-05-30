@@ -7,9 +7,9 @@ class ModificationAcceptanceChart extends StatelessWidget {
   final Map<ModificationType, double> acceptanceRates;
 
   const ModificationAcceptanceChart({
-    Key? key,
+    super.key,
     required this.acceptanceRates,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

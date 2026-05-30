@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:developer' as developer;
 import 'dart:io';
 import 'package:flutter/foundation.dart';
 import '../../utils/logger.dart';
@@ -139,7 +138,7 @@ class MemoryOptimizationStrategy {
 
   /// 获取保守策略（低内存设备）
   static MemoryOptimizationStrategy get conservative {
-    return MemoryOptimizationStrategy(
+    return const MemoryOptimizationStrategy(
       enableAggressiveCleanup: true,
       enableResourceCompression: true,
       enableLazyLoading: true,
@@ -151,7 +150,7 @@ class MemoryOptimizationStrategy {
 
   /// 获取激进策略（高性能设备）
   static MemoryOptimizationStrategy get aggressive {
-    return MemoryOptimizationStrategy(
+    return const MemoryOptimizationStrategy(
       enableAggressiveCleanup: false,
       enableResourceCompression: false,
       enableLazyLoading: false,
@@ -163,7 +162,7 @@ class MemoryOptimizationStrategy {
 
   /// 获取平衡策略
   static MemoryOptimizationStrategy get balanced {
-    return MemoryOptimizationStrategy();
+    return const MemoryOptimizationStrategy();
   }
 }
 
@@ -540,7 +539,7 @@ class MemoryOptimizer {
       };
     } else {
       // 桌面平台的估算
-      final total = 4096; // MB
+      const total = 4096; // MB
       final used = 300 + (DateTime.now().millisecond % 150);
       final free = total - used;
       final percentage = (used / total * 100);

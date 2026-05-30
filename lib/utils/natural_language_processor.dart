@@ -164,7 +164,7 @@ class NaturalLanguageProcessor {
     if (sentences.length < 3) return text;
 
     final shortSentenceCount =
-        sentences.where((s) => s.length > 0 && s.length < 15).length;
+        sentences.where((s) => s.isNotEmpty && s.length < 15).length;
 
     if (shortSentenceCount / sentences.length > 0.7) {
       _stats.recordReplacement('sentence_length', '过多短句');

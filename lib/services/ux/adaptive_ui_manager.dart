@@ -52,7 +52,7 @@ class AdaptiveUIManager {
 
   /// 加载布局偏好
   Future<void> _loadLayoutPreferences() async {
-    final layoutJson = _prefs?.getString('$_preferencesKey\_layout');
+    final layoutJson = _prefs?.getString('$_preferencesKey${'\'}_layout');
     if (layoutJson != null) {
       try {
         _layoutPreferences = json.decode(layoutJson) as Map<String, dynamic>;
@@ -174,7 +174,7 @@ class AdaptiveUIManager {
   Future<void> updateLayoutPreference(String key, dynamic value) async {
     _layoutPreferences[key] = value;
     await _prefs?.setString(
-        '$_preferencesKey\_layout', json.encode(_layoutPreferences));
+        '$_preferencesKey${'\'}_layout', json.encode(_layoutPreferences));
   }
 
   /// 重置所有习惯数据
@@ -182,7 +182,7 @@ class AdaptiveUIManager {
     _userHabits.clear();
     _layoutPreferences.clear();
     await _prefs?.remove(_preferencesKey);
-    await _prefs?.remove('$_preferencesKey\_layout');
+    await _prefs?.remove('$_preferencesKey${'\'}_layout');
     await _loadUserHabits();
   }
 
@@ -225,16 +225,15 @@ class AdaptiveLayout extends StatelessWidget {
   final Widget child;
 
   const AdaptiveLayout({
-    Key? key,
+    super.key,
     required this.density,
     required this.fontSize,
     required this.child,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
     double paddingValue;
-    double spacingValue;
 
     switch (density) {
       case 'compact':

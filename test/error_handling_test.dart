@@ -13,7 +13,7 @@ void main() {
     });
 
     test('应该正确处理文件系统异常', () {
-      final error = FileSystemException('文件不存在', '/path/to/file.txt');
+      const error = FileSystemException('文件不存在', '/path/to/file.txt');
       final userError = handler.handleError(error);
 
       expect(userError.title, contains('文件'));
@@ -23,7 +23,7 @@ void main() {
     });
 
     test('应该正确处理网络异常', () {
-      final error = SocketException('网络连接失败');
+      const error = SocketException('网络连接失败');
       final userError = handler.handleError(error);
 
       expect(userError.title, contains('网络'));
@@ -50,7 +50,7 @@ void main() {
     });
 
     test('应该正确处理格式异常', () {
-      final error = FormatException('无效的JSON格式', '{invalid json}', 0);
+      const error = FormatException('无效的JSON格式', '{invalid json}', 0);
       final userError = handler.handleError(error);
 
       expect(userError.title, contains('格式'));
@@ -69,7 +69,7 @@ void main() {
     });
 
     test('应该正确处理字符串错误消息', () {
-      final error = '文件操作失败';
+      const error = '文件操作失败';
       final userError = handler.handleError(error);
 
       expect(userError.title, contains('文件'));

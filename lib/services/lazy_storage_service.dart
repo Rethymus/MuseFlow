@@ -118,7 +118,7 @@ class LazyStorageService {
 
     try {
       // 检查是否有最近使用的笔记
-      final recentNoteIds = _settingsBox?.get('recent_notes') as String?;
+      final recentNoteIds = _settingsBox?.get('recent_notes');
       if (recentNoteIds != null && recentNoteIds.isNotEmpty) {
         // 可以预加载这些笔记
         Logger.debug('发现最近使用的笔记，可以预加载');

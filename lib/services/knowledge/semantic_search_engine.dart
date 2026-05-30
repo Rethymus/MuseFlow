@@ -378,13 +378,21 @@ class SemanticSearchEngine with ChangeNotifier {
     final buffer = StringBuffer();
 
     buffer.write(character.name);
-    if (character.age != null) buffer.write(' ${character.age}岁');
-    if (character.appearance != null) buffer.write(' ${character.appearance}');
-    if (character.personality != null)
+    if (character.age != null) {
+      buffer.write(' ${character.age}岁');
+    }
+    if (character.appearance != null) {
+      buffer.write(' ${character.appearance}');
+    }
+    if (character.personality != null) {
       buffer.write(' ${character.personality}');
-    if (character.background != null) buffer.write(' ${character.background}');
-    if (character.speakingStyle != null)
+    }
+    if (character.background != null) {
+      buffer.write(' ${character.background}');
+    }
+    if (character.speakingStyle != null) {
       buffer.write(' ${character.speakingStyle}');
+    }
 
     if (character.tags.isNotEmpty) {
       buffer.write(' 标签: ${character.tags.join(' ')}');
@@ -424,10 +432,12 @@ class SemanticSearchEngine with ChangeNotifier {
     final buffer = StringBuffer();
 
     buffer.write('${organization.name} ${organization.description}');
-    if (organization.leader != null)
+    if (organization.leader != null) {
       buffer.write(' 领导: ${organization.leader}');
-    if (organization.philosophy != null)
+    }
+    if (organization.philosophy != null) {
       buffer.write(' 理念: ${organization.philosophy}');
+    }
     if (organization.members.isNotEmpty) {
       buffer.write(' 成员: ${organization.members.join(' ')}');
     }
@@ -562,23 +572,18 @@ class SemanticSearchEngine with ChangeNotifier {
           (normalizedKeyword * keywordWeight);
 
       // 获取原始结果项
-      SearchResultItem? originalItem;
-      if (semanticScores.containsKey(id)) {
-        originalItem = semanticResults.firstWhere((r) => r.id == id);
-      } else {
-        originalItem = keywordResults.firstWhere((r) => r.id == id);
-      }
+      final originalItem = semanticScores.containsKey(id)
+          ? semanticResults.firstWhere((r) => r.id == id)
+          : keywordResults.firstWhere((r) => r.id == id);
 
-      if (originalItem != null) {
-        combinedResults[id] = SearchResultItem(
-          id: originalItem.id,
-          title: originalItem.title,
-          content: originalItem.content,
-          type: originalItem.type,
-          relevanceScore: combinedScore,
-          metadata: originalItem.metadata,
-        );
-      }
+      combinedResults[id] = SearchResultItem(
+        id: originalItem.id,
+        title: originalItem.title,
+        content: originalItem.content,
+        type: originalItem.type,
+        relevanceScore: combinedScore,
+        metadata: originalItem.metadata,
+      );
     }
 
     // 排序并返回

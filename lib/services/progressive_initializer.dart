@@ -108,7 +108,7 @@ class ProgressiveInitializer {
 
   // 性能监控
   DateTime? _performanceStartTime;
-  Map<String, Duration> _phaseDurations = {};
+  final Map<String, Duration> _phaseDurations = {};
   // ignore: unused_field
   final Map<String, Stopwatch> _phaseTimers = {};
 

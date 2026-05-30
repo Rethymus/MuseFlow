@@ -48,8 +48,6 @@ class PerformanceTestResult {
 ///
 /// 用于验证性能优化效果和生成性能报告
 class PerformanceValidator {
-  static const String _reportFileName = 'performance_validation_report.json';
-
   /// 执行完整的性能验证
   static Future<List<PerformanceTestResult>> runFullValidation() async {
     Logger.debug('开始性能验证测试...');
@@ -86,7 +84,6 @@ class PerformanceValidator {
 
   /// 测试启动时间
   static Future<PerformanceTestResult> _testStartupTime() async {
-    const targetThreshold = 2000.0; // 2秒
     const optimizedThreshold = 1000.0; // 1秒 (优化目标)
 
     Logger.debug('测试启动时间...');
@@ -122,7 +119,6 @@ class PerformanceValidator {
 
   /// 测试内存使用
   static Future<PerformanceTestResult> _testMemoryUsage() async {
-    const targetThreshold = 500.0; // 500MB
     const optimizedThreshold = 350.0; // 350MB (优化目标，减少30%)
 
     Logger.debug('测试内存使用...');
@@ -151,7 +147,6 @@ class PerformanceValidator {
 
   /// 测试预加载效率
   static Future<PerformanceTestResult> _testPreloadEfficiency() async {
-    const targetThreshold = 0.8; // 80%命中率
     const optimizedThreshold = 0.9; // 90%命中率 (优化目标)
 
     Logger.debug('测试预加载效率...');
@@ -209,7 +204,6 @@ class PerformanceValidator {
 
   /// 测试内存泄漏
   static Future<PerformanceTestResult> _testMemoryLeaks() async {
-    const targetThreshold = 5; // 最多5个泄漏
     const optimizedThreshold = 2; // 最多2个泄漏 (优化目标)
 
     Logger.debug('测试内存泄漏...');
@@ -238,7 +232,6 @@ class PerformanceValidator {
 
   /// 测试资源清理效率
   static Future<PerformanceTestResult> _testResourceCleanup() async {
-    const targetThreshold = 100.0; // 100MB
     const optimizedThreshold = 50.0; // 50MB (优化目标)
 
     Logger.debug('测试资源清理效率...');
@@ -274,7 +267,6 @@ class PerformanceValidator {
 
   /// 测试性能稳定性
   static Future<PerformanceTestResult> _testPerformanceStability() async {
-    const targetThreshold = 0.1; // 10%变异系数
     const optimizedThreshold = 0.05; // 5%变异系数 (优化目标)
 
     Logger.debug('测试性能稳定性...');
@@ -325,19 +317,6 @@ class PerformanceValidator {
   static Future<void> _generateValidationReport(
       List<PerformanceTestResult> results) async {
     try {
-      final report = {
-        'timestamp': DateTime.now().toIso8601String(),
-        'summary': {
-          'totalTests': results.length,
-          'passedTests': results.where((r) => r.passed).length,
-          'failedTests': results.where((r) => !r.passed).length,
-          'overallStatus':
-              results.every((r) => r.passed) ? 'EXCELLENT' : 'ACCEPTABLE',
-        },
-        'results': results.map((r) => r.toJson()).toList(),
-        'recommendations': _generateRecommendations(results),
-      };
-
       // 在实际应用中，这里应该保存到文件
       Logger.debug('性能验证报告已生成');
       Logger.debug('总测试数: ${results.length}');

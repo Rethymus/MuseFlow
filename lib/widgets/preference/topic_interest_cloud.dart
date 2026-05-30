@@ -6,9 +6,9 @@ class TopicInterestCloud extends StatelessWidget {
   final Map<String, double> topicInterests;
 
   const TopicInterestCloud({
-    Key? key,
+    super.key,
     required this.topicInterests,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

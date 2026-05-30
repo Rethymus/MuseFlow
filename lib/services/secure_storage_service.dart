@@ -63,7 +63,7 @@ class SecureStorageService implements BaseStorageService {
   /// Check if legacy data migration is needed and perform it
   Future<void> _checkAndPerformMigration() async {
     final migrationCompleted =
-        await _migrationBox.get(_migrationKey) ?? 'false';
+        _migrationBox.get(_migrationKey) ?? 'false';
 
     if (migrationCompleted == 'false') {
       await _migrateLegacyData();
@@ -397,9 +397,9 @@ class SecureStorageService implements BaseStorageService {
       'total_notes': totalNotes,
       'settings_count': settingsCount,
       'encryption_enabled': true,
-      'migration_completed': await _migrationBox.get(_migrationKey) ?? 'false',
+      'migration_completed': _migrationBox.get(_migrationKey) ?? 'false',
       'encryption_version':
-          await _migrationBox.get(_encryptionVersionKey) ?? '0',
+          _migrationBox.get(_encryptionVersionKey) ?? '0',
     };
   }
 
