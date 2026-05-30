@@ -15,7 +15,6 @@ class ImmersiveMode extends ChangeNotifier {
   int _focusScore = 0;
   List<double> _typingSpeedHistory = [];
   DateTime? _lastTypingTime;
-  DateTime? _sessionStartTime;
 
   // 环境设置
   ImmersiveEnvironment _environment = ImmersiveEnvironment();
@@ -56,7 +55,6 @@ class ImmersiveMode extends ChangeNotifier {
     if (_isActive) return;
 
     _isActive = true;
-    _sessionStartTime = DateTime.now();
     _sessionDuration = 0;
     _wordCount = 0;
     _focusScore = 0;

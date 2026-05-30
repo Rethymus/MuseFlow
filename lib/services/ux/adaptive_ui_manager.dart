@@ -234,24 +234,19 @@ class AdaptiveLayout extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     double paddingValue;
-    double spacingValue;
 
     switch (density) {
       case 'compact':
         paddingValue = 8.0;
-        spacingValue = 4.0;
         break;
       case 'comfortable':
         paddingValue = 16.0;
-        spacingValue = 8.0;
         break;
       case 'spacious':
         paddingValue = 24.0;
-        spacingValue = 16.0;
         break;
       default:
         paddingValue = 16.0;
-        spacingValue = 8.0;
     }
 
     return Theme(

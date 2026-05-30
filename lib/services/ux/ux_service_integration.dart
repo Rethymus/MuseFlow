@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import 'adaptive_ui_manager.dart';
 import 'immersive_mode.dart';
 import 'interaction_analyzer.dart';
