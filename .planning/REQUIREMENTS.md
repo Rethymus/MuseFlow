@@ -124,13 +124,62 @@
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| *(Populated during roadmap creation)* | | |
+| TECH-01 | Phase 1 | Pending |
+| TECH-02 | Phase 1 | Pending |
+| TECH-03 | Phase 1 | Pending |
+| TECH-04 | Phase 1 | Pending |
+| TECH-05 | Phase 1 | Pending |
+| TECH-06 | Phase 1 | Pending |
+| TECH-07 | Phase 1 | Pending |
+| EDIT-01 | Phase 1 | Pending |
+| EDIT-04 | Phase 1 | Pending |
+| CAPT-01 | Phase 1 | Pending |
+| CAPT-02 | Phase 1 | Pending |
+| CAPT-05 | Phase 1 | Pending |
+| AI-01 | Phase 2 | Pending |
+| AI-03 | Phase 2 | Pending |
+| AI-04 | Phase 2 | Pending |
+| AI-05 | Phase 2 | Pending |
+| AI-06 | Phase 2 | Pending |
+| AI-07 | Phase 2 | Pending |
+| AI-08 | Phase 2 | Pending |
+| MODL-01 | Phase 2 | Pending |
+| MODL-02 | Phase 2 | Pending |
+| CAPT-03 | Phase 2 | Pending |
+| CAPT-04 | Phase 2 | Pending |
+| EDIT-02 | Phase 3 | Pending |
+| EDIT-03 | Phase 3 | Pending |
+| EDIT-05 | Phase 3 | Pending |
+| EDIT-06 | Phase 3 | Pending |
+| EDIT-07 | Phase 3 | Pending |
+| KNOW-01 | Phase 4 | Pending |
+| KNOW-02 | Phase 4 | Pending |
+| KNOW-03 | Phase 4 | Pending |
+| KNOW-04 | Phase 4 | Pending |
+| KNOW-05 | Phase 4 | Pending |
+| SKIL-01 | Phase 4 | Pending |
+| SKIL-02 | Phase 4 | Pending |
+| SKIL-03 | Phase 4 | Pending |
+| SKIL-04 | Phase 4 | Pending |
+| SKIL-05 | Phase 4 | Pending |
+| STRC-01 | Phase 5 | Pending |
+| STRC-02 | Phase 5 | Pending |
+| STRC-03 | Phase 5 | Pending |
+| STRC-04 | Phase 5 | Pending |
+| STRC-05 | Phase 5 | Pending |
+| FRMT-01 | Phase 5 | Pending |
+| FRMT-02 | Phase 5 | Pending |
+| FRMT-03 | Phase 5 | Pending |
+| FRMT-04 | Phase 5 | Pending |
+| AI-02 | Phase 6 | Pending |
+| MODL-03 | Phase 6 | Pending |
+| MODL-04 | Phase 6 | Pending |
 
 **Coverage:**
-- v1 requirements: 46 total
-- Mapped to phases: 0
-- Unmapped: 46 ⚠️
+- v1 requirements: 50 total
+- Mapped to phases: 50
+- Unmapped: 0
 
 ---
 *Requirements defined: 2026-05-31*
-*Last updated: 2026-05-31 after initial definition*
+*Last updated: 2026-05-31 after roadmap creation*

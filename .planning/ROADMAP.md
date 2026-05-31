@@ -1,0 +1,184 @@
+# Roadmap: MuseFlow 灵韵
+
+## Overview
+
+MuseFlow is built from spike to polish in 7 phases. Phase 0 validates existential technical risks (editor choice, CJK IME, large document performance) before committing to architecture. Phase 1 delivers a usable app shell with editor and fragment capture UI -- a real app users can touch. Phase 2 adds AI providers and completes the capture-to-synthesis pipeline, making the core creative loop work end-to-end. Phase 3 layers AI-powered editor features (floating toolbar, provenance tracking, selective undo). Phase 4 builds the knowledge base and skill system that auto-inject context into AI calls. Phase 5 adds story structure tools (foreshadowing, consistency guardian) plus format cleaning and export. Phase 6 rounds out multi-provider support and Android optimization. Each phase delivers one coherent, verifiable capability.
+
+## Phases
+
+**Phase Numbering:**
+- Integer phases (1, 2, 3): Planned milestone work
+- Decimal phases (2.1, 2.2): Urgent insertions (marked with INSERTED)
+
+Decimal phases appear between their surrounding integers in numeric order.
+
+- [ ] **Phase 0: Technical Validation** - Spike editor/IME/packages before committing to architecture
+- [ ] **Phase 1: App Shell + Editor + Capture UI** - Runnable app with navigation, editor, and fragment capture (no AI)
+- [ ] **Phase 2: AI Provider + Capture Synthesis** - AI adapter layer, provider settings, anti-AI-scent, fragment synthesis
+- [ ] **Phase 3: Editor AI Toolbar** - Floating toolbar with AI actions, text provenance, selective undo, context anchor
+- [ ] **Phase 4: Knowledge Base + Skill System** - Character cards, world settings, auto-injection, AI-assisted world-building
+- [ ] **Phase 5: Story Structure + Format + Export** - Foreshadowing tracking, consistency guardian, format cleaning, export
+- [ ] **Phase 6: Multi-Provider + Android Polish** - Claude adapter, model parameters, custom models, Android optimization
+
+## Phase Details
+
+### Phase 0: Technical Validation
+**Mode**: mvp
+**Goal**: Validate that super_editor handles CJK IME on Windows and performs with 100K+ character Chinese documents before committing any feature code
+**Depends on**: Nothing (first phase)
+**Requirements**: *(Spike phase -- no v1 requirements mapped. Validates feasibility for TECH-02, EDIT-01, EDIT-04)*
+**Success Criteria** (what must be TRUE):
+  1. super_editor renders a 100K+ character Chinese document with acceptable scroll performance (< 16ms frame time)
+  2. Sogou Pinyin, Wubi, and Microsoft Pinyin IME composition works correctly in super_editor on Windows
+  3. All core packages (super_editor, hive_ce, flutter_riverpod, openai_dart, anthropic_sdk_dart) resolve without version conflicts
+  4. Streaming SSE tokens can be buffered and batch-inserted into super_editor's MutableDocument without jank
+**Risks**: super_editor fails IME or performance benchmarks -- would force editor migration (catastrophic). Mitigated by validating before feature code.
+**Plans**: TBD
+
+Plans:
+- [ ] 00-01: Editor benchmark spike -- large Chinese document performance
+- [ ] 00-02: CJK IME validation spike -- Sogou/Wubi/MSPinyin on Windows
+- [ ] 00-03: Package compatibility matrix -- resolve all dependencies, verify streaming into editor
+
+### Phase 1: App Shell + Editor + Capture UI
+**Mode**: mvp
+**Goal**: Users can launch the app, navigate between modules, write in a rich text editor with Chinese IME, and capture/organize inspiration fragments
+**Depends on**: Phase 0 (editor/IME validated)
+**Requirements**: TECH-01, TECH-02, TECH-03, TECH-04, TECH-05, TECH-06, TECH-07, EDIT-01, EDIT-04, CAPT-01, CAPT-02, CAPT-05
+**Success Criteria** (what must be TRUE):
+  1. App launches as a native Windows desktop app in under 3 seconds with proper window management (title bar, minimize/maximize/close, remembered size)
+  2. User can navigate between modules (capture, editor, settings) via the app shell
+  3. Rich text editor supports bold, italic, headings, lists and handles 300K+ character documents without lag
+  4. Sogou, Wubi, and Microsoft Pinyin input methods work correctly in the editor
+  5. User can create, edit, and organize fragments in bullet-note mode by story/chapter/scene
+  6. Floating quick-capture window is accessible from any screen
+**UI hint**: yes
+**Risks**: Hive CE encryption setup on Windows may require native library configuration. Window size persistence may need platform channel work.
+**Plans**: TBD
+
+Plans:
+- [ ] 01-01: App shell with window management, navigation, and Hive/secure storage initialization
+- [ ] 01-02: Rich text editor integration (super_editor) with formatting and large document support
+- [ ] 01-03: Fragment capture UI -- bullet-note mode, organization by story/chapter/scene
+- [ ] 01-04: Quick-capture floating window and Android adaptive layout
+
+### Phase 2: AI Provider + Capture Synthesis
+**Mode**: mvp
+**Goal**: Users can configure an AI provider, and the fragment capture flow works end-to-end: select fragments, AI synthesizes them into coherent story paragraphs, user edits before sending to editor
+**Depends on**: Phase 1 (app shell, editor, capture UI)
+**Requirements**: AI-01, AI-03, AI-04, AI-05, AI-06, AI-07, AI-08, MODL-01, MODL-02, CAPT-03, CAPT-04
+**Success Criteria** (what must be TRUE):
+  1. User can add an OpenAI-compatible provider (name, API Key, Base URL) and select it for use
+  2. Preset providers (OpenAI, DeepSeek, Ollama) are available as one-click configurations
+  3. User selects fragments and triggers AI synthesis -- streaming response appears in real time
+  4. Synthesized text is editable before being placed into the editor
+  5. Anti-AI-scent layer is active: generated text avoids AI cliches (总之, 然而, 综上所述, etc.) via prompt engineering and post-processing
+  6. AI errors (network failure, rate limit, invalid key) display graceful messages, not crashes
+**UI hint**: yes
+**Risks**: Anti-AI-scent effectiveness is unproven until tested with real Chinese prose and detection tools. Token budget estimation for Chinese text needs empirical validation.
+**Plans**: TBD
+
+Plans:
+- [ ] 02-01: AI adapter interface + OpenAI-compatible adapter with streaming SSE
+- [ ] 02-02: Provider management UI (CRUD, presets) with secure key storage
+- [ ] 02-03: PromptPipeline middleware chain + anti-AI-scent system (prompt layer + post-processing)
+- [ ] 02-04: Fragment-to-paragraph synthesis flow with token budget management and error handling
+
+### Phase 3: Editor AI Toolbar
+**Mode**: mvp
+**Goal**: Users can select text in the editor and get AI-powered actions via a floating toolbar: tone rewrite, paragraph polish, free-form edit -- with provenance tracking and selective undo
+**Depends on**: Phase 2 (AI provider, PromptPipeline, anti-AI-scent)
+**Requirements**: EDIT-02, EDIT-03, EDIT-05, EDIT-06, EDIT-07
+**Success Criteria** (what must be TRUE):
+  1. User selects text (word/phrase/paragraph) and a floating toolbar appears at the selection
+  2. Floating toolbar provides three AI actions: tone rewrite (语气改写), paragraph polish (文段润色), free input edit (自由输入)
+  3. AI-modified text is visually distinguished from human-written text (provenance tracking)
+  4. User can selectively undo AI modifications without losing their own human edits
+  5. User can select previous paragraphs as reference context for AI operations (context anchor)
+**UI hint**: yes
+**Risks**: Floating toolbar positioning with super_editor's OverlayPortal/Follower pattern needs prototyping. Selective undo with provenance tracking adds document model complexity.
+**Plans**: TBD
+
+Plans:
+- [ ] 03-01: Floating toolbar on text selection with tone rewrite, polish, and free-input actions
+- [ ] 03-02: Text provenance tracking -- visually distinguish AI-modified vs human-written text
+- [ ] 03-03: Selective undo for AI modifications and context anchor selection
+
+### Phase 4: Knowledge Base + Skill System
+**Mode**: mvp
+**Goal**: Users maintain character cards and world settings, AI auto-injects relevant context when writing, and AI assists in creating complete world-building documents that enforce constraints during writing
+**Depends on**: Phase 3 (editor with AI integration, PromptPipeline)
+**Requirements**: KNOW-01, KNOW-02, KNOW-03, KNOW-04, KNOW-05, SKIL-01, SKIL-02, SKIL-03, SKIL-04, SKIL-05
+**Success Criteria** (what must be TRUE):
+  1. User can create, edit, and delete character cards (name, personality, appearance, backstory, aliases)
+  2. User can create, edit, and delete world settings (rules, factions, geography, technology level)
+  3. AI automatically injects relevant character/setting context when generating or editing text -- no manual selection required
+  4. User describes a world concept and AI generates a complete setting document (power hierarchy, faction relations, rules, taboos, terminology)
+  5. AI flags when author writes content contradicting active skill settings (deviation detection)
+  6. Multiple skills can be active per project (e.g., "修仙体系" + "门派设定")
+**UI hint**: yes
+**Risks**: Name-index entity matching for auto-injection may produce false positives with Chinese names. Token budget can be exhausted by large knowledge bases -- relevance scoring is critical.
+**Plans**: TBD
+
+Plans:
+- [ ] 04-01: Knowledge base CRUD -- character cards and world settings with Hive persistence
+- [ ] 04-02: Name-index entity matching and AI auto-injection into PromptPipeline
+- [ ] 04-03: Skill system -- AI-assisted world-building document generation
+- [ ] 04-04: Real-time skill enforcement, deviation detection, and multi-skill activation
+- [ ] 04-05: Knowledge base quick-insert via keyboard shortcut in editor
+
+### Phase 5: Story Structure + Format + Export
+**Mode**: mvp
+**Goal**: Users can track foreshadowing threads, manage plot nodes, and rely on AI to catch character inconsistencies and story contradictions -- then clean formatting and export their work
+**Depends on**: Phase 4 (knowledge base with character data for consistency checks)
+**Requirements**: STRC-01, STRC-02, STRC-03, STRC-04, STRC-05, FRMT-01, FRMT-02, FRMT-03, FRMT-04
+**Success Criteria** (what must be TRUE):
+  1. User can mark and track planted foreshadowing threads, with alerts when unresolved threads accumulate
+  2. User can create, move, and connect story milestone nodes (plot node management)
+  3. AI flags when a character acts inconsistently with their established personality (consistency guardian)
+  4. AI identifies contradictions in story timeline or rules (logic loop detection)
+  5. One-click typeset beautify fixes punctuation (half/full-width mixing), removes Markdown residuals, and applies proper indentation/spacing
+  6. User can export to plain text, Markdown, or JSON format
+**UI hint**: yes
+**Risks**: Logic loop detection is AI-dependent and may produce false positives. Foreshadowing resolution detection requires tracking state across chapters. Format cleaning edge cases in Chinese punctuation are numerous.
+**Plans**: TBD
+
+Plans:
+- [ ] 05-01: Foreshadowing tracking and resolution detection
+- [ ] 05-02: Plot node management and character consistency guardian
+- [ ] 05-03: Logic loop detection via AI analysis
+- [ ] 05-04: Format cleaning (punctuation, Markdown residuals, typeset) and export (TXT/MD/JSON)
+
+### Phase 6: Multi-Provider + Android Polish
+**Mode**: mvp
+**Goal**: Users can use Claude as an AI provider alongside OpenAI-compatible ones, configure per-model parameters, import custom models, and the app works smoothly on Android
+**Depends on**: Phase 5 (all features complete, polishing existing functionality)
+**Requirements**: AI-02, MODL-03, MODL-04
+**Success Criteria** (what must be TRUE):
+  1. User can add and use Claude as an AI provider (separate API adapter for non-OpenAI-compatible Claude API)
+  2. User can configure per-provider model parameters (Temperature, Top-P, Max Tokens)
+  3. User can import custom models (LocalAI, etc.) with custom endpoints
+  4. App runs on Android with adaptive layout and touch-optimized interactions
+**UI hint**: yes
+**Risks**: Claude API (Anthropic) has different message format and streaming protocol -- requires dedicated adapter. Android layout adaptation may surface touch/IME issues not seen on Windows.
+**Plans**: TBD
+
+Plans:
+- [ ] 06-01: Claude API adapter (anthropic_sdk_dart) with streaming support
+- [ ] 06-02: Per-provider model parameter configuration and custom model import
+- [ ] 06-03: Android layout adaptation and touch optimization
+
+## Progress
+
+**Execution Order:**
+Phases execute in numeric order: 0 -> 1 -> 2 -> 3 -> 4 -> 5 -> 6
+
+| Phase | Plans Complete | Status | Completed |
+|-------|----------------|--------|-----------|
+| 0. Technical Validation | 0/3 | Not started | - |
+| 1. App Shell + Editor + Capture UI | 0/4 | Not started | - |
+| 2. AI Provider + Capture Synthesis | 0/4 | Not started | - |
+| 3. Editor AI Toolbar | 0/3 | Not started | - |
+| 4. Knowledge Base + Skill System | 0/5 | Not started | - |
+| 5. Story Structure + Format + Export | 0/4 | Not started | - |
+| 6. Multi-Provider + Android Polish | 0/3 | Not started | - |
