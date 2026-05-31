@@ -465,24 +465,24 @@ testWidgets('Chinese IME composing lifecycle', (tester) async {
 | A8 | Flutter 3.44.0 / Dart 3.5.4 is the correct toolchain (not a misconfigured install) | Version Compatibility | If Flutter should ship newer Dart, `flutter upgrade` fixes everything |
 | A9 | Both editors' programmatic text insertion APIs support batch operations for streaming | Editor Comparison | Streaming spike would need alternative approach (e.g., rebuild entire document) |
 
-## Open Questions
+## Open Questions (RESOLVED BY PLAN)
 
-1. **Can Flutter be upgraded to ship Dart 3.9+?**
+1. **Can Flutter be upgraded to ship Dart 3.9+?** (RESOLVED BY Plan 00-01 Task 1 — runs `flutter upgrade` then `dart --version`)
    - What we know: Flutter 3.44.0 (2026-05-15) ships Dart 3.5.4 (2024-10-16). This is a 7-month gap.
    - What's unclear: Whether `flutter upgrade` will bring a newer Dart, or if this is a WSL2-specific issue.
    - Recommendation: First task in plan should be `flutter upgrade && dart --version` to check. If Dart becomes 3.9+, all CLAUDE.md versions work.
 
-2. **Does `openai_dart 0.4.5` actually support streaming?**
+2. **Does `openai_dart 0.4.5` actually support streaming?** (RESOLVED BY Plan 00-03 Task 2 — verifies streaming API surface and documents blocking finding if absent)
    - What we know: 0.4.x is pre-1.0. The 6.x version has full streaming support.
    - What's unclear: Whether the 0.4.x API has `createChatCompletionStream()` or equivalent.
    - Recommendation: Verify during SSE streaming spike. If not, Dart upgrade becomes mandatory.
 
-3. **How severe is super_editor #2588 (IME position bug) in practice?**
+3. **How severe is super_editor #2588 (IME position bug) in practice?** (RESOLVED BY Plan 00-02 Task 2 checkpoint — manual IME testing explicitly checks candidate window position)
    - What we know: Bug is open, describes wrong IME candidate window position on Windows.
    - What's unclear: Whether it affects all Chinese IMEs or only specific ones; whether it's a cosmetic issue or a usability blocker.
    - Recommendation: Manual testing must explicitly check IME candidate window position during the IME validation spike.
 
-4. **Can both editors be benchmarked in the same project?**
+4. **Can both editors be benchmarked in the same project?** (RESOLVED BY Plan 00-01 Task 1 — uses separate benchmark apps per editor; Plan 00-03 merges only the winner)
    - What we know: They have conflicting transitive dependencies (file_picker, uuid, flutter_plugin_android_lifecycle).
    - What's unclear: Whether dependency_overrides can resolve the conflicts for a spike.
    - Recommendation: Plan for separate benchmark apps. Merge only the winning editor into the project skeleton.
