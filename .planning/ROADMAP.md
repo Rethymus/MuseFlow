@@ -33,7 +33,7 @@ Decimal phases appear between their surrounding integers in numeric order.
   3. All core packages (super_editor, hive_ce, flutter_riverpod, openai_dart, anthropic_sdk_dart) resolve without version conflicts
   4. Streaming SSE tokens can be buffered and batch-inserted into super_editor's MutableDocument without jank
 **Risks**: super_editor fails IME or performance benchmarks -- would force editor migration (catastrophic). Mitigated by validating before feature code.
-**Plans**: TBD
+**Plans**: 3 plans
 
 Plans:
 - [ ] 00-01: Editor benchmark spike -- large Chinese document performance
@@ -175,7 +175,7 @@ Phases execute in numeric order: 0 -> 1 -> 2 -> 3 -> 4 -> 5 -> 6
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 0. Technical Validation | 0/3 | Not started | - |
+| 0. Technical Validation | 0/3 | Ready to execute | - |
 | 1. App Shell + Editor + Capture UI | 0/4 | Not started | - |
 | 2. AI Provider + Capture Synthesis | 0/4 | Not started | - |
 | 3. Editor AI Toolbar | 0/3 | Not started | - |
