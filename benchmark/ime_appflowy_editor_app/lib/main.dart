@@ -11,7 +11,6 @@ void main() async {
     size: Size(900, 700),
     minimumSize: Size(600, 400),
     title: 'IME Test - appflowy_editor',
-    titleBarTopPadding: 0,
   );
 
   await windowManager.waitUntilReadyToShow(windowOptions, () async {
