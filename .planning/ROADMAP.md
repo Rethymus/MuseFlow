@@ -36,8 +36,8 @@ Decimal phases appear between their surrounding integers in numeric order.
 **Plans**: 3 plans
 
 Plans:
-- [ ] 00-01: Editor benchmark spike -- large Chinese document performance
-- [ ] 00-02: CJK IME validation spike -- Sogou/Wubi/MSPinyin on Windows
+- [x] 00-01: Editor benchmark spike -- large Chinese document performance
+- [x] 00-02: CJK IME validation spike -- Sogou/Wubi/MSPinyin on Windows
 - [ ] 00-03: Package compatibility matrix -- resolve all dependencies, verify streaming into editor
 
 ### Phase 1: App Shell + Editor + Capture UI
@@ -175,7 +175,7 @@ Phases execute in numeric order: 0 -> 1 -> 2 -> 3 -> 4 -> 5 -> 6
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 0. Technical Validation | 0/3 | Ready to execute | - |
+| 0. Technical Validation | 2/3 | In Progress|  |
 | 1. App Shell + Editor + Capture UI | 0/4 | Not started | - |
 | 2. AI Provider + Capture Synthesis | 0/4 | Not started | - |
 | 3. Editor AI Toolbar | 0/3 | Not started | - |
