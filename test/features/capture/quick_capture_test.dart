@@ -6,34 +6,6 @@ import 'package:museflow/features/capture/presentation/capture_provider.dart';
 import 'package:museflow/features/capture/presentation/quick_capture.dart';
 import 'package:museflow/shared/utils/keyboard_shortcuts.dart';
 
-/// A test wrapper that provides the QuickCaptureDialog inside a scaffold
-/// with a ScaffoldMessenger for SnackBar testing.
-Widget _createTestApp({
-  List<Override>? overrides,
-  bool showQuickCapture = false,
-}) {
-  return ProviderScope(
-    overrides: overrides ?? [],
-    child: MaterialApp(
-      home: Scaffold(
-        body: Builder(
-          builder: (context) {
-            return ElevatedButton(
-              onPressed: () {
-                showDialog(
-                  context: context,
-                  builder: (_) => const QuickCaptureDialog(),
-                );
-              },
-              child: const Text('OPEN_DIALOG'),
-            );
-          },
-        ),
-      ),
-    ),
-  );
-}
-
 /// Creates a mock CaptureNotifier that records calls to addFragment.
 class _MockCaptureNotifier extends CaptureNotifier {
   final List<String> addedTexts = [];
@@ -51,7 +23,27 @@ void main() {
   group('QuickCaptureDialog', () {
     testWidgets('should render with title, TextField, and action buttons',
         (tester) async {
-      await tester.pumpWidget(_createTestApp());
+      await tester.pumpWidget(
+        ProviderScope(
+          child: MaterialApp(
+            home: Scaffold(
+              body: Builder(
+                builder: (context) {
+                  return ElevatedButton(
+                    onPressed: () {
+                      showDialog(
+                        context: context,
+                        builder: (_) => const QuickCaptureDialog(),
+                      );
+                    },
+                    child: const Text('OPEN_DIALOG'),
+                  );
+                },
+              ),
+            ),
+          ),
+        ),
+      );
 
       // Open the dialog
       await tester.tap(find.text('OPEN_DIALOG'));
@@ -73,11 +65,30 @@ void main() {
         (tester) async {
       final mockNotifier = _MockCaptureNotifier();
 
-      await tester.pumpWidget(_createTestApp(
-        overrides: [
-          captureProvider.overrideWith(() => mockNotifier),
-        ],
-      ));
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            captureProvider.overrideWith(() => mockNotifier),
+          ],
+          child: MaterialApp(
+            home: Scaffold(
+              body: Builder(
+                builder: (context) {
+                  return ElevatedButton(
+                    onPressed: () {
+                      showDialog(
+                        context: context,
+                        builder: (_) => const QuickCaptureDialog(),
+                      );
+                    },
+                    child: const Text('OPEN_DIALOG'),
+                  );
+                },
+              ),
+            ),
+          ),
+        ),
+      );
 
       // Open the dialog
       await tester.tap(find.text('OPEN_DIALOG'));
@@ -101,11 +112,30 @@ void main() {
         (tester) async {
       final mockNotifier = _MockCaptureNotifier();
 
-      await tester.pumpWidget(_createTestApp(
-        overrides: [
-          captureProvider.overrideWith(() => mockNotifier),
-        ],
-      ));
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            captureProvider.overrideWith(() => mockNotifier),
+          ],
+          child: MaterialApp(
+            home: Scaffold(
+              body: Builder(
+                builder: (context) {
+                  return ElevatedButton(
+                    onPressed: () {
+                      showDialog(
+                        context: context,
+                        builder: (_) => const QuickCaptureDialog(),
+                      );
+                    },
+                    child: const Text('OPEN_DIALOG'),
+                  );
+                },
+              ),
+            ),
+          ),
+        ),
+      );
 
       // Open the dialog
       await tester.tap(find.text('OPEN_DIALOG'));
@@ -129,11 +159,30 @@ void main() {
         (tester) async {
       final mockNotifier = _MockCaptureNotifier();
 
-      await tester.pumpWidget(_createTestApp(
-        overrides: [
-          captureProvider.overrideWith(() => mockNotifier),
-        ],
-      ));
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            captureProvider.overrideWith(() => mockNotifier),
+          ],
+          child: MaterialApp(
+            home: Scaffold(
+              body: Builder(
+                builder: (context) {
+                  return ElevatedButton(
+                    onPressed: () {
+                      showDialog(
+                        context: context,
+                        builder: (_) => const QuickCaptureDialog(),
+                      );
+                    },
+                    child: const Text('OPEN_DIALOG'),
+                  );
+                },
+              ),
+            ),
+          ),
+        ),
+      );
 
       // Open the dialog
       await tester.tap(find.text('OPEN_DIALOG'));
@@ -153,11 +202,30 @@ void main() {
     testWidgets('should show SnackBar after successful save', (tester) async {
       final mockNotifier = _MockCaptureNotifier();
 
-      await tester.pumpWidget(_createTestApp(
-        overrides: [
-          captureProvider.overrideWith(() => mockNotifier),
-        ],
-      ));
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            captureProvider.overrideWith(() => mockNotifier),
+          ],
+          child: MaterialApp(
+            home: Scaffold(
+              body: Builder(
+                builder: (context) {
+                  return ElevatedButton(
+                    onPressed: () {
+                      showDialog(
+                        context: context,
+                        builder: (_) => const QuickCaptureDialog(),
+                      );
+                    },
+                    child: const Text('OPEN_DIALOG'),
+                  );
+                },
+              ),
+            ),
+          ),
+        ),
+      );
 
       // Open the dialog
       await tester.tap(find.text('OPEN_DIALOG'));
@@ -190,22 +258,37 @@ void main() {
       );
       await tester.pumpAndSettle();
 
-      // Verify the Shortcuts widget is present in the tree
-      expect(find.byType(Shortcuts), findsOneWidget);
+      // Verify that QuickCaptureShortcut's Shortcuts widget is present.
+      // MaterialApp and Scaffold add their own Shortcuts widgets, so we
+      // check that at least one exists (ours is among them).
+      expect(find.byType(Shortcuts), findsAtLeast(1));
 
       // Verify the child content is rendered
       expect(find.text('TEST_CONTENT'), findsOneWidget);
 
-      // Verify the shortcut mapping contains Ctrl+Shift+N -> QuickCaptureIntent
-      final shortcutsWidget = tester.widget<Shortcuts>(
-        find.byType(Shortcuts),
-      );
-      final manager = shortcutsWidget.manager;
-      // The Shortcuts widget should have a mapping for Ctrl+Shift+N
-      expect(manager, isNotNull);
+      // Verify our specific shortcut is registered by finding a Shortcuts
+      // widget that contains the Ctrl+Shift+N -> QuickCaptureIntent mapping.
+      // The Shortcuts widget stores its shortcuts in the `shortcuts` property
+      // which is a Map<LogicalKeySet, Intent>.
+      bool foundOurShortcut = false;
+      for (final element in find.byType(Shortcuts).evaluate()) {
+        final shortcutsWidget = element.widget as Shortcuts;
+        // The shortcuts are stored in the internal manager; access via
+        // checking if our intent type exists in the widget's debug properties.
+        // Instead, we can check the `shortcuts` constructor param directly.
+        final shortcuts = shortcutsWidget.shortcuts;
+        if (shortcuts is Map<LogicalKeySet, Intent>) {
+          if (shortcuts.values.any((intent) => intent is QuickCaptureIntent)) {
+            foundOurShortcut = true;
+            break;
+          }
+        }
+      }
+      expect(foundOurShortcut, isTrue);
     });
 
-    testWidgets('should contain QuickCaptureIntent in actions', (tester) async {
+    testWidgets('should contain Actions for QuickCaptureIntent',
+        (tester) async {
       await tester.pumpWidget(
         ProviderScope(
           child: MaterialApp(
@@ -219,8 +302,18 @@ void main() {
       );
       await tester.pumpAndSettle();
 
-      // Verify the Actions widget is present
-      expect(find.byType(Actions), findsOneWidget);
+      // Verify that QuickCaptureShortcut's Actions widget is present.
+      // MaterialApp and Scaffold add their own Actions widgets, so we
+      // check that at least one exists with our QuickCaptureIntent action.
+      bool foundOurAction = false;
+      for (final element in find.byType(Actions).evaluate()) {
+        final actionsWidget = element.widget as Actions;
+        if (actionsWidget.actions.containsKey(QuickCaptureIntent)) {
+          foundOurAction = true;
+          break;
+        }
+      }
+      expect(foundOurAction, isTrue);
     });
   });
 }
