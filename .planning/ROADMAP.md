@@ -62,6 +62,20 @@ Plans:
 - [ ] 01-03: Fragment capture UI -- bullet-note mode, organization by story/chapter/scene
 - [ ] 01-04: Quick-capture floating window and Android adaptive layout
 
+**Wave 1** *(foundation — everything depends on this)*
+- 01-01: App shell + storage infrastructure + sidebar navigation
+
+**Wave 2** *(parallel — editor and capture are independent)*
+- 01-02: Rich text editor with formatting toolbar
+- 01-03: Fragment capture workspace with tagging
+
+**Wave 3** *(blocked on Wave 1 + 01-03)*
+- 01-04: Quick-capture overlay + adaptive layout
+
+**Cross-cutting constraints:**
+- `AppConstants` layout breakpoints shared across 01-01, 01-04
+- `CaptureNotifier` provider created in 01-03, consumed by 01-04
+
 ### Phase 2: AI Provider + Capture Synthesis
 **Mode**: mvp
 **Goal**: Users can configure an AI provider, and the fragment capture flow works end-to-end: select fragments, AI synthesizes them into coherent story paragraphs, user edits before sending to editor
@@ -176,7 +190,7 @@ Phases execute in numeric order: 0 -> 1 -> 2 -> 3 -> 4 -> 5 -> 6
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 0. Technical Validation | 3/3 | Complete   | 2026-06-01 |
-| 1. App Shell + Editor + Capture UI | 0/4 | Not started | - |
+| 1. App Shell + Editor + Capture UI | 0/4 | Planned | - |
 | 2. AI Provider + Capture Synthesis | 0/4 | Not started | - |
 | 3. Editor AI Toolbar | 0/3 | Not started | - |
 | 4. Knowledge Base + Skill System | 0/5 | Not started | - |

@@ -773,22 +773,13 @@ class SecureStorageService {
 
 **If this table is empty:** All claims in this research were verified or cited -- no user confirmation needed.
 
-## Open Questions
+## Open Questions (RESOLVED)
 
-1. **Android bottom navigation transition**
-   - What we know: D-02 says sidebar collapses to NavigationRail on narrow windows. D-07 mentions Android adaptive layout.
-   - What's unclear: At what exact breakpoint should NavigationRail collapse? Should Android use `NavigationBar` (bottom) instead of collapsed `NavigationRail` (side)?
-   - Recommendation: Claude's discretion -- use `LayoutBuilder` with 600px breakpoint for NavigationRail collapse, and switch to `NavigationBar` (bottom) when width < 600px (phone portrait). This is standard Material 3 adaptive behavior.
+1. **Android bottom navigation transition** — RESOLVED: Use `LayoutBuilder` with 600px breakpoint for NavigationRail collapse, and switch to `NavigationBar` (bottom) when width < 600px (phone portrait). This is standard Material 3 adaptive behavior.
 
-2. **Fragment tag schema**
-   - What we know: D-08 says flat bullet list with story/chapter/scene as tags. Tags are `List<String>` on Fragment model.
-   - What's unclear: Should tags be free-form strings or a fixed enum? Are tags hierarchical (story > chapter > scene) or flat?
-   - Recommendation: Use free-form strings for Phase 1. Tags like "story:xxx", "chapter:yyy", "scene:zzz" as a convention, not enforced by schema. This allows flexibility for user-defined structures.
+2. **Fragment tag schema** — RESOLVED: Use free-form strings for Phase 1. Tags like "story:xxx", "chapter:yyy", "scene:zzz" as a convention, not enforced by schema. This allows flexibility for user-defined structures.
 
-3. **Last-opened document persistence**
-   - What we know: D-03 says editor launches with last-opened document.
-   - What's unclear: For Phase 1 with only one document, is this just remembering the single document's content?
-   - Recommendation: Store current document content in a Hive box. On launch, load from box. For Phase 1, there's only one document so this is straightforward.
+3. **Last-opened document persistence** — RESOLVED: Store current document content in a Hive box. On launch, load from box. For Phase 1, there's only one document so this is straightforward.
 
 ## Environment Availability
 
