@@ -1,11 +1,3 @@
-/// Type ID registry for Hive adapters.
-/// Centralizes all type IDs to prevent conflicts.
-abstract class HiveTypeIds {
-  static const int fragment = 0;
-  static const int appSettings = 1;
-  static const int manuscript = 2;
-}
-
 /// A creative fragment captured by the user.
 /// Represents a single inspiration snippet with optional tags.
 ///

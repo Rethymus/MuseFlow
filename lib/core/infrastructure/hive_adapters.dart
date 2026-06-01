@@ -2,6 +2,14 @@ import 'package:hive_ce/hive.dart';
 import 'package:museflow/core/domain/app_settings.dart';
 import 'package:museflow/core/domain/fragment.dart';
 
+/// Type ID registry for Hive adapters.
+/// Centralizes all type IDs to prevent conflicts.
+abstract class HiveTypeIds {
+  static const int fragment = 0;
+  static const int appSettings = 1;
+  static const int manuscript = 2;
+}
+
 /// Manual Hive TypeAdapter for [Fragment].
 ///
 /// Delegates serialization to freezed-generated fromJson/toJson.
