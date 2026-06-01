@@ -54,12 +54,12 @@ Plans:
   6. Floating quick-capture window is accessible from any screen
 **UI hint**: yes
 **Risks**: Hive CE encryption setup on Windows may require native library configuration. Window size persistence may need platform channel work.
-**Plans:** 1/4 plans executed
+**Plans:** 3/4 plans executed
 
 Plans:
 - [x] 01-01: App shell with window management, navigation, and Hive/secure storage initialization
-- [ ] 01-02: Rich text editor integration (super_editor) with formatting and large document support
-- [ ] 01-03: Fragment capture UI -- bullet-note mode, organization by story/chapter/scene
+- [x] 01-02: Rich text editor integration (super_editor) with formatting and large document support
+- [x] 01-03: Fragment capture UI -- bullet-note mode, organization by story/chapter/scene
 - [ ] 01-04: Quick-capture floating window and Android adaptive layout
 
 **Wave 1** *(foundation — everything depends on this)*
@@ -190,7 +190,7 @@ Phases execute in numeric order: 0 -> 1 -> 2 -> 3 -> 4 -> 5 -> 6
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 0. Technical Validation | 3/3 | Complete   | 2026-06-01 |
-| 1. App Shell + Editor + Capture UI | 1/4 | In Progress|  |
+| 1. App Shell + Editor + Capture UI | 3/4 | In Progress|  |
 | 2. AI Provider + Capture Synthesis | 0/4 | Not started | - |
 | 3. Editor AI Toolbar | 0/3 | Not started | - |
 | 4. Knowledge Base + Skill System | 0/5 | Not started | - |
