@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:museflow/core/presentation/sidebar.dart';
 import 'package:museflow/shared/constants/app_constants.dart';
+import 'package:museflow/shared/utils/keyboard_shortcuts.dart';
 
 /// Main app shell with sidebar + content area layout.
 ///
@@ -22,25 +23,10 @@ class AppShellScaffold extends StatelessWidget {
 
     if (isNarrow) {
       // Mobile layout: bottom nav bar + content
-      return Scaffold(
-        body: navigationShell,
-        bottomNavigationBar: AdaptiveSidebar(
-          currentIndex: navigationShell.currentIndex,
-          onDestinationSelected: (index) {
-            navigationShell.goBranch(
-              index,
-              initialLocation: index == navigationShell.currentIndex,
-            );
-          },
-        ),
-      );
-    }
-
-    // Desktop layout: sidebar + content in Row
-    return Scaffold(
-      body: Row(
-        children: [
-          AdaptiveSidebar(
+      return QuickCaptureShortcut(
+        child: Scaffold(
+          body: navigationShell,
+          bottomNavigationBar: AdaptiveSidebar(
             currentIndex: navigationShell.currentIndex,
             onDestinationSelected: (index) {
               navigationShell.goBranch(
@@ -49,9 +35,28 @@ class AppShellScaffold extends StatelessWidget {
               );
             },
           ),
-          const VerticalDivider(width: 1, thickness: 1),
-          Expanded(child: navigationShell),
-        ],
+        ),
+      );
+    }
+
+    // Desktop layout: sidebar + content in Row
+    return QuickCaptureShortcut(
+      child: Scaffold(
+        body: Row(
+          children: [
+            AdaptiveSidebar(
+              currentIndex: navigationShell.currentIndex,
+              onDestinationSelected: (index) {
+                navigationShell.goBranch(
+                  index,
+                  initialLocation: index == navigationShell.currentIndex,
+                );
+              },
+            ),
+            const VerticalDivider(width: 1, thickness: 1),
+            Expanded(child: navigationShell),
+          ],
+        ),
       ),
     );
   }
