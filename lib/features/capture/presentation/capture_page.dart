@@ -12,21 +12,82 @@ import 'package:museflow/features/capture/presentation/fragment_card.dart';
 /// - Fragment list: ListView.builder with FragmentCard items
 /// - Empty state when no fragments
 /// - All UI copy in Chinese per UI-SPEC copywriting contract
-class CapturePage extends ConsumerWidget {
+class CapturePage extends ConsumerStatefulWidget {
   const CapturePage({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<CapturePage> createState() => _CapturePageState();
+}
+
+class _CapturePageState extends ConsumerState<CapturePage> {
+  late final TextEditingController _textController;
+
+  @override
+  void initState() {
+    super.initState();
+    _textController = TextEditingController();
+
+    // Sync provider → controller (one-way: provider is source of truth)
+    ref.listenManual(captureInputProvider, (previous, next) {
+      if (_textController.text != next) {
+        _textController.text = next;
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _textController.dispose();
+    super.dispose();
+  }
+
+  void _handleSubmit(String text) {
+    if (text.trim().isNotEmpty) {
+      ref.read(captureProvider.notifier).addFragment(text.trim());
+      ref.read(captureInputProvider.notifier).clear();
+      _textController.clear();
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final captureState = ref.watch(captureProvider);
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
 
     return Column(
       children: [
+        // Error banner
+        if (captureState.error != null)
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            color: colorScheme.errorContainer,
+            child: Row(
+              children: [
+                Icon(Icons.error_outline, size: 16, color: colorScheme.error),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    captureState.error!,
+                    style: TextStyle(color: colorScheme.onErrorContainer),
+                  ),
+                ),
+                IconButton(
+                  icon: Icon(Icons.close, size: 16, color: colorScheme.onErrorContainer),
+                  onPressed: () => ref.read(captureProvider.notifier).clearError(),
+                  padding: EdgeInsets.zero,
+                  constraints: const BoxConstraints(),
+                ),
+              ],
+            ),
+          ),
+
         // Input field (per D-09: always visible, zero clicks to start)
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
           child: TextField(
+            controller: _textController,
             decoration: InputDecoration(
               hintText: '输入灵感碎片，按回车添加...',
               border: OutlineInputBorder(
@@ -42,12 +103,7 @@ class CapturePage extends ConsumerWidget {
                 borderSide: BorderSide(color: colorScheme.primary),
               ),
             ),
-            onSubmitted: (text) {
-              if (text.trim().isNotEmpty) {
-                ref.read(captureProvider.notifier).addFragment(text.trim());
-                ref.read(captureInputProvider.notifier).clear();
-              }
-            },
+            onSubmitted: _handleSubmit,
             onChanged: (text) {
               ref.read(captureInputProvider.notifier).update(text);
             },
@@ -62,13 +118,11 @@ class CapturePage extends ConsumerWidget {
             children: [
               _buildFilterChip(
                 context: context,
-                ref: ref,
                 label: '全部',
                 isActive: captureState.activeFilter == '全部',
               ),
               ...FragmentTags.defaults.map((tag) => _buildFilterChip(
                     context: context,
-                    ref: ref,
                     label: tag,
                     isActive: captureState.activeFilter == tag,
                   )),
@@ -80,7 +134,7 @@ class CapturePage extends ConsumerWidget {
 
         // Fragment list or empty state
         Expanded(
-          child: _buildFragmentList(context, ref, captureState),
+          child: _buildFragmentList(context, captureState),
         ),
       ],
     );
@@ -88,7 +142,6 @@ class CapturePage extends ConsumerWidget {
 
   Widget _buildFilterChip({
     required BuildContext context,
-    required WidgetRef ref,
     required String label,
     required bool isActive,
   }) {
@@ -109,7 +162,6 @@ class CapturePage extends ConsumerWidget {
 
   Widget _buildFragmentList(
     BuildContext context,
-    WidgetRef ref,
     CaptureState captureState,
   ) {
     if (captureState.isLoading) {

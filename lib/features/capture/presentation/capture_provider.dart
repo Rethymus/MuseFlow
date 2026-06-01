@@ -5,18 +5,21 @@ import 'package:museflow/core/presentation/providers.dart';
 
 /// State for the capture page.
 ///
-/// Tracks the fragment list, selection state, active filter, and loading status.
+/// Tracks the fragment list, selection state, active filter, loading status,
+/// and error state for user feedback.
 class CaptureState {
   final List<Fragment> fragments;
   final Set<String> selectedIds;
   final String activeFilter;
   final bool isLoading;
+  final String? error;
 
   const CaptureState({
     this.fragments = const [],
     this.selectedIds = const {},
     this.activeFilter = '全部',
     this.isLoading = true,
+    this.error,
   });
 
   CaptureState copyWith({
@@ -24,12 +27,14 @@ class CaptureState {
     Set<String>? selectedIds,
     String? activeFilter,
     bool? isLoading,
+    String? error,
   }) {
     return CaptureState(
       fragments: fragments ?? this.fragments,
       selectedIds: selectedIds ?? this.selectedIds,
       activeFilter: activeFilter ?? this.activeFilter,
       isLoading: isLoading ?? this.isLoading,
+      error: error,
     );
   }
 }
@@ -43,10 +48,15 @@ class CaptureNotifier extends Notifier<CaptureState> {
   CaptureState build() {
     // Listen to the async repository -- once available, load fragments
     final repositoryAsync = ref.watch(fragmentRepositoryProvider);
-    repositoryAsync.whenData((repository) {
-      _loadFragments(FragmentService(repository));
-    });
-    return const CaptureState();
+    return repositoryAsync.when(
+      loading: () => const CaptureState(),
+      error: (err, _) => CaptureState(error: '加载失败: $err', isLoading: false),
+      data: (repository) {
+        // Use Future.microtask to avoid setState during build
+        Future.microtask(() => _loadFragments(FragmentService(repository)));
+        return const CaptureState();
+      },
+    );
   }
 
   FragmentService? _service;
@@ -54,30 +64,45 @@ class CaptureNotifier extends Notifier<CaptureState> {
   void _loadFragments(FragmentService service) {
     _service = service;
     final fragments = service.listFragmentsByTag(state.activeFilter);
-    state = state.copyWith(fragments: fragments, isLoading: false);
+    state = state.copyWith(fragments: fragments, isLoading: false, error: null);
   }
 
   /// Reloads fragments using the current service and filter.
   void _reload() {
     if (_service == null) return;
-    final fragments = _service!.listFragmentsByTag(state.activeFilter);
-    state = state.copyWith(fragments: fragments, isLoading: false);
+    try {
+      final fragments = _service!.listFragmentsByTag(state.activeFilter);
+      state = state.copyWith(fragments: fragments, isLoading: false, error: null);
+    } catch (e) {
+      state = state.copyWith(error: '刷新失败: $e');
+    }
   }
 
   /// Adds a new fragment with the given text and optional tags.
-  void addFragment(String text, {List<String>? tags}) {
-    if (_service == null) return;
-    _service!.createFragment(text, tags: tags);
-    _reload();
+  Future<void> addFragment(String text, {List<String>? tags}) async {
+    if (_service == null) {
+      state = state.copyWith(error: '数据未就绪，请稍后重试');
+      return;
+    }
+    try {
+      await _service!.createFragment(text, tags: tags);
+      _reload();
+    } catch (e) {
+      state = state.copyWith(error: '添加失败: $e');
+    }
   }
 
   /// Removes a fragment by ID and reloads the list.
   Future<void> deleteFragment(String id) async {
     if (_service == null) return;
-    await _service!.removeFragment(id);
-    final newSelected = Set<String>.of(state.selectedIds)..remove(id);
-    state = state.copyWith(selectedIds: newSelected);
-    _reload();
+    try {
+      await _service!.removeFragment(id);
+      final newSelected = Set<String>.of(state.selectedIds)..remove(id);
+      state = state.copyWith(selectedIds: newSelected);
+      _reload();
+    } catch (e) {
+      state = state.copyWith(error: '删除失败: $e');
+    }
   }
 
   /// Toggles selection state for a fragment.
@@ -111,8 +136,17 @@ class CaptureNotifier extends Notifier<CaptureState> {
   /// Updates the tags on a fragment.
   Future<void> updateTags(String id, List<String> tags) async {
     if (_service == null) return;
-    await _service!.updateFragmentTags(id, tags);
-    _reload();
+    try {
+      await _service!.updateFragmentTags(id, tags);
+      _reload();
+    } catch (e) {
+      state = state.copyWith(error: '更新标签失败: $e');
+    }
+  }
+
+  /// Clears the current error message.
+  void clearError() {
+    state = state.copyWith(error: null);
   }
 }
 
@@ -141,18 +175,6 @@ class CaptureInputNotifier extends Notifier<String> {
 final captureInputProvider =
     NotifierProvider<CaptureInputNotifier, String>(
   CaptureInputNotifier.new,
-);
-
-/// Simple notifier holding the active filter tag.
-class FragmentFilterNotifier extends Notifier<String> {
-  @override
-  String build() => '全部';
-}
-
-/// Active filter tag state. Defaults to '全部' (All).
-final fragmentFilterProvider =
-    NotifierProvider<FragmentFilterNotifier, String>(
-  FragmentFilterNotifier.new,
 );
 
 /// Computed provider returning fragments that are currently selected.
