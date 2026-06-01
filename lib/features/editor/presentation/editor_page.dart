@@ -1,11 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:museflow/shared/constants/app_constants.dart';
+import 'package:museflow/features/editor/presentation/editor_provider.dart';
+import 'package:museflow/features/editor/presentation/editor_toolbar.dart';
 import 'package:super_editor/super_editor.dart';
 
-/// Editor page with a super_editor instance in a centered layout.
+/// Editor page with fixed formatting toolbar and centered super_editor.
 ///
-/// Phase 1: basic editor with default paragraph. Toolbar added in Plan 02.
+/// Layout: EditorToolbar + Divider + Expanded(centered SuperEditor at max 800px).
+/// Keyboard shortcuts: Ctrl+B (bold), Ctrl+I (italic).
 class EditorPage extends ConsumerStatefulWidget {
   const EditorPage({super.key});
 
@@ -19,17 +23,7 @@ class _EditorPageState extends ConsumerState<EditorPage> {
   @override
   void initState() {
     super.initState();
-    final document = MutableDocument(
-      nodes: [
-        ParagraphNode(
-          id: Editor.createNodeId(),
-          text: AttributedText('开始在 MuseFlow 中创作...'),
-        ),
-      ],
-    );
-    _editor = createDefaultDocumentEditor(
-      document: document,
-    );
+    _editor = createDefaultEditor();
   }
 
   @override
@@ -38,23 +32,98 @@ class _EditorPageState extends ConsumerState<EditorPage> {
     super.dispose();
   }
 
+  void _toggleBold() {
+    final composer = _editor.composer;
+    final selection = composer.selection;
+    if (selection == null) return;
+
+    if (selection.isCollapsed) {
+      composer.preferences.toggleStyles({boldAttribution});
+    } else {
+      _editor.execute([
+        ToggleTextAttributionsRequest(
+          documentRange: selection,
+          attributions: {boldAttribution},
+        ),
+      ]);
+    }
+  }
+
+  void _toggleItalic() {
+    final composer = _editor.composer;
+    final selection = composer.selection;
+    if (selection == null) return;
+
+    if (selection.isCollapsed) {
+      composer.preferences.toggleStyles({italicsAttribution});
+    } else {
+      _editor.execute([
+        ToggleTextAttributionsRequest(
+          documentRange: selection,
+          attributions: {italicsAttribution},
+        ),
+      ]);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(24.0),
-        child: Center(
-          child: ConstrainedBox(
-            constraints: const BoxConstraints(
-              maxWidth: AppConstants.editorMaxWidth,
-            ),
-            child: SuperEditor(
-              editor: _editor,
-              autofocus: true,
-            ),
+    final colorScheme = Theme.of(context).colorScheme;
+
+    return Shortcuts(
+      shortcuts: <LogicalKeySet, Intent>{
+        LogicalKeySet(LogicalKeyboardKey.control, LogicalKeyboardKey.keyB):
+            const _BoldIntent(),
+        LogicalKeySet(LogicalKeyboardKey.control, LogicalKeyboardKey.keyI):
+            const _ItalicIntent(),
+      },
+      child: Actions(
+        actions: <Type, Action<Intent>>{
+          _BoldIntent: CallbackAction<_BoldIntent>(
+            onInvoke: (_) => _toggleBold(),
+          ),
+          _ItalicIntent: CallbackAction<_ItalicIntent>(
+            onInvoke: (_) => _toggleItalic(),
+          ),
+        },
+        child: Scaffold(
+          body: Column(
+            children: [
+              // Fixed toolbar at top
+              EditorToolbar(editor: _editor),
+              // Divider between toolbar and editor
+              Divider(height: 1, thickness: 1, color: colorScheme.outline),
+              // Editor area with centered layout
+              Expanded(
+                child: SingleChildScrollView(
+                  padding: const EdgeInsets.all(24.0),
+                  child: Center(
+                    child: ConstrainedBox(
+                      constraints: const BoxConstraints(
+                        maxWidth: AppConstants.editorMaxWidth,
+                      ),
+                      child: SuperEditor(
+                        editor: _editor,
+                        autofocus: true,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ],
           ),
         ),
       ),
     );
   }
+}
+
+// --- Keyboard shortcut intents ---
+
+class _BoldIntent extends Intent {
+  const _BoldIntent();
+}
+
+class _ItalicIntent extends Intent {
+  const _ItalicIntent();
 }

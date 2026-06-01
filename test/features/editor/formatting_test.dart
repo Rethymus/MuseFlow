@@ -60,7 +60,7 @@ void main() {
 
       test('should toggle composer preferences for bold when selection is collapsed', () {
         // Set a collapsed selection
-        (editor.composer as MutableDocumentComposer).setSelectionWithReason(
+        editor.composer.setSelectionWithReason(
           DocumentSelection.collapsed(
             position: DocumentPosition(nodeId: 'test-node', nodePosition: const TextNodePosition(offset: 5)),
           ),
@@ -216,7 +216,7 @@ void main() {
     group('toolbar active state', () {
       test('should detect bold in composer preferences when set', () {
         // Simulate collapsed cursor with bold preference active
-        (editor.composer as MutableDocumentComposer).setSelectionWithReason(
+        editor.composer.setSelectionWithReason(
           DocumentSelection.collapsed(
             position: DocumentPosition(nodeId: 'test-node', nodePosition: const TextNodePosition(offset: 0)),
           ),
@@ -228,7 +228,7 @@ void main() {
       });
 
       test('should not show bold as active when not set', () {
-        (editor.composer as MutableDocumentComposer).setSelectionWithReason(
+        editor.composer.setSelectionWithReason(
           DocumentSelection.collapsed(
             position: DocumentPosition(nodeId: 'test-node', nodePosition: const TextNodePosition(offset: 0)),
           ),
