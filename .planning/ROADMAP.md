@@ -54,7 +54,7 @@ Plans:
   6. Floating quick-capture window is accessible from any screen
 **UI hint**: yes
 **Risks**: Hive CE encryption setup on Windows may require native library configuration. Window size persistence may need platform channel work.
-**Plans**: TBD
+**Plans:** 4 plans
 
 Plans:
 - [ ] 01-01: App shell with window management, navigation, and Hive/secure storage initialization
