@@ -12,7 +12,7 @@ MuseFlow is built from spike to polish in 7 phases. Phase 0 validates existentia
 
 Decimal phases appear between their surrounding integers in numeric order.
 
-- [ ] **Phase 0: Technical Validation** - Spike editor/IME/packages before committing to architecture
+- [x] **Phase 0: Technical Validation** - Spike editor/IME/packages before committing to architecture (completed 2026-06-01)
 - [ ] **Phase 1: App Shell + Editor + Capture UI** - Runnable app with navigation, editor, and fragment capture (no AI)
 - [ ] **Phase 2: AI Provider + Capture Synthesis** - AI adapter layer, provider settings, anti-AI-scent, fragment synthesis
 - [ ] **Phase 3: Editor AI Toolbar** - Floating toolbar with AI actions, text provenance, selective undo, context anchor
@@ -38,7 +38,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 Plans:
 - [x] 00-01: Editor benchmark spike -- large Chinese document performance
 - [x] 00-02: CJK IME validation spike -- Sogou/Wubi/MSPinyin on Windows
-- [ ] 00-03: Package compatibility matrix -- resolve all dependencies, verify streaming into editor
+- [x] 00-03: Package compatibility matrix -- resolve all dependencies, verify streaming into editor
 
 ### Phase 1: App Shell + Editor + Capture UI
 **Mode**: mvp
@@ -175,7 +175,7 @@ Phases execute in numeric order: 0 -> 1 -> 2 -> 3 -> 4 -> 5 -> 6
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 0. Technical Validation | 2/3 | In Progress|  |
+| 0. Technical Validation | 3/3 | Complete   | 2026-06-01 |
 | 1. App Shell + Editor + Capture UI | 0/4 | Not started | - |
 | 2. AI Provider + Capture Synthesis | 0/4 | Not started | - |
 | 3. Editor AI Toolbar | 0/3 | Not started | - |
