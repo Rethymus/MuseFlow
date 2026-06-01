@@ -13,7 +13,7 @@ MuseFlow is built from spike to polish in 7 phases. Phase 0 validates existentia
 Decimal phases appear between their surrounding integers in numeric order.
 
 - [x] **Phase 0: Technical Validation** - Spike editor/IME/packages before committing to architecture (completed 2026-06-01)
-- [ ] **Phase 1: App Shell + Editor + Capture UI** - Runnable app with navigation, editor, and fragment capture (no AI)
+- [x] **Phase 1: App Shell + Editor + Capture UI** - Runnable app with navigation, editor, and fragment capture (no AI) (completed 2026-06-01)
 - [ ] **Phase 2: AI Provider + Capture Synthesis** - AI adapter layer, provider settings, anti-AI-scent, fragment synthesis
 - [ ] **Phase 3: Editor AI Toolbar** - Floating toolbar with AI actions, text provenance, selective undo, context anchor
 - [ ] **Phase 4: Knowledge Base + Skill System** - Character cards, world settings, auto-injection, AI-assisted world-building
@@ -54,13 +54,13 @@ Plans:
   6. Floating quick-capture window is accessible from any screen
 **UI hint**: yes
 **Risks**: Hive CE encryption setup on Windows may require native library configuration. Window size persistence may need platform channel work.
-**Plans:** 3/4 plans executed
+**Plans:** 4/4 plans complete
 
 Plans:
 - [x] 01-01: App shell with window management, navigation, and Hive/secure storage initialization
 - [x] 01-02: Rich text editor integration (super_editor) with formatting and large document support
 - [x] 01-03: Fragment capture UI -- bullet-note mode, organization by story/chapter/scene
-- [ ] 01-04: Quick-capture floating window and Android adaptive layout
+- [x] 01-04: Quick-capture floating window and Android adaptive layout
 
 **Wave 1** *(foundation — everything depends on this)*
 - 01-01: App shell + storage infrastructure + sidebar navigation
@@ -190,7 +190,7 @@ Phases execute in numeric order: 0 -> 1 -> 2 -> 3 -> 4 -> 5 -> 6
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 0. Technical Validation | 3/3 | Complete   | 2026-06-01 |
-| 1. App Shell + Editor + Capture UI | 3/4 | In Progress|  |
+| 1. App Shell + Editor + Capture UI | 4/4 | Complete   | 2026-06-01 |
 | 2. AI Provider + Capture Synthesis | 0/4 | Not started | - |
 | 3. Editor AI Toolbar | 0/3 | Not started | - |
 | 4. Knowledge Base + Skill System | 0/5 | Not started | - |
