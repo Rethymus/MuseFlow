@@ -13,6 +13,7 @@ import 'package:museflow/features/ai/application/provider_service.dart';
 import 'package:museflow/features/ai/application/token_budget_calculator.dart';
 import 'package:museflow/features/ai/infrastructure/openai_adapter.dart';
 import 'package:museflow/features/ai/infrastructure/provider_repository.dart';
+import 'package:museflow/features/editor/application/diff_calculator.dart';
 import 'package:museflow/features/editor/application/editor_ai_notifier.dart';
 import 'package:museflow/features/editor/application/editor_prompt_pipeline.dart';
 export 'package:museflow/features/editor/presentation/editor_page.dart'
@@ -116,4 +117,12 @@ final tokenBudgetCalculatorProvider = Provider<TokenBudgetCalculator>((ref) {
 /// and selected text instead of fragments.
 final editorPromptPipelineProvider = Provider<EditorPromptPipeline>((ref) {
   return EditorPromptPipeline();
+});
+
+/// Provides a [DiffCalculator] instance for sentence-level diff computation.
+///
+/// Stateless utility, but registered as a provider for consistency
+/// with the rest of the dependency graph.
+final diffCalculatorProvider = Provider<DiffCalculator>((ref) {
+  return DiffCalculator();
 });
