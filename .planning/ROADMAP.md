@@ -90,13 +90,27 @@ Plans:
   6. AI errors (network failure, rate limit, invalid key) display graceful messages, not crashes
 **UI hint**: yes
 **Risks**: Anti-AI-scent effectiveness is unproven until tested with real Chinese prose and detection tools. Token budget estimation for Chinese text needs empirical validation.
-**Plans**: TBD
+**Plans:** 3 plans
 
 Plans:
-- [ ] 02-01: AI adapter interface + OpenAI-compatible adapter with streaming SSE
-- [ ] 02-02: Provider management UI (CRUD, presets) with secure key storage
-- [ ] 02-03: PromptPipeline middleware chain + anti-AI-scent system (prompt layer + post-processing)
-- [ ] 02-04: Fragment-to-paragraph synthesis flow with token budget management and error handling
+- [ ] 02-01-PLAN.md — Provider management: domain entity, repository, presets, service, settings UI with CRUD and routing
+- [ ] 02-02-PLAN.md — AI engine: OpenAI adapter with streaming, PromptPipeline middleware chain, anti-AI-scent processor, token budget calculator
+- [ ] 02-03-PLAN.md — Synthesis UX: SynthesisNotifier, slide-out panel with streaming display, editor insertion, banned phrase settings
+
+**Wave 1** *(foundation — provider entity and management UI)*
+- 02-01: Provider domain + repository + presets + service + settings UI
+
+**Wave 2** *(depends on 02-01 for provider entity)*
+- 02-02: OpenAI adapter + PromptPipeline + anti-AI-scent + token budget
+
+**Wave 3** *(depends on 02-01 + 02-02)*
+- 02-03: SynthesisNotifier + panel + capture page integration + editor insertion
+
+**Cross-cutting constraints:**
+- `AIProvider` entity and `ProviderService` created in 02-01, consumed by 02-02 and 02-03
+- `OpenAIAdapter`, `PromptPipeline`, `AntiAIScentProcessor` created in 02-02, consumed by 02-03
+- `CaptureNotifier.selectedIds` / `selectedFragmentsProvider` from Phase 1 consumed by 02-03
+- `EditorPage._editor` exposed via provider in 02-03 for text insertion
 
 ### Phase 3: Editor AI Toolbar
 **Mode**: mvp
@@ -191,7 +205,7 @@ Phases execute in numeric order: 0 -> 1 -> 2 -> 3 -> 4 -> 5 -> 6
 |-------|----------------|--------|-----------|
 | 0. Technical Validation | 3/3 | Complete   | 2026-06-01 |
 | 1. App Shell + Editor + Capture UI | 4/4 | Complete   | 2026-06-01 |
-| 2. AI Provider + Capture Synthesis | 0/4 | Not started | - |
+| 2. AI Provider + Capture Synthesis | 0/3 | Planning complete | - |
 | 3. Editor AI Toolbar | 0/3 | Not started | - |
 | 4. Knowledge Base + Skill System | 0/5 | Not started | - |
 | 5. Story Structure + Format + Export | 0/4 | Not started | - |
