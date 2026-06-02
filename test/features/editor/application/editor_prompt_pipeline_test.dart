@@ -8,6 +8,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:museflow/features/ai/application/prompt_pipeline.dart';
 import 'package:museflow/features/editor/application/editor_prompt_pipeline.dart';
 import 'package:museflow/features/editor/domain/editor_ai_state.dart';
+import 'package:openai_dart/openai_dart.dart';
 
 void main() {
   group('PromptContext extensions', () {
@@ -48,7 +49,7 @@ void main() {
         anchors: [anchor],
       );
       final updated = context.addMessage(
-        const ChatMessage.system('test'),
+        ChatMessage.system('test'),
       );
       expect(updated.selectedText, '原文');
       expect(updated.anchors, hasLength(1));
@@ -61,7 +62,7 @@ void main() {
         anchors: [],
       );
       final updated = context.withMessages([
-        const ChatMessage.system('test'),
+        ChatMessage.system('test'),
       ]);
       expect(updated.selectedText, '原文');
       expect(updated.anchors, isEmpty);
@@ -71,7 +72,7 @@ void main() {
       final context = PromptContext(
         fragments: [],
         selectedText: '原文',
-        messages: [const ChatMessage.system('old')],
+        messages: [ChatMessage.system('old')],
       );
       final updated = context.replaceSystemMessage(0, 'new');
       expect(updated.selectedText, '原文');

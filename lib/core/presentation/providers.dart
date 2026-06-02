@@ -13,8 +13,12 @@ import 'package:museflow/features/ai/application/provider_service.dart';
 import 'package:museflow/features/ai/application/token_budget_calculator.dart';
 import 'package:museflow/features/ai/infrastructure/openai_adapter.dart';
 import 'package:museflow/features/ai/infrastructure/provider_repository.dart';
+import 'package:museflow/features/editor/application/editor_ai_notifier.dart';
+import 'package:museflow/features/editor/application/editor_prompt_pipeline.dart';
 export 'package:museflow/features/editor/presentation/editor_page.dart'
     show editorProvider;
+export 'package:museflow/features/editor/application/editor_ai_notifier.dart'
+    show editorAINotifierProvider, EditorAINotifier;
 
 /// Provides a [FragmentRepository] backed by a Hive 'fragments' box.
 ///
@@ -104,4 +108,12 @@ final antiAIScentProcessorProvider = Provider<AntiAIScentProcessor>((ref) {
 /// Provides a singleton [TokenBudgetCalculator] for budget management per AI-07.
 final tokenBudgetCalculatorProvider = Provider<TokenBudgetCalculator>((ref) {
   return TokenBudgetCalculator();
+});
+
+/// Provides an [EditorPromptPipeline] for editor AI operations.
+///
+/// Per D-16/D-17: Assembles prompts with operation-specific instructions
+/// and selected text instead of fragments.
+final editorPromptPipelineProvider = Provider<EditorPromptPipeline>((ref) {
+  return EditorPromptPipeline();
 });

@@ -17,6 +17,7 @@ import 'package:museflow/core/presentation/providers.dart';
 import 'package:museflow/features/ai/domain/ai_exception.dart';
 import 'package:museflow/features/ai/domain/ai_provider.dart';
 import 'package:museflow/features/ai/infrastructure/openai_adapter.dart';
+import 'package:museflow/features/ai/presentation/synthesis_notifier.dart';
 import 'package:museflow/features/editor/application/editor_ai_notifier.dart';
 import 'package:museflow/features/editor/domain/editor_ai_state.dart';
 import 'package:openai_dart/openai_dart.dart';
@@ -126,7 +127,7 @@ void main() {
         expect(state.isStreaming, false);
       });
 
-      test('should set operation type in state', () {
+      test('should set operation type in state', () async {
         container = createContainer();
         fakeAdapter.streamOutput = Stream.fromIterable(['结果']);
 
@@ -137,6 +138,7 @@ void main() {
               0,
               2,
             );
+        await _pumpAndWait();
 
         final state = container.read(editorAINotifierProvider);
         expect(state.operation, EditorAIOperation.paragraphPolish);

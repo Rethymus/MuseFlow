@@ -13,7 +13,20 @@ import 'package:museflow/features/ai/application/prompt_middlewares/banned_list_
 import 'package:museflow/features/ai/application/prompt_middlewares/persona_injection_middleware.dart';
 import 'package:museflow/features/ai/application/prompt_middlewares/system_prompt_middleware.dart';
 import 'package:museflow/features/ai/application/prompt_middlewares/user_content_middleware.dart';
+import 'package:museflow/features/editor/domain/editor_ai_state.dart';
 import 'package:openai_dart/openai_dart.dart';
+
+/// Abstract interface for context anchors that can be injected into prompts.
+///
+/// Defined here to avoid circular dependency between the AI and editor layers.
+/// Plan 03's ContextAnchor will implement this interface.
+abstract class AnchorReference {
+  /// The text content of the anchor (e.g., character description, setting).
+  String get text;
+
+  /// A human-readable label for the anchor (e.g., "角色卡", "世界观").
+  String get label;
+}
 
 /// Immutable context that flows through the middleware chain.
 ///
@@ -35,12 +48,28 @@ class PromptContext {
   /// Token budget for the request (default 4096).
   final int tokenBudget;
 
+  /// Selected text from the editor for AI operations (null for fragment mode).
+  final String? selectedText;
+
+  /// Context anchors injected into the prompt (e.g., character cards, settings).
+  final List<AnchorReference>? anchors;
+
+  /// The editor AI operation type (null for non-editor prompts).
+  final EditorAIOperation? selectedOperation;
+
+  /// User's custom instruction for free-input operations.
+  final String? userInstruction;
+
   const PromptContext({
     required this.fragments,
     this.additionalInstruction,
     this.bannedPhrases = const [],
     this.messages = const [],
     this.tokenBudget = 4096,
+    this.selectedText,
+    this.anchors,
+    this.selectedOperation,
+    this.userInstruction,
   });
 
   /// Creates a copy with an additional message appended.
@@ -51,6 +80,10 @@ class PromptContext {
       bannedPhrases: bannedPhrases,
       messages: [...messages, message],
       tokenBudget: tokenBudget,
+      selectedText: selectedText,
+      anchors: anchors,
+      selectedOperation: selectedOperation,
+      userInstruction: userInstruction,
     );
   }
 
@@ -62,6 +95,10 @@ class PromptContext {
       bannedPhrases: bannedPhrases,
       messages: newMessages,
       tokenBudget: tokenBudget,
+      selectedText: selectedText,
+      anchors: anchors,
+      selectedOperation: selectedOperation,
+      userInstruction: userInstruction,
     );
   }
 
@@ -75,6 +112,10 @@ class PromptContext {
       bannedPhrases: bannedPhrases,
       messages: updated,
       tokenBudget: tokenBudget,
+      selectedText: selectedText,
+      anchors: anchors,
+      selectedOperation: selectedOperation,
+      userInstruction: userInstruction,
     );
   }
 }

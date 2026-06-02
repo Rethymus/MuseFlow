@@ -47,6 +47,7 @@ void main() {
 
     test('should treat double ellipsis (……) as single boundary', () {
       final result = SentenceSegmenter.segment('然后呢……我不知道。');
+      // …… is grouped as one punctuation unit and acts as a sentence boundary
       expect(result, hasLength(2));
       expect(result[0], '然后呢……');
       expect(result[1], '我不知道。');
@@ -55,11 +56,13 @@ void main() {
     test('should handle multiple sentence types together', () {
       final result =
           SentenceSegmenter.segment('你好。世界！真的吗？嗯……好吧。');
-      expect(result, hasLength(4));
+      // …… is grouped as one unit and acts as a sentence boundary
+      expect(result, hasLength(5));
       expect(result[0], '你好。');
       expect(result[1], '世界！');
       expect(result[2], '真的吗？');
-      expect(result[3], '嗯……好吧。');
+      expect(result[3], '嗯……');
+      expect(result[4], '好吧。');
     });
 
     test('should preserve punctuation at end of each segment', () {
