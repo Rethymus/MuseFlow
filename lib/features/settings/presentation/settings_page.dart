@@ -35,6 +35,13 @@ class SettingsPage extends ConsumerWidget {
             trailing: const Icon(Icons.chevron_right),
             onTap: () => context.go(AppConstants.aiProviders),
           ),
+          ListTile(
+            leading: const Icon(Icons.filter_alt_outlined),
+            title: const Text('AI 用语过滤'),
+            subtitle: const Text('自定义需要过滤的 AI 味词组'),
+            trailing: const Icon(Icons.chevron_right),
+            onTap: () => context.go(AppConstants.bannedPhrases),
+          ),
           const Divider(),
           const SizedBox(height: 16),
           // Storage section

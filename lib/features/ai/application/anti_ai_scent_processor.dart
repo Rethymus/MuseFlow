@@ -77,6 +77,10 @@ class ProcessingResult {
 /// }
 /// ```
 class AntiAIScentProcessor {
+  /// The keys from the built-in synonym map, used to seed user's banned list.
+  static List<String> get synonymKeys =>
+      _synonymMap.keys.toList();
+
   /// Fixed synonym map for auto-replacement per D-09.
   /// Empty string values mean "delete the phrase".
   static const Map<String, String> _synonymMap = {

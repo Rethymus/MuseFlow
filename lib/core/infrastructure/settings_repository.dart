@@ -54,4 +54,19 @@ class SettingsRepository {
   Future<void> setDefaultTag(String tag) async {
     await _box.put(_defaultTagKey, tag);
   }
+
+  /// Gets the user's banned phrase list for anti-AI-scent processing.
+  ///
+  /// Returns null if not yet initialized (first access).
+  List<String>? getBannedPhrases() {
+    final data = _box.get('banned_phrases');
+    if (data == null) return null;
+    if (data is List) return data.cast<String>();
+    return null;
+  }
+
+  /// Saves the user's banned phrase list for anti-AI-scent processing.
+  Future<void> saveBannedPhrases(List<String> phrases) async {
+    await _box.put('banned_phrases', phrases);
+  }
 }

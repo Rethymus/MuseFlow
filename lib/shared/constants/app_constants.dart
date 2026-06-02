@@ -24,4 +24,5 @@ abstract class AppConstants {
   static const String editor = '/editor';
   static const String settings = '/settings';
   static const String aiProviders = '/settings/ai-providers';
+  static const String bannedPhrases = '/settings/banned-phrases';
 }

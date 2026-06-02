@@ -20,6 +20,7 @@ import 'package:museflow/features/ai/application/anti_ai_scent_processor.dart';
 import 'package:museflow/features/ai/application/prompt_pipeline.dart';
 import 'package:museflow/features/ai/domain/ai_exception.dart';
 import 'package:museflow/features/ai/domain/ai_provider.dart';
+import 'package:museflow/features/ai/presentation/banned_phrase_settings.dart';
 import 'package:museflow/features/capture/presentation/capture_provider.dart';
 import 'package:museflow/core/presentation/providers.dart';
 import 'package:super_editor/super_editor.dart';
@@ -147,6 +148,11 @@ class SynthesisNotifier extends Notifier<SynthesisState> {
   /// Resets state to idle.
   void reset() {
     state = const SynthesisState();
+  }
+
+  /// Updates the accumulated text (user edits in the panel per CAPT-04).
+  void updateText(String text) {
+    state = state.copyWith(accumulatedText: text);
   }
 
   /// Inserts the accumulated text into the editor at cursor per D-07.
@@ -304,8 +310,8 @@ class SynthesisNotifier extends Notifier<SynthesisState> {
 
   /// Gets banned phrases from settings, or returns empty list.
   Future<List<String>> _getBannedPhrases() async {
-    // For now, return empty list. Will be wired to settings in Task 2.
-    return [];
+    final phrasesAsync = ref.read(bannedPhrasesProvider);
+    return phrasesAsync.asData?.value ?? [];
   }
 }
 
