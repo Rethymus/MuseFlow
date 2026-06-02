@@ -15,7 +15,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] **Phase 0: Technical Validation** - Spike editor/IME/packages before committing to architecture (completed 2026-06-01)
 - [x] **Phase 1: App Shell + Editor + Capture UI** - Runnable app with navigation, editor, and fragment capture (no AI) (completed 2026-06-01)
 - [x] **Phase 2: AI Provider + Capture Synthesis** - AI adapter layer, provider settings, anti-AI-scent, fragment synthesis (completed 2026-06-02)
-- [ ] **Phase 3: Editor AI Toolbar** - Floating toolbar with AI actions, text provenance, selective undo, context anchor
+- [x] **Phase 3: Editor AI Toolbar** - Floating toolbar with AI actions, text provenance, selective undo, context anchor (completed 2026-06-02)
 - [ ] **Phase 4: Knowledge Base + Skill System** - Character cards, world settings, auto-injection, AI-assisted world-building
 - [ ] **Phase 5: Story Structure + Format + Export** - Foreshadowing tracking, consistency guardian, format cleaning, export
 - [ ] **Phase 6: Multi-Provider + Android Polish** - Claude adapter, model parameters, custom models, Android optimization
@@ -125,12 +125,12 @@ Plans:
   5. User can select previous paragraphs as reference context for AI operations (context anchor)
 **UI hint**: yes
 **Risks**: Floating toolbar positioning with super_editor's OverlayPortal/Follower pattern needs prototyping. Selective undo with provenance tracking adds document model complexity.
-**Plans:** 3 plans
+**Plans:** 3/3 plans complete
 
 Plans:
-- [ ] 03-01-PLAN.md — Floating toolbar: SelectionLayerLinks + Follower, three AI actions, free-input, progress bar, smart flip
-- [ ] 03-02-PLAN.md — Provenance tracking: inline diff display, accept/reject per sentence, blue attribution, status bar
-- [ ] 03-03-PLAN.md — Selective undo + context anchors: AI undo stack, anchor entities, middleware injection, visual indicators
+- [x] 03-01-PLAN.md — Floating toolbar: SelectionLayerLinks + Follower, three AI actions, free-input, progress bar, smart flip
+- [x] 03-02-PLAN.md — Provenance tracking: inline diff display, accept/reject per sentence, blue attribution, status bar
+- [x] 03-03-PLAN.md — Selective undo + context anchors: AI undo stack, anchor entities, middleware injection, visual indicators
 
 **Wave 1** *(foundation — floating toolbar + AI operation engine)*
 - 03-01: Floating toolbar, EditorAINotifier, EditorPromptPipeline, SentenceSegmenter
@@ -220,7 +220,7 @@ Phases execute in numeric order: 0 -> 1 -> 2 -> 3 -> 4 -> 5 -> 6
 | 0. Technical Validation | 3/3 | Complete   | 2026-06-01 |
 | 1. App Shell + Editor + Capture UI | 4/4 | Complete   | 2026-06-01 |
 | 2. AI Provider + Capture Synthesis | 3/3 | Complete    | 2026-06-02 |
-| 3. Editor AI Toolbar | 0/3 | Not started | - |
+| 3. Editor AI Toolbar | 3/3 | Complete   | 2026-06-02 |
 | 4. Knowledge Base + Skill System | 0/5 | Not started | - |
 | 5. Story Structure + Format + Export | 0/4 | Not started | - |
 | 6. Multi-Provider + Android Polish | 0/3 | Not started | - |
