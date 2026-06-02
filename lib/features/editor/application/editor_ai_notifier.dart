@@ -18,8 +18,12 @@ import 'package:museflow/features/ai/domain/ai_exception.dart';
 import 'package:museflow/features/ai/domain/ai_provider.dart';
 import 'package:museflow/features/ai/presentation/banned_phrase_settings.dart';
 import 'package:museflow/features/ai/presentation/synthesis_notifier.dart';
+import 'package:museflow/features/editor/application/diff_calculator.dart';
 import 'package:museflow/features/editor/application/editor_prompt_pipeline.dart';
+import 'package:museflow/features/editor/domain/diff_state.dart';
 import 'package:museflow/features/editor/domain/editor_ai_state.dart';
+import 'package:museflow/features/editor/infrastructure/provenance_attribution.dart';
+import 'package:super_editor/super_editor.dart';
 
 /// Notifier managing editor AI operations with streaming state.
 ///
@@ -156,7 +160,8 @@ class EditorAINotifier extends Notifier<EditorAIState> {
     }
   }
 
-  /// Runs anti-AI-scent post-processing on accumulated text.
+  /// Runs anti-AI-scent post-processing on accumulated text,
+  /// then calculates the sentence-level diff result.
   Future<void> _postProcess() async {
     final processor = ref.read(antiAIScentProcessorProvider);
     final bannedPhrases = await _getBannedPhrases();
@@ -166,9 +171,165 @@ class EditorAINotifier extends Notifier<EditorAIState> {
       bannedPhrases: bannedPhrases,
     );
 
+    // Calculate sentence-level diff between original and AI text
+    final diffResult = DiffCalculator.calculate(
+      state.selectedText,
+      result.processedText,
+      state.selectionNodeId,
+      state.selectionStartOffset,
+    );
+
     state = state.copyWith(
       progressText: result.processedText,
       isStreaming: false,
+      diffResult: diffResult,
+    );
+  }
+
+  /// Accepts a single sentence diff at [index].
+  ///
+  /// For modifications: deletes original range and inserts AI text with
+  /// provenance attribution (D-10).
+  /// For deletions: deletes the original range.
+  /// For insertions: inserts AI text with provenance.
+  ///
+  /// Per Pitfall 5: batches delete+insert in a single editor.execute() call
+  /// to create one undo entry.
+  void acceptSentence(int index) {
+    final currentDiff = state.diffResult;
+    if (currentDiff == null || index >= currentDiff.sentences.length) return;
+
+    final sentence = currentDiff.sentences[index];
+    if (sentence.status != DiffStatus.pending) return;
+
+    final editor = ref.read(editorProvider);
+    if (editor == null) return;
+
+    final range = DocumentRange(
+      start: DocumentPosition(
+        nodeId: sentence.nodeId,
+        nodePosition: TextNodePosition(offset: sentence.startOffset),
+      ),
+      end: DocumentPosition(
+        nodeId: sentence.nodeId,
+        nodePosition: TextNodePosition(offset: sentence.endOffset),
+      ),
+    );
+
+    if (sentence.isModification) {
+      // Pitfall 5: batch delete+insert in single execute for one undo entry
+      editor.execute([
+        DeleteContentRequest(documentRange: range),
+        InsertTextRequest(
+          documentPosition: DocumentPosition(
+            nodeId: sentence.nodeId,
+            nodePosition: TextNodePosition(offset: sentence.startOffset),
+          ),
+          textToInsert: sentence.newText!,
+          attributions: {aiProvenanceAttribution},
+        ),
+      ]);
+    } else if (sentence.isDeletion) {
+      editor.execute([DeleteContentRequest(documentRange: range)]);
+    } else if (sentence.isInsertion) {
+      editor.execute([
+        InsertTextRequest(
+          documentPosition: DocumentPosition(
+            nodeId: sentence.nodeId,
+            nodePosition: TextNodePosition(offset: sentence.startOffset),
+          ),
+          textToInsert: sentence.newText!,
+          attributions: {aiProvenanceAttribution},
+        ),
+      ]);
+    }
+
+    // Update sentence status to accepted
+    _updateSentenceStatus(index, DiffStatus.accepted);
+  }
+
+  /// Rejects a single sentence diff at [index].
+  ///
+  /// For modifications: keeps original text (no document change).
+  /// For insertions: deletes the inserted range.
+  /// For deletions: re-inserts the original text.
+  void rejectSentence(int index) {
+    final currentDiff = state.diffResult;
+    if (currentDiff == null || index >= currentDiff.sentences.length) return;
+
+    final sentence = currentDiff.sentences[index];
+    if (sentence.status != DiffStatus.pending) return;
+
+    final editor = ref.read(editorProvider);
+    if (editor == null) return;
+
+    if (sentence.isInsertion) {
+      // Delete the inserted range
+      final range = DocumentRange(
+        start: DocumentPosition(
+          nodeId: sentence.nodeId,
+          nodePosition: TextNodePosition(offset: sentence.startOffset),
+        ),
+        end: DocumentPosition(
+          nodeId: sentence.nodeId,
+          nodePosition: TextNodePosition(offset: sentence.endOffset),
+        ),
+      );
+      editor.execute([DeleteContentRequest(documentRange: range)]);
+    } else if (sentence.isDeletion) {
+      // Re-insert the original text
+      editor.execute([
+        InsertTextRequest(
+          documentPosition: DocumentPosition(
+            nodeId: sentence.nodeId,
+            nodePosition: TextNodePosition(offset: sentence.startOffset),
+          ),
+          textToInsert: sentence.originalText!,
+          attributions: {},
+        ),
+      ]);
+    }
+    // For modifications: keep original -- no document change needed
+
+    // Update sentence status to rejected
+    _updateSentenceStatus(index, DiffStatus.rejected);
+  }
+
+  /// Accepts all pending sentences.
+  void acceptAll() {
+    final currentDiff = state.diffResult;
+    if (currentDiff == null) return;
+    for (var i = 0; i < currentDiff.sentences.length; i++) {
+      if (currentDiff.sentences[i].status == DiffStatus.pending) {
+        acceptSentence(i);
+      }
+    }
+  }
+
+  /// Rejects all pending sentences.
+  void rejectAll() {
+    final currentDiff = state.diffResult;
+    if (currentDiff == null) return;
+    for (var i = 0; i < currentDiff.sentences.length; i++) {
+      if (currentDiff.sentences[i].status == DiffStatus.pending) {
+        rejectSentence(i);
+      }
+    }
+  }
+
+  /// Updates the status of a single sentence in the diff result.
+  void _updateSentenceStatus(int index, DiffStatus newStatus) {
+    final currentDiff = state.diffResult;
+    if (currentDiff == null) return;
+
+    final updatedSentences = List<SentenceDiff>.from(currentDiff.sentences);
+    updatedSentences[index] = updatedSentences[index].copyWith(status: newStatus);
+
+    state = state.copyWith(
+      diffResult: DiffResult(
+        sentences: updatedSentences,
+        nodeId: currentDiff.nodeId,
+      ),
     );
   }
 

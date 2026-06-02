@@ -4,6 +4,8 @@
 /// and [EditorAIOperation] enum (tone rewrite, paragraph polish, free-input).
 library;
 
+import 'package:museflow/features/editor/domain/diff_state.dart';
+
 /// Types of AI operations available in the editor floating toolbar.
 ///
 /// Each operation has a Chinese label for display in the UI.
@@ -62,6 +64,9 @@ class EditorAIState {
   /// User's custom instruction for free-input operations.
   final String? userInstruction;
 
+  /// The diff result after an AI operation completes, or null when no diff.
+  final DiffResult? diffResult;
+
   /// Creates an [EditorAIState] with sensible defaults (idle state).
   const EditorAIState({
     this.isStreaming = false,
@@ -73,6 +78,7 @@ class EditorAIState {
     this.selectionStartOffset = 0,
     this.selectionEndOffset = 0,
     this.userInstruction,
+    this.diffResult,
   });
 
   /// Creates a copy with the given fields replaced.
@@ -90,6 +96,7 @@ class EditorAIState {
     int? selectionStartOffset,
     int? selectionEndOffset,
     Object? userInstruction = _sentinel,
+    Object? diffResult = _sentinel,
   }) {
     return EditorAIState(
       isStreaming: isStreaming ?? this.isStreaming,
@@ -104,6 +111,8 @@ class EditorAIState {
       userInstruction: userInstruction == _sentinel
           ? this.userInstruction
           : userInstruction as String?,
+      diffResult:
+          diffResult == _sentinel ? this.diffResult : diffResult as DiffResult?,
     );
   }
 }
