@@ -35,14 +35,14 @@
 
 ### AI Integration
 
-- [ ] **AI-01**: Unified AI adapter interface supporting OpenAI-compatible APIs (OpenAI, DeepSeek, Ollama)
+- [x] **AI-01**: Unified AI adapter interface supporting OpenAI-compatible APIs (OpenAI, DeepSeek, Ollama)
 - [ ] **AI-02**: Claude API adapter (separate client due to different API structure)
-- [ ] **AI-03**: Streaming responses (SSE) with real-time text display
-- [ ] **AI-04**: PromptPipeline middleware system: system prompt → knowledge injection → skill enforcement → anti-AI-scent → user content
-- [ ] **AI-05**: Anti-AI-scent prompt engineering layer — avoid AI clichés (总之, 然而, 综上所述, etc.)
-- [ ] **AI-06**: Anti-AI-scent post-processing — detect and replace remaining AI patterns
-- [ ] **AI-07**: Token budget management — smart context window allocation
-- [ ] **AI-08**: Rate limiting and error handling with graceful offline fallback
+- [x] **AI-03**: Streaming responses (SSE) with real-time text display
+- [x] **AI-04**: PromptPipeline middleware system: system prompt → knowledge injection → skill enforcement → anti-AI-scent → user content
+- [x] **AI-05**: Anti-AI-scent prompt engineering layer — avoid AI clichés (总之, 然而, 综上所述, etc.)
+- [x] **AI-06**: Anti-AI-scent post-processing — detect and replace remaining AI patterns
+- [x] **AI-07**: Token budget management — smart context window allocation
+- [x] **AI-08**: Rate limiting and error handling with graceful offline fallback
 
 ### Model Management
 
@@ -136,13 +136,13 @@
 | CAPT-01 | Phase 1 | Pending |
 | CAPT-02 | Phase 1 | Pending |
 | CAPT-05 | Phase 1 | Pending |
-| AI-01 | Phase 2 | Pending |
-| AI-03 | Phase 2 | Pending |
-| AI-04 | Phase 2 | Pending |
-| AI-05 | Phase 2 | Pending |
-| AI-06 | Phase 2 | Pending |
-| AI-07 | Phase 2 | Pending |
-| AI-08 | Phase 2 | Pending |
+| AI-01 | Phase 2 | Complete |
+| AI-03 | Phase 2 | Complete |
+| AI-04 | Phase 2 | Complete |
+| AI-05 | Phase 2 | Complete |
+| AI-06 | Phase 2 | Complete |
+| AI-07 | Phase 2 | Complete |
+| AI-08 | Phase 2 | Complete |
 | MODL-01 | Phase 2 | Complete (02-01) |
 | MODL-02 | Phase 2 | Complete (02-01) |
 | CAPT-03 | Phase 2 | Pending |

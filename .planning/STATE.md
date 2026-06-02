@@ -2,16 +2,16 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-status: in_progress
-stopped_at: Executed 02-01 (AI Provider Management). Next: 02-02
-last_updated: "2026-06-02T04:23:00.000Z"
+status: executing
+stopped_at: Completed 02-02-PLAN.md (AI Engine). Next: 02-03 (Synthesis UX)
+last_updated: "2026-06-02T04:45:00.000Z"
 last_activity: 2026-06-02
 progress:
   total_phases: 7
   completed_phases: 2
-  total_plans: 8
-  completed_plans: 8
-  percent: 33
+  total_plans: 10
+  completed_plans: 9
+  percent: 90
 ---
 
 # Project State
@@ -26,17 +26,17 @@ See: .planning/PROJECT.md (updated 2026-05-31)
 ## Current Position
 
 Phase: 2
-Plan: 02-01 completed. Next: 02-02 (AI engine)
+Plan: 02-02 completed. Next: 02-03 (Synthesis UX)
 Status: In progress
 Last activity: 2026-06-02
 
-Progress: [███░░░░░░░] 33%
+Progress: [█████████░] 90%
 
 ## Performance Metrics
 
 **Velocity:**
 
-- Total plans completed: 7
+- Total plans completed: 8
 - Average duration: -
 - Total execution time: 0 hours
 
@@ -46,7 +46,7 @@ Progress: [███░░░░░░░] 33%
 |-------|-------|-------|----------|
 | 00 | 3 | - | - |
 | 01 | 4 | - | - |
-| 02 | 1 | 11m | 11m |
+| 02 | 2 | 27m | 14m |
 
 **Recent Trend:**
 
@@ -65,6 +65,9 @@ Recent decisions affecting current work:
 - **Roadmap**: Editor choice is super_editor (not appflowy_editor) -- CJK IME and large document performance are existential for Chinese novel authors on Windows
 - **Roadmap**: Phase 0 spike validates editor before any feature code -- editor migration after feature build is catastrophic
 - **Roadmap**: Anti-AI-scent effectiveness unproven -- must validate with real Chinese prose in Phase 2
+- **D-15**: CJK boundary matching uses both-sides check (not regex) per Pitfall 5 -- prevents "自然而然" false positive
+- **D-16**: PromptPipeline middlewares import openai_dart directly (Dart no transitive re-export)
+- **D-17**: PromptMiddleware const constructor enables const middleware subclasses
 
 ### Pending Todos
 
@@ -85,6 +88,6 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-06-02T04:23:00.000Z
-Stopped at: Completed 02-01-PLAN.md (AI Provider Management)
-Resume file: .planning/phases/02-ai-provider-capture-synthesis/02-01-SUMMARY.md
+Last session: 2026-06-02T04:45:00.000Z
+Stopped at: Completed 02-02-PLAN.md (AI Engine)
+Resume file: .planning/phases/02-ai-provider-capture-synthesis/02-02-SUMMARY.md
