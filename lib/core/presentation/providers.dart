@@ -14,8 +14,10 @@ import 'package:museflow/features/ai/application/token_budget_calculator.dart';
 import 'package:museflow/features/ai/infrastructure/openai_adapter.dart';
 import 'package:museflow/features/ai/infrastructure/provider_repository.dart';
 import 'package:museflow/features/editor/application/diff_calculator.dart';
-import 'package:museflow/features/editor/application/editor_ai_notifier.dart';
 import 'package:museflow/features/editor/application/editor_prompt_pipeline.dart';
+import 'package:museflow/features/editor/application/selective_undo.dart';
+export 'package:museflow/features/editor/application/context_anchor_notifier.dart'
+    show contextAnchorNotifierProvider, ContextAnchorNotifier;
 export 'package:museflow/features/editor/presentation/editor_page.dart'
     show editorProvider;
 export 'package:museflow/features/editor/application/editor_ai_notifier.dart'
@@ -125,4 +127,12 @@ final editorPromptPipelineProvider = Provider<EditorPromptPipeline>((ref) {
 /// with the rest of the dependency graph.
 final diffCalculatorProvider = Provider<DiffCalculator>((ref) {
   return DiffCalculator();
+});
+
+/// Provides a singleton [SelectiveUndoService] for AI undo management.
+///
+/// Per EDIT-06: Separate AI undo stack from document undo.
+/// Ctrl+Z undoes human edits; Ctrl+Shift+Z undoes AI accepts.
+final selectiveUndoServiceProvider = Provider<SelectiveUndoService>((ref) {
+  return SelectiveUndoService();
 });
