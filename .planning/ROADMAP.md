@@ -160,7 +160,7 @@ Plans:
   6. Multiple skills can be active per project (e.g., "修仙体系" + "门派设定")
 **UI hint**: yes
 **Risks**: Name-index entity matching for auto-injection may produce false positives with Chinese names. Token budget can be exhausted by large knowledge bases -- relevance scoring is critical.
-**Plans:** 3 plans
+**Plans:** 5 plans
 
 Plans:
 - [ ] 04-01: Knowledge base CRUD -- character cards and world settings with Hive persistence
@@ -183,7 +183,7 @@ Plans:
   6. User can export to plain text, Markdown, or JSON format
 **UI hint**: yes
 **Risks**: Logic loop detection is AI-dependent and may produce false positives. Foreshadowing resolution detection requires tracking state across chapters. Format cleaning edge cases in Chinese punctuation are numerous.
-**Plans:** 3 plans
+**Plans:** 4 plans
 
 Plans:
 - [ ] 05-01: Foreshadowing tracking and resolution detection
