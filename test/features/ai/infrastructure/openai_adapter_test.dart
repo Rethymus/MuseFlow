@@ -4,8 +4,6 @@
 /// and AI-08 (error handling with graceful classification).
 library;
 
-import 'dart:async';
-
 import 'package:flutter_test/flutter_test.dart';
 import 'package:museflow/features/ai/domain/ai_exception.dart';
 import 'package:museflow/features/ai/infrastructure/openai_adapter.dart';
@@ -27,10 +25,6 @@ void main() {
       test('should return Stream<String> of text deltas from streaming events',
           () async {
         // Simulate the adapter converting ChatStreamEvents to text deltas
-        final messages = [
-          ChatMessage.system('You are a helpful assistant.'),
-          ChatMessage.user('Hello'),
-        ];
 
         // We test the adapter's stream mapping logic by verifying
         // the method signature and basic contract.
