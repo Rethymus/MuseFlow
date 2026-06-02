@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
+import 'package:museflow/shared/constants/app_constants.dart';
 
 /// Settings page with section headers for storage and about.
 ///
-/// Placeholder content for Phase 1. Full settings UI in later phases.
+/// Provides navigation to AI provider management sub-page.
 class SettingsPage extends ConsumerWidget {
   const SettingsPage({super.key});
 
@@ -20,6 +22,21 @@ class SettingsPage extends ConsumerWidget {
             style: theme.textTheme.headlineMedium,
           ),
           const SizedBox(height: 32),
+          // AI Model section
+          Text(
+            'AI',
+            style: theme.textTheme.titleLarge,
+          ),
+          const SizedBox(height: 8),
+          ListTile(
+            leading: const Icon(Icons.smart_toy_outlined),
+            title: const Text('AI 模型'),
+            subtitle: const Text('配置和管理 AI 模型提供商'),
+            trailing: const Icon(Icons.chevron_right),
+            onTap: () => context.go(AppConstants.aiProviders),
+          ),
+          const Divider(),
+          const SizedBox(height: 16),
           // Storage section
           Text(
             '存储',
@@ -30,11 +47,6 @@ class SettingsPage extends ConsumerWidget {
             leading: Icon(Icons.storage_outlined),
             title: Text('本地数据'),
             subtitle: Text('所有数据存储在本地设备'),
-          ),
-          const ListTile(
-            leading: Icon(Icons.key_outlined),
-            title: Text('API 密钥'),
-            subtitle: Text('密钥安全存储在系统密钥库中'),
           ),
           const Divider(),
           const SizedBox(height: 16),

@@ -86,6 +86,11 @@ class ProviderService {
     return _secureStorage.getApiKey(providerId);
   }
 
+  /// Updates the API key for an existing provider in secure storage.
+  Future<void> updateApiKey(String providerId, String apiKey) async {
+    await _secureStorage.saveApiKey(providerId, apiKey);
+  }
+
   /// Tests the connection to an AI provider by sending a minimal request.
   ///
   /// Creates a temporary OpenAI-compatible client and sends a minimal chat

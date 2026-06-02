@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:museflow/core/presentation/app_shell.dart';
+import 'package:museflow/features/ai/presentation/provider_management_page.dart';
 import 'package:museflow/features/capture/presentation/capture_page.dart';
 import 'package:museflow/features/editor/presentation/editor_page.dart';
 import 'package:museflow/features/settings/presentation/settings_page.dart';
@@ -54,12 +55,19 @@ class MuseFlowApp extends ConsumerWidget {
                 ),
               ],
             ),
-            // Branch 2: Settings
+            // Branch 2: Settings (with AI providers sub-route)
             StatefulShellBranch(
               routes: [
                 GoRoute(
                   path: AppConstants.settings,
                   builder: (context, state) => const SettingsPage(),
+                  routes: [
+                    GoRoute(
+                      path: 'ai-providers',
+                      builder: (context, state) =>
+                          const ProviderManagementPage(),
+                    ),
+                  ],
                 ),
               ],
             ),
