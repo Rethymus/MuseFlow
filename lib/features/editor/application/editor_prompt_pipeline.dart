@@ -6,13 +6,14 @@
 ///
 /// Per D-16: Each AI operation has a distinct system prompt instruction.
 /// Per D-17: Pipeline order = system prompt + anti-AI persona + banned list
-///           + operation instruction + selected text content.
+///           + context anchors + operation instruction + selected text content.
 library;
 
 import 'package:museflow/features/ai/application/prompt_pipeline.dart';
 import 'package:museflow/features/ai/application/prompt_middlewares/banned_list_middleware.dart';
 import 'package:museflow/features/ai/application/prompt_middlewares/persona_injection_middleware.dart';
 import 'package:museflow/features/ai/application/prompt_middlewares/system_prompt_middleware.dart';
+import 'package:museflow/features/editor/application/context_anchor_middleware.dart';
 import 'package:museflow/features/editor/domain/editor_ai_state.dart';
 import 'package:openai_dart/openai_dart.dart';
 
@@ -29,6 +30,7 @@ class EditorPromptPipeline extends PromptPipeline {
             SystemPromptMiddleware(),
             PersonaInjectionMiddleware(),
             BannedListMiddleware(),
+            const ContextAnchorMiddleware(),
             EditorOperationMiddleware(),
             EditorUserContentMiddleware(),
           ],

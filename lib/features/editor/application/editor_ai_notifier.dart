@@ -116,12 +116,16 @@ class EditorAINotifier extends Notifier<EditorAIState> {
     final pipeline = EditorPromptPipeline();
     final bannedPhrases = await _getBannedPhrases();
 
+    // D-15: Inject active anchors into the prompt context
+    final activeAnchors = ref.read(contextAnchorNotifierProvider);
+
     final context = PromptContext(
       fragments: [],
       selectedText: selectedText,
       selectedOperation: operation,
       userInstruction: userInstruction,
       bannedPhrases: bannedPhrases,
+      anchors: activeAnchors.isNotEmpty ? activeAnchors : null,
     );
     final messages = pipeline.build(context);
 
@@ -184,6 +188,9 @@ class EditorAINotifier extends Notifier<EditorAIState> {
       isStreaming: false,
       diffResult: diffResult,
     );
+
+    // D-12: Clear one-time anchors after AI operation completes
+    ref.read(contextAnchorNotifierProvider.notifier).clearOneTime();
   }
 
   /// Accepts a single sentence diff at [index].
@@ -215,6 +222,18 @@ class EditorAINotifier extends Notifier<EditorAIState> {
         nodePosition: TextNodePosition(offset: sentence.endOffset),
       ),
     );
+
+    // EDIT-06: Record in selective undo stack before applying
+    final undoService = ref.read(selectiveUndoServiceProvider);
+    if (sentence.isModification || sentence.isDeletion) {
+      undoService.record(
+        originalText: sentence.originalText!,
+        replacementText: sentence.newText ?? '',
+        nodeId: sentence.nodeId,
+        startOffset: sentence.startOffset,
+        endOffset: sentence.endOffset,
+      );
+    }
 
     if (sentence.isModification) {
       // Pitfall 5: batch delete+insert in single execute for one undo entry
@@ -315,6 +334,44 @@ class EditorAINotifier extends Notifier<EditorAIState> {
         rejectSentence(i);
       }
     }
+  }
+
+  /// Undoes the last AI modification using the selective undo stack.
+  ///
+  /// Per EDIT-06: This is separate from Ctrl+Z (which undoes human edits).
+  /// Restores the original text without provenance attribution.
+  void undoLastAIChange() {
+    final undoService = ref.read(selectiveUndoServiceProvider);
+    final entry = undoService.popLast();
+    if (entry == null) return;
+
+    final editor = ref.read(editorProvider);
+    if (editor == null) return;
+
+    final range = DocumentRange(
+      start: DocumentPosition(
+        nodeId: entry.nodeId,
+        nodePosition: TextNodePosition(offset: entry.startOffset),
+      ),
+      end: DocumentPosition(
+        nodeId: entry.nodeId,
+        nodePosition: TextNodePosition(offset: entry.endOffset),
+      ),
+    );
+
+    // Delete the AI replacement and re-insert original text
+    // WITHOUT provenance attribution (restoring human text)
+    editor.execute([
+      DeleteContentRequest(documentRange: range),
+      InsertTextRequest(
+        documentPosition: DocumentPosition(
+          nodeId: entry.nodeId,
+          nodePosition: TextNodePosition(offset: entry.startOffset),
+        ),
+        textToInsert: entry.originalText,
+        attributions: {},
+      ),
+    ]);
   }
 
   /// Updates the status of a single sentence in the diff result.
