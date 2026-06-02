@@ -125,12 +125,26 @@ Plans:
   5. User can select previous paragraphs as reference context for AI operations (context anchor)
 **UI hint**: yes
 **Risks**: Floating toolbar positioning with super_editor's OverlayPortal/Follower pattern needs prototyping. Selective undo with provenance tracking adds document model complexity.
-**Plans**: TBD
+**Plans:** 3 plans
 
 Plans:
-- [ ] 03-01: Floating toolbar on text selection with tone rewrite, polish, and free-input actions
-- [ ] 03-02: Text provenance tracking -- visually distinguish AI-modified vs human-written text
-- [ ] 03-03: Selective undo for AI modifications and context anchor selection
+- [ ] 03-01-PLAN.md — Floating toolbar: SelectionLayerLinks + Follower, three AI actions, free-input, progress bar, smart flip
+- [ ] 03-02-PLAN.md — Provenance tracking: inline diff display, accept/reject per sentence, blue attribution, status bar
+- [ ] 03-03-PLAN.md — Selective undo + context anchors: AI undo stack, anchor entities, middleware injection, visual indicators
+
+**Wave 1** *(foundation — floating toolbar + AI operation engine)*
+- 03-01: Floating toolbar, EditorAINotifier, EditorPromptPipeline, SentenceSegmenter
+
+**Wave 2** *(depends on 03-01 for EditorAIState and streaming)*
+- 03-02: Diff state entities, inline diff display, accept/reject, provenance attribution, status bar
+
+**Wave 3** *(depends on 03-01 + 03-02)*
+- 03-03: Selective undo service, context anchors, middleware injection, anchor indicators
+
+**Cross-cutting constraints:**
+- `PromptContext` extended with `selectedText` and `anchors` fields in 03-01, consumed by 03-02 and 03-03
+- `EditorAINotifier` created in 03-01, extended with accept/reject in 03-02, extended with undo + anchors in 03-03
+- `EditorPromptPipeline` created in 03-01, extended with `ContextAnchorMiddleware` in 03-03
 
 ### Phase 4: Knowledge Base + Skill System
 **Mode**: mvp
@@ -146,7 +160,7 @@ Plans:
   6. Multiple skills can be active per project (e.g., "修仙体系" + "门派设定")
 **UI hint**: yes
 **Risks**: Name-index entity matching for auto-injection may produce false positives with Chinese names. Token budget can be exhausted by large knowledge bases -- relevance scoring is critical.
-**Plans**: TBD
+**Plans:** 3 plans
 
 Plans:
 - [ ] 04-01: Knowledge base CRUD -- character cards and world settings with Hive persistence
@@ -169,7 +183,7 @@ Plans:
   6. User can export to plain text, Markdown, or JSON format
 **UI hint**: yes
 **Risks**: Logic loop detection is AI-dependent and may produce false positives. Foreshadowing resolution detection requires tracking state across chapters. Format cleaning edge cases in Chinese punctuation are numerous.
-**Plans**: TBD
+**Plans:** 3 plans
 
 Plans:
 - [ ] 05-01: Foreshadowing tracking and resolution detection
@@ -189,7 +203,7 @@ Plans:
   4. App runs on Android with adaptive layout and touch-optimized interactions
 **UI hint**: yes
 **Risks**: Claude API (Anthropic) has different message format and streaming protocol -- requires dedicated adapter. Android layout adaptation may surface touch/IME issues not seen on Windows.
-**Plans**: TBD
+**Plans:** 3 plans
 
 Plans:
 - [ ] 06-01: Claude API adapter (anthropic_sdk_dart) with streaming support
