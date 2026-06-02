@@ -7,10 +7,14 @@ import 'package:museflow/core/domain/fragment.dart';
 import 'package:museflow/core/infrastructure/fragment_repository.dart';
 import 'package:museflow/core/infrastructure/secure_storage_service.dart';
 import 'package:museflow/core/infrastructure/settings_repository.dart';
+import 'package:museflow/features/ai/application/anti_ai_scent_processor.dart';
 import 'package:museflow/features/ai/application/prompt_pipeline.dart';
 import 'package:museflow/features/ai/application/provider_service.dart';
+import 'package:museflow/features/ai/application/token_budget_calculator.dart';
 import 'package:museflow/features/ai/infrastructure/openai_adapter.dart';
 import 'package:museflow/features/ai/infrastructure/provider_repository.dart';
+export 'package:museflow/features/editor/presentation/editor_page.dart'
+    show editorProvider;
 
 /// Provides a [FragmentRepository] backed by a Hive 'fragments' box.
 ///
@@ -90,4 +94,14 @@ final openaiAdapterProvider = Provider<OpenAIAdapter>((ref) {
 /// Middleware order: SystemPrompt -> PersonaInjection -> BannedList -> UserContent
 final promptPipelineProvider = Provider<PromptPipeline>((ref) {
   return PromptPipeline.withDefaultMiddlewares();
+});
+
+/// Provides a singleton [AntiAIScentProcessor] for post-processing text per AI-06.
+final antiAIScentProcessorProvider = Provider<AntiAIScentProcessor>((ref) {
+  return AntiAIScentProcessor();
+});
+
+/// Provides a singleton [TokenBudgetCalculator] for budget management per AI-07.
+final tokenBudgetCalculatorProvider = Provider<TokenBudgetCalculator>((ref) {
+  return TokenBudgetCalculator();
 });

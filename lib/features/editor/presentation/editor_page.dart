@@ -6,6 +6,24 @@ import 'package:museflow/features/editor/presentation/editor_provider.dart';
 import 'package:museflow/features/editor/presentation/editor_toolbar.dart';
 import 'package:super_editor/super_editor.dart';
 
+/// Notifier exposing the current Editor instance.
+///
+/// Set by EditorPage in initState, cleared in dispose.
+/// Per Pitfall 6: StatefulShellRoute.indexedStack keeps the editor mounted,
+/// so the Editor is always available even when on the capture page.
+class EditorHolderNotifier extends Notifier<Editor?> {
+  @override
+  Editor? build() => null;
+
+  /// Sets the current editor instance.
+  void setEditor(Editor? editor) => state = editor;
+}
+
+/// Provider exposing the current Editor instance for cross-widget access.
+final editorProvider = NotifierProvider<EditorHolderNotifier, Editor?>(
+  EditorHolderNotifier.new,
+);
+
 /// Editor page with fixed formatting toolbar and centered super_editor.
 ///
 /// Layout: EditorToolbar + Divider + Expanded(centered SuperEditor at max 800px).
@@ -24,10 +42,15 @@ class _EditorPageState extends ConsumerState<EditorPage> {
   void initState() {
     super.initState();
     _editor = createDefaultEditor();
+    // Expose editor via provider for synthesis text insertion per D-07
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      ref.read(editorProvider.notifier).setEditor(_editor);
+    });
   }
 
   @override
   void dispose() {
+    ref.read(editorProvider.notifier).setEditor(null);
     _editor.composer.dispose();
     super.dispose();
   }
