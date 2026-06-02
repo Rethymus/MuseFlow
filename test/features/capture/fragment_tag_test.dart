@@ -13,7 +13,7 @@ class MockFragmentRepository implements FragmentRepository {
   Fragment? lastUpdatedFragment;
 
   @override
-  Fragment addFragment(String text, {List<String>? tags}) {
+  Future<Fragment> addFragment(String text, {List<String>? tags}) async {
     final fragment = Fragment(
       id: 'test-${_fragments.length}',
       text: text,
@@ -60,8 +60,8 @@ void main() {
 
   group('FragmentService', () {
     group('createFragment', () {
-      test('should create fragment with text and empty tags', () {
-        final fragment = service.createFragment('test fragment');
+      test('should create fragment with text and empty tags', () async {
+        final fragment = await service.createFragment('test fragment');
 
         expect(fragment.text, equals('test fragment'));
         expect(fragment.id, isNotEmpty);
@@ -69,8 +69,8 @@ void main() {
         expect(fragment.createdAt, isNotNull);
       });
 
-      test('should create fragment with provided tags', () {
-        final fragment = service.createFragment(
+      test('should create fragment with provided tags', () async {
+        final fragment = await service.createFragment(
           'tagged fragment',
           tags: [FragmentTags.story],
         );
@@ -82,11 +82,11 @@ void main() {
     group('listFragments', () {
       test('should return fragments sorted by createdAt descending', () async {
         // Add fragments with a small delay to ensure different timestamps
-        service.createFragment('first');
+        await service.createFragment('first');
         await Future<void>.delayed(const Duration(milliseconds: 10));
-        service.createFragment('second');
+        await service.createFragment('second');
         await Future<void>.delayed(const Duration(milliseconds: 10));
-        service.createFragment('third');
+        await service.createFragment('third');
 
         final fragments = service.listFragments();
 
@@ -97,20 +97,20 @@ void main() {
     });
 
     group('listFragmentsByTag', () {
-      test('should return all fragments when tag is "全部"', () {
-        service.createFragment('a', tags: [FragmentTags.story]);
-        service.createFragment('b', tags: [FragmentTags.chapter]);
-        service.createFragment('c', tags: [FragmentTags.scene]);
+      test('should return all fragments when tag is "全部"', () async {
+        await service.createFragment('a', tags: [FragmentTags.story]);
+        await service.createFragment('b', tags: [FragmentTags.chapter]);
+        await service.createFragment('c', tags: [FragmentTags.scene]);
 
         final fragments = service.listFragmentsByTag('全部');
 
         expect(fragments.length, equals(3));
       });
 
-      test('should return filtered fragments for specific tag', () {
-        service.createFragment('story fragment', tags: [FragmentTags.story]);
-        service.createFragment('chapter fragment', tags: [FragmentTags.chapter]);
-        service.createFragment('both', tags: [FragmentTags.story, FragmentTags.chapter]);
+      test('should return filtered fragments for specific tag', () async {
+        await service.createFragment('story fragment', tags: [FragmentTags.story]);
+        await service.createFragment('chapter fragment', tags: [FragmentTags.chapter]);
+        await service.createFragment('both', tags: [FragmentTags.story, FragmentTags.chapter]);
 
         final fragments = service.listFragmentsByTag(FragmentTags.story);
 
@@ -121,7 +121,7 @@ void main() {
 
     group('removeFragment', () {
       test('should delegate delete to repository', () async {
-        final fragment = service.createFragment('to delete');
+        final fragment = await service.createFragment('to delete');
 
         await service.removeFragment(fragment.id);
 
@@ -132,7 +132,7 @@ void main() {
 
     group('updateFragmentTags', () {
       test('should update tags and set updatedAt', () async {
-        final fragment = service.createFragment('original');
+        final fragment = await service.createFragment('original');
         expect(fragment.updatedAt, isNull);
 
         await service.updateFragmentTags(fragment.id, [FragmentTags.story]);

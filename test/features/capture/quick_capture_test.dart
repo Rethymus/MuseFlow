@@ -13,7 +13,7 @@ class _MockCaptureNotifier extends CaptureNotifier {
   CaptureState build() => const CaptureState();
 
   @override
-  void addFragment(String text, {List<String>? tags}) {
+  Future<void> addFragment(String text, {List<String>? tags}) async {
     addedTexts.add(text);
   }
 }

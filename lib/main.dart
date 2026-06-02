@@ -1,9 +1,58 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive_ce_flutter/hive_flutter.dart';
 import 'package:museflow/app.dart';
 import 'package:museflow/core/infrastructure/hive_adapters.dart';
+import 'package:museflow/core/infrastructure/secure_storage_service.dart';
 import 'package:window_manager/window_manager.dart';
+
+/// Reads saved window geometry from the encrypted settings box.
+///
+/// Called before [runApp] so the window opens at the user's last size/position.
+/// Returns nulls on first launch or if the box hasn't been created yet.
+/// The box is left open — [settingsRepositoryProvider] reuses it via
+/// [Hive.openBox] same-name semantics.
+Future<({Size? size, Offset? position})> _readSavedGeometry() async {
+  try {
+    const encryptionKeyStoreKey = 'hive_encryption_key';
+
+    final secureStorage = SecureStorageService();
+    final storedKey = await secureStorage.getApiKey(encryptionKeyStoreKey);
+
+    if (storedKey == null) return (size: null, position: null);
+
+    final encryptionKey = base64Decode(storedKey);
+    final box = await Hive.openBox(
+      'settings',
+      encryptionCipher: HiveAesCipher(encryptionKey),
+    );
+
+    Size? savedSize;
+    final sizeData = box.get('windowSize');
+    if (sizeData != null) {
+      savedSize = Size(
+        sizeData['width'] as double,
+        sizeData['height'] as double,
+      );
+    }
+
+    Offset? savedPosition;
+    final posData = box.get('windowPosition');
+    if (posData != null) {
+      savedPosition = Offset(
+        posData['x'] as double,
+        posData['y'] as double,
+      );
+    }
+
+    return (size: savedSize, position: savedPosition);
+  } catch (_) {
+    // If key is corrupted or box can't open, fall back to defaults.
+    return (size: null, position: null);
+  }
+}
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -15,19 +64,26 @@ void main() async {
   Hive.registerAdapter(FragmentAdapter());
   Hive.registerAdapter(AppSettingsAdapter());
 
+  // Read saved window geometry before showing the window
+  final geometry = await _readSavedGeometry();
+
   // Configure window manager for desktop
   await WindowManager.instance.ensureInitialized();
   windowManager.waitUntilReadyToShow(
-    const WindowOptions(
-      size: Size(1200, 800),
-      minimumSize: Size(800, 600),
-      center: true,
+    WindowOptions(
+      size: geometry.size ?? const Size(1200, 800),
+      minimumSize: const Size(800, 600),
+      center: geometry.position == null,
       backgroundColor: Colors.transparent,
       skipTaskbar: false,
       titleBarStyle: TitleBarStyle.normal,
       title: 'MuseFlow 灵韵',
     ),
     () async {
+      // Restore saved position only if one was persisted.
+      if (geometry.position != null) {
+        await windowManager.setPosition(geometry.position!);
+      }
       await windowManager.show();
       await windowManager.focus();
     },

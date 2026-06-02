@@ -13,7 +13,7 @@ class FragmentService {
   FragmentService(this._repository);
 
   /// Creates a new fragment with the given text and optional tags.
-  Fragment createFragment(String text, {List<String>? tags}) {
+  Future<Fragment> createFragment(String text, {List<String>? tags}) async {
     return _repository.addFragment(text, tags: tags);
   }
 
