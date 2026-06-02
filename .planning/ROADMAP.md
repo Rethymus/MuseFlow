@@ -205,7 +205,7 @@ Phases execute in numeric order: 0 -> 1 -> 2 -> 3 -> 4 -> 5 -> 6
 |-------|----------------|--------|-----------|
 | 0. Technical Validation | 3/3 | Complete   | 2026-06-01 |
 | 1. App Shell + Editor + Capture UI | 4/4 | Complete   | 2026-06-01 |
-| 2. AI Provider + Capture Synthesis | 3/3 | Complete   | 2026-06-02 |
+| 2. AI Provider + Capture Synthesis | 3/3 | Complete    | 2026-06-02 |
 | 3. Editor AI Toolbar | 0/3 | Not started | - |
 | 4. Knowledge Base + Skill System | 0/5 | Not started | - |
 | 5. Story Structure + Format + Export | 0/4 | Not started | - |
