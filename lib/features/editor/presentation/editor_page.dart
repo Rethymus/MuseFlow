@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:museflow/core/presentation/providers.dart';
+import 'package:museflow/features/editor/infrastructure/provenance_attribution.dart';
 import 'package:museflow/shared/constants/app_constants.dart';
 import 'package:museflow/features/editor/presentation/context_anchor_indicator.dart';
 import 'package:museflow/features/editor/presentation/diff_display.dart';
@@ -10,6 +11,33 @@ import 'package:museflow/features/editor/presentation/editor_toolbar.dart';
 import 'package:museflow/features/editor/presentation/floating_toolbar.dart';
 import 'package:museflow/features/editor/presentation/status_bar.dart';
 import 'package:super_editor/super_editor.dart';
+
+/// Stylesheet that extends the default with AI-provenance background styling.
+///
+/// EDIT-05: Text accepted from AI suggestions gets a blue background
+/// (10% opacity) via the [aiProvenanceAttribution] that is already present
+/// in the document model from `InsertTextRequest` attributions.
+final _provenanceStylesheet = defaultStylesheet.copyWith(
+  inlineTextStyler: _provenanceInlineTextStyler,
+);
+
+/// Inline text styler that adds provenance background on top of default styles.
+TextStyle _provenanceInlineTextStyler(
+  Set<Attribution> attributions,
+  TextStyle existingStyle,
+) {
+  // Apply default styles first (bold, italic, underline, etc.)
+  var style = defaultInlineTextStyler(attributions, existingStyle);
+
+  // If the text has AI provenance, apply a subtle blue background
+  if (attributions.contains(aiProvenanceAttribution)) {
+    style = style.copyWith(
+      backgroundColor: provenanceColor,
+    );
+  }
+
+  return style;
+}
 
 /// Notifier exposing the current Editor instance.
 ///
@@ -147,6 +175,7 @@ class _EditorPageState extends ConsumerState<EditorPage> {
                         child: SuperEditor(
                           editor: _editor,
                           autofocus: true,
+                          stylesheet: _provenanceStylesheet,
                           selectionLayerLinks: _selectionLinks,
                           documentOverlayBuilders: [
                             // Selection leaders layer (positions leader widgets

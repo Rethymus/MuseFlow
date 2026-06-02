@@ -543,22 +543,19 @@ class EditorAINotifier extends Notifier<EditorAIState> {
 | A4 | Chinese sentence boundaries are adequately handled by `。！？…` characters | Pitfall 3 | Edge cases with quotes/numbers may require more sophisticated parser |
 | A5 | `ScreenFollowerBoundary` is available in follow_the_leader 0.5.3 | Pattern 1 | May need `WidgetFollowerBoundary` with a viewport key instead |
 
-## Open Questions
+## Open Questions (RESOLVED)
 
-1. **Diff display approach: inline replacement vs side-by-side?**
-   - What we know: CONTEXT.md D-01 specifies inline diff with red deletions and green insertions
-   - What's unclear: How to render deleted text (strikethrough? background color?) alongside inserted text in the same position
-   - Recommendation: Use super_editor's `CustomUnderlineAttribution` with red for deletions (strikethrough style), `BackgroundColorAttribution` with light green for insertions. Both visible simultaneously on the same text range.
+1. **Diff display approach: inline replacement vs side-by-side?** → **RESOLVED in Plan 02**
+   - Decision: Use overlay highlights -- red background (0x33FF0000) for deletions, green background (0x3300FF00) for insertions. Rendered via DiffOverlayBuilder using editor document layout positioning. Accept/reject via floating AcceptRejectBar on selection.
+   - Plan reference: 03-02-PLAN.md Task 2
 
-2. **Batch undo for diff acceptance**
-   - What we know: super_editor groups requests in a single `execute()` call into one undo entry
-   - What's unclear: Whether delete+insert in the same `execute()` call truly creates a single undo entry
-   - Recommendation: Verify in Phase 0-style spike. Fallback: implement custom `ReplaceTextRangeCommand` that does delete+insert atomically.
+2. **Batch undo for diff acceptance** → **RESOLVED in Plan 02**
+   - Decision: Batch delete+insert in a single `editor.execute()` call per RESEARCH.md Pitfall 5. If this doesn't produce a single undo entry, fallback to custom `ReplaceTextRangeCommand` (deferred to execution spike).
+   - Plan reference: 03-02-PLAN.md Task 2 behavior section
 
-3. **Toolbar conflict with fixed EditorToolbar**
-   - What we know: EditorToolbar is always visible at top; floating toolbar appears on selection
-   - What's unclear: Whether they can overlap visually when selection is near top of document
-   - Recommendation: Floating toolbar should detect proximity to EditorToolbar and flip below selection when too close to top.
+3. **Toolbar conflict with fixed EditorToolbar** → **RESOLVED in Plan 01**
+   - Decision: Floating toolbar and fixed EditorToolbar serve different purposes (AI actions vs formatting) and coexist without conflict. Floating toolbar uses smart flip (D-08) and suppresses during IME composition (Pitfall 4). No proximity detection needed -- they occupy different screen regions.
+   - Plan reference: 03-01-PLAN.md Task 2 action section
 
 ## Environment Availability
 

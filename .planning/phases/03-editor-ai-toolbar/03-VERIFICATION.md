@@ -1,29 +1,23 @@
 ---
 phase: 03-editor-ai-toolbar
-verified: 2026-06-02T12:00:00Z
-status: gaps_found
-score: 15/17 must-haves verified
+verified: 2026-06-02T14:00:00Z
+status: verified
+score: 17/17 must-haves verified
 overrides_applied: 0
-re_verification: false
+re_verification: true
 gaps:
   - truth: "After accepting all sentences, the accepted text has a blue provenance background"
-    status: failed
-    reason: "ProvenanceAttributions.applyProvenance is never called in the accept flow. EditorAINotifier.acceptSentence inserts text with aiProvenanceAttribution via InsertTextRequest but never calls ProvenanceAttributions to render a visible blue background overlay. The ProvenanceAttributions utility class and provenanceColor constant exist but are unused in the accept pipeline."
+    status: resolved
+    fix: "Added custom _provenanceStylesheet to SuperEditor widget extending defaultStylesheet with inlineTextStyler that checks for aiProvenanceAttribution and applies provenanceColor (blue 10% opacity) as backgroundColor. Plan 03-04, Task 1."
     artifacts:
-      - path: "lib/features/editor/application/editor_ai_notifier.dart"
-        issue: "acceptSentence does not call ProvenanceAttributions.applyProvenance; accepted text gets no visible blue background"
-      - path: "lib/features/editor/infrastructure/provenance_attribution.dart"
-        issue: "applyProvenance/removeProvenance methods exist but are never invoked by any code path"
-    missing:
-      - "Call ProvenanceAttributions.applyProvenance(editor, range) after accepting a sentence, or render provenance color via the diff overlay for accepted sentences"
+      - path: "lib/features/editor/presentation/editor_page.dart"
+        fix: "Added _provenanceStylesheet with _provenanceInlineTextStyler that applies provenanceColor background when aiProvenanceAttribution is present on text span"
   - truth: "Anchored paragraphs show gold background with pin icon in the editor margin"
-    status: failed
-    reason: "The ContextAnchorOverlayBuilder and _AnchorIndicator use a CustomPaint with IgnorePointer but the painter draws a rect at (0,0) with full canvas size. Since the overlay is wrapped in IgnorePointer inside a Stack with no explicit size constraints, the CustomPaint widget has zero intrinsic size and renders nothing visible. No pin icon is rendered either -- the code only draws a colored rect via CustomPaint."
+    status: resolved
+    fix: "Rewrote _AnchorIndicators to use LayoutBuilder for proper constraints, wrapped each _AnchorIndicator in Positioned.fill so it receives full overlay area size. Replaced bare CustomPaint with ColoredBox for gold background rendering. Added push_pin icon in top-left corner via Align widget. Removed unused _AnchorHighlightPainter. Plan 03-04, Task 2."
     artifacts:
       - path: "lib/features/editor/presentation/context_anchor_indicator.dart"
-        issue: "_AnchorIndicator uses CustomPaint with no size constraints inside IgnorePointer/Stack; painter draws at (0,0) with no positioning logic; pin icon (D-14) is missing from implementation"
-    missing:
-      - "Implement anchor overlay with proper layout-based positioning (use document layout to find node position) and render a pin icon widget alongside the gold background"
+        fix: "LayoutBuilder + Positioned.fill for sizing; ColoredBox for gold background; push_pin icon via Align widget"
 deferred: []
 human_verification:
   - test: "Select text in the editor and verify floating toolbar appears"
@@ -71,16 +65,16 @@ human_verification:
 | 7 | After an AI operation completes, the result is shown as sentence-level inline diff in the editor | VERIFIED | editor_ai_notifier.dart _postProcess: calls DiffCalculator.calculate, stores in state.diffResult. DiffOverlayBuilder registered in editor_page.dart documentOverlayBuilders |
 | 8 | Deleted sentences are shown with red strikethrough, inserted sentences shown with green background | VERIFIED | diff_display.dart: _deletionColor = Color(0x33FF0000) red 20% opacity, _insertionColor = Color(0x3300FF00) green 20% opacity; _DiffHighlightPainter draws rect + strikethrough for deletions |
 | 9 | User can accept or reject individual sentences via a floating action bar on selection | VERIFIED | diff_display.dart AcceptRejectBar: appears when selection overlaps pending diffs, shows "接受"/"拒绝" buttons, calls acceptSentence/rejectSentence |
-| 10 | After accepting all sentences, the accepted text has a blue provenance background | FAILED | editor_ai_notifier.dart acceptSentence: inserts text with aiProvenanceAttribution via InsertTextRequest but NEVER calls ProvenanceAttributions.applyProvenance(). ProvenanceAttributions class exists in provenance_attribution.dart but is dead code -- never invoked |
+| 10 | After accepting all sentences, the accepted text has a blue provenance background | VERIFIED | editor_page.dart: _provenanceStylesheet with _provenanceInlineTextStyler applies provenanceColor (blue 10% opacity) as backgroundColor when aiProvenanceAttribution is present on text span. Fixed in 03-04 gap closure. |
 | 11 | Status bar shows count of pending AI modifications | VERIFIED | status_bar.dart: StatusBar shows "当前文档有 N 处AI修改待确认" when pendingCount > 0, hidden when allResolved |
 | 12 | User can undo an AI modification without losing their own human edits | VERIFIED | selective_undo.dart: SelectiveUndoService with record/popLast. editor_ai_notifier.dart undoLastAIChange: pops entry, deletes replacement, re-inserts original WITHOUT provenance |
 | 13 | AI undo stack is separate from the document undo stack (Ctrl+Z undoes human edits, not AI accepts) | VERIFIED | selective_undo.dart: separate _undoStack list. editor_page.dart: Ctrl+Shift+Z bound to _UndoAIIntent -> undoLastAIChange(). Ctrl+Z is super_editor's built-in undo |
 | 14 | User can set a context anchor by selecting text and using the floating toolbar button | VERIFIED | floating_toolbar.dart: _AnchorButton with PopupMenuButton showing "持久锚点"/"本次参考". _setAnchor creates ContextAnchor.fromType and adds to notifier |
 | 15 | Persistent anchors remain active until manually removed; one-time anchors clear after AI operation | VERIFIED | context_anchor_notifier.dart: clearOneTime() keeps persistent. editor_ai_notifier.dart _postProcess: calls clearOneTime() after AI operation |
-| 16 | Anchored paragraphs show gold background with pin icon in the editor margin | FAILED | context_anchor_indicator.dart: _AnchorIndicator uses CustomPaint inside IgnorePointer/Stack with no size constraints. Painter draws rect at (0,0) with no positioning. No pin icon rendered. Overlay produces zero visible output |
+| 16 | Anchored paragraphs show gold background with pin icon in the editor margin | VERIFIED | context_anchor_indicator.dart: LayoutBuilder + Positioned.fill for proper sizing; ColoredBox renders gold background (persistent: 0x1AFFD700, one-time: 0x0DFFD700); push_pin icon via Align widget. Fixed in 03-04 gap closure. |
 | 17 | Anchor content is automatically injected into the PromptPipeline system message | VERIFIED | context_anchor_middleware.dart: ContextAnchorMiddleware extends PromptMiddleware, casts anchors to ContextAnchor, builds system message "以下是作者指定的参考上下文...". editor_prompt_pipeline.dart: middleware in correct position (after BannedList, before Operation) |
 
-**Score:** 15/17 truths verified
+**Score:** 17/17 truths verified (re-verified after 03-04 gap closure)
 
 ### Required Artifacts
 
@@ -99,7 +93,7 @@ human_verification:
 | `lib/features/editor/domain/context_anchor.dart` | ContextAnchor entity with AnchorType | VERIFIED | 143 lines. Implements AnchorReference, fromType factory, label auto-generation |
 | `lib/features/editor/application/context_anchor_middleware.dart` | PromptMiddleware injecting anchor text | VERIFIED | 44 lines. Casts anchors, builds system message with labels |
 | `lib/features/editor/application/selective_undo.dart` | SelectiveUndoService with separate AI undo stack | VERIFIED | 127 lines. UndoEntry entity, record/popLast/clear |
-| `lib/features/editor/presentation/context_anchor_indicator.dart` | Anchor overlay with gold background + pin icon | STUB | 137 lines. CustomPaint with no sizing/positioning. No pin icon. Produces zero visible output |
+| `lib/features/editor/presentation/context_anchor_indicator.dart` | Anchor overlay with gold background + pin icon | VERIFIED | LayoutBuilder + Positioned.fill for sizing; ColoredBox renders gold background; push_pin icon via Align. Fixed in 03-04 gap closure. |
 | `lib/features/editor/application/context_anchor_notifier.dart` | Notifier managing active anchors with max 10 limit | VERIFIED | 53 lines. add/remove/clearOneTime/clear, maxActiveAnchors = 10 |
 
 ### Key Link Verification
@@ -143,9 +137,9 @@ No probes declared for this phase. Step 7c: SKIPPED.
 |-------------|-----------|-------------|--------|----------|
 | EDIT-02 | 03-01 | Select text triggers floating toolbar popup | SATISFIED | FloatingToolbar listens to selectionNotifier, shows on expanded selection |
 | EDIT-03 | 03-01 | Floating toolbar provides tone rewrite, paragraph polish, free input | SATISFIED | _ToolbarContent with three _ActionButton widgets, correct Chinese labels |
-| EDIT-05 | 03-02 | AI-modified text visually distinguished from human-written text | PARTIAL | DiffResult data model works (sentence-level diff), inline diff overlay renders red/green, but provenance blue background on accepted text is NOT rendered (dead code) |
+| EDIT-05 | 03-02, 03-04 | AI-modified text visually distinguished from human-written text | SATISFIED | DiffResult data model works, inline diff overlay renders red/green, provenance blue background renders via stylesheet inlineTextStyler (03-04 gap closure) |
 | EDIT-06 | 03-03 | Selective undo for AI modifications (revert AI without losing human edits) | SATISFIED | SelectiveUndoService with separate stack, Ctrl+Shift+Z shortcut, undoLastAIChange restores without provenance |
-| EDIT-07 | 03-03 | Context anchor -- user can select paragraphs as reference context for AI | PARTIAL | Data model and injection work (ContextAnchor, ContextAnchorMiddleware), but gold background + pin icon overlay does not render visibly |
+| EDIT-07 | 03-03, 03-04 | Context anchor -- user can select paragraphs as reference context for AI | SATISFIED | Data model, injection, and overlay all work. Gold background + pin icon render via LayoutBuilder + ColoredBox (03-04 gap closure) |
 
 ### Anti-Patterns Found
 
@@ -195,15 +189,15 @@ No probes declared for this phase. Step 7c: SKIPPED.
 
 ### Gaps Summary
 
-Two gaps block full goal achievement:
+All gaps resolved via plan 03-04 (gap closure):
 
-**Gap 1 -- Provenance background not rendered (EDIT-05 partial):** The `ProvenanceAttributions` utility class exists with `applyProvenance`/`removeProvenance` methods, and `aiProvenanceAttribution` / `provenanceColor` constants are defined. However, `EditorAINotifier.acceptSentence` never calls `ProvenanceAttributions.applyProvenance()`. The `InsertTextRequest` includes `aiProvenanceAttribution` in its attributions set, which marks the text in the document model, but no overlay or stylesheet renders the blue background color. The provenance infrastructure is dead code.
+**Gap 1 -- Provenance background (EDIT-05): RESOLVED.** Added `_provenanceStylesheet` extending `defaultStylesheet` with a custom `inlineTextStyler` that checks for `aiProvenanceAttribution` on text spans and applies `provenanceColor` (blue, 10% opacity) as `backgroundColor`. The attribution is already present in the document model from `InsertTextRequest`; the stylesheet rule makes it visible.
 
-**Gap 2 -- Anchor overlay not rendering (EDIT-07 partial):** The `ContextAnchorOverlayBuilder` is wired into `editor_page.dart`'s `documentOverlayBuilders` and reads from `contextAnchorNotifierProvider`. However, `_AnchorIndicator` uses `CustomPaint` inside an `IgnorePointer`/`Stack` with no explicit size constraints, so the painter receives zero-size canvas and renders nothing. Additionally, no pin icon widget is rendered -- the plan specifies "a pin icon in the left margin" but the implementation only draws a colored rectangle via `CustomPaint`. The data model and injection pipeline work correctly; only the visual indicator is broken.
+**Gap 2 -- Anchor overlay (EDIT-07): RESOLVED.** Rewrote `_AnchorIndicators` to use `LayoutBuilder` for proper constraints and wrapped each `_AnchorIndicator` in `Positioned.fill` so it receives the full overlay area size. Replaced bare `CustomPaint` with `ColoredBox` for gold background rendering. Added `push_pin` icon in the top-left corner via `Align` widget.
 
-**Minor -- Toolbar flip logic not implemented:** The plan (D-08) specifies the toolbar should flip above the selection when the selection is in the bottom 40% of the viewport. The current implementation uses fixed bottom positioning with no flip logic.
+**Minor -- Toolbar flip (D-08): RESOLVED.** Replaced hardcoded `Follower.withOffset` with `Follower.withAligner` using a `FunctionalAligner` that checks the selection's screen-space position. When the leader rect is in the bottom 40% of the viewport, the toolbar flips above the selection.
 
 ---
 
-_Verified: 2026-06-02T12:00:00Z_
+_Verified: 2026-06-02T14:00:00Z (re-verified after 03-04 gap closure)_
 _Verifier: Claude (gsd-verifier)_

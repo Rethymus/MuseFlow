@@ -169,6 +169,23 @@ Plans:
 - [ ] 04-04: Real-time skill enforcement, deviation detection, and multi-skill activation
 - [ ] 04-05: Knowledge base quick-insert via keyboard shortcut in editor
 
+**Wave 1** *(foundation — entities, repositories, notifiers, UI)*
+- 04-01: Knowledge base CRUD — CharacterCard, WorldSetting, Hive adapters, repositories, notifiers, knowledge base page
+
+**Wave 2** *(parallel — name index and skill generation are independent)*
+- 04-02: Name-index entity matching + KnowledgeInjectionMiddleware for auto-injection
+- 04-03: Skill system — SkillDocument entity, AI-assisted generation, multi-step wizard
+
+**Wave 3** *(parallel — depends on Wave 1 + 2)*
+- 04-04: SkillEnforcementMiddleware, deviation detection, multi-skill activation UI
+- 04-05: Ctrl+K quick-insert dialog for knowledge references in editor
+
+**Cross-cutting constraints:**
+- `KnowledgeEntity` abstract base and `EntityType` enum created in 04-01, consumed by 04-02 through 04-05
+- `NameIndex` created in 04-02, consumed by 04-02's KnowledgeInjectionMiddleware
+- `SkillDocument` and `SkillRepository` created in 04-03, consumed by 04-04 and 04-05
+- `CharacterCardNotifier`/`WorldSettingNotifier` created in 04-01, presentation layer uses notifiers not repositories
+
 ### Phase 5: Story Structure + Format + Export
 **Mode**: mvp
 **Goal**: Users can track foreshadowing threads, manage plot nodes, and rely on AI to catch character inconsistencies and story contradictions -- then clean formatting and export their work

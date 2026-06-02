@@ -57,6 +57,9 @@ class _AnchorOverlay extends ConsumerWidget {
 }
 
 /// Renders positioned indicator widgets for each active anchor.
+///
+/// Uses [LayoutBuilder] to obtain the available size and renders each
+/// anchor as a [Positioned.fill] child so it gets a non-zero canvas.
 class _AnchorIndicators extends StatelessWidget {
   const _AnchorIndicators({
     required this.editor,
@@ -69,13 +72,19 @@ class _AnchorIndicators extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return IgnorePointer(
-      child: Stack(
-        children: anchors.map((anchor) {
-          return _AnchorIndicator(
-            anchor: anchor,
-            editor: editor,
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          return Stack(
+            children: anchors.map((anchor) {
+              return Positioned.fill(
+                child: _AnchorIndicator(
+                  anchor: anchor,
+                  editor: editor,
+                ),
+              );
+            }).toList(),
           );
-        }).toList(),
+        },
       ),
     );
   }
@@ -83,7 +92,9 @@ class _AnchorIndicators extends StatelessWidget {
 
 /// A single anchor indicator with gold background and pin icon.
 ///
-/// Renders at the approximate position of the anchored node.
+/// Renders a gold-tinted background overlay for the anchored paragraph.
+/// Persistent anchors use deeper gold (0x1AFFD700), one-time use
+/// lighter gold (0x0DFFD700). A pin icon appears in the top-left corner.
 class _AnchorIndicator extends StatelessWidget {
   const _AnchorIndicator({
     required this.anchor,
@@ -102,35 +113,20 @@ class _AnchorIndicator extends StatelessWidget {
     final color =
         anchor.isPersistent ? _persistentAnchorColor : _oneTimeAnchorColor;
 
-    return CustomPaint(
-      painter: _AnchorHighlightPainter(
-        nodeId: anchor.nodeId,
-        color: color,
+    return ColoredBox(
+      color: color,
+      child: const Align(
+        alignment: Alignment.topLeft,
+        child: Padding(
+          padding: EdgeInsets.only(left: 2, top: 2),
+          child: Icon(
+            Icons.push_pin,
+            size: 14,
+            color: Color(0x99FFD700),
+          ),
+        ),
       ),
     );
   }
 }
 
-/// Custom painter for rendering anchor highlights.
-///
-/// Renders a gold-tinted background overlay for the anchored paragraph.
-class _AnchorHighlightPainter extends CustomPainter {
-  _AnchorHighlightPainter({
-    required this.nodeId,
-    required this.color,
-  });
-
-  final String nodeId;
-  final Color color;
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    final paint = Paint()..color = color;
-    canvas.drawRect(Rect.fromLTWH(0, 0, size.width, size.height), paint);
-  }
-
-  @override
-  bool shouldRepaint(covariant _AnchorHighlightPainter oldDelegate) {
-    return nodeId != oldDelegate.nodeId || color != oldDelegate.color;
-  }
-}

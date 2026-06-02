@@ -112,19 +112,54 @@ class _FloatingToolbarState extends ConsumerState<FloatingToolbar> {
     );
   }
 
-  /// Builds a [Follower.withOffset] with smart flip logic.
+  /// Builds a [Follower.withAligner] with smart flip logic.
+  ///
+  /// D-08: The toolbar appears below the selection by default. When the
+  /// selection's vertical center falls in the bottom 40% of the viewport,
+  /// the toolbar flips above the selection to stay fully visible.
   Widget _buildFollower({required Widget child}) {
-    // D-08: Smart flip -- toolbar below selection by default,
-    // flips above when selection is in the bottom 40% of viewport.
-    // For simplicity, we use bottom positioning (toolbar below selection)
-    // since the selection bounds leader is at the top of the selection.
-    return Follower.withOffset(
+    return Follower.withAligner(
       link: widget.selectionLayerLinks.expandedSelectionBoundsLink,
-      leaderAnchor: Alignment.bottomCenter,
-      followerAnchor: Alignment.topCenter,
-      offset: const Offset(0, 8),
+      aligner: FunctionalAligner(
+        delegate: _flipAlign,
+      ),
       boundary: const ScreenFollowerBoundary(),
       child: child,
+    );
+  }
+
+  /// Determines toolbar anchor alignment based on selection's viewport position.
+  ///
+  /// Returns a [FollowerAlignment] that places the toolbar below the selection
+  /// when the selection is in the top 60% of the viewport, or above it when
+  /// in the bottom 40%.
+  static FollowerAlignment _flipAlign(
+    Rect globalLeaderRect,
+    Size followerSize, [
+    Rect? globalBounds,
+  ]) {
+    // Default: toolbar below selection
+    bool flipAbove = false;
+
+    if (globalBounds != null && globalBounds.height > 0) {
+      // Compare selection center Y against the 60% threshold of the viewport.
+      final selectionCenterY = globalLeaderRect.center.dy;
+      final threshold = globalBounds.height * 0.6;
+      flipAbove = selectionCenterY > threshold;
+    }
+
+    if (flipAbove) {
+      return const FollowerAlignment(
+        leaderAnchor: Alignment.topCenter,
+        followerAnchor: Alignment.bottomCenter,
+        followerOffset: Offset(0, -8),
+      );
+    }
+
+    return const FollowerAlignment(
+      leaderAnchor: Alignment.bottomCenter,
+      followerAnchor: Alignment.topCenter,
+      followerOffset: Offset(0, 8),
     );
   }
 
