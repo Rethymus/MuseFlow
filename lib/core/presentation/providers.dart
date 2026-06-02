@@ -7,6 +7,8 @@ import 'package:museflow/core/domain/fragment.dart';
 import 'package:museflow/core/infrastructure/fragment_repository.dart';
 import 'package:museflow/core/infrastructure/secure_storage_service.dart';
 import 'package:museflow/core/infrastructure/settings_repository.dart';
+import 'package:museflow/features/ai/application/provider_service.dart';
+import 'package:museflow/features/ai/infrastructure/provider_repository.dart';
 
 /// Provides a [FragmentRepository] backed by a Hive 'fragments' box.
 ///
@@ -52,4 +54,23 @@ final settingsRepositoryProvider =
 /// Provides a singleton [SecureStorageService] instance.
 final secureStorageServiceProvider = Provider<SecureStorageService>((ref) {
   return SecureStorageService();
+});
+
+/// Provides a [ProviderRepository] backed by a Hive 'ai_providers' box.
+///
+/// Opens the box without encryption (API keys go to SecureStorage).
+final providerRepositoryProvider =
+    FutureProvider<ProviderRepository>((ref) async {
+  final box = await Hive.openBox<dynamic>('ai_providers');
+  final secureStorage = ref.read(secureStorageServiceProvider);
+  return ProviderRepository(box, secureStorage);
+});
+
+/// Provides a [ProviderService] for AI provider management.
+///
+/// Depends on [providerRepositoryProvider] and [secureStorageServiceProvider].
+final providerServiceProvider = FutureProvider<ProviderService>((ref) async {
+  final repository = await ref.watch(providerRepositoryProvider.future);
+  final secureStorage = ref.read(secureStorageServiceProvider);
+  return ProviderService(repository, secureStorage);
 });
