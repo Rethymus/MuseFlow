@@ -93,7 +93,7 @@ Plans:
 **Plans:** 3 plans
 
 Plans:
-- [ ] 02-01-PLAN.md — Provider management: domain entity, repository, presets, service, settings UI with CRUD and routing
+- [x] 02-01-PLAN.md — Provider management: domain entity, repository, presets, service, settings UI with CRUD and routing
 - [ ] 02-02-PLAN.md — AI engine: OpenAI adapter with streaming, PromptPipeline middleware chain, anti-AI-scent processor, token budget calculator
 - [ ] 02-03-PLAN.md — Synthesis UX: SynthesisNotifier, slide-out panel with streaming display, editor insertion, banned phrase settings
 
@@ -205,7 +205,7 @@ Phases execute in numeric order: 0 -> 1 -> 2 -> 3 -> 4 -> 5 -> 6
 |-------|----------------|--------|-----------|
 | 0. Technical Validation | 3/3 | Complete   | 2026-06-01 |
 | 1. App Shell + Editor + Capture UI | 4/4 | Complete   | 2026-06-01 |
-| 2. AI Provider + Capture Synthesis | 0/3 | Planning complete | - |
+| 2. AI Provider + Capture Synthesis | 1/3 | In progress | - |
 | 3. Editor AI Toolbar | 0/3 | Not started | - |
 | 4. Knowledge Base + Skill System | 0/5 | Not started | - |
 | 5. Story Structure + Format + Export | 0/4 | Not started | - |

@@ -46,8 +46,8 @@
 
 ### Model Management
 
-- [ ] **MODL-01**: Provider CRUD — add/edit/delete AI providers (name, API Key, Base URL)
-- [ ] **MODL-02**: Preset providers for OpenAI, Claude, DeepSeek, Ollama
+- [x] **MODL-01**: Provider CRUD — add/edit/delete AI providers (name, API Key, Base URL)
+- [x] **MODL-02**: Preset providers for OpenAI, Claude, DeepSeek, Ollama
 - [ ] **MODL-03**: Per-provider model parameter config (Temperature, Top-P, Max Tokens)
 - [ ] **MODL-04**: Custom model import support (LocalAI, etc.)
 
@@ -143,8 +143,8 @@
 | AI-06 | Phase 2 | Pending |
 | AI-07 | Phase 2 | Pending |
 | AI-08 | Phase 2 | Pending |
-| MODL-01 | Phase 2 | Pending |
-| MODL-02 | Phase 2 | Pending |
+| MODL-01 | Phase 2 | Complete (02-01) |
+| MODL-02 | Phase 2 | Complete (02-01) |
 | CAPT-03 | Phase 2 | Pending |
 | CAPT-04 | Phase 2 | Pending |
 | EDIT-02 | Phase 3 | Pending |
