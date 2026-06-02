@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:museflow/shared/constants/app_constants.dart';
 import 'package:museflow/features/editor/presentation/editor_provider.dart';
 import 'package:museflow/features/editor/presentation/editor_toolbar.dart';
+import 'package:museflow/features/editor/presentation/floating_toolbar.dart';
 import 'package:super_editor/super_editor.dart';
 
 /// Notifier exposing the current Editor instance.
@@ -37,11 +38,13 @@ class EditorPage extends ConsumerStatefulWidget {
 
 class _EditorPageState extends ConsumerState<EditorPage> {
   late final Editor _editor;
+  late final SelectionLayerLinks _selectionLinks;
 
   @override
   void initState() {
     super.initState();
     _editor = createDefaultEditor();
+    _selectionLinks = SelectionLayerLinks();
     // Expose editor via provider for synthesis text insertion per D-07
     WidgetsBinding.instance.addPostFrameCallback((_) {
       ref.read(editorProvider.notifier).setEditor(_editor);
@@ -128,6 +131,27 @@ class _EditorPageState extends ConsumerState<EditorPage> {
                       child: SuperEditor(
                         editor: _editor,
                         autofocus: true,
+                        selectionLayerLinks: _selectionLinks,
+                        documentOverlayBuilders: [
+                          // Selection leaders layer (positions leader widgets
+                          // at selection bounds for the floating toolbar)
+                          _SelectionLeadersLayerBuilder(
+                            links: _selectionLinks,
+                          ),
+                          // Floating toolbar for AI actions
+                          FunctionalSuperEditorLayerBuilder(
+                            (context, editContext) {
+                              return ContentLayerProxyWidget(
+                                child: FloatingToolbar(
+                                  editor: _editor,
+                                  selectionLayerLinks: _selectionLinks,
+                                ),
+                              );
+                            },
+                          ),
+                          // Default caret overlay
+                          const DefaultCaretOverlayBuilder(),
+                        ],
                       ),
                     ),
                   ),
@@ -149,4 +173,23 @@ class _BoldIntent extends Intent {
 
 class _ItalicIntent extends Intent {
   const _ItalicIntent();
+}
+
+/// Layer builder that positions leader widgets at selection bounds.
+///
+/// This provides the [LeaderLink]s that the [FloatingToolbar] uses
+/// via [Follower.withOffset] to position itself relative to the selection.
+class _SelectionLeadersLayerBuilder implements SuperEditorLayerBuilder {
+  const _SelectionLeadersLayerBuilder({required this.links});
+
+  final SelectionLayerLinks links;
+
+  @override
+  ContentLayerWidget build(BuildContext context, SuperEditorContext editContext) {
+    return SelectionLeadersDocumentLayer(
+      document: editContext.document,
+      selection: editContext.composer.selectionNotifier,
+      links: links,
+    );
+  }
 }
