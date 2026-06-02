@@ -11,7 +11,9 @@ library;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:museflow/features/ai/presentation/synthesis_notifier.dart';
+import 'package:museflow/shared/constants/app_constants.dart';
 
 /// Width of the synthesis panel on desktop.
 const double _panelWidth = 400.0;
@@ -392,6 +394,10 @@ class _SynthesisPanelState extends ConsumerState<SynthesisPanel> {
                         ref.read(synthesisProvider.notifier).confirmAndInsert();
                         _isTextDirty = false;
                         _additionalInstructionController.clear();
+                        // Navigate to editor page per D-07
+                        if (context.mounted) {
+                          context.go(AppConstants.editor);
+                        }
                       },
                 icon: const Icon(Icons.check, size: 16),
                 label: const Text('确认插入'),

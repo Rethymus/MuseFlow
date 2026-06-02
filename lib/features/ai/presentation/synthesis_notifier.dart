@@ -258,7 +258,7 @@ class SynthesisNotifier extends Notifier<SynthesisState> {
       }
 
       // Stream complete -- run anti-AI-scent processing
-      _postProcess();
+      await _postProcess();
     } on AIException catch (e) {
       _handleStreamError(e);
     } catch (e) {
@@ -271,9 +271,10 @@ class SynthesisNotifier extends Notifier<SynthesisState> {
   }
 
   /// Runs anti-AI-scent post-processing on accumulated text.
-  void _postProcess() {
+  /// Per CR-02 fix: uses user-configured banned phrases, not hardcoded empty list.
+  Future<void> _postProcess() async {
     final processor = ref.read(antiAIScentProcessorProvider);
-    final bannedPhrases = <String>[];
+    final bannedPhrases = await _getBannedPhrases();
 
     final result = processor.process(
       state.accumulatedText,
