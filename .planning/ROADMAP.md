@@ -14,7 +14,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 
 - [x] **Phase 0: Technical Validation** - Spike editor/IME/packages before committing to architecture (completed 2026-06-01)
 - [x] **Phase 1: App Shell + Editor + Capture UI** - Runnable app with navigation, editor, and fragment capture (no AI) (completed 2026-06-01)
-- [ ] **Phase 2: AI Provider + Capture Synthesis** - AI adapter layer, provider settings, anti-AI-scent, fragment synthesis
+- [x] **Phase 2: AI Provider + Capture Synthesis** - AI adapter layer, provider settings, anti-AI-scent, fragment synthesis (completed 2026-06-02)
 - [ ] **Phase 3: Editor AI Toolbar** - Floating toolbar with AI actions, text provenance, selective undo, context anchor
 - [ ] **Phase 4: Knowledge Base + Skill System** - Character cards, world settings, auto-injection, AI-assisted world-building
 - [ ] **Phase 5: Story Structure + Format + Export** - Foreshadowing tracking, consistency guardian, format cleaning, export
@@ -90,12 +90,12 @@ Plans:
   6. AI errors (network failure, rate limit, invalid key) display graceful messages, not crashes
 **UI hint**: yes
 **Risks**: Anti-AI-scent effectiveness is unproven until tested with real Chinese prose and detection tools. Token budget estimation for Chinese text needs empirical validation.
-**Plans:** 2/3 plans executed
+**Plans:** 3/3 plans complete
 
 Plans:
 - [x] 02-01-PLAN.md — Provider management: domain entity, repository, presets, service, settings UI with CRUD and routing
 - [x] 02-02-PLAN.md — AI engine: OpenAI adapter with streaming, PromptPipeline middleware chain, anti-AI-scent processor, token budget calculator
-- [ ] 02-03-PLAN.md — Synthesis UX: SynthesisNotifier, slide-out panel with streaming display, editor insertion, banned phrase settings
+- [x] 02-03-PLAN.md — Synthesis UX: SynthesisNotifier, slide-out panel with streaming display, editor insertion, banned phrase settings
 
 **Wave 1** *(foundation — provider entity and management UI)*
 - 02-01: Provider domain + repository + presets + service + settings UI
@@ -205,7 +205,7 @@ Phases execute in numeric order: 0 -> 1 -> 2 -> 3 -> 4 -> 5 -> 6
 |-------|----------------|--------|-----------|
 | 0. Technical Validation | 3/3 | Complete   | 2026-06-01 |
 | 1. App Shell + Editor + Capture UI | 4/4 | Complete   | 2026-06-01 |
-| 2. AI Provider + Capture Synthesis | 2/3 | In Progress|  |
+| 2. AI Provider + Capture Synthesis | 3/3 | Complete   | 2026-06-02 |
 | 3. Editor AI Toolbar | 0/3 | Not started | - |
 | 4. Knowledge Base + Skill System | 0/5 | Not started | - |
 | 5. Story Structure + Format + Export | 0/4 | Not started | - |

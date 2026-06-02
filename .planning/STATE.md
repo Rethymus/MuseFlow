@@ -3,15 +3,15 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-stopped_at: Completed 02-02-PLAN.md (AI Engine). Next: 02-03 (Synthesis UX)
-last_updated: "2026-06-02T04:45:00.000Z"
-last_activity: 2026-06-02
+stopped_at: Completed 02-03-PLAN.md (Synthesis UX)
+last_updated: "2026-06-02T07:54:07Z"
+last_activity: 2026-06-02 -- Phase 2 complete (3/3 plans)
 progress:
   total_phases: 7
-  completed_phases: 2
+  completed_phases: 3
   total_plans: 10
-  completed_plans: 9
-  percent: 90
+  completed_plans: 10
+  percent: 43
 ---
 
 # Project State
@@ -21,16 +21,16 @@ progress:
 See: .planning/PROJECT.md (updated 2026-05-31)
 
 **Core value:** 让AI帮你写好故事，但让读者看不出AI的痕迹。
-**Current focus:** Phase 2 — ai provider + capture synthesis
+**Current focus:** Phase 2 — AI Provider + Capture Synthesis
 
 ## Current Position
 
-Phase: 2
-Plan: 02-02 completed. Next: 02-03 (Synthesis UX)
-Status: In progress
-Last activity: 2026-06-02
+Phase: 2 (AI Provider + Capture Synthesis) -- COMPLETE
+Plan: 3 of 3
+Status: Phase 2 complete, ready for Phase 3
+Last activity: 2026-06-02 -- Phase 2 complete (3/3 plans)
 
-Progress: [█████████░] 90%
+Progress: [██████████] 100%
 
 ## Performance Metrics
 
@@ -46,7 +46,7 @@ Progress: [█████████░] 90%
 |-------|-------|-------|----------|
 | 00 | 3 | - | - |
 | 01 | 4 | - | - |
-| 02 | 2 | 27m | 14m |
+| 02 | 3 | 40m | 13m |
 
 **Recent Trend:**
 
@@ -68,6 +68,9 @@ Recent decisions affecting current work:
 - **D-15**: CJK boundary matching uses both-sides check (not regex) per Pitfall 5 -- prevents "自然而然" false positive
 - **D-16**: PromptPipeline middlewares import openai_dart directly (Dart no transitive re-export)
 - **D-17**: PromptMiddleware const constructor enables const middleware subclasses
+- **D-18**: Editor exposed via EditorHolderNotifier (Notifier<Editor?>) set in initState, cleared in dispose -- works because StatefulShellRoute.indexedStack keeps editor mounted
+- **D-19**: activeProviderProvider/activeApiKeyProvider wrap async FutureProviders for sync reads in SynthesisNotifier
+- **D-20**: BannedPhrasesNotifier seeds from AntiAIScentProcessor.synonymKeys, persists via SettingsRepository
 
 ### Pending Todos
 
@@ -88,6 +91,6 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-06-02T04:45:00.000Z
-Stopped at: Completed 02-02-PLAN.md (AI Engine)
-Resume file: .planning/phases/02-ai-provider-capture-synthesis/02-02-SUMMARY.md
+Last session: 2026-06-02T07:54:07Z
+Stopped at: Completed 02-03-PLAN.md (Synthesis UX)
+Resume file: .planning/phases/02-ai-provider-capture-synthesis/02-03-SUMMARY.md

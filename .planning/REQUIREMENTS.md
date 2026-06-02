@@ -29,8 +29,8 @@
 
 - [ ] **CAPT-01**: Bullet-note mode for rapid fragment input
 - [ ] **CAPT-02**: Fragments organized by story/chapter/scene
-- [ ] **CAPT-03**: AI synthesizes selected fragments into coherent story paragraph(s)
-- [ ] **CAPT-04**: Synthesized text is editable before entering main editor
+- [x] **CAPT-03**: AI synthesizes selected fragments into coherent story paragraph(s)
+- [x] **CAPT-04**: Synthesized text is editable before entering main editor
 - [ ] **CAPT-05**: Floating quick-capture window accessible from any screen
 
 ### AI Integration
@@ -145,8 +145,8 @@
 | AI-08 | Phase 2 | Complete |
 | MODL-01 | Phase 2 | Complete (02-01) |
 | MODL-02 | Phase 2 | Complete (02-01) |
-| CAPT-03 | Phase 2 | Pending |
-| CAPT-04 | Phase 2 | Pending |
+| CAPT-03 | Phase 2 | Complete |
+| CAPT-04 | Phase 2 | Complete |
 | EDIT-02 | Phase 3 | Pending |
 | EDIT-03 | Phase 3 | Pending |
 | EDIT-05 | Phase 3 | Pending |
