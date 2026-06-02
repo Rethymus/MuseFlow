@@ -7,7 +7,9 @@ import 'package:museflow/core/domain/fragment.dart';
 import 'package:museflow/core/infrastructure/fragment_repository.dart';
 import 'package:museflow/core/infrastructure/secure_storage_service.dart';
 import 'package:museflow/core/infrastructure/settings_repository.dart';
+import 'package:museflow/features/ai/application/prompt_pipeline.dart';
 import 'package:museflow/features/ai/application/provider_service.dart';
+import 'package:museflow/features/ai/infrastructure/openai_adapter.dart';
 import 'package:museflow/features/ai/infrastructure/provider_repository.dart';
 
 /// Provides a [FragmentRepository] backed by a Hive 'fragments' box.
@@ -73,4 +75,19 @@ final providerServiceProvider = FutureProvider<ProviderService>((ref) async {
   final repository = await ref.watch(providerRepositoryProvider.future);
   final secureStorage = ref.read(secureStorageServiceProvider);
   return ProviderService(repository, secureStorage);
+});
+
+/// Provides a singleton [OpenAIAdapter] for streaming AI completions.
+///
+/// Per AI-01: Supports any OpenAI-compatible API via configurable baseUrl.
+/// Client caching prevents memory leaks.
+final openaiAdapterProvider = Provider<OpenAIAdapter>((ref) {
+  return OpenAIAdapter();
+});
+
+/// Provides a [PromptPipeline] with default middleware ordering per AI-04.
+///
+/// Middleware order: SystemPrompt -> PersonaInjection -> BannedList -> UserContent
+final promptPipelineProvider = Provider<PromptPipeline>((ref) {
+  return PromptPipeline.withDefaultMiddlewares();
 });
