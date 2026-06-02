@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:museflow/core/presentation/providers.dart';
 import 'package:museflow/shared/constants/app_constants.dart';
+import 'package:museflow/features/editor/presentation/context_anchor_indicator.dart';
 import 'package:museflow/features/editor/presentation/diff_display.dart';
 import 'package:museflow/features/editor/presentation/editor_provider.dart';
 import 'package:museflow/features/editor/presentation/editor_toolbar.dart';
@@ -105,6 +106,9 @@ class _EditorPageState extends ConsumerState<EditorPage> {
             const _BoldIntent(),
         LogicalKeySet(LogicalKeyboardKey.control, LogicalKeyboardKey.keyI):
             const _ItalicIntent(),
+        // EDIT-06: Ctrl+Shift+Z for AI undo (separate from Ctrl+Z)
+        LogicalKeySet(LogicalKeyboardKey.control, LogicalKeyboardKey.shift,
+            LogicalKeyboardKey.keyZ): const _UndoAIIntent(),
       },
       child: Actions(
         actions: <Type, Action<Intent>>{
@@ -113,6 +117,9 @@ class _EditorPageState extends ConsumerState<EditorPage> {
           ),
           _ItalicIntent: CallbackAction<_ItalicIntent>(
             onInvoke: (_) => _toggleItalic(),
+          ),
+          _UndoAIIntent: CallbackAction<_UndoAIIntent>(
+            onInvoke: (_) => _undoLastAIChange(),
           ),
         },
         child: PopScope(
@@ -147,6 +154,8 @@ class _EditorPageState extends ConsumerState<EditorPage> {
                             _SelectionLeadersLayerBuilder(
                               links: _selectionLinks,
                             ),
+                            // D-14: Anchor indicators (background layer)
+                            const ContextAnchorOverlayBuilder(),
                             // Diff highlights overlay
                             const DiffOverlayBuilder(),
                             // Floating toolbar for AI actions
@@ -187,6 +196,13 @@ class _EditorPageState extends ConsumerState<EditorPage> {
         ),
       ),
     );
+  }
+
+  /// Undoes the last AI modification via SelectiveUndoService.
+  ///
+  /// Per EDIT-06: Separate from Ctrl+Z (which undoes human edits).
+  void _undoLastAIChange() {
+    ref.read(editorAINotifierProvider.notifier).undoLastAIChange();
   }
 
   /// Checks for unresolved diffs before navigating away.
@@ -237,6 +253,10 @@ class _BoldIntent extends Intent {
 
 class _ItalicIntent extends Intent {
   const _ItalicIntent();
+}
+
+class _UndoAIIntent extends Intent {
+  const _UndoAIIntent();
 }
 
 /// Layer builder that positions leader widgets at selection bounds.

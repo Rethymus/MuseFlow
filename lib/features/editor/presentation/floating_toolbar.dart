@@ -17,8 +17,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:follow_the_leader/follow_the_leader.dart';
 import 'package:museflow/core/presentation/providers.dart';
-import 'package:museflow/features/editor/application/editor_ai_notifier.dart';
+import 'package:museflow/features/editor/domain/context_anchor.dart';
 import 'package:museflow/features/editor/domain/editor_ai_state.dart';
+import 'package:uuid/uuid.dart';
 import 'package:super_editor/super_editor.dart';
 
 /// Floating toolbar that appears on text selection with AI action buttons.
@@ -104,6 +105,7 @@ class _FloatingToolbarState extends ConsumerState<FloatingToolbar> {
               });
             },
             onStartOperation: _startOperation,
+            onSetAnchor: _setAnchor,
           ),
         );
       },
@@ -124,6 +126,59 @@ class _FloatingToolbarState extends ConsumerState<FloatingToolbar> {
       boundary: const ScreenFollowerBoundary(),
       child: child,
     );
+  }
+
+  /// Sets a context anchor from the current selection.
+  ///
+  /// Per D-13: Creates a ContextAnchor and adds it to the notifier.
+  /// Shows a SnackBar confirmation.
+  void _setAnchor(AnchorType type) {
+    final selection = widget.editor.composer.selection;
+    if (selection == null) return;
+
+    final selectedText = _getSelectedText(selection);
+    if (selectedText.isEmpty) return;
+
+    final nodeId = selection.base.nodeId;
+    final baseOffset =
+        (selection.base.nodePosition as TextNodePosition).offset;
+    final extentOffset =
+        (selection.extent.nodePosition as TextNodePosition).offset;
+    final startOffset = baseOffset < extentOffset ? baseOffset : extentOffset;
+    final endOffset = baseOffset < extentOffset ? extentOffset : baseOffset;
+
+    final anchor = ContextAnchor.fromType(
+      id: const Uuid().v4(),
+      text: selectedText,
+      nodeId: nodeId,
+      startOffset: startOffset,
+      endOffset: endOffset,
+      type: type,
+      createdAt: DateTime.now(),
+    );
+
+    final notifier = ref.read(contextAnchorNotifierProvider.notifier);
+    final added = notifier.add(anchor);
+
+    if (!added && mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('锚点数量已达上限（最多10个）'),
+          duration: Duration(seconds: 2),
+        ),
+      );
+      return;
+    }
+
+    if (mounted) {
+      final label = type == AnchorType.persistent ? '持久锚点' : '本次参考';
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('已设置为$label'),
+          duration: const Duration(seconds: 2),
+        ),
+      );
+    }
   }
 
   /// Starts an AI operation on the selected text.
@@ -190,6 +245,7 @@ class _ToolbarContent extends StatelessWidget {
     required this.freeInputController,
     required this.onToggleFreeInput,
     required this.onStartOperation,
+    required this.onSetAnchor,
   });
 
   final Editor editor;
@@ -198,6 +254,7 @@ class _ToolbarContent extends StatelessWidget {
   final VoidCallback onToggleFreeInput;
   final void Function(EditorAIOperation operation, {String? userInstruction})
       onStartOperation;
+  final void Function(AnchorType type) onSetAnchor;
 
   @override
   Widget build(BuildContext context) {
@@ -244,6 +301,11 @@ class _ToolbarContent extends StatelessWidget {
                   onTap: onToggleFreeInput,
                   isActive: showFreeInput,
                 ),
+                // D-13: Anchor entry button
+                const SizedBox(width: 2),
+                const VerticalDivider(width: 1, indent: 4, endIndent: 4),
+                const SizedBox(width: 2),
+                _AnchorButton(onSetAnchor: onSetAnchor),
               ],
             ),
           ),
@@ -376,6 +438,56 @@ class _FreeInputField extends StatelessWidget {
             tooltip: '取消',
           ),
         ],
+      ),
+    );
+  }
+}
+
+/// Anchor entry button with popup menu for choosing anchor type.
+///
+/// Per D-13: Shows a "📌" button that opens a menu with two options:
+/// "持久锚点" (persistent) and "本次参考" (one-time).
+class _AnchorButton extends StatelessWidget {
+  const _AnchorButton({required this.onSetAnchor});
+
+  final void Function(AnchorType type) onSetAnchor;
+
+  @override
+  Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
+    return PopupMenuButton<AnchorType>(
+      tooltip: '设置参考锚点',
+      onSelected: onSetAnchor,
+      itemBuilder: (context) => [
+        const PopupMenuItem(
+          value: AnchorType.persistent,
+          child: Row(
+            children: [
+              Icon(Icons.push_pin, size: 16),
+              SizedBox(width: 8),
+              Text('持久锚点'),
+            ],
+          ),
+        ),
+        const PopupMenuItem(
+          value: AnchorType.oneTime,
+          child: Row(
+            children: [
+              Icon(Icons.push_pin_outlined, size: 16),
+              SizedBox(width: 8),
+              Text('本次参考'),
+            ],
+          ),
+        ),
+      ],
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+        child: Icon(
+          Icons.push_pin,
+          size: 16,
+          color: colorScheme.onSurface,
+        ),
       ),
     );
   }
