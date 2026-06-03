@@ -7,6 +7,7 @@ import 'package:museflow/features/story_structure/application/foreshadowing_remi
 import 'package:museflow/features/story_structure/domain/foreshadowing_entry.dart';
 import 'package:museflow/features/story_structure/infrastructure/foreshadowing_repository.dart';
 import 'package:museflow/features/story_structure/presentation/foreshadowing_form.dart';
+import 'package:museflow/features/story_structure/presentation/plot_timeline.dart';
 import 'package:museflow/features/story_structure/presentation/story_structure_page.dart';
 
 import '../../../helpers/hive_test_helper.dart';
@@ -83,7 +84,7 @@ void main() {
       expect(find.byType(FloatingActionButton), findsOneWidget);
     });
 
-    testWidgets('should show placeholder for non-foreshadowing tabs',
+    testWidgets('should show real widgets for plot and guardian tabs',
         (tester) async {
       await tester.pumpWidget(
         UncontrolledProviderScope(
@@ -96,13 +97,13 @@ void main() {
       await tester.pump();
       await tester.pump(const Duration(milliseconds: 100));
 
-      // Tap the Plot Timeline tab
+      // Tap the Plot Timeline tab — now shows PlotTimeline widget
       await tester.tap(find.text('剧情线'));
       await tester.pump();
       await tester.pump(const Duration(milliseconds: 100));
 
-      expect(find.text('时间线还空着'), findsOneWidget);
-      expect(find.text('计划中'), findsOneWidget);
+      // PlotTimeline should render (empty state or real content)
+      expect(find.byType(PlotTimeline), findsOneWidget);
     });
 
     testWidgets('should display foreshadowing entries when data loaded',
