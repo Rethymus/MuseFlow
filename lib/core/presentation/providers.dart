@@ -16,6 +16,12 @@ import 'package:museflow/features/ai/infrastructure/provider_repository.dart';
 import 'package:museflow/features/editor/application/diff_calculator.dart';
 import 'package:museflow/features/editor/application/editor_prompt_pipeline.dart';
 import 'package:museflow/features/editor/application/selective_undo.dart';
+import 'package:museflow/features/knowledge/application/character_card_notifier.dart';
+import 'package:museflow/features/knowledge/application/world_setting_notifier.dart';
+import 'package:museflow/features/knowledge/domain/character_card.dart';
+import 'package:museflow/features/knowledge/domain/world_setting.dart';
+import 'package:museflow/features/knowledge/infrastructure/character_card_repository.dart';
+import 'package:museflow/features/knowledge/infrastructure/world_setting_repository.dart';
 export 'package:museflow/features/editor/application/context_anchor_notifier.dart'
     show contextAnchorNotifierProvider, ContextAnchorNotifier;
 export 'package:museflow/features/editor/presentation/editor_page.dart'
@@ -136,3 +142,39 @@ final diffCalculatorProvider = Provider<DiffCalculator>((ref) {
 final selectiveUndoServiceProvider = Provider<SelectiveUndoService>((ref) {
   return SelectiveUndoService();
 });
+
+/// Provides a [CharacterCardRepository] backed by a Hive 'character_cards' box.
+///
+/// Opens the box asynchronously, so consumers must await this provider.
+final characterCardRepositoryProvider =
+    FutureProvider<CharacterCardRepository>((ref) async {
+  final box = await Hive.openBox<dynamic>('character_cards');
+  return CharacterCardRepository(box);
+});
+
+/// Provides a [WorldSettingRepository] backed by a Hive 'world_settings' box.
+///
+/// Opens the box asynchronously, so consumers must await this provider.
+final worldSettingRepositoryProvider =
+    FutureProvider<WorldSettingRepository>((ref) async {
+  final box = await Hive.openBox<dynamic>('world_settings');
+  return WorldSettingRepository(box);
+});
+
+/// Provides a [CharacterCardNotifier] for character card CRUD operations.
+///
+/// Presentation layer uses this (not the repository directly) per
+/// Clean Architecture compliance.
+final characterCardNotifierProvider =
+    AsyncNotifierProvider<CharacterCardNotifier, List<CharacterCard>>(
+  CharacterCardNotifier.new,
+);
+
+/// Provides a [WorldSettingNotifier] for world setting CRUD operations.
+///
+/// Presentation layer uses this (not the repository directly) per
+/// Clean Architecture compliance.
+final worldSettingNotifierProvider =
+    AsyncNotifierProvider<WorldSettingNotifier, List<WorldSetting>>(
+  WorldSettingNotifier.new,
+);

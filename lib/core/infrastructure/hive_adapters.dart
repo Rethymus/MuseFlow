@@ -1,6 +1,8 @@
 import 'package:hive_ce/hive.dart';
 import 'package:museflow/core/domain/app_settings.dart';
 import 'package:museflow/core/domain/fragment.dart';
+import 'package:museflow/features/knowledge/domain/character_card.dart';
+import 'package:museflow/features/knowledge/domain/world_setting.dart';
 
 /// Type ID registry for Hive adapters.
 /// Centralizes all type IDs to prevent conflicts.
@@ -8,6 +10,8 @@ abstract class HiveTypeIds {
   static const int fragment = 0;
   static const int appSettings = 1;
   static const int manuscript = 2;
+  static const int characterCard = 3;
+  static const int worldSetting = 4;
 }
 
 /// Manual Hive TypeAdapter for [Fragment].
@@ -62,6 +66,64 @@ class AppSettingsAdapter extends TypeAdapter<AppSettings> {
   bool operator ==(Object other) =>
       identical(this, other) ||
       other is AppSettingsAdapter &&
+          runtimeType == other.runtimeType &&
+          typeId == other.typeId;
+}
+
+/// Manual Hive TypeAdapter for [CharacterCard].
+///
+/// Delegates serialization to fromJson/toJson.
+class CharacterCardAdapter extends TypeAdapter<CharacterCard> {
+  @override
+  final int typeId = HiveTypeIds.characterCard;
+
+  @override
+  CharacterCard read(BinaryReader reader) {
+    final json = reader.readMap() as Map<String, dynamic>;
+    return CharacterCard.fromJson(json);
+  }
+
+  @override
+  void write(BinaryWriter writer, CharacterCard obj) {
+    writer.writeMap(obj.toJson());
+  }
+
+  @override
+  int get hashCode => typeId.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is CharacterCardAdapter &&
+          runtimeType == other.runtimeType &&
+          typeId == other.typeId;
+}
+
+/// Manual Hive TypeAdapter for [WorldSetting].
+///
+/// Delegates serialization to fromJson/toJson.
+class WorldSettingAdapter extends TypeAdapter<WorldSetting> {
+  @override
+  final int typeId = HiveTypeIds.worldSetting;
+
+  @override
+  WorldSetting read(BinaryReader reader) {
+    final json = reader.readMap() as Map<String, dynamic>;
+    return WorldSetting.fromJson(json);
+  }
+
+  @override
+  void write(BinaryWriter writer, WorldSetting obj) {
+    writer.writeMap(obj.toJson());
+  }
+
+  @override
+  int get hashCode => typeId.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is WorldSettingAdapter &&
           runtimeType == other.runtimeType &&
           typeId == other.typeId;
 }

@@ -6,6 +6,9 @@ import 'package:museflow/features/ai/presentation/banned_phrase_settings.dart';
 import 'package:museflow/features/ai/presentation/provider_management_page.dart';
 import 'package:museflow/features/capture/presentation/capture_page.dart';
 import 'package:museflow/features/editor/presentation/editor_page.dart';
+import 'package:museflow/features/knowledge/presentation/character_card_form.dart';
+import 'package:museflow/features/knowledge/presentation/knowledge_base_page.dart';
+import 'package:museflow/features/knowledge/presentation/world_setting_form.dart';
 import 'package:museflow/features/settings/presentation/settings_page.dart';
 import 'package:museflow/shared/constants/app_constants.dart';
 import 'package:museflow/shared/theme/app_theme.dart';
@@ -72,6 +75,41 @@ class MuseFlowApp extends ConsumerWidget {
                       path: 'banned-phrases',
                       builder: (context, state) =>
                           const BannedPhraseSettingsPage(),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+            // Branch 3: Knowledge base
+            StatefulShellBranch(
+              routes: [
+                GoRoute(
+                  path: AppConstants.knowledge,
+                  builder: (context, state) => const KnowledgeBasePage(),
+                  routes: [
+                    GoRoute(
+                      path: 'character/new',
+                      builder: (context, state) =>
+                          const CharacterCardForm(),
+                    ),
+                    GoRoute(
+                      path: 'character/:id',
+                      builder: (context, state) {
+                        final id = state.pathParameters['id'];
+                        return CharacterCardForm(cardId: id);
+                      },
+                    ),
+                    GoRoute(
+                      path: 'setting/new',
+                      builder: (context, state) =>
+                          const WorldSettingForm(),
+                    ),
+                    GoRoute(
+                      path: 'setting/:id',
+                      builder: (context, state) {
+                        final id = state.pathParameters['id'];
+                        return WorldSettingForm(settingId: id);
+                      },
                     ),
                   ],
                 ),
