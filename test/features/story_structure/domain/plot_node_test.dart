@@ -139,7 +139,7 @@ void main() {
     });
 
     test('should handle nullable updatedAt in JSON roundtrip', () {
-      final noUpdate = testNode.copyWith(updatedAt: null);
+      final noUpdate = testNode.copyWith(clearUpdatedAt: true);
       final json = noUpdate.toJson();
       final restored = PlotNode.fromJson(json);
 

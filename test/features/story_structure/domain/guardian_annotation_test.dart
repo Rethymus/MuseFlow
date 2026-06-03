@@ -103,15 +103,15 @@ void main() {
       expect(testAnnotation.hasExactLocation, isTrue);
 
       // Missing nodeId
-      final noNode = testAnnotation.copyWith(nodeId: null);
+      final noNode = testAnnotation.copyWith(clearNodeId: true);
       expect(noNode.hasExactLocation, isFalse);
 
       // Missing startOffset
-      final noStart = testAnnotation.copyWith(startOffset: null);
+      final noStart = testAnnotation.copyWith(clearStartOffset: true);
       expect(noStart.hasExactLocation, isFalse);
 
       // Missing endOffset
-      final noEnd = testAnnotation.copyWith(endOffset: null);
+      final noEnd = testAnnotation.copyWith(clearEndOffset: true);
       expect(noEnd.hasExactLocation, isFalse);
 
       // All null
