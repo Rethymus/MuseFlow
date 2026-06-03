@@ -70,6 +70,11 @@ class AdaptiveSidebar extends StatelessWidget {
           selectedIcon: Icon(Icons.settings),
           label: Text('设置'),
         ),
+        NavigationRailDestination(
+          icon: Icon(Icons.menu_book_outlined),
+          selectedIcon: Icon(Icons.menu_book),
+          label: Text('知识库'),
+        ),
       ],
     );
   }
@@ -105,6 +110,11 @@ class _BottomNavBar extends StatelessWidget {
           icon: Icon(Icons.settings_outlined),
           selectedIcon: Icon(Icons.settings),
           label: '设置',
+        ),
+        NavigationDestination(
+          icon: Icon(Icons.menu_book_outlined),
+          selectedIcon: Icon(Icons.menu_book),
+          label: '知识库',
         ),
       ],
     );

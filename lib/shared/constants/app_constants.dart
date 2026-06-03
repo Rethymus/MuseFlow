@@ -25,4 +25,7 @@ abstract class AppConstants {
   static const String settings = '/settings';
   static const String aiProviders = '/settings/ai-providers';
   static const String bannedPhrases = '/settings/banned-phrases';
+  static const String knowledge = '/knowledge';
+  static const String knowledgeCharacterNew = '/knowledge/character/new';
+  static const String knowledgeSettingNew = '/knowledge/setting/new';
 }
