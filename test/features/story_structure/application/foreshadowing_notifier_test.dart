@@ -2,28 +2,24 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:hive_ce/hive.dart';
 import 'package:museflow/core/presentation/providers.dart';
-import 'package:museflow/features/story_structure/application/foreshadowing_notifier.dart';
 import 'package:museflow/features/story_structure/application/foreshadowing_reminder_service.dart';
 import 'package:museflow/features/story_structure/domain/foreshadowing_entry.dart';
 import 'package:museflow/features/story_structure/infrastructure/foreshadowing_repository.dart';
 
-import 'package:hive_ce_flutter/hive_flutter.dart';
+import '../../../helpers/hive_test_helper.dart';
 
 void main() {
   late ProviderContainer container;
   late Box<dynamic> box;
 
   setUp(() async {
-    await Hive.initFlutter();
-    try {
-      await Hive.deleteBoxFromDisk('test_foreshadowing_notifier');
-    } catch (_) {}
+    await setUpHiveTest();
     box = await Hive.openBox<dynamic>('test_foreshadowing_notifier');
 
     container = ProviderContainer(
       overrides: [
         foreshadowingRepositoryProvider
-            .overrideWithValue(ForeshadowingRepository(box)),
+            .overrideWith((ref) async => ForeshadowingRepository(box)),
         foreshadowingReminderServiceProvider
             .overrideWithValue(ForeshadowingReminderService()),
       ],
@@ -32,8 +28,7 @@ void main() {
 
   tearDown(() async {
     container.dispose();
-    await box.close();
-    await Hive.deleteBoxFromDisk('test_foreshadowing_notifier');
+    await tearDownHiveTest();
   });
 
   ForeshadowingEntry _makeEntry({
@@ -131,6 +126,9 @@ void main() {
         plantedChapter: 1,
       ));
 
+      // Wait for state to settle
+      await notifier.future;
+
       final reminders = notifier.remindersForChapter(
         currentChapter: 5,
         defaultThreshold: 3,
@@ -156,6 +154,9 @@ void main() {
 
       await notifier.add(_makeEntry(id: 'e1'));
       await notifier.markResolved('e1', resolvedChapter: 5);
+
+      // Wait for state to settle
+      await notifier.future;
 
       final reminders = notifier.remindersForChapter(
         currentChapter: 100,

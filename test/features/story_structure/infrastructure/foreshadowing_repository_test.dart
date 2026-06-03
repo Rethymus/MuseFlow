@@ -3,25 +3,20 @@ import 'package:hive_ce/hive.dart';
 import 'package:museflow/features/story_structure/domain/foreshadowing_entry.dart';
 import 'package:museflow/features/story_structure/infrastructure/foreshadowing_repository.dart';
 
-import 'package:hive_ce_flutter/hive_flutter.dart';
+import '../../../helpers/hive_test_helper.dart';
 
 void main() {
   late ForeshadowingRepository repository;
   late Box<dynamic> box;
 
   setUp(() async {
-    await Hive.initFlutter();
-    // Use a test-specific box name, delete if it exists
-    try {
-      await Hive.deleteBoxFromDisk('test_foreshadowing_entries');
-    } catch (_) {}
+    await setUpHiveTest();
     box = await Hive.openBox<dynamic>('test_foreshadowing_entries');
     repository = ForeshadowingRepository(box);
   });
 
   tearDown(() async {
-    await box.close();
-    await Hive.deleteBoxFromDisk('test_foreshadowing_entries');
+    await tearDownHiveTest();
   });
 
   ForeshadowingEntry _makeEntry({
@@ -131,11 +126,21 @@ void main() {
         updatedAt: DateTime(2026, 2, 1),
       );
 
-      await repository.add(entry);
+      // add() sets createdAt to now, so compare saved result from add
+      final saved = await repository.add(entry);
       final restored = repository.getById('roundtrip');
 
       expect(restored, isNotNull);
-      expect(restored, equals(entry));
+      expect(restored!.id, saved.id);
+      expect(restored.title, saved.title);
+      expect(restored.mode, saved.mode);
+      expect(restored.status, saved.status);
+      expect(restored.plantedChapter, saved.plantedChapter);
+      expect(restored.targetResolutionChapter, saved.targetResolutionChapter);
+      expect(restored.sourceExcerpt, saved.sourceExcerpt);
+      expect(restored.sourceLocation, saved.sourceLocation);
+      expect(restored.notes, saved.notes);
+      expect(restored.linkedPlotNodeIds, saved.linkedPlotNodeIds);
     });
   });
 }

@@ -2,7 +2,9 @@ import 'package:hive_ce/hive.dart';
 import 'package:museflow/core/domain/app_settings.dart';
 import 'package:museflow/core/domain/fragment.dart';
 import 'package:museflow/features/knowledge/domain/character_card.dart';
+import 'package:museflow/features/knowledge/domain/skill_document.dart';
 import 'package:museflow/features/knowledge/domain/world_setting.dart';
+import 'package:museflow/features/story_structure/domain/foreshadowing_entry.dart';
 
 /// Type ID registry for Hive adapters.
 /// Centralizes all type IDs to prevent conflicts.
@@ -12,6 +14,8 @@ abstract class HiveTypeIds {
   static const int manuscript = 2;
   static const int characterCard = 3;
   static const int worldSetting = 4;
+  static const int skillDocument = 5;
+  static const int foreshadowingEntry = 6;
 }
 
 /// Manual Hive TypeAdapter for [Fragment].
@@ -124,6 +128,61 @@ class WorldSettingAdapter extends TypeAdapter<WorldSetting> {
   bool operator ==(Object other) =>
       identical(this, other) ||
       other is WorldSettingAdapter &&
+          runtimeType == other.runtimeType &&
+          typeId == other.typeId;
+}
+
+class SkillDocumentAdapter extends TypeAdapter<SkillDocument> {
+  @override
+  final int typeId = HiveTypeIds.skillDocument;
+
+  @override
+  SkillDocument read(BinaryReader reader) {
+    final json = reader.readMap() as Map<String, dynamic>;
+    return SkillDocument.fromJson(json);
+  }
+
+  @override
+  void write(BinaryWriter writer, SkillDocument obj) {
+    writer.writeMap(obj.toJson());
+  }
+
+  @override
+  int get hashCode => typeId.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is SkillDocumentAdapter &&
+          runtimeType == other.runtimeType &&
+          typeId == other.typeId;
+}
+
+/// Manual Hive TypeAdapter for [ForeshadowingEntry].
+///
+/// Delegates serialization to fromJson/toJson.
+class ForeshadowingEntryAdapter extends TypeAdapter<ForeshadowingEntry> {
+  @override
+  final int typeId = HiveTypeIds.foreshadowingEntry;
+
+  @override
+  ForeshadowingEntry read(BinaryReader reader) {
+    final json = reader.readMap() as Map<String, dynamic>;
+    return ForeshadowingEntry.fromJson(json);
+  }
+
+  @override
+  void write(BinaryWriter writer, ForeshadowingEntry obj) {
+    writer.writeMap(obj.toJson());
+  }
+
+  @override
+  int get hashCode => typeId.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is ForeshadowingEntryAdapter &&
           runtimeType == other.runtimeType &&
           typeId == other.typeId;
 }
