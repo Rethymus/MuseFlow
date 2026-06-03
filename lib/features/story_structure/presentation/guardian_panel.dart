@@ -5,35 +5,50 @@ import 'package:museflow/core/presentation/providers.dart';
 import 'package:museflow/features/story_structure/application/guardian_notifier.dart';
 import 'package:museflow/features/story_structure/domain/guardian_annotation.dart';
 
+/// Filter options for guardian finding kinds.
+enum GuardianFilter {
+  all,
+  character,
+  timeline,
+  world,
+  skill,
+  foreshadowing,
+}
+
 /// Side panel for manual guardian checks and finding display.
 ///
 /// Shows check state (idle/checking/error/results), finding cards with
 /// severity/kind/reason/suggested fix, and supports dismiss/retry actions.
+/// Supports check types: selected text, current chapter, and logic-only.
 ///
 /// Guardian suggestions never auto-apply. Suggested rewrites are copyable
 /// or can be routed to explicit review.
 class GuardianPanel extends ConsumerStatefulWidget {
   final String? selectedText;
+  final int? currentChapter;
 
-  const GuardianPanel({super.key, this.selectedText});
+  const GuardianPanel({super.key, this.selectedText, this.currentChapter});
 
   @override
   ConsumerState<GuardianPanel> createState() => _GuardianPanelState();
 }
 
 class _GuardianPanelState extends ConsumerState<GuardianPanel> {
+  GuardianFilter _filter = GuardianFilter.all;
+
   @override
   Widget build(BuildContext context) {
     final guardianAsync = ref.watch(guardianNotifierProvider);
+    final hasApiKey = ref.watch(activeApiKeyProvider) != null;
 
     return guardianAsync.when(
       loading: () => const Center(child: CircularProgressIndicator()),
       error: (error, _) => _buildError(error.toString()),
-      data: (result) => _buildContent(result),
+      data: (result) => _buildContent(result, hasApiKey: hasApiKey),
     );
   }
 
-  Widget _buildContent(GuardianCheckResult result) {
+  Widget _buildContent(GuardianCheckResult result, {required bool hasApiKey}) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -45,7 +60,7 @@ class _GuardianPanelState extends ConsumerState<GuardianPanel> {
               const Icon(Icons.shield_outlined, size: 20),
               const SizedBox(width: 8),
               Text(
-                '角色守护',
+                '故事守护',
                 style: Theme.of(context).textTheme.titleMedium,
               ),
             ],
@@ -53,11 +68,16 @@ class _GuardianPanelState extends ConsumerState<GuardianPanel> {
         ),
         const Divider(height: 1),
 
-        // Check button area
+        // Check buttons area
         Padding(
           padding: const EdgeInsets.all(12),
-          child: _buildCheckButton(result),
+          child: _buildCheckButtons(result, hasApiKey: hasApiKey),
         ),
+
+        // Filter chips
+        if (result.state == GuardianCheckState.results &&
+            result.annotations.isNotEmpty)
+          _buildFilterChips(),
 
         // Results area
         Expanded(child: _buildResults(result)),
@@ -65,7 +85,8 @@ class _GuardianPanelState extends ConsumerState<GuardianPanel> {
     );
   }
 
-  Widget _buildCheckButton(GuardianCheckResult result) {
+  Widget _buildCheckButtons(GuardianCheckResult result,
+      {required bool hasApiKey}) {
     if (result.state == GuardianCheckState.checking) {
       return const Row(
         children: [
@@ -80,13 +101,115 @@ class _GuardianPanelState extends ConsumerState<GuardianPanel> {
       );
     }
 
+    if (!hasApiKey) {
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'AI 检查未启用',
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  color: Theme.of(context).colorScheme.outline,
+                ),
+          ),
+          const SizedBox(height: 4),
+          Text(
+            '请先在设置中配置 AI 模型和 API Key。',
+            style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                  color: Theme.of(context).colorScheme.outline,
+                ),
+          ),
+        ],
+      );
+    }
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        FilledButton.tonal(
+          onPressed: widget.selectedText != null &&
+                  widget.selectedText!.isNotEmpty
+              ? _runLogicCheck
+              : null,
+          child: const Text('检查选中文本'),
+        ),
+        const SizedBox(height: 8),
+        FilledButton.tonal(
+          onPressed: widget.currentChapter != null
+              ? _runChapterCheck
+              : null,
+          child: const Text('检查当前章节'),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildFilterChips() {
     return SizedBox(
-      width: double.infinity,
-      child: FilledButton.tonal(
-        onPressed: _runCheck,
-        child: const Text('运行守护检查'),
+      height: 40,
+      child: ListView(
+        scrollDirection: Axis.horizontal,
+        padding: const EdgeInsets.symmetric(horizontal: 12),
+        children: [
+          _FilterChip(
+            label: '全部',
+            selected: _filter == GuardianFilter.all,
+            onTap: () => setState(() => _filter = GuardianFilter.all),
+          ),
+          const SizedBox(width: 4),
+          _FilterChip(
+            label: '角色',
+            selected: _filter == GuardianFilter.character,
+            onTap: () => setState(() => _filter = GuardianFilter.character),
+          ),
+          const SizedBox(width: 4),
+          _FilterChip(
+            label: '时间线',
+            selected: _filter == GuardianFilter.timeline,
+            onTap: () => setState(() => _filter = GuardianFilter.timeline),
+          ),
+          const SizedBox(width: 4),
+          _FilterChip(
+            label: '世界',
+            selected: _filter == GuardianFilter.world,
+            onTap: () => setState(() => _filter = GuardianFilter.world),
+          ),
+          const SizedBox(width: 4),
+          _FilterChip(
+            label: '技能',
+            selected: _filter == GuardianFilter.skill,
+            onTap: () => setState(() => _filter = GuardianFilter.skill),
+          ),
+          const SizedBox(width: 4),
+          _FilterChip(
+            label: '伏笔',
+            selected: _filter == GuardianFilter.foreshadowing,
+            onTap: () =>
+                setState(() => _filter = GuardianFilter.foreshadowing),
+          ),
+        ],
       ),
     );
+  }
+
+  List<GuardianAnnotation> _filteredAnnotations(
+      List<GuardianAnnotation> annotations) {
+    if (_filter == GuardianFilter.all) return annotations;
+    return annotations.where((a) {
+      switch (_filter) {
+        case GuardianFilter.character:
+          return a.kind == GuardianFindingKind.characterConsistency;
+        case GuardianFilter.timeline:
+          return a.kind == GuardianFindingKind.timelineContradiction;
+        case GuardianFilter.world:
+          return a.kind == GuardianFindingKind.worldRuleConflict;
+        case GuardianFilter.skill:
+          return a.kind == GuardianFindingKind.skillRuleConflict;
+        case GuardianFilter.foreshadowing:
+          return a.kind == GuardianFindingKind.unresolvedForeshadowing;
+        case GuardianFilter.all:
+          return true;
+      }
+    }).toList();
   }
 
   Widget _buildResults(GuardianCheckResult result) {
@@ -121,7 +244,8 @@ class _GuardianPanelState extends ConsumerState<GuardianPanel> {
         return _buildError(result.errorMessage ?? '检查失败');
 
       case GuardianCheckState.results:
-        if (result.annotations.isEmpty) {
+        final filtered = _filteredAnnotations(result.annotations);
+        if (filtered.isEmpty) {
           return const Center(
             child: Padding(
               padding: EdgeInsets.all(32.0),
@@ -146,11 +270,11 @@ class _GuardianPanelState extends ConsumerState<GuardianPanel> {
         }
 
         return ListView.builder(
-          itemCount: result.annotations.length,
+          itemCount: filtered.length,
           itemBuilder: (context, index) {
             return _FindingCard(
-              annotation: result.annotations[index],
-              onDismiss: () => _dismiss(result.annotations[index].id),
+              annotation: filtered[index],
+              onDismiss: () => _dismiss(filtered[index].id),
             );
           },
         );
@@ -160,7 +284,7 @@ class _GuardianPanelState extends ConsumerState<GuardianPanel> {
   Widget _buildError(String message) {
     return Center(
       child: Padding(
-        padding: const EdgeInsets.all(32.0),
+        padding: EdgeInsets.all(32.0),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -177,7 +301,7 @@ class _GuardianPanelState extends ConsumerState<GuardianPanel> {
               mainAxisSize: MainAxisSize.min,
               children: [
                 OutlinedButton(
-                  onPressed: _runCheck,
+                  onPressed: _runChapterCheck,
                   child: const Text('重试'),
                 ),
                 const SizedBox(width: 8),
@@ -195,28 +319,73 @@ class _GuardianPanelState extends ConsumerState<GuardianPanel> {
     );
   }
 
-  Future<void> _runCheck() async {
+  Future<void> _runLogicCheck() async {
     final notifier = ref.read(guardianNotifierProvider.notifier);
-    notifier.setChecking();
+    final text = widget.selectedText ?? '';
+    if (text.isEmpty) return;
 
-    try {
-      final service = await ref.read(guardianCheckServiceProvider.future);
-      final text = widget.selectedText ?? '';
-      if (text.isEmpty) {
-        notifier.setError('没有选中的文本可供检查');
-        return;
-      }
+    await notifier.checkLogic(
+      text: text,
+      currentChapter: widget.currentChapter ?? 1,
+    );
+  }
 
-      final annotations =
-          await service.checkCharacterConsistency(text: text);
-      await notifier.setResults(annotations);
-    } catch (e) {
-      notifier.setError(e.toString());
-    }
+  Future<void> _runChapterCheck() async {
+    final notifier = ref.read(guardianNotifierProvider.notifier);
+    final text = widget.selectedText ?? '';
+    if (text.isEmpty) return;
+
+    await notifier.checkCurrentChapter(
+      text: text,
+      currentChapter: widget.currentChapter ?? 1,
+    );
   }
 
   Future<void> _dismiss(String id) async {
     await ref.read(guardianNotifierProvider.notifier).dismiss(id);
+  }
+}
+
+/// Simple filter chip widget.
+class _FilterChip extends StatelessWidget {
+  final String label;
+  final bool selected;
+  final VoidCallback onTap;
+
+  const _FilterChip({
+    required this.label,
+    required this.selected,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(20),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+        decoration: BoxDecoration(
+          color: selected ? colorScheme.primaryContainer : Colors.transparent,
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(
+            color: selected
+                ? colorScheme.primary
+                : colorScheme.outline.withOpacity(0.3),
+          ),
+        ),
+        child: Text(
+          label,
+          style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                color: selected
+                    ? colorScheme.onPrimaryContainer
+                    : colorScheme.onSurface,
+              ),
+        ),
+      ),
+    );
   }
 }
 
