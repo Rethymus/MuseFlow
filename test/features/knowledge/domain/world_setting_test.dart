@@ -125,7 +125,7 @@ void main() {
       });
 
       test('should return formatted context string with all fields', () {
-        final context = baseSetting.toContextString();
+        final context = baseSetting.toContextString;
         expect(context, contains('修仙界'));
         expect(context, contains('天地法则，因果循环'));
         expect(context, contains('正道联盟、魔道、散修'));

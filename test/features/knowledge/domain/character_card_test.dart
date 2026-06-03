@@ -116,7 +116,7 @@ void main() {
       });
 
       test('should return formatted context string', () {
-        final context = baseCard.toContextString();
+        final context = baseCard.toContextString;
         expect(context, contains('李逍遥'));
         expect(context, contains('潇洒不羁，重情重义'));
         expect(context, contains('剑眉星目，身披青衫'));
