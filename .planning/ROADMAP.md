@@ -200,11 +200,11 @@ Plans:
   6. User can export to plain text, Markdown, or JSON format
 **UI hint**: yes
 **Risks**: Logic loop detection is AI-dependent and may produce false positives. Foreshadowing resolution detection requires tracking state across chapters. Format cleaning edge cases in Chinese punctuation are numerous.
-**Plans:** 4 plans
+**Plans:** 2/4 plans executed
 
 Plans:
-- [ ] 05-01: Foreshadowing tracking and resolution detection
-- [ ] 05-02: Plot node management and character consistency guardian
+- [x] 05-01: Foreshadowing tracking and resolution detection
+- [x] 05-02: Plot node management and character consistency guardian
 - [ ] 05-03: Logic loop detection via AI analysis
 - [ ] 05-04: Format cleaning (punctuation, Markdown residuals, typeset) and export (TXT/MD/JSON)
 
@@ -239,5 +239,5 @@ Phases execute in numeric order: 0 -> 1 -> 2 -> 3 -> 4 -> 5 -> 6
 | 2. AI Provider + Capture Synthesis | 3/3 | Complete    | 2026-06-02 |
 | 3. Editor AI Toolbar | 3/3 | Complete   | 2026-06-02 |
 | 4. Knowledge Base + Skill System | 1/5 | In Progress|  |
-| 5. Story Structure + Format + Export | 0/4 | Not started | - |
+| 5. Story Structure + Format + Export | 2/4 | In Progress|  |
 | 6. Multi-Provider + Android Polish | 0/3 | Not started | - |
