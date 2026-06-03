@@ -30,6 +30,14 @@ class _TestSettingsPage extends StatelessWidget {
       const Scaffold(body: Center(child: Text('TEST_SETTINGS')));
 }
 
+class _TestKnowledgePage extends StatelessWidget {
+  const _TestKnowledgePage();
+
+  @override
+  Widget build(BuildContext context) =>
+      const Scaffold(body: Center(child: Text('TEST_KNOWLEDGE')));
+}
+
 /// Creates a test router with the same shell structure as the real app,
 /// but with simple placeholder pages instead of SuperEditor.
 GoRouter _createTestRouter() {
@@ -65,6 +73,14 @@ GoRouter _createTestRouter() {
               ),
             ],
           ),
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: AppConstants.knowledge,
+                builder: (context, state) => const _TestKnowledgePage(),
+              ),
+            ],
+          ),
         ],
       ),
     ],
@@ -81,7 +97,7 @@ Widget _createTestApp() {
 
 void main() {
   group('App Shell Navigation', () {
-    testWidgets('should render NavigationRail with 3 destinations',
+    testWidgets('should render NavigationRail with 4 destinations',
         (tester) async {
       tester.view.physicalSize = const Size(1200, 800);
       tester.view.devicePixelRatio = 1.0;
@@ -92,12 +108,12 @@ void main() {
       // Should find NavigationRail
       expect(find.byType(NavigationRail), findsOneWidget);
 
-      // Should have 3 navigation destinations with Chinese labels
+      // Should have 4 navigation destinations with Chinese labels
       // Use find.byType to locate NavigationRailDestination labels
       final navRail = tester.widget<NavigationRail>(
         find.byType(NavigationRail),
       );
-      expect(navRail.destinations.length, equals(3));
+      expect(navRail.destinations.length, equals(4));
 
       // Verify labels exist in the widget tree
       expect(find.text('捕捉器'), findsOneWidget);
@@ -163,11 +179,11 @@ void main() {
       expect(find.byType(NavigationBar), findsOneWidget);
       expect(find.byType(NavigationRail), findsNothing);
 
-      // Should have 3 destinations
+      // Should have 4 destinations
       final navBar = tester.widget<NavigationBar>(
         find.byType(NavigationBar),
       );
-      expect(navBar.destinations.length, equals(3));
+      expect(navBar.destinations.length, equals(4));
 
       tester.view.resetPhysicalSize();
       tester.view.resetDevicePixelRatio();
