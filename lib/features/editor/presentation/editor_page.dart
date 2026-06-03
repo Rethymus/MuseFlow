@@ -10,6 +10,7 @@ import 'package:museflow/features/editor/presentation/editor_provider.dart';
 import 'package:museflow/features/editor/presentation/editor_toolbar.dart';
 import 'package:museflow/features/editor/presentation/floating_toolbar.dart';
 import 'package:museflow/features/editor/presentation/status_bar.dart';
+import 'package:museflow/features/knowledge/presentation/quick_insert_dialog.dart';
 import 'package:super_editor/super_editor.dart';
 
 /// Stylesheet that extends the default with AI-provenance background styling.
@@ -137,6 +138,8 @@ class _EditorPageState extends ConsumerState<EditorPage> {
         // EDIT-06: Ctrl+Shift+Z for AI undo (separate from Ctrl+Z)
         LogicalKeySet(LogicalKeyboardKey.control, LogicalKeyboardKey.shift,
             LogicalKeyboardKey.keyZ): const _UndoAIIntent(),
+        LogicalKeySet(LogicalKeyboardKey.control, LogicalKeyboardKey.keyK):
+            const _QuickInsertIntent(),
       },
       child: Actions(
         actions: <Type, Action<Intent>>{
@@ -148,6 +151,9 @@ class _EditorPageState extends ConsumerState<EditorPage> {
           ),
           _UndoAIIntent: CallbackAction<_UndoAIIntent>(
             onInvoke: (_) => _undoLastAIChange(),
+          ),
+          _QuickInsertIntent: CallbackAction<_QuickInsertIntent>(
+            onInvoke: (_) => _showQuickInsertDialog(),
           ),
         },
         child: PopScope(
@@ -234,6 +240,13 @@ class _EditorPageState extends ConsumerState<EditorPage> {
     ref.read(editorAINotifierProvider.notifier).undoLastAIChange();
   }
 
+  void _showQuickInsertDialog() {
+    showDialog<void>(
+      context: context,
+      builder: (_) => const QuickInsertDialog(),
+    );
+  }
+
   /// Checks for unresolved diffs before navigating away.
   ///
   /// Per D-04: Shows a confirmation dialog when there are pending
@@ -286,6 +299,10 @@ class _ItalicIntent extends Intent {
 
 class _UndoAIIntent extends Intent {
   const _UndoAIIntent();
+}
+
+class _QuickInsertIntent extends Intent {
+  const _QuickInsertIntent();
 }
 
 /// Layer builder that positions leader widgets at selection bounds.

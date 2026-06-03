@@ -28,4 +28,5 @@ abstract class AppConstants {
   static const String knowledge = '/knowledge';
   static const String knowledgeCharacterNew = '/knowledge/character/new';
   static const String knowledgeSettingNew = '/knowledge/setting/new';
+  static const String storyStructure = '/story-structure';
 }

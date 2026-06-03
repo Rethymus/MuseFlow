@@ -66,14 +66,19 @@ class AdaptiveSidebar extends StatelessWidget {
           label: Text('编辑器'),
         ),
         NavigationRailDestination(
-          icon: Icon(Icons.settings_outlined),
-          selectedIcon: Icon(Icons.settings),
-          label: Text('设置'),
-        ),
-        NavigationRailDestination(
           icon: Icon(Icons.menu_book_outlined),
           selectedIcon: Icon(Icons.menu_book),
           label: Text('知识库'),
+        ),
+        NavigationRailDestination(
+          icon: Icon(Icons.account_tree_outlined),
+          selectedIcon: Icon(Icons.account_tree),
+          label: Text('故事结构'),
+        ),
+        NavigationRailDestination(
+          icon: Icon(Icons.settings_outlined),
+          selectedIcon: Icon(Icons.settings),
+          label: Text('设置'),
         ),
       ],
     );
@@ -107,14 +112,19 @@ class _BottomNavBar extends StatelessWidget {
           label: '编辑器',
         ),
         NavigationDestination(
-          icon: Icon(Icons.settings_outlined),
-          selectedIcon: Icon(Icons.settings),
-          label: '设置',
-        ),
-        NavigationDestination(
           icon: Icon(Icons.menu_book_outlined),
           selectedIcon: Icon(Icons.menu_book),
           label: '知识库',
+        ),
+        NavigationDestination(
+          icon: Icon(Icons.account_tree_outlined),
+          selectedIcon: Icon(Icons.account_tree),
+          label: '故事结构',
+        ),
+        NavigationDestination(
+          icon: Icon(Icons.settings_outlined),
+          selectedIcon: Icon(Icons.settings),
+          label: '设置',
         ),
       ],
     );

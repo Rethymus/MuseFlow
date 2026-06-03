@@ -8,8 +8,11 @@ import 'package:museflow/features/capture/presentation/capture_page.dart';
 import 'package:museflow/features/editor/presentation/editor_page.dart';
 import 'package:museflow/features/knowledge/presentation/character_card_form.dart';
 import 'package:museflow/features/knowledge/presentation/knowledge_base_page.dart';
+import 'package:museflow/features/knowledge/presentation/skill_generation_wizard.dart';
+import 'package:museflow/features/knowledge/presentation/skill_list_page.dart';
 import 'package:museflow/features/knowledge/presentation/world_setting_form.dart';
 import 'package:museflow/features/settings/presentation/settings_page.dart';
+import 'package:museflow/features/story_structure/presentation/story_structure_page.dart';
 import 'package:museflow/shared/constants/app_constants.dart';
 import 'package:museflow/shared/theme/app_theme.dart';
 
@@ -59,28 +62,7 @@ class MuseFlowApp extends ConsumerWidget {
                 ),
               ],
             ),
-            // Branch 2: Settings (with AI providers sub-route)
-            StatefulShellBranch(
-              routes: [
-                GoRoute(
-                  path: AppConstants.settings,
-                  builder: (context, state) => const SettingsPage(),
-                  routes: [
-                    GoRoute(
-                      path: 'ai-providers',
-                      builder: (context, state) =>
-                          const ProviderManagementPage(),
-                    ),
-                    GoRoute(
-                      path: 'banned-phrases',
-                      builder: (context, state) =>
-                          const BannedPhraseSettingsPage(),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-            // Branch 3: Knowledge base
+            // Branch 2: Knowledge base
             StatefulShellBranch(
               routes: [
                 GoRoute(
@@ -110,6 +92,44 @@ class MuseFlowApp extends ConsumerWidget {
                         final id = state.pathParameters['id'];
                         return WorldSettingForm(settingId: id);
                       },
+                    ),
+                    GoRoute(
+                      path: 'skills',
+                      builder: (context, state) => const SkillListPage(),
+                    ),
+                    GoRoute(
+                      path: 'skills/new',
+                      builder: (context, state) => const SkillGenerationWizard(),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+            // Branch 3: Story Structure
+            StatefulShellBranch(
+              routes: [
+                GoRoute(
+                  path: AppConstants.storyStructure,
+                  builder: (context, state) => const StoryStructurePage(),
+                ),
+              ],
+            ),
+            // Branch 4: Settings (with AI providers sub-route)
+            StatefulShellBranch(
+              routes: [
+                GoRoute(
+                  path: AppConstants.settings,
+                  builder: (context, state) => const SettingsPage(),
+                  routes: [
+                    GoRoute(
+                      path: 'ai-providers',
+                      builder: (context, state) =>
+                          const ProviderManagementPage(),
+                    ),
+                    GoRoute(
+                      path: 'banned-phrases',
+                      builder: (context, state) =>
+                          const BannedPhraseSettingsPage(),
                     ),
                   ],
                 ),
