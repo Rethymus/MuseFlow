@@ -5,6 +5,8 @@ import 'package:museflow/features/knowledge/domain/character_card.dart';
 import 'package:museflow/features/knowledge/domain/skill_document.dart';
 import 'package:museflow/features/knowledge/domain/world_setting.dart';
 import 'package:museflow/features/story_structure/domain/foreshadowing_entry.dart';
+import 'package:museflow/features/story_structure/domain/guardian_annotation.dart';
+import 'package:museflow/features/story_structure/domain/plot_node.dart';
 
 /// Type ID registry for Hive adapters.
 /// Centralizes all type IDs to prevent conflicts.
@@ -16,6 +18,8 @@ abstract class HiveTypeIds {
   static const int worldSetting = 4;
   static const int skillDocument = 5;
   static const int foreshadowingEntry = 6;
+  static const int plotNode = 7;
+  static const int guardianAnnotation = 8;
 }
 
 /// Manual Hive TypeAdapter for [Fragment].
@@ -183,6 +187,64 @@ class ForeshadowingEntryAdapter extends TypeAdapter<ForeshadowingEntry> {
   bool operator ==(Object other) =>
       identical(this, other) ||
       other is ForeshadowingEntryAdapter &&
+          runtimeType == other.runtimeType &&
+          typeId == other.typeId;
+}
+
+/// Manual Hive TypeAdapter for [PlotNode].
+///
+/// Delegates serialization to fromJson/toJson.
+class PlotNodeAdapter extends TypeAdapter<PlotNode> {
+  @override
+  final int typeId = HiveTypeIds.plotNode;
+
+  @override
+  PlotNode read(BinaryReader reader) {
+    final json = reader.readMap() as Map<String, dynamic>;
+    return PlotNode.fromJson(json);
+  }
+
+  @override
+  void write(BinaryWriter writer, PlotNode obj) {
+    writer.writeMap(obj.toJson());
+  }
+
+  @override
+  int get hashCode => typeId.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is PlotNodeAdapter &&
+          runtimeType == other.runtimeType &&
+          typeId == other.typeId;
+}
+
+/// Manual Hive TypeAdapter for [GuardianAnnotation].
+///
+/// Delegates serialization to fromJson/toJson.
+class GuardianAnnotationAdapter extends TypeAdapter<GuardianAnnotation> {
+  @override
+  final int typeId = HiveTypeIds.guardianAnnotation;
+
+  @override
+  GuardianAnnotation read(BinaryReader reader) {
+    final json = reader.readMap() as Map<String, dynamic>;
+    return GuardianAnnotation.fromJson(json);
+  }
+
+  @override
+  void write(BinaryWriter writer, GuardianAnnotation obj) {
+    writer.writeMap(obj.toJson());
+  }
+
+  @override
+  int get hashCode => typeId.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is GuardianAnnotationAdapter &&
           runtimeType == other.runtimeType &&
           typeId == other.typeId;
 }
