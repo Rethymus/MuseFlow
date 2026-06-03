@@ -8,7 +8,11 @@ void main() {
     late LogicGuardianService service;
 
     setUp(() {
-      service = LogicGuardianService();
+      service = LogicGuardianService(
+        apiKey: 'test-key',
+        baseUrl: 'https://api.example.com',
+        model: 'test-model',
+      );
     });
 
     /// Helper to create a minimal context bundle for testing.
@@ -278,7 +282,11 @@ void main() {
       test('should not expose any editor mutation methods', () {
         // Verify the service only has read-only/check methods.
         // No applyFix, editNode, updateAnnotation, or similar mutation methods.
-        final service = LogicGuardianService();
+        final service = LogicGuardianService(
+          apiKey: 'test-key',
+          baseUrl: 'https://api.example.com',
+          model: 'test-model',
+        );
 
         // These read-only methods should exist and be callable
         expect(service.buildLogicPrompt, isA<Function>());
