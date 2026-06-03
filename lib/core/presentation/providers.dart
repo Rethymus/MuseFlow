@@ -35,6 +35,7 @@ import 'package:museflow/features/knowledge/infrastructure/world_setting_reposit
 import 'package:museflow/features/story_structure/application/foreshadowing_notifier.dart';
 import 'package:museflow/features/story_structure/application/foreshadowing_reminder_service.dart';
 import 'package:museflow/features/story_structure/application/guardian_check_service.dart';
+import 'package:museflow/features/story_structure/application/guardian_context_builder.dart';
 import 'package:museflow/features/story_structure/application/guardian_notifier.dart';
 import 'package:museflow/features/story_structure/application/plot_node_notifier.dart';
 import 'package:museflow/features/story_structure/domain/foreshadowing_entry.dart';
@@ -169,6 +170,17 @@ final antiAIScentProcessorProvider = Provider<AntiAIScentProcessor>((ref) {
 /// Provides a singleton [TokenBudgetCalculator] for budget management per AI-07.
 final tokenBudgetCalculatorProvider = Provider<TokenBudgetCalculator>((ref) {
   return TokenBudgetCalculator();
+});
+
+/// Provides a [GuardianContextBuilder] for assembling bounded guardian context.
+///
+/// Uses the default guardian token budget (4000 tokens) and the shared
+/// [TokenBudgetCalculator].
+final guardianContextBuilderProvider = Provider<GuardianContextBuilder>((ref) {
+  return GuardianContextBuilder(
+    tokenBudgetCalculator: ref.watch(tokenBudgetCalculatorProvider),
+    tokenBudget: 4000,
+  );
 });
 
 /// Provides an [EditorPromptPipeline] for editor AI operations.
