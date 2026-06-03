@@ -3,7 +3,7 @@ import 'package:hive_ce/hive.dart';
 import 'package:museflow/features/knowledge/domain/character_card.dart';
 import 'package:museflow/features/knowledge/infrastructure/character_card_repository.dart';
 
-import '../../../../helpers/hive_test_helper.dart';
+import '../../../helpers/hive_test_helper.dart';
 
 void main() {
   late Box<dynamic> box;
