@@ -5,7 +5,7 @@ import 'package:museflow/core/presentation/providers.dart';
 import 'package:museflow/features/story_structure/domain/plot_node.dart';
 import 'package:museflow/features/story_structure/infrastructure/plot_node_repository.dart';
 
-import '../../../../helpers/hive_test_helper.dart';
+import '../../../helpers/hive_test_helper.dart';
 
 void main() {
   late ProviderContainer container;

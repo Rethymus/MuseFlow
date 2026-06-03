@@ -38,7 +38,7 @@ import 'package:museflow/features/story_structure/application/guardian_check_ser
 import 'package:museflow/features/story_structure/application/guardian_notifier.dart';
 import 'package:museflow/features/story_structure/application/plot_node_notifier.dart';
 import 'package:museflow/features/story_structure/domain/foreshadowing_entry.dart';
-import 'package:museflow/features/story_structure/domain/guardian_annotation.dart';
+import 'package:museflow/features/story_structure/domain/plot_node.dart';
 import 'package:museflow/features/story_structure/infrastructure/foreshadowing_repository.dart';
 import 'package:museflow/features/story_structure/infrastructure/guardian_annotation_repository.dart';
 import 'package:museflow/features/story_structure/infrastructure/plot_node_repository.dart';
