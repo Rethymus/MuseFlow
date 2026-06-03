@@ -160,10 +160,10 @@ Plans:
   6. Multiple skills can be active per project (e.g., "修仙体系" + "门派设定")
 **UI hint**: yes
 **Risks**: Name-index entity matching for auto-injection may produce false positives with Chinese names. Token budget can be exhausted by large knowledge bases -- relevance scoring is critical.
-**Plans:** 5 plans
+**Plans:** 1/5 plans executed
 
 Plans:
-- [ ] 04-01: Knowledge base CRUD -- character cards and world settings with Hive persistence
+- [x] 04-01: Knowledge base CRUD -- character cards and world settings with Hive persistence
 - [ ] 04-02: Name-index entity matching and AI auto-injection into PromptPipeline
 - [ ] 04-03: Skill system -- AI-assisted world-building document generation
 - [ ] 04-04: Real-time skill enforcement, deviation detection, and multi-skill activation
@@ -238,6 +238,6 @@ Phases execute in numeric order: 0 -> 1 -> 2 -> 3 -> 4 -> 5 -> 6
 | 1. App Shell + Editor + Capture UI | 4/4 | Complete   | 2026-06-01 |
 | 2. AI Provider + Capture Synthesis | 3/3 | Complete    | 2026-06-02 |
 | 3. Editor AI Toolbar | 3/3 | Complete   | 2026-06-02 |
-| 4. Knowledge Base + Skill System | 0/5 | Not started | - |
+| 4. Knowledge Base + Skill System | 1/5 | In Progress|  |
 | 5. Story Structure + Format + Export | 0/4 | Not started | - |
 | 6. Multi-Provider + Android Polish | 0/3 | Not started | - |
