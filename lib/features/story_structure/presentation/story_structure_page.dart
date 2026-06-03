@@ -4,6 +4,9 @@ import 'package:museflow/core/presentation/providers.dart';
 import 'package:museflow/features/story_structure/application/foreshadowing_reminder_service.dart';
 import 'package:museflow/features/story_structure/domain/foreshadowing_entry.dart';
 import 'package:museflow/features/story_structure/presentation/foreshadowing_form.dart';
+import 'package:museflow/features/story_structure/presentation/guardian_panel.dart';
+import 'package:museflow/features/story_structure/presentation/plot_node_form.dart';
+import 'package:museflow/features/story_structure/presentation/plot_timeline.dart';
 
 /// Story structure page with section navigation.
 ///
@@ -53,16 +56,8 @@ class _StoryStructurePageState extends ConsumerState<StoryStructurePage>
         controller: _tabController,
         children: const [
           _ForeshadowingSection(),
-          _PlaceholderSection(
-            title: '时间线还空着',
-            body: '先放下几个关键节点：铺垫、转折、高潮、收束。关系图以后再说，先让故事走起来。',
-            actionLabel: '计划中',
-          ),
-          _PlaceholderSection(
-            title: '暂无守护提示',
-            body: '手动检查当前章节或选中文本，AI 会提示可能的人设、时间线或世界规则冲突。',
-            actionLabel: '计划中',
-          ),
+          PlotTimeline(),
+          GuardianPanel(),
           _PlaceholderSection(
             title: '整理成可交付的稿件',
             body: '先预览清理结果，再确认应用。导出只保存到你选择的本地文件。',
@@ -70,13 +65,7 @@ class _StoryStructurePageState extends ConsumerState<StoryStructurePage>
           ),
         ],
       ),
-      floatingActionButton: _tabController.index == 0
-          ? FloatingActionButton(
-              onPressed: () => _showForeshadowingForm(context),
-              tooltip: '新建伏笔',
-              child: const Icon(Icons.add),
-            )
-          : null,
+      floatingActionButton: _buildFAB(),
     );
   }
 
@@ -85,6 +74,29 @@ class _StoryStructurePageState extends ConsumerState<StoryStructurePage>
       context: context,
       builder: (_) => const ForeshadowingForm(),
     );
+  }
+
+  void _showPlotNodeForm(BuildContext context) {
+    showDialog<void>(
+      context: context,
+      builder: (_) => const PlotNodeForm(),
+    );
+  }
+
+  Widget? _buildFAB() {
+    return switch (_tabController.index) {
+      0 => FloatingActionButton(
+          onPressed: () => _showForeshadowingForm(context),
+          tooltip: '新建伏笔',
+          child: const Icon(Icons.add),
+        ),
+      1 => FloatingActionButton(
+          onPressed: () => _showPlotNodeForm(context),
+          tooltip: '新建情节点',
+          child: const Icon(Icons.add),
+        ),
+      _ => null,
+    };
   }
 }
 
