@@ -3,18 +3,20 @@ import 'package:hive_ce/hive.dart';
 import 'package:museflow/features/story_structure/domain/plot_node.dart';
 import 'package:museflow/features/story_structure/infrastructure/plot_node_repository.dart';
 
+import '../../../helpers/hive_test_helper.dart';
+
 void main() {
   late Box<dynamic> box;
   late PlotNodeRepository repository;
 
   setUp(() async {
+    await setUpHiveTest();
     box = await Hive.openBox<dynamic>('test_plot_nodes');
     repository = PlotNodeRepository(box);
   });
 
   tearDown(() async {
-    await box.clear();
-    await box.close();
+    await tearDownHiveTest();
   });
 
   group('PlotNodeRepository', () {

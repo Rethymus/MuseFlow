@@ -34,8 +34,13 @@ import 'package:museflow/features/knowledge/infrastructure/skill_repository.dart
 import 'package:museflow/features/knowledge/infrastructure/world_setting_repository.dart';
 import 'package:museflow/features/story_structure/application/foreshadowing_notifier.dart';
 import 'package:museflow/features/story_structure/application/foreshadowing_reminder_service.dart';
+import 'package:museflow/features/story_structure/application/guardian_notifier.dart';
+import 'package:museflow/features/story_structure/application/plot_node_notifier.dart';
 import 'package:museflow/features/story_structure/domain/foreshadowing_entry.dart';
+import 'package:museflow/features/story_structure/domain/guardian_annotation.dart';
 import 'package:museflow/features/story_structure/infrastructure/foreshadowing_repository.dart';
+import 'package:museflow/features/story_structure/infrastructure/guardian_annotation_repository.dart';
+import 'package:museflow/features/story_structure/infrastructure/plot_node_repository.dart';
 export 'package:museflow/features/editor/application/context_anchor_notifier.dart'
     show contextAnchorNotifierProvider, ContextAnchorNotifier;
 export 'package:museflow/features/editor/presentation/editor_page.dart'
@@ -340,4 +345,40 @@ final foreshadowingReminderServiceProvider =
 final foreshadowingNotifierProvider =
     AsyncNotifierProvider<ForeshadowingNotifier, List<ForeshadowingEntry>>(
   ForeshadowingNotifier.new,
+);
+
+/// Provides a [PlotNodeRepository] backed by a Hive 'plot_nodes' box.
+///
+/// Opens the box asynchronously, so consumers must await this provider.
+final plotNodeRepositoryProvider =
+    FutureProvider<PlotNodeRepository>((ref) async {
+  final box = await Hive.openBox<dynamic>('plot_nodes');
+  return PlotNodeRepository(box);
+});
+
+/// Provides a [PlotNodeNotifier] for plot node CRUD operations.
+///
+/// Presentation layer uses this (not the repository directly) per
+/// Clean Architecture compliance.
+final plotNodeNotifierProvider =
+    AsyncNotifierProvider<PlotNodeNotifier, List<PlotNode>>(
+  PlotNodeNotifier.new,
+);
+
+/// Provides a [GuardianAnnotationRepository] backed by a Hive
+/// 'guardian_annotations' box.
+///
+/// Opens the box asynchronously, so consumers must await this provider.
+final guardianAnnotationRepositoryProvider =
+    FutureProvider<GuardianAnnotationRepository>((ref) async {
+  final box = await Hive.openBox<dynamic>('guardian_annotations');
+  return GuardianAnnotationRepository(box);
+});
+
+/// Provides a [GuardianNotifier] for guardian annotation lifecycle management.
+///
+/// Presentation layer uses this for check state and annotation dismissal.
+final guardianNotifierProvider =
+    AsyncNotifierProvider<GuardianNotifier, GuardianCheckResult>(
+  GuardianNotifier.new,
 );
