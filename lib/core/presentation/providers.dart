@@ -34,6 +34,7 @@ import 'package:museflow/features/knowledge/infrastructure/skill_repository.dart
 import 'package:museflow/features/knowledge/infrastructure/world_setting_repository.dart';
 import 'package:museflow/features/story_structure/application/foreshadowing_notifier.dart';
 import 'package:museflow/features/story_structure/application/foreshadowing_reminder_service.dart';
+import 'package:museflow/features/story_structure/application/guardian_check_service.dart';
 import 'package:museflow/features/story_structure/application/guardian_notifier.dart';
 import 'package:museflow/features/story_structure/application/plot_node_notifier.dart';
 import 'package:museflow/features/story_structure/domain/foreshadowing_entry.dart';
@@ -382,3 +383,24 @@ final guardianNotifierProvider =
     AsyncNotifierProvider<GuardianNotifier, GuardianCheckResult>(
   GuardianNotifier.new,
 );
+
+/// Provides a [GuardianCheckService] for manual character consistency checks.
+///
+/// Requires an active AI provider with API key. Throws [StateError] if
+/// no provider is configured (UI should check before triggering checks).
+final guardianCheckServiceProvider =
+    FutureProvider<GuardianCheckService>((ref) async {
+  final provider = ref.watch(activeProviderProvider);
+  final apiKey = ref.watch(activeApiKeyProvider);
+  if (provider == null || apiKey == null || apiKey.isEmpty) {
+    throw StateError('未配置可用的 AI 模型');
+  }
+  final characterRepository =
+      await ref.watch(characterCardRepositoryProvider.future);
+  return GuardianCheckService.fromRepository(
+    characterRepository: characterRepository,
+    apiKey: apiKey,
+    baseUrl: provider.baseUrl,
+    model: provider.model,
+  );
+});

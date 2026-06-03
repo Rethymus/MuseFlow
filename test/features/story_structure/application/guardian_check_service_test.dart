@@ -2,15 +2,14 @@ import 'dart:convert';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:museflow/features/knowledge/domain/character_card.dart';
-import 'package:museflow/features/knowledge/infrastructure/character_card_repository.dart';
 import 'package:museflow/features/story_structure/application/guardian_check_service.dart';
 import 'package:museflow/features/story_structure/domain/guardian_annotation.dart';
 
-/// A fake [CharacterCardRepository] for testing without Hive.
-class FakeCharacterCardRepository extends CharacterCardRepository {
+/// Simple character data holder for tests without Hive dependency.
+class TestCharacterSource implements CharacterSource {
   final List<CharacterCard> _cards;
 
-  FakeCharacterCardRepository(this._cards) : super(_FakeBox());
+  TestCharacterSource(this._cards);
 
   @override
   List<CharacterCard> getAll() => _cards;
@@ -26,15 +25,10 @@ class FakeCharacterCardRepository extends CharacterCardRepository {
   }
 }
 
-class _FakeBox extends dynamic implements Box<dynamic> {
-  @override
-  dynamic noSuchMethod(Invocation invocation) => null;
-}
-
 void main() {
   group('GuardianCheckService', () {
     late GuardianCheckService service;
-    late FakeCharacterCardRepository characterRepo;
+    late TestCharacterSource characterSource;
 
     final aliceCard = CharacterCard(
       id: 'char-1',
@@ -57,13 +51,13 @@ void main() {
     );
 
     setUp(() {
-      characterRepo = FakeCharacterCardRepository([aliceCard, bobCard]);
+      characterSource = TestCharacterSource([aliceCard, bobCard]);
     });
 
     group('prompt building', () {
       test('should include character personality when name appears in text', () {
         service = GuardianCheckService(
-          characterRepository: characterRepo,
+          characterSource: characterSource,
           apiKey: 'test-key',
           baseUrl: 'https://api.example.com',
           model: 'test-model',
@@ -75,13 +69,13 @@ void main() {
 
         // Should include Alice's personality context
         expect(prompt, contains('Alice'));
-        expect(prompt, contains('shy'));
+        expect(prompt, contains('Shy'));
         expect(prompt, contains('introverted'));
       });
 
       test('should include character matched by alias', () {
         service = GuardianCheckService(
-          characterRepository: characterRepo,
+          characterSource: characterSource,
           apiKey: 'test-key',
           baseUrl: 'https://api.example.com',
           model: 'test-model',
@@ -96,7 +90,7 @@ void main() {
 
       test('should not include unrelated characters', () {
         service = GuardianCheckService(
-          characterRepository: characterRepo,
+          characterSource: characterSource,
           apiKey: 'test-key',
           baseUrl: 'https://api.example.com',
           model: 'test-model',
@@ -114,7 +108,7 @@ void main() {
 
       test('should handle text with no matching characters', () {
         service = GuardianCheckService(
-          characterRepository: characterRepo,
+          characterSource: characterSource,
           apiKey: 'test-key',
           baseUrl: 'https://api.example.com',
           model: 'test-model',
@@ -132,7 +126,7 @@ void main() {
     group('JSON parsing', () {
       test('should parse valid JSON array into annotations', () {
         service = GuardianCheckService(
-          characterRepository: characterRepo,
+          characterSource: characterSource,
           apiKey: 'test-key',
           baseUrl: 'https://api.example.com',
           model: 'test-model',
@@ -180,7 +174,7 @@ void main() {
 
       test('should handle malformed JSON gracefully returning empty list', () {
         service = GuardianCheckService(
-          characterRepository: characterRepo,
+          characterSource: characterSource,
           apiKey: 'test-key',
           baseUrl: 'https://api.example.com',
           model: 'test-model',
@@ -195,7 +189,7 @@ void main() {
 
       test('should handle JSON with missing fields gracefully', () {
         service = GuardianCheckService(
-          characterRepository: characterRepo,
+          characterSource: characterSource,
           apiKey: 'test-key',
           baseUrl: 'https://api.example.com',
           model: 'test-model',
@@ -221,7 +215,7 @@ void main() {
 
       test('should handle empty JSON array', () {
         service = GuardianCheckService(
-          characterRepository: characterRepo,
+          characterSource: characterSource,
           apiKey: 'test-key',
           baseUrl: 'https://api.example.com',
           model: 'test-model',
@@ -236,7 +230,7 @@ void main() {
 
       test('should handle JSON with nested code blocks', () {
         service = GuardianCheckService(
-          characterRepository: characterRepo,
+          characterSource: characterSource,
           apiKey: 'test-key',
           baseUrl: 'https://api.example.com',
           model: 'test-model',
@@ -253,7 +247,7 @@ void main() {
     group('annotations should never auto-apply', () {
       test('parsed annotations should have no document mutation API', () {
         service = GuardianCheckService(
-          characterRepository: characterRepo,
+          characterSource: characterSource,
           apiKey: 'test-key',
           baseUrl: 'https://api.example.com',
           model: 'test-model',
