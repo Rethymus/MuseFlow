@@ -46,6 +46,12 @@ Phase 6 rounds out multi-provider support and ensures Android usability. It deli
 - **D-11:** Android validation uses integration tests (integration_test package), not manual emulator testing. Core flows are verified programmatically.
 - **D-12:** Existing responsive breakpoints in `AppConstants` (600px collapsed, 1000px extended) are the layout foundation. Phase 6 ensures new UI respects these breakpoints on phone-width screens.
 
+### Verification Closure Decisions
+- **D-13:** Phase 6 verification should use **core automated coverage** as the pass gate: domain/entity serialization, preset provider config, adapter parameter forwarding, parameter validation, model-list fetching/fallback, and provider-management responsive widget behavior must be covered by green automated tests. Full device/emulator and real API execution are not required for the automated pass gate in the current Linux/WSL environment.
+- **D-14:** Android layout verification may use widget-level narrow-width tests as the local substitute for physical Android execution. Specifically, provider management must be verified around the 600px breakpoint with no overflow and with a usable list/form switching flow. Physical Android touch testing remains manual UAT, not an automated blocker.
+- **D-15:** Real Claude API streaming with live credentials is manual UAT, not an automated release gate. Automated tests should verify Claude preset identity, HTTPS OpenAI-compatible endpoint configuration, model ID propagation, and request parameter forwarding without requiring secrets or network calls.
+- **D-16:** `/gsd:validate-phase 6` is allowed to fix test blockers and add missing tests required to make `06-VALIDATION.md` compliant. The validation pass may update tests, small testability seams, and narrow correctness fixes needed for tests to compile and run; it should not reopen Phase 6 product scope or add new provider features.
+
 ### Claude's Discretion
 - Exact Claude preset baseUrl and default model identifier.
 - Exact parameter input field labels and validation error messages (in Chinese, consistent with existing UI tone).
@@ -80,6 +86,8 @@ Phase 6 rounds out multi-provider support and ensures Android usability. It deli
 - `lib/features/ai/presentation/provider_management_notifier.dart` — ProviderManagementNotifier, may need model-list fetching method.
 - `lib/core/presentation/providers.dart` — Central provider exports, may need new providers for model list.
 - `lib/shared/constants/app_constants.dart` — Responsive breakpoints for Android layout work.
+- `.planning/phases/06-multi-provider-android-polish/06-VALIDATION.md` — Current validation artifact is draft/non-compliant and must be updated by `/gsd:validate-phase 6` using D-13 through D-16.
+- `.planning/v1.0-MILESTONE-AUDIT.md` — Milestone audit identifies Phase 6 validation and missing verification as critical blockers.
 
 </canonical_refs>
 
@@ -106,6 +114,7 @@ Phase 6 rounds out multi-provider support and ensures Android usability. It deli
 - `OpenAIAdapter.createStream` currently takes a fixed `ChatCompletionCreateRequest` without temperature/topP/maxTokens. Needs to accept and forward optional parameters.
 - Model-list fetching is a new capability: needs a service method, a provider, and UI integration into the model input field.
 - Android integration tests require `integration_test` package setup and test app configuration.
+- Phase 6 validation currently has recorded test blockers from `06-03-SUMMARY.md`; validation closure should first make the automated provider-management responsive and model/parameter tests compile in the current tree, then classify device/API-dependent checks as manual UAT.
 
 </code_context>
 
@@ -116,6 +125,7 @@ Phase 6 rounds out multi-provider support and ensures Android usability. It deli
 - Parameter inputs should feel lightweight — not a full "model configuration page". Just three extra fields in the existing provider form.
 - Model list dropdown should feel like autocomplete: type to filter, click to select, or ignore the dropdown and type manually.
 - Integration tests should cover the critical user path: launch → navigate to settings → see providers → add a provider with parameters → verify it's active.
+- For local verification, prefer deterministic widget/unit tests over live services: mock/fake provider data, verify request construction, and treat real Claude credentials and Android touch behavior as manual UAT rows.
 
 </specifics>
 

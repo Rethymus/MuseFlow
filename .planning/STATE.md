@@ -2,16 +2,16 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-status: ready_to_plan
-stopped_at: Phase 05 complete (4/0) — ready to discuss Phase 06
-last_updated: 2026-06-04T07:33:57.269Z
-last_activity: 2026-06-04 -- Phase 06 (Multi-Provider + Android Polish) fully executed and verified
+status: Awaiting next milestone
+stopped_at: Phase 06 complete
+last_updated: "2026-06-04T07:38:32.404Z"
+last_activity: 2026-06-04 — Milestone v1.0 completed and archived
 progress:
   total_phases: 7
-  completed_phases: 6
-  total_plans: 25
+  completed_phases: 5
+  total_plans: 22
   completed_plans: 25
-  percent: 86
+  percent: 71
 ---
 
 # Project State
@@ -25,12 +25,10 @@ See: .planning/PROJECT.md (updated 2026-05-31)
 
 ## Current Position
 
-Phase: 06
-Plan: Not started
-Status: Ready to plan
-Last activity: 2026-06-04
-
-Progress: [████████░░] 86%
+Phase: Milestone v1.0 complete
+Plan: —
+Status: Awaiting next milestone
+Last activity: 2026-06-04 — Milestone v1.0 completed and archived
 
 ## Performance Metrics
 
@@ -88,14 +86,20 @@ None yet.
 
 ## Deferred Items
 
-Items acknowledged and carried forward from previous milestone close:
+Items acknowledged and deferred at milestone close on 2026-06-04:
 
-| Category | Item | Status | Deferred At |
-|----------|------|--------|-------------|
-| *(none)* | | | |
+| Category | Item | Status |
+|----------|------|--------|
+| uat_gap | Phase 00: 00-HUMAN-UAT.md — 4 pending scenarios (Windows IME testing) | partial |
+| verification_gap | Phase 00: 00-VERIFICATION.md — human_needed (requires physical Windows device) | human_needed |
+| verification_gap | Phase 01: 01-VERIFICATION.md — human_needed (requires physical Windows device) | human_needed |
 
 ## Session Continuity
 
 Last session: 2026-06-04T09:00:00.000Z
 Stopped at: Phase 06 complete
 Resume file: .planning/phases/05-story-structure-format-export/05-PLAN.md
+
+## Operator Next Steps
+
+- Start the next milestone with /gsd-new-milestone

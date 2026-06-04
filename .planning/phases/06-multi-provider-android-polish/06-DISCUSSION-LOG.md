@@ -124,3 +124,57 @@
 - Retrospective Android touch optimization for all Phase 1-5 pages
 - Per-model parameters (separate from per-provider)
 - Provider-specific model list fetching logic (Ollama /api/tags etc.)
+
+---
+
+# Phase 6 Verification Closure Discussion Addendum
+
+> Audit trail only. Decisions are captured in `06-CONTEXT.md` D-13 through D-16.
+
+**Date:** 2026-06-04T15:07:32+08:00
+**Phase:** 06-multi-provider-android-polish
+**Areas discussed:** 通过标准, 环境替代, Claude实测, 修复范围
+
+## 通过标准
+
+| Option | Description | Selected |
+|--------|-------------|----------|
+| 核心自动化 | 核心域/服务/参数/模型列表/响应式布局测试必须绿；设备和真实 API 只作为人工项记录。 | yes |
+| 全套门禁 | 必须跑完整 `flutter test` 和 `integration_test`，否则 Phase 6 不算通过。 | |
+| 文档优先 | 只要已有 summary 和局部测试足够，先把验证文档补齐。 | |
+
+**User's choice:** 核心自动化
+**Notes:** Phase 6 validation should be audit-credible without depending on unavailable local Android/device infrastructure.
+
+## 环境替代
+
+| Option | Description | Selected |
+|--------|-------------|----------|
+| Widget替代 | 用窄宽 widget test 验证 600px 响应式，用 `flutter test` 集成 smoke 替代真实 Android；真实设备列为人工 UAT。 | yes |
+| 等设备 | 必须配置 Android emulator/device 后再继续，否则 Phase 6 保持 blocked。 | |
+| 跳过Android | 跳过 Android 验证，只保留设计说明。 | |
+
+**User's choice:** Widget替代
+**Notes:** Provider management responsive behavior must be verified around `AppConstants.sidebarCollapsedBreakpoint`; physical Android touch remains manual UAT.
+
+## Claude实测
+
+| Option | Description | Selected |
+|--------|-------------|----------|
+| 人工UAT | 真实 Claude API 流式调用作为人工 UAT，不阻塞自动验证；自动测试只验证 endpoint/model/参数转发。 | yes |
+| 真实门禁 | 必须提供真实 API key 并跑通 Claude streaming，Phase 6 才能通过。 | |
+| 仅配置 | 完全不测真实 Claude，只测配置项。 | |
+
+**User's choice:** 人工UAT
+**Notes:** Automated tests must not require secrets or network calls.
+
+## 修复范围
+
+| Option | Description | Selected |
+|--------|-------------|----------|
+| 允许修复 | 下一步允许 validate-phase 6 顺手修测试编译和缺失测试；context 只锁决策。 | yes |
+| 只写文档 | 本次只更新 context，不允许后续自动修任何代码。 | |
+| 直接修复 | 直接进入修复，不再补 context。 | |
+
+**User's choice:** 允许修复
+**Notes:** `/gsd:validate-phase 6` may fix test blockers and add missing tests, but must not reopen Phase 6 product scope.
