@@ -121,5 +121,15 @@ This document evolves at phase transitions and milestone boundaries.
 3. Audit Out of Scope — reasons still valid?
 4. Update Context with current state
 
+## Current Milestone: v1.1 创作体验升级
+
+**Goal:** 在 v1.0 核心流程基础上，增加模板库降低冷启动门槛、可视化增强创作感知、引导流程让新用户快速上手、数据统计量化创作过程。
+
+**Target features:**
+- 预设世界观模板库 — 策选起点/番茄等平台主流类型，Full preset + Lightweight 模板结合
+- 故事弧可视化 — Custom Flutter Canvas 交互式图，基于 PlotNode 数据可拖拽/编辑
+- 开篇引导 — First-run wizard（新用户体验完整流程）+ AI opening generator（持续使用）
+- 写作数据统计 — Global analytics 为主 + Per-project dashboard 细分
+
 ---
-*Last updated: 2026-06-04 after v1.0 milestone*
+*Last updated: 2026-06-04 after starting v1.1 milestone*
