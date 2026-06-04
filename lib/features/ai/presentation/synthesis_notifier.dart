@@ -249,6 +249,9 @@ class SynthesisNotifier extends Notifier<SynthesisState> {
         baseUrl: provider.baseUrl,
         model: provider.model,
         messages: messages,
+        temperature: provider.temperature,
+        topP: provider.topP,
+        maxTokens: provider.maxTokens,
       );
 
       await for (final token in stream) {

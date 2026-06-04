@@ -31,6 +31,9 @@ class OpenAIAdapter {
   /// - [baseUrl]: API base URL (must be HTTPS, except localhost for Ollama)
   /// - [model]: Model identifier (e.g., 'gpt-4o-mini', 'deepseek-chat')
   /// - [messages]: Pre-assembled chat messages from PromptPipeline
+  /// - [temperature]: Sampling temperature (0.0-2.0). Null = model default.
+  /// - [topP]: Nucleus sampling threshold (0.0-1.0). Null = model default.
+  /// - [maxTokens]: Maximum tokens in response (1-128000). Null = model default.
   ///
   /// Returns a [Stream<String>] of text delta tokens.
   /// On error, the stream emits an [AIException] subclass.
@@ -39,6 +42,9 @@ class OpenAIAdapter {
     required String baseUrl,
     required String model,
     required List<ChatMessage> messages,
+    double? temperature,
+    double? topP,
+    int? maxTokens,
   }) {
     // Validate baseUrl per T-02-08
     _validateBaseUrl(baseUrl);
@@ -46,9 +52,14 @@ class OpenAIAdapter {
     // Get or create cached client
     final client = _getOrCreateClient(apiKey, baseUrl);
 
+    // Per D-04: pass nullable values directly -- openai_dart handles
+    // null-by-omission in its request serialization.
     final request = ChatCompletionCreateRequest(
       model: model,
       messages: messages,
+      temperature: temperature,
+      topP: topP,
+      maxTokens: maxTokens,
     );
 
     // Map the raw stream to text deltas with error classification

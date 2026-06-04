@@ -280,5 +280,38 @@ void main() {
         expect(event.textDelta, isNull);
       });
     });
+
+    group('createStream with nullable parameters', () {
+      test('should accept optional temperature, topP, maxTokens parameters', () {
+        // Verify the adapter exposes the extended API surface
+        expect(
+          () => adapter.createStream(
+            apiKey: 'test-key',
+            baseUrl: 'https://api.openai.com/v1',
+            model: 'gpt-4o-mini',
+            messages: [ChatMessage.user('test')],
+            temperature: 1.5,
+            topP: 0.9,
+            maxTokens: 4096,
+          ),
+          returnsNormally,
+        );
+      });
+
+      test('should accept null temperature, topP, maxTokens parameters', () {
+        expect(
+          () => adapter.createStream(
+            apiKey: 'test-key',
+            baseUrl: 'https://api.openai.com/v1',
+            model: 'gpt-4o-mini',
+            messages: [ChatMessage.user('test')],
+            temperature: null,
+            topP: null,
+            maxTokens: null,
+          ),
+          returnsNormally,
+        );
+      });
+    });
   });
 }

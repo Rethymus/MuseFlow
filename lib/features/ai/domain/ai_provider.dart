@@ -22,10 +22,19 @@ enum AiProviderType {
   }
 }
 
+/// Sentinel value for [AIProvider.copyWith] to distinguish "not provided"
+/// from "explicitly set to null". Used because Dart optional parameters
+/// cannot differentiate between omitted and passed-as-null.
+const _nullSentinel = Object();
+
 /// An AI provider configuration entity.
 ///
 /// Immutable entity representing a configured AI model provider.
 /// Use [copyWith] to create modified copies.
+///
+/// Per D-03: [temperature], [topP], and [maxTokens] are nullable model
+/// parameters. Null means "use the model's default" -- the API request
+/// omits these fields when null.
 class AIProvider {
   final String id;
   final String name;
@@ -35,6 +44,15 @@ class AIProvider {
   final bool isActive;
   final DateTime createdAt;
 
+  /// Model sampling temperature. Range 0.0-2.0. Null = model default.
+  final double? temperature;
+
+  /// Nucleus sampling threshold. Range 0.0-1.0. Null = model default.
+  final double? topP;
+
+  /// Maximum tokens in the response. Range 1-128000. Null = model default.
+  final int? maxTokens;
+
   const AIProvider({
     required this.id,
     required this.name,
@@ -43,9 +61,16 @@ class AIProvider {
     required this.model,
     this.isActive = false,
     required this.createdAt,
+    this.temperature,
+    this.topP,
+    this.maxTokens,
   });
 
   /// Creates a copy of this provider with the given fields replaced.
+  ///
+  /// To explicitly set [temperature], [topP], or [maxTokens] back to null,
+  /// pass `null` as the value. Omitting the parameter preserves the current
+  /// value.
   AIProvider copyWith({
     String? id,
     String? name,
@@ -54,6 +79,9 @@ class AIProvider {
     String? model,
     bool? isActive,
     DateTime? createdAt,
+    Object? temperature = _nullSentinel,
+    Object? topP = _nullSentinel,
+    Object? maxTokens = _nullSentinel,
   }) {
     return AIProvider(
       id: id ?? this.id,
@@ -63,6 +91,13 @@ class AIProvider {
       model: model ?? this.model,
       isActive: isActive ?? this.isActive,
       createdAt: createdAt ?? this.createdAt,
+      temperature: temperature == _nullSentinel
+          ? this.temperature
+          : temperature as double?,
+      topP: topP == _nullSentinel ? this.topP : topP as double?,
+      maxTokens: maxTokens == _nullSentinel
+          ? this.maxTokens
+          : maxTokens as int?,
     );
   }
 
@@ -76,6 +111,9 @@ class AIProvider {
       model: json['model'] as String,
       isActive: json['isActive'] as bool? ?? false,
       createdAt: DateTime.parse(json['createdAt'] as String),
+      temperature: json['temperature'] as double?,
+      topP: json['topP'] as double?,
+      maxTokens: json['maxTokens'] as int?,
     );
   }
 
@@ -89,6 +127,9 @@ class AIProvider {
       'model': model,
       'isActive': isActive,
       'createdAt': createdAt.toIso8601String(),
+      'temperature': temperature,
+      'topP': topP,
+      'maxTokens': maxTokens,
     };
   }
 
@@ -102,15 +143,29 @@ class AIProvider {
         other.type == type &&
         other.model == model &&
         other.isActive == isActive &&
-        other.createdAt == createdAt;
+        other.createdAt == createdAt &&
+        other.temperature == temperature &&
+        other.topP == topP &&
+        other.maxTokens == maxTokens;
   }
 
   @override
-  int get hashCode =>
-      Object.hash(id, name, baseUrl, type, model, isActive, createdAt);
+  int get hashCode => Object.hash(
+        id,
+        name,
+        baseUrl,
+        type,
+        model,
+        isActive,
+        createdAt,
+        temperature,
+        topP,
+        maxTokens,
+      );
 
   @override
   String toString() =>
       'AIProvider(id: $id, name: $name, baseUrl: $baseUrl, type: $type, '
-      'model: $model, isActive: $isActive, createdAt: $createdAt)';
+      'model: $model, isActive: $isActive, temperature: $temperature, '
+      'topP: $topP, maxTokens: $maxTokens, createdAt: $createdAt)';
 }
