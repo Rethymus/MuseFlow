@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive_ce/hive.dart';
@@ -39,6 +40,7 @@ import 'package:museflow/features/story_structure/application/guardian_context_b
 import 'package:museflow/features/story_structure/application/guardian_notifier.dart';
 import 'package:museflow/features/story_structure/application/logic_guardian_service.dart';
 import 'package:museflow/features/story_structure/application/plot_node_notifier.dart';
+import 'package:museflow/features/story_structure/application/export_service.dart';
 import 'package:museflow/features/story_structure/domain/foreshadowing_entry.dart';
 import 'package:museflow/features/story_structure/domain/plot_node.dart';
 import 'package:museflow/features/story_structure/infrastructure/foreshadowing_repository.dart';
@@ -435,3 +437,20 @@ final logicGuardianServiceProvider =
     model: provider.model,
   );
 });
+
+/// Provides an [ExportService] for building and writing exported manuscripts.
+///
+/// Uses dart:io file writer for production. Injected via provider for
+/// consistency with the rest of the dependency graph.
+final exportServiceProvider = Provider<ExportService>((ref) {
+  return ExportService(
+    fileWriter: _dartIoFileWriter,
+  );
+});
+
+/// Production file writer using dart:io.
+Future<void> _dartIoFileWriter(String path, String content) async {
+  // ignore: avoid_print
+  final file = File(path);
+  await file.writeAsString(content);
+}

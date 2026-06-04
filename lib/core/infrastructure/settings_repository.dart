@@ -69,4 +69,18 @@ class SettingsRepository {
   Future<void> saveBannedPhrases(List<String> phrases) async {
     await _box.put('banned_phrases', phrases);
   }
+
+  /// Gets the last export path used for manuscript export.
+  ///
+  /// Returns null if no export has been performed yet.
+  String? getLastExportPath() {
+    return _box.get('last_export_path') as String?;
+  }
+
+  /// Saves the last export path for manuscript export.
+  ///
+  /// Per D-18: Local-only, does not expose manuscript content.
+  Future<void> saveLastExportPath(String path) async {
+    await _box.put('last_export_path', path);
+  }
 }
