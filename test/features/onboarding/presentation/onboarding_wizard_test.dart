@@ -1,11 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:hive_ce/hive.dart';
+import 'package:museflow/features/knowledge/domain/character_card.dart';
+import 'package:museflow/features/knowledge/domain/world_setting.dart';
+import 'package:museflow/features/knowledge/infrastructure/character_card_repository.dart';
+import 'package:museflow/features/knowledge/infrastructure/world_setting_repository.dart';
 import 'package:museflow/features/onboarding/domain/genre_option.dart';
 import 'package:museflow/features/onboarding/domain/onboarding_progress.dart';
 import 'package:museflow/features/onboarding/infrastructure/onboarding_progress_repository.dart';
 import 'package:museflow/features/onboarding/presentation/onboarding_wizard_page.dart';
+import 'package:museflow/features/onboarding/presentation/onboarding_providers.dart';
+import 'package:museflow/features/onboarding/presentation/wizard_steps/character_step_page.dart';
 import 'package:museflow/features/onboarding/presentation/wizard_steps/genre_step_page.dart';
+import 'package:museflow/features/onboarding/presentation/wizard_steps/world_step_page.dart';
 
 import '../../../helpers/hive_test_helper.dart';
 
@@ -309,6 +317,358 @@ void main() {
       await repository.markCompleted();
 
       expect(repository.isCompleted(), isTrue);
+    });
+  });
+
+  group('WorldStepPage', () {
+    testWidgets('should display name and description fields', (tester) async {
+      final nameController = TextEditingController();
+      final descController = TextEditingController();
+
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            body: WorldStepPage(
+              worldNameController: nameController,
+              worldDescriptionController: descController,
+            ),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      expect(find.text('世界观名称 *'), findsOneWidget);
+      expect(find.text('世界简介'), findsOneWidget);
+    });
+
+    testWidgets('should validate name is required', (tester) async {
+      final nameController = TextEditingController();
+      final descController = TextEditingController();
+      final key = GlobalKey<WorldStepPageState>();
+
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            body: WorldStepPage(
+              key: key,
+              worldNameController: nameController,
+              worldDescriptionController: descController,
+            ),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      // Validate empty form
+      final isValid = key.currentState!.validate();
+      await tester.pump();
+      expect(isValid, isFalse);
+      expect(find.text('请输入世界观名称'), findsOneWidget);
+    });
+
+    testWidgets('should validate name max length', (tester) async {
+      final nameController = TextEditingController(text: 'a' * 101);
+      final descController = TextEditingController();
+      final key = GlobalKey<WorldStepPageState>();
+
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            body: WorldStepPage(
+              key: key,
+              worldNameController: nameController,
+              worldDescriptionController: descController,
+            ),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      final isValid = key.currentState!.validate();
+      await tester.pump();
+      expect(isValid, isFalse);
+      expect(find.text('名称不能超过100个字符'), findsOneWidget);
+    });
+
+    testWidgets('should pass validation with valid name', (tester) async {
+      final nameController = TextEditingController(text: '仙侠世界');
+      final descController = TextEditingController();
+      final key = GlobalKey<WorldStepPageState>();
+
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            body: WorldStepPage(
+              key: key,
+              worldNameController: nameController,
+              worldDescriptionController: descController,
+            ),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      final isValid = key.currentState!.validate();
+      expect(isValid, isTrue);
+    });
+
+    testWidgets('should accept optional description', (tester) async {
+      final nameController = TextEditingController(text: '测试世界');
+      final descController = TextEditingController(text: '一个测试世界的描述');
+      final key = GlobalKey<WorldStepPageState>();
+
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            body: WorldStepPage(
+              key: key,
+              worldNameController: nameController,
+              worldDescriptionController: descController,
+            ),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      final isValid = key.currentState!.validate();
+      expect(isValid, isTrue);
+    });
+  });
+
+  group('CharacterStepPage', () {
+    testWidgets('should display name and description fields', (tester) async {
+      final nameController = TextEditingController();
+      final descController = TextEditingController();
+
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            body: CharacterStepPage(
+              characterNameController: nameController,
+              characterDescriptionController: descController,
+            ),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      expect(find.text('角色名称 *'), findsOneWidget);
+      expect(find.text('角色简介'), findsOneWidget);
+    });
+
+    testWidgets('should validate name is required', (tester) async {
+      final nameController = TextEditingController();
+      final descController = TextEditingController();
+      final key = GlobalKey<CharacterStepPageState>();
+
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            body: CharacterStepPage(
+              key: key,
+              characterNameController: nameController,
+              characterDescriptionController: descController,
+            ),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      final isValid = key.currentState!.validate();
+      await tester.pump();
+      expect(isValid, isFalse);
+      expect(find.text('请输入角色名称'), findsOneWidget);
+    });
+
+    testWidgets('should validate name max length 50', (tester) async {
+      final nameController = TextEditingController(text: 'a' * 51);
+      final descController = TextEditingController();
+      final key = GlobalKey<CharacterStepPageState>();
+
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            body: CharacterStepPage(
+              key: key,
+              characterNameController: nameController,
+              characterDescriptionController: descController,
+            ),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      final isValid = key.currentState!.validate();
+      await tester.pump();
+      expect(isValid, isFalse);
+      expect(find.text('名称不能超过50个字符'), findsOneWidget);
+    });
+
+    testWidgets('should pass validation with valid name', (tester) async {
+      final nameController = TextEditingController(text: '张三');
+      final descController = TextEditingController();
+      final key = GlobalKey<CharacterStepPageState>();
+
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            body: CharacterStepPage(
+              key: key,
+              characterNameController: nameController,
+              characterDescriptionController: descController,
+            ),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      final isValid = key.currentState!.validate();
+      expect(isValid, isTrue);
+    });
+  });
+
+  group('Wizard entity creation integration', () {
+    testWidgets(
+        'should show world form fields when on step 2',
+        (tester) async {
+      await tester.pumpWidget(
+        const ProviderScope(
+          child: MaterialApp(home: OnboardingWizardPage()),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      // Advance to step 2
+      await tester.tap(find.text('下一步'));
+      await tester.pumpAndSettle();
+
+      expect(find.text('构建世界'), findsOneWidget);
+      expect(find.text('世界观名称 *'), findsOneWidget);
+      expect(find.text('世界简介'), findsOneWidget);
+    });
+
+    testWidgets(
+        'should show character form fields when on step 3',
+        (tester) async {
+      await tester.pumpWidget(
+        const ProviderScope(
+          child: MaterialApp(home: OnboardingWizardPage()),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      // Advance to step 2
+      await tester.tap(find.text('下一步'));
+      await tester.pumpAndSettle();
+
+      // Advance to step 3 (skip world form validation since empty)
+      await tester.tap(find.text('下一步'));
+      await tester.pumpAndSettle();
+
+      expect(find.text('创建角色'), findsOneWidget);
+      expect(find.text('角色名称 *'), findsOneWidget);
+      expect(find.text('角色简介'), findsOneWidget);
+    });
+
+    testWidgets(
+        'should skip step without validation on skip button',
+        (tester) async {
+      await tester.pumpWidget(
+        const ProviderScope(
+          child: MaterialApp(home: OnboardingWizardPage()),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      // Skip from step 1 to step 2
+      await tester.tap(find.text('跳过'));
+      await tester.pumpAndSettle();
+
+      expect(find.text('构建世界'), findsOneWidget);
+
+      // Skip from step 2 to step 3 (no validation triggered)
+      await tester.tap(find.text('跳过'));
+      await tester.pumpAndSettle();
+
+      expect(find.text('创建角色'), findsOneWidget);
+    });
+  });
+
+  group('Entity persistence', () {
+    late Box<dynamic> worldSettingsBox;
+    late Box<dynamic> characterCardsBox;
+
+    setUp(() async {
+      await setUpHiveTest();
+      worldSettingsBox = await Hive.openBox<dynamic>('world_settings');
+      characterCardsBox = await Hive.openBox<dynamic>('character_cards');
+    });
+
+    tearDown(() async {
+      await tearDownHiveTest();
+    });
+
+    test('should persist WorldSetting to Hive via repository', () async {
+      final repository =
+          OnboardingProgressRepository(await Hive.openBox('settings'));
+      // Simulate the provider creating a world setting
+      final worldRepo = WorldSettingRepository(worldSettingsBox);
+      final setting = WorldSetting(
+        id: '',
+        name: '测试世界',
+        description: '测试描述',
+        createdAt: DateTime.now(),
+      );
+      final saved = await worldRepo.add(setting);
+
+      expect(saved.id.isNotEmpty, isTrue);
+      expect(saved.name, '测试世界');
+      expect(worldSettingsBox.length, 1);
+    });
+
+    test('should persist CharacterCard to Hive via repository', () async {
+      final cardRepo = CharacterCardRepository(characterCardsBox);
+      final card = CharacterCard(
+        id: '',
+        name: '测试角色',
+        personality: '勇敢',
+        createdAt: DateTime.now(),
+      );
+      final saved = await cardRepo.add(card);
+
+      expect(saved.id.isNotEmpty, isTrue);
+      expect(saved.name, '测试角色');
+      expect(characterCardsBox.length, 1);
+    });
+  });
+
+  group('OnboardingRepository providers', () {
+    setUp(() async {
+      await setUpHiveTest();
+    });
+
+    tearDown(() async {
+      await tearDownHiveTest();
+    });
+
+    test(
+        'onboardingWorldSettingRepositoryProvider creates WorldSettingRepository',
+        () async {
+      final container = ProviderContainer();
+      final repository =
+          await container.read(onboardingWorldSettingRepositoryProvider.future);
+      expect(repository, isA<WorldSettingRepository>());
+      container.dispose();
+    });
+
+    test(
+        'onboardingCharacterCardRepositoryProvider creates CharacterCardRepository',
+        () async {
+      final container = ProviderContainer();
+      final repository = await container
+          .read(onboardingCharacterCardRepositoryProvider.future);
+      expect(repository, isA<CharacterCardRepository>());
+      container.dispose();
     });
   });
 }
