@@ -2,42 +2,45 @@
 gsd_state_version: 1.0
 milestone: v1.1
 milestone_name: 创作体验升级
-status: planning
-last_updated: "2026-06-04T07:58:26.477Z"
-last_activity: 2026-06-04
+status: executing
+stopped_at: Phase 8 UI-SPEC approved
+last_updated: "2026-06-04T13:23:03.646Z"
+last_activity: 2026-06-04 -- Phase 08 planning complete
 progress:
-  total_phases: 0
-  completed_phases: 0
-  total_plans: 0
-  completed_plans: 0
-  percent: 0
+  total_phases: 4
+  completed_phases: 1
+  total_plans: 8
+  completed_plans: 3
+  percent: 25
 ---
 
 # Project State
 
 ## Project Reference
 
-See: .planning/PROJECT.md (updated 2026-05-31)
+See: .planning/PROJECT.md (updated 2026-06-04)
 
 **Core value:** 让AI帮你写好故事，但让读者看不出AI的痕迹。
-**Current focus:** Phase 06 — multi provider android polish
+**Current focus:** Phase 8 — 开篇引导
 
 ## Current Position
 
-Phase: Not started (defining requirements)
-Plan: —
-Status: Defining requirements
-Last activity: 2026-06-04 — Milestone v1.1 started
+Phase: 8 of 10 (开篇引导)
+Plan: 0 of 3 in current phase
+Status: Ready to execute
+Last activity: 2026-06-04 -- Phase 08 planning complete
+
+Progress: [██░░░░░░░░] 25%
 
 ## Performance Metrics
 
 **Velocity:**
 
-- Total plans completed: 32
+- Total plans completed (v1.0): 32
 - Average duration: -
 - Total execution time: 0 hours
 
-**By Phase:**
+**By Phase (v1.0):**
 
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
@@ -52,7 +55,7 @@ Last activity: 2026-06-04 — Milestone v1.1 started
 **Recent Trend:**
 
 - Last 5 plans: 06-01, 06-02, 06-03, 04-05, 04-04
-- Trend: N/A
+- Trend: Stable
 
 *Updated after each plan completion*
 
@@ -61,18 +64,14 @@ Last activity: 2026-06-04 — Milestone v1.1 started
 ### Decisions
 
 Decisions are logged in PROJECT.md Key Decisions table.
-Recent decisions affecting current work:
+Recent decisions affecting v1.1:
 
-- **Roadmap**: Editor choice is super_editor (not appflowy_editor) -- CJK IME and large document performance are existential for Chinese novel authors on Windows
-- **Roadmap**: Phase 0 spike validates editor before any feature code -- editor migration after feature build is catastrophic
-- **Roadmap**: Anti-AI-scent effectiveness unproven -- must validate with real Chinese prose in Phase 2
-- **D-15**: CJK boundary matching uses both-sides check (not regex) per Pitfall 5 -- prevents "自然而然" false positive
-- **D-16**: PromptPipeline middlewares import openai_dart directly (Dart no transitive re-export)
-- **D-17**: PromptMiddleware const constructor enables const middleware subclasses
-- **D-18**: Editor exposed via EditorHolderNotifier (Notifier<Editor?>) set in initState, cleared in dispose -- works because StatefulShellRoute.indexedStack keeps editor mounted
-- **D-19**: activeProviderProvider/activeApiKeyProvider wrap async FutureProviders for sync reads in SynthesisNotifier
-- **D-20**: BannedPhrasesNotifier seeds from AntiAIScentProcessor.synonymKeys, persists via SettingsRepository
-- **D-21**: Provider management page uses AppConstants.sidebarCollapsedBreakpoint to switch from desktop two-panel Row to mobile list/form flow
+- **Research**: graphview ^1.5.1 chosen over CustomPainter for story arc visualization — saves weeks of layout/interaction work
+- **Research**: fl_chart ^1.2.0 for analytics charts (LineChart, BarChart, PieChart)
+- **Research**: Onboarding uses built-in PageView (not introduction_screen package)
+- **Research**: Template data as bundled JSON in assets/templates/world_presets/
+- **Research**: Stats storage via Hive boxes (writingStats, dailyStats) with 30s debounced writes
+- **Research**: First-run detection via appSettings Hive box key
 
 ### Pending Todos
 
@@ -80,12 +79,13 @@ None yet.
 
 ### Blockers/Concerns
 
-- Anti-AI-scent banned phrase lists are from domain knowledge, not empirical testing. Needs validation.
-- `flutter analyze --no-fatal-infos` still reports existing warning/info lint items, but no analysis errors.
+- Graph rendering performance with 100+ PlotNodes — mitigate with virtual viewport and debounced layout (Phase 10)
+- Phase 7 bundled template prose still needs human literary review before release sign-off
+- Anti-AI-scent effectiveness still unproven — carried forward from v1.0
 
 ## Deferred Items
 
-Items acknowledged and deferred at milestone close on 2026-06-04:
+Items acknowledged and deferred at v1.0 milestone close on 2026-06-04:
 
 | Category | Item | Status |
 |----------|------|--------|
@@ -95,10 +95,6 @@ Items acknowledged and deferred at milestone close on 2026-06-04:
 
 ## Session Continuity
 
-Last session: 2026-06-04T09:00:00.000Z
-Stopped at: Phase 06 complete
-Resume file: .planning/phases/05-story-structure-format-export/05-PLAN.md
-
-## Operator Next Steps
-
-- Start the next milestone with /gsd-new-milestone
+Last session: 2026-06-04T12:59:04.538Z
+Stopped at: Phase 8 UI-SPEC approved
+Resume file: .planning/phases/08-onboarding-guide/08-UI-SPEC.md

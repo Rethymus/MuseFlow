@@ -32,72 +32,97 @@
 ## Phase Details
 
 ### Phase 7: 预设世界观模板库
+
 **Goal**: 用户可以通过类型画廊快速选择世界观模板，一键创建完整的知识库实体，大幅降低新项目的冷启动门槛
 **Depends on**: Phase 6 (v1.0 shipped — knowledge base domain entities exist)
 **Requirements**: TMPL-01, TMPL-02, TMPL-03, TMPL-04, TMPL-05, TMPL-06
 **Success Criteria** (what must be TRUE):
+
   1. User can browse a genre gallery showing 14 novel types (8 male-frequency + 6 female-frequency), each with icon, name, and brief description
   2. User can tap "Use Template" and get editable WorldSetting + CharacterCard prototype entities created in the knowledge base (not locked)
   3. User can preview template contents (world skeleton, character prototypes, foreshadowing patterns) before committing to creation
   4. AI fills in blank template fields based on user's story concept input, producing a customized starting point
   5. Each genre template includes 3 opening sample paragraphs and genre-specific foreshadowing arcs (e.g., xianxia: hidden bloodline → awakening → tribulation)
+
 **Plans**: 3 executable plans created 2026-06-04
 
 Plans:
+
 - [x] 07-01: Template data model and bundled JSON assets
 - [x] 07-02: Genre gallery UI with filtering and preview
 - [x] 07-03: Template instantiation (WorldSetting + CharacterCard creation) and AI completion
 
 ### Phase 8: 开篇引导
+
 **Goal**: 新用户首次启动时通过4步向导快速体验完整创作流程，老用户可随时在编辑器中使用AI开篇生成器
 **Depends on**: Phase 7 (reuses TemplateRepository for wizard's genre selection step)
 **Requirements**: ONBD-01, ONBD-02, ONBD-03, ONBD-04, ONBD-05, ONBD-06
 **Success Criteria** (what must be TRUE):
+
   1. On fresh install, app automatically detects first-run state (via Hive appSettings key) and launches the onboarding wizard
   2. User completes a 4-step flow (pick genre → create world → create character → AI opening), and each step delivers tangible value (not just explanation screens)
   3. User can skip any step or exit the wizard entirely, and partial progress is persisted so they can resume later
   4. AI opening generator is accessible outside the wizard (from editor), generating 3 distinct opening styles (scene-led, character-led, suspense-led)
   5. User can select one of the 3 generated openings and insert it directly into the editor for refinement
-**Plans**: 3 executable plans created 2026-06-04
+
+**Plans**: 5 executable plans created 2026-06-04
 **UI hint**: yes
 
 Plans:
-- [ ] 08-01: First-run detection and go_router redirect guard
-- [ ] 08-02: 4-step wizard UI (PageView-based) with skip/resume logic
-- [ ] 08-03: AI opening generator (3 styles) with editor integration
+**Wave 1**
+
+- [ ] 08-01: First-run detection and progress persistence (wave 1)
+
+**Wave 2** *(blocked on Wave 1 completion)*
+
+- [ ] 08-02: Wizard host + genre step (wave 2, depends on 08-01)
+- [ ] 08-03: World + character steps + entity creation (wave 2, depends on 08-01)
+
+**Wave 3** *(blocked on Wave 2 completion)*
+
+- [ ] 08-04: OpeningVariant model + OpeningGeneratorService (wave 3, depends on 08-01)
+- [ ] 08-05: OpeningStepPage + OpeningGeneratorSheet + toolbar button + wizard wiring (wave 3, depends on 08-01, 08-02, 08-03, 08-04)
 
 ### Phase 9: 写作数据统计
+
 **Goal**: 用户可以通过全球面板和项目面板查看量化创作数据（字数、速度、AI使用率），并获得里程碑成就徽章激励
 **Depends on**: Phase 6 (v1.0 shipped — editor and AI pipeline exist for data collection)
 **Requirements**: STAT-01, STAT-02, STAT-03, STAT-04, STAT-05, STAT-06
 **Success Criteria** (what must be TRUE):
+
   1. After an editing session, the global stats page shows accurate total word count, writing days, AI assist ratio, and session count
   2. Charts render correctly — line chart for speed trend, bar chart for daily words, pie chart for AI usage ratio (via fl_chart)
   3. Editing performance is unaffected by stats collection (in-memory counters with 30-second debatched Hive writes)
   4. Achievement badges appear when milestones are reached (first 1K/10K/50K words, 7/30/100 consecutive writing days)
   5. User can clear all writing statistics from the settings page
+
 **Plans**: TBD
 **UI hint**: yes
 
 Plans:
+
 - [ ] 09-01: Stats data model, Hive storage, and in-memory collector service
 - [ ] 09-02: Global and project stats pages with fl_chart visualizations
 - [ ] 09-03: Achievement badge system and settings clear action
 
 ### Phase 10: 故事弧可视化
+
 **Goal**: 用户可以看到基于现有PlotNode数据的交互式故事弧节点图，通过视觉方式理解和管理剧情结构
 **Depends on**: Phase 6 (v1.0 shipped — PlotNode domain entity exists)
 **Requirements**: VIZO-01, VIZO-02, VIZO-03, VIZO-04, VIZO-05, VIZO-06
 **Success Criteria** (what must be TRUE):
+
   1. An interactive graph renders from existing PlotNode data using graphview, with smooth zoom and pan via InteractiveViewer
   2. Edges visually distinguish relationship types — directed solid lines for causation, thin gray lines for association, dashed lines for foreshadowing
   3. Nodes are color-coded by structural role (setup/development/turning point/climax/resolution) and bordered by writing status
   4. User can tap a node to inline-edit its title, structural role, and writing status without leaving the graph view
   5. User can drag nodes to rearrange positions, with position changes persisted to storage; a minimap widget helps navigate large graphs
+
 **Plans**: TBD
 **UI hint**: yes
 
 Plans:
+
 - [ ] 10-01: Graph data adapter (PlotNode → graphview model) and edge styling
 - [ ] 10-02: Interactive graph UI with zoom, pan, drag, and inline node editing
 - [ ] 10-03: Minimap navigation and position persistence

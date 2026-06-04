@@ -573,20 +573,23 @@ void _showOpeningGenerator(BuildContext context) {
 | A3 | `InsertNodeRequest` with `ParagraphNode` works for appending text at the end of a super_editor document | Pattern 4 | Text not inserted or inserted at wrong position. Verified by web search finding: use `document.nodes.length` as `nodeIndex`. [ASSUMED] |
 | A4 | AI models can reliably return structured JSON with 3 Chinese opening paragraphs in a single call | Pattern 3 | Fallback to regex extraction or single-variant display needed. Mitigated by existing `TemplateCompletionService` pattern that handles JSON parse failures. |
 
-## Open Questions
+## Open Questions (RESOLVED)
 
 1. **Onboarding route placement**
+   - **RESOLVED**: Plan 08-01 Task 2 implements top-level GoRoute sibling to StatefulShellRoute. No routing conflicts expected as go_router supports multiple top-level routes.
    - What we know: Must be outside `StatefulShellRoute` for full-screen display. go_router requires a route matching `/` in the routes list, which is currently satisfied by the `StatefulShellRoute`.
    - What's unclear: Whether adding a top-level `/onboarding` route alongside `StatefulShellRoute.indexedStack` causes any routing conflicts.
    - Recommendation: Test that `/onboarding` resolves correctly as a sibling route. The existing pattern in the codebase uses nested routes under `StatefulShellBranch`, so this is a new top-level route.
 
 2. **Editor access for opening generator when no provider configured**
+   - **RESOLVED**: Plan 08-05 Task 4 shows button always, displays error message on tap if no provider (matches EditorAINotifier pattern).
    - What we know: `EditorAINotifier` shows "未配置 AI 模型" error when no provider is set.
    - What's unclear: Should the opening generator button be hidden when no provider is configured, or shown with an error?
    - Recommendation: Show the button always (consistent with other AI features), display error message on tap if no provider. This matches the existing `EditorAINotifier` pattern.
 
 3. **Opening variant display in onboarding vs editor**
    - What we know: In the wizard, the opening generator is step 4 with full-page display. In the editor, it's a bottom sheet or dialog.
+   - **RESOLVED**: Plan 08-04 creates OpeningGeneratorService (shared), Plan 08-05 Task 1 creates OpeningVariantCard (shared), Task 2 creates OpeningStepPage (wizard container), Task 3 creates OpeningGeneratorSheet (bottom sheet container).
    - What's unclear: Whether the same `OpeningGeneratorService` + selection UI is shared between both contexts.
    - Recommendation: Share `OpeningGeneratorService` and `OpeningVariantCard` widget. Use different container widgets (wizard page vs bottom sheet).
 
