@@ -17,7 +17,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] **Phase 2: AI Provider + Capture Synthesis** - AI adapter layer, provider settings, anti-AI-scent, fragment synthesis (completed 2026-06-02)
 - [x] **Phase 3: Editor AI Toolbar** - Floating toolbar with AI actions, text provenance, selective undo, context anchor (completed 2026-06-02)
 - [x] **Phase 4: Knowledge Base + Skill System** - Character cards, world settings, auto-injection, AI-assisted world-building (completed 2026-06-04)
-- [ ] **Phase 5: Story Structure + Format + Export** - Foreshadowing tracking, consistency guardian, format cleaning, export
+- [x] **Phase 5: Story Structure + Format + Export** - Foreshadowing tracking, consistency guardian, format cleaning, export (completed 2026-06-04)
 - [x] **Phase 6: Multi-Provider + Android Polish** - Claude adapter, model parameters, custom models, Android optimization
 
 ## Phase Details
@@ -200,7 +200,7 @@ Plans:
   6. User can export to plain text, Markdown, or JSON format
 **UI hint**: yes
 **Risks**: Logic loop detection is AI-dependent and may produce false positives. Foreshadowing resolution detection requires tracking state across chapters. Format cleaning edge cases in Chinese punctuation are numerous.
-**Plans:** 3/4 plans executed
+**Plans:** 4/4 plans complete
 
 Plans:
 - [x] 05-01: Foreshadowing tracking and resolution detection
