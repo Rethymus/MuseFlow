@@ -206,7 +206,7 @@ Plans:
 - [x] 05-01: Foreshadowing tracking and resolution detection
 - [x] 05-02: Plot node management and character consistency guardian
 - [x] 05-03: Logic loop detection via AI analysis
-- [ ] 05-04: Format cleaning (punctuation, Markdown residuals, typeset) and export (TXT/MD/JSON)
+- [x] 05-04: Format cleaning (punctuation, Markdown residuals, typeset) and export (TXT/MD/JSON)
 
 ### Phase 6: Multi-Provider + Android Polish
 **Mode**: mvp
