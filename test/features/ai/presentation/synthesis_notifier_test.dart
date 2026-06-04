@@ -426,6 +426,9 @@ class _FakeOpenAIAdapter extends OpenAIAdapter {
     required String baseUrl,
     required String model,
     required List<ChatMessage> messages,
+    double? temperature,
+    double? topP,
+    int? maxTokens,
   }) {
     return streamOutput ?? Stream.fromIterable(['默认文本']);
   }
