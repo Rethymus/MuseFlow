@@ -33,6 +33,7 @@ import 'package:museflow/features/knowledge/infrastructure/character_card_reposi
 import 'package:museflow/features/knowledge/infrastructure/name_index.dart';
 import 'package:museflow/features/knowledge/infrastructure/skill_repository.dart';
 import 'package:museflow/features/knowledge/infrastructure/world_setting_repository.dart';
+import 'package:museflow/features/onboarding/infrastructure/onboarding_progress_repository.dart';
 import 'package:museflow/features/story_structure/application/foreshadowing_notifier.dart';
 import 'package:museflow/features/story_structure/application/foreshadowing_reminder_service.dart';
 import 'package:museflow/features/story_structure/application/guardian_check_service.dart';
@@ -92,6 +93,17 @@ final settingsRepositoryProvider =
   );
 
   return SettingsRepository(box);
+});
+
+/// Provides an [OnboardingProgressRepository] backed by the same encrypted
+/// Hive 'settings' box used by [SettingsRepository].
+///
+/// Depends on [settingsRepositoryProvider] and accesses the shared box
+/// for onboarding progress and completion flag persistence.
+final onboardingProgressProvider =
+    FutureProvider<OnboardingProgressRepository>((ref) async {
+  final settingsRepo = await ref.watch(settingsRepositoryProvider.future);
+  return OnboardingProgressRepository(settingsRepo.box);
 });
 
 /// Provides a singleton [SecureStorageService] instance.

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:hive_ce/hive.dart';
 import 'package:museflow/core/presentation/app_shell.dart';
 import 'package:museflow/features/ai/presentation/banned_phrase_settings.dart';
 import 'package:museflow/features/ai/presentation/provider_management_page.dart';
@@ -11,6 +12,7 @@ import 'package:museflow/features/knowledge/presentation/knowledge_base_page.dar
 import 'package:museflow/features/knowledge/presentation/skill_generation_wizard.dart';
 import 'package:museflow/features/knowledge/presentation/skill_list_page.dart';
 import 'package:museflow/features/knowledge/presentation/world_setting_form.dart';
+import 'package:museflow/features/onboarding/presentation/onboarding_wizard_page.dart';
 import 'package:museflow/features/settings/presentation/settings_page.dart';
 import 'package:museflow/features/story_structure/presentation/story_structure_page.dart';
 import 'package:museflow/shared/constants/app_constants.dart';
@@ -38,7 +40,14 @@ class MuseFlowApp extends ConsumerWidget {
   GoRouter _createRouter() {
     return GoRouter(
       initialLocation: AppConstants.editor,
+      redirect: _handleRedirect,
       routes: [
+        // Top-level onboarding route — outside StatefulShellRoute for full-screen display.
+        // The OnboardingWizardPage will be implemented in Plan 02.
+        GoRoute(
+          path: AppConstants.onboarding,
+          builder: (context, state) => const OnboardingWizardPage(),
+        ),
         StatefulShellRoute.indexedStack(
           builder: (context, state, navigationShell) {
             return AppShellScaffold(navigationShell: navigationShell);
@@ -139,5 +148,42 @@ class MuseFlowApp extends ConsumerWidget {
         ),
       ],
     );
+  }
+
+  /// Redirect guard for first-run detection.
+  ///
+  /// Reads the `onboarding_completed` flag from the Hive settings box.
+  /// - Fresh install (flag not set): redirects to /onboarding
+  /// - Completed onboarding while on /onboarding: redirects to editor
+  /// - Completed onboarding on any other route: no redirect
+  /// - Prevents infinite loops by checking current location before redirecting.
+  Future<String?> _handleRedirect(
+    BuildContext context,
+    GoRouterState state,
+  ) async {
+    final isOnboarding = state.matchedLocation == AppConstants.onboarding;
+
+    try {
+      final box = Hive.box('settings');
+      final completed =
+          box.get('onboarding_completed', defaultValue: false) as bool;
+
+      // Fresh install: redirect to onboarding wizard
+      if (!completed && !isOnboarding) {
+        return AppConstants.onboarding;
+      }
+
+      // Completed user landed on /onboarding (e.g. deep link): redirect to editor
+      if (completed && isOnboarding) {
+        return AppConstants.editor;
+      }
+
+      // No redirect needed
+      return null;
+    } catch (_) {
+      // If settings box is not yet open, allow normal navigation.
+      // The onboarding check will run again once the box is available.
+      return null;
+    }
   }
 }
