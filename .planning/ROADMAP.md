@@ -16,9 +16,9 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] **Phase 1: App Shell + Editor + Capture UI** - Runnable app with navigation, editor, and fragment capture (no AI) (completed 2026-06-01)
 - [x] **Phase 2: AI Provider + Capture Synthesis** - AI adapter layer, provider settings, anti-AI-scent, fragment synthesis (completed 2026-06-02)
 - [x] **Phase 3: Editor AI Toolbar** - Floating toolbar with AI actions, text provenance, selective undo, context anchor (completed 2026-06-02)
-- [ ] **Phase 4: Knowledge Base + Skill System** - Character cards, world settings, auto-injection, AI-assisted world-building
+- [x] **Phase 4: Knowledge Base + Skill System** - Character cards, world settings, auto-injection, AI-assisted world-building (completed 2026-06-04)
 - [ ] **Phase 5: Story Structure + Format + Export** - Foreshadowing tracking, consistency guardian, format cleaning, export
-- [ ] **Phase 6: Multi-Provider + Android Polish** - Claude adapter, model parameters, custom models, Android optimization
+- [x] **Phase 6: Multi-Provider + Android Polish** - Claude adapter, model parameters, custom models, Android optimization
 
 ## Phase Details
 
@@ -160,14 +160,14 @@ Plans:
   6. Multiple skills can be active per project (e.g., "修仙体系" + "门派设定")
 **UI hint**: yes
 **Risks**: Name-index entity matching for auto-injection may produce false positives with Chinese names. Token budget can be exhausted by large knowledge bases -- relevance scoring is critical.
-**Plans:** 1/5 plans executed
+**Plans:** 5/5 plans complete
 
 Plans:
 - [x] 04-01: Knowledge base CRUD -- character cards and world settings with Hive persistence
-- [ ] 04-02: Name-index entity matching and AI auto-injection into PromptPipeline
-- [ ] 04-03: Skill system -- AI-assisted world-building document generation
-- [ ] 04-04: Real-time skill enforcement, deviation detection, and multi-skill activation
-- [ ] 04-05: Knowledge base quick-insert via keyboard shortcut in editor
+- [x] 04-02: Name-index entity matching and AI auto-injection into PromptPipeline
+- [x] 04-03: Skill system -- AI-assisted world-building document generation
+- [x] 04-04: Real-time skill enforcement, deviation detection, and multi-skill activation
+- [x] 04-05: Knowledge base quick-insert via keyboard shortcut in editor
 
 **Wave 1** *(foundation — entities, repositories, notifiers, UI)*
 - 04-01: Knowledge base CRUD — CharacterCard, WorldSetting, Hive adapters, repositories, notifiers, knowledge base page
@@ -220,12 +220,12 @@ Plans:
   4. Provider management page renders on Android with responsive layout at 600px breakpoint
 **UI hint**: yes
 **Risks**: Claude's OpenAI-compatible endpoint may not support GET /v1/models (mitigated by silent fallback per D-08). Android layout adaptation may surface touch/IME issues not seen on Windows.
-**Plans:** 2/3 plans executed
+**Plans:** 3/3 plans executed
 
 Plans:
 - [x] 06-01-PLAN.md — Claude preset via OpenAI-compatible endpoint, AiProviderType.claude, testConnection fix, UI wiring
 - [x] 06-02-PLAN.md — Per-provider model parameters (temperature/topP/maxTokens), model list fetching, parameter UI
-- [ ] 06-03-PLAN.md — Responsive provider management layout for Android, integration tests for core flow
+- [x] 06-03-PLAN.md — Responsive provider management layout for Android, integration tests for core flow
 
 **Wave 1** *(foundation — Claude preset + enum variant)*
 - 06-01: Claude preset + enum variant + testConnection fix + UI wiring
@@ -253,6 +253,6 @@ Phases execute in numeric order: 0 -> 1 -> 2 -> 3 -> 4 -> 5 -> 6
 | 1. App Shell + Editor + Capture UI | 4/4 | Complete   | 2026-06-01 |
 | 2. AI Provider + Capture Synthesis | 3/3 | Complete    | 2026-06-02 |
 | 3. Editor AI Toolbar | 3/3 | Complete   | 2026-06-02 |
-| 4. Knowledge Base + Skill System | 1/5 | In Progress|  |
+| 4. Knowledge Base + Skill System | 5/5 | Complete | 2026-06-04 |
 | 5. Story Structure + Format + Export | 3/4 | In Progress|  |
-| 6. Multi-Provider + Android Polish | 2/3 | In Progress|  |
+| 6. Multi-Provider + Android Polish | 3/3 | Complete | 2026-06-04 |
