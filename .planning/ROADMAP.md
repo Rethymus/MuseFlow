@@ -227,11 +227,13 @@ Plans:
 - [ ] 06-02-PLAN.md — Per-provider model parameters (temperature/topP/maxTokens), model list fetching, parameter UI
 - [ ] 06-03-PLAN.md — Responsive provider management layout for Android, integration tests for core flow
 
-**Wave 1** *(parallel — Claude preset and model parameters both extend AIProvider)*
-- 06-01: Claude preset + enum variant + testConnection fix + UI wiring (depends on 06-01 for claude enum)
+**Wave 1** *(foundation — Claude preset + enum variant)*
+- 06-01: Claude preset + enum variant + testConnection fix + UI wiring
+
+**Wave 2** *(depends on 06-01 for claude enum)*
 - 06-02: Nullable parameter fields + adapter forwarding + parameter UI + model list fetching
 
-**Wave 2** *(depends on 06-02 for final provider management page)*
+**Wave 3** *(depends on 06-02 for final provider management page)*
 - 06-03: Responsive layout adaptation + integration tests
 
 **Cross-cutting constraints:**
@@ -253,4 +255,4 @@ Phases execute in numeric order: 0 -> 1 -> 2 -> 3 -> 4 -> 5 -> 6
 | 3. Editor AI Toolbar | 3/3 | Complete   | 2026-06-02 |
 | 4. Knowledge Base + Skill System | 1/5 | In Progress|  |
 | 5. Story Structure + Format + Export | 3/4 | In Progress|  |
-| 6. Multi-Provider + Android Polish | 0/3 | Not started | - |
+| 6. Multi-Provider + Android Polish | 0/3 | Planned | - |
