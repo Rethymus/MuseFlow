@@ -15,8 +15,7 @@ import 'package:super_editor/super_editor.dart';
 /// Story structure page with section navigation.
 ///
 /// Provides four sections: Foreshadowing, Plot Timeline, Guardian,
-/// and Finish & Export. Only Foreshadowing is fully functional in this plan;
-/// other sections show placeholder content pointing to later plans.
+/// and Finish & Export. All sections are functional.
 class StoryStructurePage extends ConsumerStatefulWidget {
   const StoryStructurePage({super.key});
 
