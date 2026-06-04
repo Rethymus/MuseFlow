@@ -76,6 +76,17 @@ class OpeningVariant {
         'text': text,
       };
 
+  /// Creates a copy with optionally replaced fields.
+  OpeningVariant copyWith({
+    OpeningVariantStyle? style,
+    String? text,
+  }) {
+    return OpeningVariant(
+      style: style ?? this.style,
+      text: text ?? this.text,
+    );
+  }
+
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
