@@ -220,10 +220,10 @@ Plans:
   4. Provider management page renders on Android with responsive layout at 600px breakpoint
 **UI hint**: yes
 **Risks**: Claude's OpenAI-compatible endpoint may not support GET /v1/models (mitigated by silent fallback per D-08). Android layout adaptation may surface touch/IME issues not seen on Windows.
-**Plans:** 3 plans
+**Plans:** 1/3 plans executed
 
 Plans:
-- [ ] 06-01-PLAN.md — Claude preset via OpenAI-compatible endpoint, AiProviderType.claude, testConnection fix, UI wiring
+- [x] 06-01-PLAN.md — Claude preset via OpenAI-compatible endpoint, AiProviderType.claude, testConnection fix, UI wiring
 - [ ] 06-02-PLAN.md — Per-provider model parameters (temperature/topP/maxTokens), model list fetching, parameter UI
 - [ ] 06-03-PLAN.md — Responsive provider management layout for Android, integration tests for core flow
 
@@ -255,4 +255,4 @@ Phases execute in numeric order: 0 -> 1 -> 2 -> 3 -> 4 -> 5 -> 6
 | 3. Editor AI Toolbar | 3/3 | Complete   | 2026-06-02 |
 | 4. Knowledge Base + Skill System | 1/5 | In Progress|  |
 | 5. Story Structure + Format + Export | 3/4 | In Progress|  |
-| 6. Multi-Provider + Android Polish | 0/3 | Planned | - |
+| 6. Multi-Provider + Android Polish | 1/3 | In Progress|  |
