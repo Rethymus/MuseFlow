@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:museflow/core/presentation/providers.dart';
 import 'package:museflow/features/ai/domain/ai_provider.dart';
 import 'package:museflow/features/ai/infrastructure/preset_providers.dart';
+import 'package:museflow/features/ai/presentation/parameter_validation.dart';
 import 'package:museflow/features/ai/presentation/provider_card.dart';
 import 'package:museflow/features/ai/presentation/provider_management_notifier.dart';
 
@@ -26,6 +27,9 @@ class _ProviderManagementPageState
   late final TextEditingController _baseUrlController;
   late final TextEditingController _apiKeyController;
   late final TextEditingController _modelController;
+  late final TextEditingController _temperatureController;
+  late final TextEditingController _topPController;
+  late final TextEditingController _maxTokensController;
 
   AiProviderType _selectedType = AiProviderType.custom;
   bool _obscureApiKey = true;
@@ -39,6 +43,9 @@ class _ProviderManagementPageState
     _baseUrlController = TextEditingController();
     _apiKeyController = TextEditingController();
     _modelController = TextEditingController();
+    _temperatureController = TextEditingController();
+    _topPController = TextEditingController();
+    _maxTokensController = TextEditingController();
   }
 
   @override
@@ -47,6 +54,9 @@ class _ProviderManagementPageState
     _baseUrlController.dispose();
     _apiKeyController.dispose();
     _modelController.dispose();
+    _temperatureController.dispose();
+    _topPController.dispose();
+    _maxTokensController.dispose();
     super.dispose();
   }
 
@@ -55,6 +65,9 @@ class _ProviderManagementPageState
     _baseUrlController.clear();
     _apiKeyController.clear();
     _modelController.clear();
+    _temperatureController.clear();
+    _topPController.clear();
+    _maxTokensController.clear();
     setState(() {
       _selectedType = AiProviderType.custom;
       _isEditing = false;
@@ -69,6 +82,10 @@ class _ProviderManagementPageState
     _baseUrlController.text = preset.baseUrl;
     _modelController.text = preset.model;
     _apiKeyController.clear();
+    // Presets have null params, so leave parameter fields empty
+    _temperatureController.clear();
+    _topPController.clear();
+    _maxTokensController.clear();
     setState(() {
       _selectedType = preset.type;
       _isEditing = false;
@@ -81,6 +98,11 @@ class _ProviderManagementPageState
     _nameController.text = provider.name;
     _baseUrlController.text = provider.baseUrl;
     _modelController.text = provider.model;
+    // Convert nullable params to text: null -> empty, non-null -> string
+    _temperatureController.text =
+        provider.temperature?.toString() ?? '';
+    _topPController.text = provider.topP?.toString() ?? '';
+    _maxTokensController.text = provider.maxTokens?.toString() ?? '';
     setState(() {
       _selectedType = provider.type;
       _isEditing = true;
@@ -118,6 +140,10 @@ class _ProviderManagementPageState
     }
 
     final notifier = ref.read(providerManagementProvider.notifier);
+    // Parse nullable parameters from text fields
+    final temperature = parseTemperature(_temperatureController.text.trim());
+    final topP = parseTopP(_topPController.text.trim());
+    final maxTokens = parseMaxTokens(_maxTokensController.text.trim());
 
     if (_isEditing && _editingProviderId != null) {
       // Update existing
@@ -130,6 +156,9 @@ class _ProviderManagementPageState
         baseUrl: _baseUrlController.text.trim(),
         type: _selectedType,
         model: _modelController.text.trim(),
+        temperature: temperature,
+        topP: topP,
+        maxTokens: maxTokens,
       );
       await notifier.updateProvider(updated);
       // Update API key if changed
@@ -154,6 +183,9 @@ class _ProviderManagementPageState
         type: _selectedType,
         model: _modelController.text.trim(),
         apiKey: apiKey,
+        temperature: temperature,
+        topP: topP,
+        maxTokens: maxTokens,
       );
     }
   }
@@ -167,6 +199,17 @@ class _ProviderManagementPageState
       apiKey: apiKey,
       baseUrl: _baseUrlController.text.trim(),
       model: _modelController.text.trim(),
+    );
+  }
+
+  Future<void> _handleFetchModels() async {
+    final notifier = ref.read(providerManagementProvider.notifier);
+    final apiKey = PresetProviders.requiresApiKey(_selectedType)
+        ? _apiKeyController.text.trim()
+        : 'ollama-no-key';
+    await notifier.fetchModels(
+      apiKey: apiKey,
+      baseUrl: _baseUrlController.text.trim(),
     );
   }
 
@@ -396,15 +439,57 @@ class _ProviderManagementPageState
           ),
           const SizedBox(height: 16),
 
-          // Model field
+          // Model field with fetch button (combo input per D-07)
           TextField(
             controller: _modelController,
-            decoration: const InputDecoration(
+            decoration: InputDecoration(
               labelText: '模型',
               hintText: 'gpt-4o-mini',
-              border: OutlineInputBorder(),
+              border: const OutlineInputBorder(),
+              suffixIcon: IconButton(
+                icon: mgmtState.isFetchingModels
+                    ? const SizedBox(
+                        width: 16,
+                        height: 16,
+                        child: CircularProgressIndicator(strokeWidth: 2),
+                      )
+                    : const Icon(Icons.refresh),
+                tooltip: '获取模型列表',
+                onPressed: mgmtState.isFetchingModels
+                    ? null
+                    : _handleFetchModels,
+              ),
             ),
           ),
+          // Model list dropdown per D-07/D-08
+          if (mgmtState.availableModels.isNotEmpty) ...[
+            const SizedBox(height: 4),
+            Container(
+              constraints: const BoxConstraints(maxHeight: 150),
+              decoration: BoxDecoration(
+                border: Border.all(color: colorScheme.outlineVariant),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: ListView.builder(
+                shrinkWrap: true,
+                padding: EdgeInsets.zero,
+                itemCount: mgmtState.availableModels.length,
+                itemBuilder: (context, index) {
+                  final modelId = mgmtState.availableModels[index];
+                  return ListTile(
+                    dense: true,
+                    title: Text(
+                      modelId,
+                      style: theme.textTheme.bodySmall,
+                    ),
+                    onTap: () {
+                      _modelController.text = modelId;
+                    },
+                  );
+                },
+              ),
+            ),
+          ],
           const SizedBox(height: 16),
 
           // API Key field (hidden for Ollama)
@@ -430,6 +515,53 @@ class _ProviderManagementPageState
             ),
             const SizedBox(height: 16),
           ],
+
+          // Parameter input rows per D-05
+          Text('模型参数', style: theme.textTheme.labelLarge),
+          const SizedBox(height: 4),
+          Text(
+            '留空使用模型默认值',
+            style: theme.textTheme.bodySmall?.copyWith(
+              color: colorScheme.onSurfaceVariant,
+            ),
+          ),
+          const SizedBox(height: 8),
+
+          // Temperature field
+          TextField(
+            controller: _temperatureController,
+            keyboardType: const TextInputType.numberWithOptions(decimal: true),
+            decoration: const InputDecoration(
+              labelText: 'Temperature',
+              hintText: '0.0 - 2.0，留空使用默认值',
+              border: OutlineInputBorder(),
+            ),
+          ),
+          const SizedBox(height: 12),
+
+          // Top-P field
+          TextField(
+            controller: _topPController,
+            keyboardType: const TextInputType.numberWithOptions(decimal: true),
+            decoration: const InputDecoration(
+              labelText: 'Top-P',
+              hintText: '0.0 - 1.0，留空使用默认值',
+              border: OutlineInputBorder(),
+            ),
+          ),
+          const SizedBox(height: 12),
+
+          // Max Tokens field
+          TextField(
+            controller: _maxTokensController,
+            keyboardType: TextInputType.number,
+            decoration: const InputDecoration(
+              labelText: '最大 Token 数',
+              hintText: '1 - 128000，留空使用默认值',
+              border: OutlineInputBorder(),
+            ),
+          ),
+          const SizedBox(height: 16),
 
           // Test Connection button with inline feedback
           if (PresetProviders.requiresApiKey(_selectedType)) ...[

@@ -115,6 +115,34 @@ class OpenAIAdapter {
   /// Whether the adapter has an active client.
   bool get isActive => _client != null && !_disposed;
 
+  /// Fetches the list of available models from the provider's /v1/models endpoint.
+  ///
+  /// Per D-08: Returns a list of model ID strings on success. Returns an empty
+  /// list on any error (network failure, timeout, invalid response) -- silent
+  /// fallback so the user can always type a model ID manually.
+  ///
+  /// Uses a 5-second timeout per the plan specification.
+  Future<List<String>> fetchModelList({
+    required String apiKey,
+    required String baseUrl,
+  }) async {
+    if (apiKey.isEmpty) return [];
+    try {
+      final client = OpenAIClient.withApiKey(
+        apiKey,
+        baseUrl: baseUrl,
+      );
+      final modelList = await client.models.list().timeout(
+            const Duration(seconds: 5),
+          );
+      client.close();
+      return modelList.data.map((m) => m.id).toList();
+    } catch (_) {
+      // Per D-08: silent fallback on any error
+      return [];
+    }
+  }
+
   /// Disposes the current client and releases resources.
   void dispose() {
     _client?.close();

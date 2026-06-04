@@ -3,6 +3,7 @@ import 'package:museflow/core/presentation/providers.dart';
 import 'package:museflow/features/ai/application/provider_service.dart';
 import 'package:museflow/features/ai/domain/ai_exception.dart';
 import 'package:museflow/features/ai/domain/ai_provider.dart';
+import 'package:museflow/features/ai/infrastructure/openai_adapter.dart';
 import 'package:museflow/features/ai/infrastructure/preset_providers.dart';
 
 /// State for the provider management page.
@@ -15,6 +16,12 @@ class ProviderManagementState {
   final String? connectionTestResult;
   final bool isTestingConnection;
 
+  /// Per D-07: Available models fetched from the provider's /v1/models endpoint.
+  final List<String> availableModels;
+
+  /// Whether model list is currently being fetched.
+  final bool isFetchingModels;
+
   const ProviderManagementState({
     this.providers = const [],
     this.selectedProvider,
@@ -23,6 +30,8 @@ class ProviderManagementState {
     this.error,
     this.connectionTestResult,
     this.isTestingConnection = false,
+    this.availableModels = const [],
+    this.isFetchingModels = false,
   });
 
   ProviderManagementState copyWith({
@@ -35,6 +44,9 @@ class ProviderManagementState {
     String? connectionTestResult,
     bool clearConnectionResult = false,
     bool isTestingConnection = false,
+    List<String>? availableModels,
+    bool clearAvailableModels = false,
+    bool isFetchingModels = false,
   }) {
     return ProviderManagementState(
       providers: providers ?? this.providers,
@@ -47,6 +59,10 @@ class ProviderManagementState {
           ? null
           : (connectionTestResult ?? this.connectionTestResult),
       isTestingConnection: isTestingConnection,
+      availableModels: clearAvailableModels
+          ? const []
+          : (availableModels ?? this.availableModels),
+      isFetchingModels: isFetchingModels,
     );
   }
 }
@@ -118,6 +134,9 @@ class ProviderManagementNotifier extends Notifier<ProviderManagementState> {
     required AiProviderType type,
     required String model,
     required String apiKey,
+    double? temperature,
+    double? topP,
+    int? maxTokens,
   }) async {
     final service = _getService();
     if (service == null) {
@@ -131,6 +150,9 @@ class ProviderManagementNotifier extends Notifier<ProviderManagementState> {
         type: type,
         model: model,
         apiKey: apiKey,
+        temperature: temperature,
+        topP: topP,
+        maxTokens: maxTokens,
       );
       _reload();
       state = state.copyWith(selectedProvider: provider);
@@ -239,6 +261,35 @@ class ProviderManagementNotifier extends Notifier<ProviderManagementState> {
       selectedProvider: preset,
       clearConnectionResult: true,
     );
+  }
+
+  /// Fetches available models from the provider's /v1/models endpoint.
+  ///
+  /// Per D-08: On any error, silently clears the available models list.
+  /// The user can always type a model ID manually.
+  Future<void> fetchModels({
+    required String apiKey,
+    required String baseUrl,
+  }) async {
+    state = state.copyWith(isFetchingModels: true, clearAvailableModels: true);
+    try {
+      final adapter = OpenAIAdapter();
+      final models = await adapter.fetchModelList(
+        apiKey: apiKey,
+        baseUrl: baseUrl,
+      );
+      adapter.dispose();
+      state = state.copyWith(
+        availableModels: models,
+        isFetchingModels: false,
+      );
+    } catch (_) {
+      // Per D-08: silent fallback
+      state = state.copyWith(
+        clearAvailableModels: true,
+        isFetchingModels: false,
+      );
+    }
   }
 
   /// Clears the current error message.

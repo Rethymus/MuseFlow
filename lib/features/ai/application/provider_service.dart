@@ -20,12 +20,16 @@ class ProviderService {
   /// Creates a new provider and saves its API key to secure storage.
   ///
   /// Returns the created provider with auto-generated ID and timestamp.
+  /// Per D-03: [temperature], [topP], [maxTokens] are nullable model parameters.
   Future<AIProvider> createProvider({
     required String name,
     required String baseUrl,
     required AiProviderType type,
     required String model,
     required String apiKey,
+    double? temperature,
+    double? topP,
+    int? maxTokens,
   }) async {
     final now = DateTime.now();
     final provider = AIProvider(
@@ -36,6 +40,9 @@ class ProviderService {
       model: model,
       isActive: false,
       createdAt: now,
+      temperature: temperature,
+      topP: topP,
+      maxTokens: maxTokens,
     );
     await _repository.save(provider);
     await _secureStorage.saveApiKey(provider.id, apiKey);
