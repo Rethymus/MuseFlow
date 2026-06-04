@@ -166,6 +166,7 @@ class _ProviderManagementPageState
     await notifier.testConnection(
       apiKey: apiKey,
       baseUrl: _baseUrlController.text.trim(),
+      model: _modelController.text.trim(),
     );
   }
 
@@ -362,6 +363,7 @@ class _ProviderManagementPageState
             segments: const [
               ButtonSegment(value: AiProviderType.openai, label: Text('OpenAI')),
               ButtonSegment(value: AiProviderType.deepseek, label: Text('DeepSeek')),
+              ButtonSegment(value: AiProviderType.claude, label: Text('Claude')),
               ButtonSegment(value: AiProviderType.ollama, label: Text('Ollama')),
               ButtonSegment(value: AiProviderType.custom, label: Text('自定义')),
             ],

@@ -74,6 +74,7 @@ class ProviderCard extends StatelessWidget {
       AiProviderType.openai => Icons.smart_toy_outlined,
       AiProviderType.deepseek => Icons.psychology_outlined,
       AiProviderType.ollama => Icons.computer_outlined,
+      AiProviderType.claude => Icons.auto_awesome_outlined,
       AiProviderType.custom => Icons.tune,
     };
 
@@ -92,6 +93,7 @@ class ProviderCard extends StatelessWidget {
         AiProviderType.openai => 'GPT-4o Mini, ${provider.baseUrl}',
         AiProviderType.deepseek => 'DeepSeek Chat, ${provider.baseUrl}',
         AiProviderType.ollama => '本地模型, 无需 API Key',
+        AiProviderType.claude => 'Claude Sonnet 4, ${provider.baseUrl}',
         AiProviderType.custom => '自定义模型配置',
       };
 }

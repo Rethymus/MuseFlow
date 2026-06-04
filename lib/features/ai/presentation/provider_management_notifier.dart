@@ -187,10 +187,11 @@ class ProviderManagementNotifier extends Notifier<ProviderManagementState> {
     }
   }
 
-  /// Tests the connection with the given API key and base URL.
+  /// Tests the connection with the given API key, base URL, and model.
   Future<void> testConnection({
     required String apiKey,
     required String baseUrl,
+    String model = 'gpt-4o-mini',
   }) async {
     final service = _getService();
     if (service == null) {
@@ -200,7 +201,11 @@ class ProviderManagementNotifier extends Notifier<ProviderManagementState> {
     state =
         state.copyWith(isTestingConnection: true, clearConnectionResult: true);
     try {
-      await service.testConnection(apiKey: apiKey, baseUrl: baseUrl);
+      await service.testConnection(
+        apiKey: apiKey,
+        baseUrl: baseUrl,
+        model: model,
+      );
       state = state.copyWith(
         connectionTestResult: 'success',
         isTestingConnection: false,

@@ -102,6 +102,7 @@ class ProviderService {
   Future<void> testConnection({
     required String apiKey,
     required String baseUrl,
+    String model = 'gpt-4o-mini',
   }) async {
     try {
       final client = OpenAIClient.withApiKey(
@@ -111,7 +112,7 @@ class ProviderService {
 
       await client.chat.completions.create(
         ChatCompletionCreateRequest(
-          model: 'gpt-4o-mini',
+          model: model,
           messages: [ChatMessage.user('Hi')],
           maxTokens: 5,
         ),
