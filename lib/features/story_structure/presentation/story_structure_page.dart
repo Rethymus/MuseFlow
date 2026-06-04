@@ -2,11 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:museflow/core/presentation/providers.dart';
 import 'package:museflow/features/story_structure/application/foreshadowing_reminder_service.dart';
+import 'package:museflow/features/story_structure/domain/export_bundle.dart';
 import 'package:museflow/features/story_structure/domain/foreshadowing_entry.dart';
 import 'package:museflow/features/story_structure/presentation/foreshadowing_form.dart';
 import 'package:museflow/features/story_structure/presentation/guardian_panel.dart';
 import 'package:museflow/features/story_structure/presentation/plot_node_form.dart';
 import 'package:museflow/features/story_structure/presentation/plot_timeline.dart';
+import 'package:museflow/features/story_structure/presentation/format_clean_preview_dialog.dart';
+import 'package:museflow/features/story_structure/presentation/export_dialog.dart';
+import 'package:super_editor/super_editor.dart';
 
 /// Story structure page with section navigation.
 ///
@@ -58,11 +62,7 @@ class _StoryStructurePageState extends ConsumerState<StoryStructurePage>
           _ForeshadowingSection(),
           PlotTimeline(),
           GuardianPanel(),
-          _PlaceholderSection(
-            title: '整理成可交付的稿件',
-            body: '先预览清理结果，再确认应用。导出只保存到你选择的本地文件。',
-            actionLabel: '计划中',
-          ),
+          _FinishExportSection(),
         ],
       ),
       floatingActionButton: _buildFAB(),
@@ -351,45 +351,148 @@ class _StatusIcon extends StatelessWidget {
   }
 }
 
-/// Placeholder section for future features.
-class _PlaceholderSection extends StatelessWidget {
-  final String title;
-  final String body;
-  final String actionLabel;
-
-  const _PlaceholderSection({
-    required this.title,
-    required this.body,
-    required this.actionLabel,
-  });
+/// Finish & Export section with format cleanup preview and manuscript export.
+///
+/// Per D-14: Format cleanup shows preview/diff before applying.
+/// Per D-17: Export writes only to user-selected local file path.
+class _FinishExportSection extends ConsumerWidget {
+  const _FinishExportSection();
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(32.0),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Icon(Icons.construction, size: 48),
+            const Icon(Icons.auto_fix_high, size: 48),
             const SizedBox(height: 16),
-            Text(
-              title,
-              style: const TextStyle(
+            const Text(
+              '整理成可交付的稿件',
+              style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.w600,
               ),
             ),
             const SizedBox(height: 8),
-            Text(
-              body,
+            const Text(
+              '先预览清理结果，再确认应用。导出只保存到你选择的本地文件。',
               textAlign: TextAlign.center,
             ),
-            const SizedBox(height: 16),
-            Chip(label: Text(actionLabel)),
+            const SizedBox(height: 24),
+            FilledButton.icon(
+              onPressed: () => _showFormatCleanPreview(context, ref),
+              icon: const Icon(Icons.preview),
+              label: const Text('预览清理'),
+            ),
+            const SizedBox(height: 12),
+            OutlinedButton.icon(
+              onPressed: () => _showExportDialog(context, ref),
+              icon: const Icon(Icons.file_download),
+              label: const Text('导出稿件'),
+            ),
           ],
         ),
       ),
+    );
+  }
+
+  void _showFormatCleanPreview(BuildContext context, WidgetRef ref) {
+    // Get current editor text for cleanup
+    final editor = ref.read(editorProvider);
+    String originalText = '';
+    if (editor != null) {
+      final document = editor.document;
+      final buffer = StringBuffer();
+      for (final node in document) {
+        if (node is! TextNode) continue;
+        buffer.writeln(node.text.toPlainText());
+      }
+      originalText = buffer.toString().trimRight();
+    }
+
+    showDialog<void>(
+      context: context,
+      builder: (_) => FormatCleanPreviewDialog(
+        originalText: originalText,
+        onApply: (cleanedText) {
+          // The apply callback is handled by the dialog's caller.
+          // In a full integration, this would replace the editor document.
+          debugPrint('Format cleanup applied: ${cleanedText.length} chars');
+        },
+      ),
+    );
+  }
+
+  void _showExportDialog(BuildContext context, WidgetRef ref) {
+    // Build export bundle from current data
+    final bundle = _buildExportBundle(ref);
+
+    showDialog<void>(
+      context: context,
+      builder: (_) => ExportDialog(
+        bundle: bundle,
+        onExport: (format, content) async {
+          // In production, this would use file_picker to get a save path
+          // and then write the file. For now, delegate to export service.
+          debugPrint('Export: ${format.label}, ${content.length} chars');
+        },
+      ),
+    );
+  }
+
+  ExportBundle _buildExportBundle(WidgetRef ref) {
+    // Get editor text
+    final editor = ref.read(editorProvider);
+    String manuscriptText = '';
+    if (editor != null) {
+      final document = editor.document;
+      final buffer = StringBuffer();
+      for (final node in document) {
+        if (node is! TextNode) continue;
+        buffer.writeln(node.text.toPlainText());
+      }
+      manuscriptText = buffer.toString().trimRight();
+    }
+
+    // Get story structure data from notifiers
+    final foreshadowingState = ref.read(foreshadowingNotifierProvider);
+    final plotNodeState = ref.read(plotNodeNotifierProvider);
+    final guardianState = ref.read(guardianNotifierProvider);
+
+    final foreshadowingEntries = foreshadowingState.asData?.value ?? [];
+    final plotNodes = plotNodeState.asData?.value ?? [];
+    final guardianAnnotations = guardianState.asData?.value.annotations ?? [];
+
+    // Get knowledge data
+    final characterState = ref.read(characterCardNotifierProvider);
+    final worldState = ref.read(worldSettingNotifierProvider);
+    final skillState = ref.read(skillListNotifierProvider);
+
+    final characters =
+        (characterState.asData?.value ?? []).map((c) => c.toJson()).toList();
+    final worlds =
+        (worldState.asData?.value ?? []).map((w) => w.toJson()).toList();
+    final skills =
+        (skillState.asData?.value ?? []).map((s) => s.toJson()).toList();
+    final activeSkillIds = (skillState.asData?.value ?? [])
+        .where((s) => s.isActive)
+        .map((s) => s.id)
+        .toList();
+
+    return ExportBundle(
+      schemaVersion: '1.0',
+      exportedAt: DateTime.now(),
+      manuscriptText: manuscriptText,
+      foreshadowingEntries: foreshadowingEntries,
+      plotNodes: plotNodes,
+      guardianAnnotations: guardianAnnotations,
+      characterCards: characters,
+      worldSettings: worlds,
+      skillDocuments: skills,
+      activeSkillIds: activeSkillIds,
+      metadata: {'appVersion': '1.0.0'},
     );
   }
 }

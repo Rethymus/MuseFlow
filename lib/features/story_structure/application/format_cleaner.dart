@@ -370,7 +370,7 @@ class FormatCleaner {
       final line = lines[i];
       final match = RegExp(r'^(#{1,6})\s+(.+)$').firstMatch(line);
       if (match != null) {
-        final headingMarkers = match.group(1)! + ' ';
+        final headingMarkers = '${match.group(1)!} ';
         final content = match.group(2)!;
         newLines.add(content);
         changes.add(FormatChange(
@@ -403,7 +403,7 @@ class FormatCleaner {
       // Match "- " or "* " at start of line (but not "# " which is a heading)
       final match = RegExp(r'^([-*])\s+(.+)$').firstMatch(line);
       if (match != null) {
-        final bullet = match.group(1)! + ' ';
+        final bullet = '${match.group(1)!} ';
         final content = match.group(2)!;
         newLines.add(content);
         changes.add(FormatChange(
