@@ -210,22 +210,35 @@ Plans:
 
 ### Phase 6: Multi-Provider + Android Polish
 **Mode**: mvp
-**Goal**: Users can use Claude as an AI provider alongside OpenAI-compatible ones, configure per-model parameters, import custom models, and the app works smoothly on Android
+**Goal**: Users can use Claude as an AI provider via OpenAI-compatible endpoint, configure per-provider model parameters, import custom models via model list fetching, and the app works smoothly on Android with responsive layout
 **Depends on**: Phase 5 (all features complete, polishing existing functionality)
 **Requirements**: AI-02, MODL-03, MODL-04
 **Success Criteria** (what must be TRUE):
-  1. User can add and use Claude as an AI provider (separate API adapter for non-OpenAI-compatible Claude API)
+  1. User can add Claude as a preset AI provider (via Anthropic's OpenAI-compatible endpoint, no anthropic_sdk_dart)
   2. User can configure per-provider model parameters (Temperature, Top-P, Max Tokens)
-  3. User can import custom models (LocalAI, etc.) with custom endpoints
-  4. App runs on Android with adaptive layout and touch-optimized interactions
+  3. User can discover models via GET /v1/models or manually enter model IDs (custom model import)
+  4. Provider management page renders on Android with responsive layout at 600px breakpoint
 **UI hint**: yes
-**Risks**: Claude API (Anthropic) has different message format and streaming protocol -- requires dedicated adapter. Android layout adaptation may surface touch/IME issues not seen on Windows.
+**Risks**: Claude's OpenAI-compatible endpoint may not support GET /v1/models (mitigated by silent fallback per D-08). Android layout adaptation may surface touch/IME issues not seen on Windows.
 **Plans:** 3 plans
 
 Plans:
-- [ ] 06-01: Claude API adapter (anthropic_sdk_dart) with streaming support
-- [ ] 06-02: Per-provider model parameter configuration and custom model import
-- [ ] 06-03: Android layout adaptation and touch optimization
+- [ ] 06-01-PLAN.md — Claude preset via OpenAI-compatible endpoint, AiProviderType.claude, testConnection fix, UI wiring
+- [ ] 06-02-PLAN.md — Per-provider model parameters (temperature/topP/maxTokens), model list fetching, parameter UI
+- [ ] 06-03-PLAN.md — Responsive provider management layout for Android, integration tests for core flow
+
+**Wave 1** *(parallel — Claude preset and model parameters both extend AIProvider)*
+- 06-01: Claude preset + enum variant + testConnection fix + UI wiring (depends on 06-01 for claude enum)
+- 06-02: Nullable parameter fields + adapter forwarding + parameter UI + model list fetching
+
+**Wave 2** *(depends on 06-02 for final provider management page)*
+- 06-03: Responsive layout adaptation + integration tests
+
+**Cross-cutting constraints:**
+- `AiProviderType.claude` enum variant created in 06-01, consumed by 06-01 UI and 06-02 form
+- `AIProvider` nullable parameter fields (temperature/topP/maxTokens) created in 06-02, must not conflict with 06-01 entity changes
+- `OpenAIAdapter.createStream` extended with nullable parameters in 06-02, consumed by SynthesisNotifier and EditorAINotifier
+- `provider_management_page.dart` modified in all three plans -- sequential waves prevent file conflicts
 
 ## Progress
 
