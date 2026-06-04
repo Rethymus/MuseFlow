@@ -84,6 +84,17 @@ void main() {
           ),
           returnsNormally,
         );
+
+        // Claude's HTTPS endpoint should be accepted (OpenAI-compatible)
+        expect(
+          () => adapter.createStream(
+            apiKey: 'test-key',
+            baseUrl: 'https://api.anthropic.com/v1/',
+            model: 'claude-sonnet-4-20250514',
+            messages: [ChatMessage.user('test')],
+          ),
+          returnsNormally,
+        );
       });
     });
 

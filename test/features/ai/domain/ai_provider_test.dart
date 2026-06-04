@@ -10,6 +10,10 @@ void main() {
       expect(AiProviderType.fromString('custom'), AiProviderType.custom);
     });
 
+    test('should create claude from string value', () {
+      expect(AiProviderType.fromString('claude'), AiProviderType.claude);
+    });
+
     test('should fall back to custom for unknown string', () {
       expect(AiProviderType.fromString('unknown'), AiProviderType.custom);
     });
@@ -18,6 +22,7 @@ void main() {
       expect(AiProviderType.openai.value, 'openai');
       expect(AiProviderType.deepseek.value, 'deepseek');
       expect(AiProviderType.ollama.value, 'ollama');
+      expect(AiProviderType.claude.value, 'claude');
       expect(AiProviderType.custom.value, 'custom');
     });
   });

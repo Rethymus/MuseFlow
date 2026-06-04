@@ -40,6 +40,14 @@ class PresetProviders {
         model: 'llama3',
         createdAt: now,
       ),
+      AIProvider(
+        id: 'preset-claude',
+        name: 'Claude',
+        baseUrl: 'https://api.anthropic.com/v1/',
+        type: AiProviderType.claude,
+        model: 'claude-sonnet-4-20250514',
+        createdAt: now,
+      ),
     ];
   }
 

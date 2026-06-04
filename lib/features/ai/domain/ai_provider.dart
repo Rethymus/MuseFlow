@@ -5,6 +5,7 @@ enum AiProviderType {
   openai('openai'),
   deepseek('deepseek'),
   ollama('ollama'),
+  claude('claude'),
   custom('custom');
 
   const AiProviderType(this.value);
