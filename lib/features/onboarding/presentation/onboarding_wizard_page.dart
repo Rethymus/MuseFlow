@@ -1,14 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:museflow/features/knowledge/domain/character_card.dart';
+import 'package:museflow/features/knowledge/domain/world_setting.dart';
 import 'package:museflow/features/onboarding/presentation/onboarding_providers.dart';
+import 'package:museflow/features/onboarding/presentation/wizard_steps/character_step_page.dart';
 import 'package:museflow/features/onboarding/presentation/wizard_steps/genre_step_page.dart';
+import 'package:museflow/features/onboarding/presentation/wizard_steps/world_step_page.dart';
 import 'package:museflow/shared/constants/app_constants.dart';
 
 /// Full-screen onboarding wizard with 4-step PageView navigation.
 ///
-/// Steps: Genre → World → Character → Opening
-/// Step 1 (Genre) is implemented here. Steps 2-4 are stubs for Plans 08-03/08-05.
+/// Steps: Genre -> World -> Character -> Opening
+/// Steps 1-3 are fully implemented. Step 4 is a stub for Plan 08-05.
 class OnboardingWizardPage extends ConsumerStatefulWidget {
   const OnboardingWizardPage({super.key});
 
@@ -39,6 +43,18 @@ class _OnboardingWizardPageState extends ConsumerState<OnboardingWizardPage> {
     '选择一种开篇风格，开始你的故事',
   ];
 
+  // Controllers for WorldStepPage fields.
+  final _worldNameController = TextEditingController();
+  final _worldDescriptionController = TextEditingController();
+
+  // Controllers for CharacterStepPage fields.
+  final _characterNameController = TextEditingController();
+  final _characterDescriptionController = TextEditingController();
+
+  // GlobalKey accessors for step form validation.
+  final _worldStepKey = GlobalKey<WorldStepPageState>();
+  final _characterStepKey = GlobalKey<CharacterStepPageState>();
+
   @override
   void initState() {
     super.initState();
@@ -48,6 +64,10 @@ class _OnboardingWizardPageState extends ConsumerState<OnboardingWizardPage> {
   @override
   void dispose() {
     _pageController.dispose();
+    _worldNameController.dispose();
+    _worldDescriptionController.dispose();
+    _characterNameController.dispose();
+    _characterDescriptionController.dispose();
     super.dispose();
   }
 
@@ -62,6 +82,23 @@ class _OnboardingWizardPageState extends ConsumerState<OnboardingWizardPage> {
       await _completeOnboarding();
       return;
     }
+
+    // Step-specific logic when advancing FROM a step
+    switch (_currentStep) {
+      case 1: // Advancing from World step -> create WorldSetting entity
+        final isValid = _worldStepKey.currentState?.validate() ?? false;
+        if (isValid && _worldNameController.text.trim().isNotEmpty) {
+          await _createWorldSetting();
+        }
+        break;
+      case 2: // Advancing from Character step -> create CharacterCard entity
+        final isValid = _characterStepKey.currentState?.validate() ?? false;
+        if (isValid && _characterNameController.text.trim().isNotEmpty) {
+          await _createCharacterCard();
+        }
+        break;
+    }
+
     await _pageController.nextPage(
       duration: const Duration(milliseconds: 300),
       curve: Curves.easeInOut,
@@ -85,6 +122,46 @@ class _OnboardingWizardPageState extends ConsumerState<OnboardingWizardPage> {
       duration: const Duration(milliseconds: 300),
       curve: Curves.easeInOut,
     );
+  }
+
+  Future<void> _createWorldSetting() async {
+    try {
+      final repository =
+          await ref.read(onboardingWorldSettingRepositoryProvider.future);
+      final setting = WorldSetting(
+        id: '',
+        name: _worldNameController.text.trim(),
+        description: _worldDescriptionController.text.trim(),
+        createdAt: DateTime.now(),
+      );
+      await repository.add(setting);
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('世界观创建失败: $e')),
+        );
+      }
+    }
+  }
+
+  Future<void> _createCharacterCard() async {
+    try {
+      final repository =
+          await ref.read(onboardingCharacterCardRepositoryProvider.future);
+      final card = CharacterCard(
+        id: '',
+        name: _characterNameController.text.trim(),
+        personality: _characterDescriptionController.text.trim(),
+        createdAt: DateTime.now(),
+      );
+      await repository.add(card);
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('角色创建失败: $e')),
+        );
+      }
+    }
   }
 
   Future<void> _completeOnboarding() async {
@@ -147,7 +224,7 @@ class _OnboardingWizardPageState extends ConsumerState<OnboardingWizardPage> {
           TextButton(
             onPressed: _skipStep,
             child: Text(
-              isLastStep ? '跳过' : '跳过',
+              '跳过',
               style: TextStyle(
                 color: theme.colorScheme.onSurfaceVariant,
               ),
@@ -199,17 +276,18 @@ class _OnboardingWizardPageState extends ConsumerState<OnboardingWizardPage> {
                 GenreStepPage(
                   onSelected: (_) => _nextStep(),
                 ),
-                // Step 2: World (stub for Plan 08-03)
-                const _StubStepPage(
-                  icon: Icons.public,
-                  title: '构建你的世界',
-                  description: '这一步将在下一版本中实现',
+                // Step 2: World setting creation
+                WorldStepPage(
+                  key: _worldStepKey,
+                  worldNameController: _worldNameController,
+                  worldDescriptionController: _worldDescriptionController,
                 ),
-                // Step 3: Character (stub for Plan 08-03)
-                const _StubStepPage(
-                  icon: Icons.person,
-                  title: '创建你的角色',
-                  description: '这一步将在下一版本中实现',
+                // Step 3: Character card creation
+                CharacterStepPage(
+                  key: _characterStepKey,
+                  characterNameController: _characterNameController,
+                  characterDescriptionController:
+                      _characterDescriptionController,
                 ),
                 // Step 4: Opening (stub for Plan 08-05)
                 const _StubStepPage(
@@ -249,7 +327,7 @@ class _OnboardingWizardPageState extends ConsumerState<OnboardingWizardPage> {
 
 /// Placeholder widget for unimplemented wizard steps.
 ///
-/// Used by Plans 08-03 and 08-05. Each step will be replaced with a full
+/// Used by Plan 08-05. The step will be replaced with a full
 /// implementation when its plan is executed.
 class _StubStepPage extends StatelessWidget {
   const _StubStepPage({
