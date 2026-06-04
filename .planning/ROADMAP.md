@@ -71,16 +71,16 @@ Plans:
 Plans:
 **Wave 1**
 
-- [ ] 08-01: First-run detection and progress persistence (wave 1)
+- [x] 08-01: First-run detection and progress persistence (wave 1)
 
 **Wave 2** *(blocked on Wave 1 completion)*
 
-- [ ] 08-02: Wizard host + genre step (wave 2, depends on 08-01)
-- [ ] 08-03: World + character steps + entity creation (wave 2, depends on 08-01)
+- [x] 08-02: Wizard host + genre step (wave 2, depends on 08-01)
+- [x] 08-03: World + character steps + entity creation (wave 2, depends on 08-01)
 
 **Wave 3** *(blocked on Wave 2 completion)*
 
-- [ ] 08-04: OpeningVariant model + OpeningGeneratorService (wave 3, depends on 08-01)
+- [x] 08-04: OpeningVariant model + OpeningGeneratorService (wave 3, depends on 08-01)
 - [ ] 08-05: OpeningStepPage + OpeningGeneratorSheet + toolbar button + wizard wiring (wave 3, depends on 08-01, 08-02, 08-03, 08-04)
 
 ### Phase 9: 写作数据统计
@@ -143,6 +143,6 @@ Note: Phases 9 and 10 are independent of each other (both depend only on v1.0). 
 | 5. Story Structure + Export | v1.0 | 4/4 | Complete | 2026-06-04 |
 | 6. Multi-Provider + Android | v1.0 | 3/3 | Complete | 2026-06-04 |
 | 7. 预设世界观模板库 | v1.1 | 3/3 | Implemented; manual template prose review pending | 2026-06-04 |
-| 8. 开篇引导 | v1.1 | 0/3 | Planning complete | - |
+| 8. 开篇引导 | v1.1 | 4/5 | In Progress|  |
 | 9. 写作数据统计 | v1.1 | 0/3 | Not started | - |
 | 10. 故事弧可视化 | v1.1 | 0/3 | Not started | - |
