@@ -1,286 +1,294 @@
-# Technology Stack
+# Technology Stack -- v1.1 Milestone Additions
 
 **Project:** MuseFlow -- AI-assisted creative writing tool (Flutter Windows + Android)
-**Researched:** 2026-05-31
-**Flutter version (local):** 3.44.0 stable / Dart 3.5.4
+**Researched:** 2026-06-04
+**Flutter version (local):** 3.44.0 stable / Dart 3.12.0
+**Scope:** NEW packages only. Existing stack (super_editor, Riverpod, Hive CE, openai_dart/anthropic_sdk_dart/ollama_dart, go_router, window_manager) is validated and unchanged.
 
 ---
 
 ## Overview
 
-MuseFlow is a local-first, cross-platform creative writing assistant. The stack is chosen to serve three hard requirements that most Flutter apps do not face simultaneously:
+The v1.1 milestone adds 4 features to the shipped v1.0 MVP. This document covers ONLY the new technology additions needed. The existing stack in the v1.0 STACK.md remains the foundation.
 
-1. **Rich text editing with a custom floating toolbar** -- the editor is the product
-2. **Multi-provider LLM integration** -- OpenAI, Claude, DeepSeek, Ollama through one adapter layer
-3. **Offline-first structured storage** -- knowledge base, story structure, manuscripts all live locally
+New capabilities required:
+1. **Interactive graph rendering** -- story arc visualization with draggable nodes, zoom/pan, connection lines
+2. **Data visualization charts** -- writing analytics with trend lines, bar charts, statistics dashboards
+3. **Template data loading** -- YAML/JSON world-building preset packs bundled as assets
+4. **Onboarding wizard UI** -- first-run experience and AI opening generator
 
-Every choice below is verified against current pub.dev versions and official docs.
-
----
-
-## Core Framework
-
-| Technology | Version | Purpose | Why |
-|------------|---------|---------|-----|
-| Flutter SDK | 3.44.0 (stable) | Cross-platform UI framework | Project constraint (PROJECT.md). Windows desktop + Android. IME support via TSF on Windows is mature since 3.x. |
-| Dart SDK | 3.5.4 | Language | Ships with Flutter. Required for pattern matching, sealed classes, records used throughout. |
-| flutter_riverpod | ^3.3.1 | State management | Project constraint (PROJECT.md). Code-gen based providers with `@riverpod` annotation. AsyncNotifier for LLM streaming. |
-| riverpod_annotation | ^4.0.3 | Provider annotations | Pairs with riverpod_generator. Compile-time safe provider definitions. |
-| riverpod_generator | ^4.0.3 | Code generation for providers | Eliminates boilerplate. Generates `_$NotifierName` base classes. |
-| freezed | ^3.2.5 | Immutable data classes | Union types for Result/Either, copyWith generation, JSON serialization. Critical for domain entities. |
-| freezed_annotation | ^3.1.0 | Freezed annotations | Runtime companion to freezed code gen. |
-| build_runner | latest | Code generation runner | Required by riverpod_generator and freezed. Run with `dart run build_runner watch -d`. |
-
-**Confidence:** HIGH -- verified via pub.dev API and Context7 docs.
+Every new addition is evaluated against the Windows <100MB install constraint.
 
 ---
 
-## Editor Stack
+## New Dependencies
+
+### Data Visualization (Writing Analytics)
 
 | Technology | Version | Purpose | Why |
 |------------|---------|---------|-----|
-| **appflowy_editor** | ^6.2.0 | Rich text editor | **The clear winner for this project.** First-class `FloatingToolbar` widget that appears on text selection -- exactly the "browser extension style" toolbar MuseFlow needs. Block-based document model. Built by the AppFlowy team for production use. Desktop-optimized `EditorStyle.desktop()`. Custom block components for future story-structure overlays. |
+| **fl_chart** | ^1.2.0 | LineChart, BarChart, PieChart for writing analytics | **The standard Flutter chart library.** 10K+ GitHub stars, actively maintained, zero native dependencies (pure Dart rendering via CustomPainter). LineChart for word count trends over time, BarChart for daily/weekly writing speed, PieChart for AI vs human text ratio. Built-in touch interactions, tooltips, animations, and `FlTransformationConfig` for pan/zoom on line charts. Min Flutter 3.27.4 -- compatible with our 3.44.0. |
 
-### Why appflowy_editor over flutter_quill
+**Why fl_chart over alternatives:**
 
-| Criterion | appflowy_editor | flutter_quill |
-|-----------|----------------|---------------|
-| Floating toolbar | **Built-in `FloatingToolbar` widget** -- production-ready, configurable items | No native floating toolbar; requires custom wrapping |
-| Custom block components | First-class API with `BlockComponentBuilder` | Custom embeds via Delta, more complex |
-| Desktop support | `EditorStyle.desktop()` with proper padding, cursor, selection | Works but less desktop-tuned |
-| Document model | Block-based JSON (structured, queryable for story tracking) | Delta-based (flat operation log, harder to query) |
-| Community | Backed by AppFlowy (large OSS project) | Community-maintained, slower releases |
-| Toolbar customizability | Item-based: pick from `paragraphItem`, `headingItems`, `markdownFormatItems`, add custom items | Button-based: assemble individual toolbar buttons |
+| Criterion | fl_chart | Syncfusion Flutter Charts | Victory Flutter |
+|-----------|----------|--------------------------|-----------------|
+| License | MIT (free) | Community license has restrictions for commercial use | MIT |
+| Package size impact | ~200KB (pure Dart) | Heavy -- pulls in Syncfusion ecosystem | Moderate |
+| Native dependencies | None | None | None |
+| Customization | Very high -- every element configurable | Very high but verbose API | Moderate |
+| Animations | Built-in, implicit animations | Built-in | Limited |
+| Windows support | Full | Full | Full |
+| Maintenance | Active, frequent releases | Commercial backing | Less active |
+| Install budget | Fits <100MB | Risky for <100MB constraint | Fits |
 
-The floating toolbar is a deal-maker. PROJECT.md specifies a "browser extension style" popup menu on text selection. appflowy_editor's `FloatingToolbar` does exactly this with zero custom code:
+Syncfusion is overkill for the 3-4 chart types needed and risks the 100MB install budget. fl_chart is the proven lightweight choice.
 
-```dart
-FloatingToolbar(
-  editorState: editorState,
-  editorScrollController: scrollController,
-  items: [
-    ...markdownFormatItems,  // bold, italic, underline, strikethrough
-    linkItem,
-    // Add custom AI items here
-  ],
-  child: AppFlowyEditor(
-    editorState: editorState,
-    editorScrollController: scrollController,
-  ),
-)
-```
-
-Custom AI actions (tone rewrite, polish, free edit) can be added as custom toolbar items in the floating menu.
-
-**Confidence:** HIGH -- verified via Context7 docs (full code examples for FloatingToolbar), pub.dev version 6.2.0.
+**Confidence:** HIGH -- verified via `flutter pub add --dry-run` (resolves 1.2.0), pub.dev page, Context7 docs, changelog confirming Flutter 3.27.4 min.
 
 ---
 
-## AI Integration
+### Interactive Graph Rendering (Story Arc Visualization)
 
 | Technology | Version | Purpose | Why |
 |------------|---------|---------|-----|
-| **openai_dart** | ^6.0.0 | OpenAI API client + OpenAI-compatible providers | Type-safe Dart client. Supports custom `baseUrl` -- covers DeepSeek and Ollama (both expose OpenAI-compatible endpoints). Streaming via `createChatCompletionStream()`. |
-| **anthropic_sdk_dart** | ^4.0.0 | Claude API client | Dedicated Dart SDK for Anthropic's Messages API with streaming and tool use. Claude has a non-OpenAI-compatible API, so a separate client is necessary. |
-| **ollama_dart** | ^2.2.0 | Ollama local LLM client | Dedicated client for Ollama's REST API. Provides model listing, chat, generation. Use alongside openai_dart for Ollama (Ollama supports both its native API and OpenAI-compatible endpoints; ollama_dart gives richer model management). |
+| **graphview** | ^1.5.1 | Interactive graph visualization for story arc nodes | **The only mature Flutter graph library.** Supports FruchtermanReingold (force-directed layout ideal for plot node networks), Sugiyama (layered/hierarchical), custom node widgets via builder pattern, node dragging via `setFocusedNode` + position update, InteractiveViewer integration for zoom/pan, edge painting with custom colors/styles per connection, animated transitions. 1.5.1 adds GraphViewController with jumpToNode, animateToNode, zoomToFit, and expand/collapse. |
 
-### Multi-Model Adapter Architecture
+**Why graphview over raw CustomPainter:**
 
-DeepSeek and Ollama expose OpenAI-compatible endpoints. This means `openai_dart` covers three providers with one package:
+| Criterion | graphview | Custom CustomPainter |
+|-----------|-----------|---------------------|
+| Layout algorithms | Built-in: FruchtermanReingold, Sugiyama, BuchheimWalker, Circle, Balloon, Radial | Must implement from scratch -- force-directed layout is non-trivial |
+| Node rendering | Widget builder pattern -- any Flutter widget as a node | Must paint everything manually on canvas |
+| Interaction | Node tap, drag, focus, expand/collapse, animated transitions | All hit-testing and gesture handling must be custom |
+| Zoom/Pan | InteractiveViewer integration built-in | Must implement matrix transforms manually |
+| Edge rendering | Multiple renderers (TreeEdgeRenderer, ArrowEdgeRenderer) with per-edge color/style | Must implement Bezier/straight line rendering with arrow heads |
+| Development time | Days | Weeks |
+| Testability | High -- widget-based nodes testable in widget tests | Low -- canvas painting requires golden tests |
+| Maintenance burden | Library handles edge cases (overlapping, crossing reduction) | Every edge case is custom code to maintain |
 
-```dart
-// OpenAI (default)
-final openaiClient = OpenAIClient(
-  apiKey: 'sk-...',
-);
+The story arc visualization maps directly to graphview's data model:
+- **PlotNode** -> `Node.Id(plotNodeId)` with a builder that renders node title, structural role badge, writing status color
+- **causeNodeIds/consequenceNodeIds** -> `graph.addEdge()` with directional arrows
+- **relatedNodeIds** -> `graph.addEdge()` with dashed line style
+- **linkedForeshadowingIds** -> Dotted edges with distinct color
 
-// DeepSeek (OpenAI-compatible)
-final deepseekClient = OpenAIClient(
-  baseUrl: 'https://api.deepseek.com/v1',
-  apiKey: 'dsk-...',
-);
+Force-directed layout (FruchtermanReingold) is ideal because plot nodes do not form a clean tree -- they have cause/consequence chains AND lateral relationships AND foreshadowing links. Tree layouts would force an artificial hierarchy.
 
-// Ollama (OpenAI-compatible)
-final ollamaClient = OpenAIClient(
-  baseUrl: 'http://localhost:11434/v1',
-);
-```
-
-Claude requires its own client due to a different API structure. Build a unified `LLMProvider` abstract interface:
-
-```dart
-abstract class LLMProvider {
-  Stream<String> chatStream(List<ChatMessage> messages, {LLMConfig? config});
-  Future<String> chat(List<ChatMessage> messages, {LLMConfig? config});
-}
-```
-
-With four implementations: `OpenAIAdapter`, `DeepSeekAdapter`, `OllamaAdapter` (all wrapping openai_dart with different baseUrls), and `ClaudeAdapter` (wrapping anthropic_sdk_dart).
-
-**Confidence:** HIGH -- verified via pub.dev API (versions confirmed), Context7 docs (openai_dart baseUrl configuration examples with Groq, Azure, TogetherAI, FastChat showing the pattern).
+**Confidence:** HIGH -- verified via `flutter pub add --dry-run` (resolves 1.5.1), pub.dev page with full API documentation, Context7 docs confirming builder pattern, node dragging, and InteractiveViewer integration.
 
 ---
 
-## Local Storage
+### Template Data Loading (World-Building Presets)
 
 | Technology | Version | Purpose | Why |
 |------------|---------|---------|-----|
-| **hive_ce** | ^2.19.3 | Primary local NoSQL database | Community Edition of Hive. Actively maintained (original Hive 2.2.3 hasn't had meaningful updates). Supports encryption (AES-256 CBC), isolate-safe via `IsolatedHive`, automatic TypeAdapter generation with `@GenerateAdapters`, DevTools inspector. |
-| **hive_ce_flutter** | ^2.3.4 | Flutter integration for Hive CE | Provides `Hive.initFlutter()` with proper path resolution on all platforms including Windows. |
-| **flutter_secure_storage** | ^10.3.1 | Encrypted API key storage | Uses platform-specific secure storage (Windows Credential Manager via `flutter_secure_storage_windows`). For API keys that must never be in plaintext. |
+| **yaml** (transitive) | 3.1.3 | Parse YAML template files | Already in dependency tree (transitive via build_runner, json_serializable, etc.). No new dependency needed. Dart's `yaml` package parses YAML into `YamlMap`/`YamlList`, convertible to standard Map/List. |
+| **json_serializable** (existing) | ^6.14.0 | Generate fromJson/toJson for template models | Already in dev_dependencies. Template data models will use the same pattern as existing domain entities. |
 
-### Why hive_ce over original Hive
+**Template storage strategy:**
 
-| Criterion | hive_ce (2.19.3) | hive (2.2.3) |
-|-----------|-------------------|---------------|
-| Last updated | Active, frequent releases | Stale, minimal updates |
-| TypeAdapter generation | `@GenerateAdapters` annotation, auto-registers | Manual or hive_generator (less maintained) |
-| Isolate support | `IsolatedHive` built-in | Limited |
-| Flutter Web WASM | Supported | Not supported |
-| DevTools inspector | Built-in | None |
-| Encryption | AES-256 CBC, same as original | AES-256 CBC |
-
-PROJECT.md specifies Hive as the storage engine. hive_ce is the spiritual continuation that stays API-compatible while adding features. Migration path is clean -- same `Hive.box()`, `box.put()`, `box.get()` API.
-
-### Storage Design
+Templates are **bundled as assets** (not fetched from a server -- local-first, offline-ready, privacy-preserving).
 
 ```
-Boxes:
-  - manuscripts     -> { manuscriptId: Manuscript }
-  - chapters        -> { chapterId: Chapter }
-  - fragments       -> { fragmentId: Fragment }          // story structure nodes
-  - characters      -> { characterId: Character }
-  - worldSettings   -> { settingId: WorldSetting }
-  - plotNodes       -> { plotNodeId: PlotNode }          // foreshadowing, plot points
-  - appSettings     -> { key: dynamic }                  // user preferences, model configs
-  - apiKeys         -> encrypted via flutter_secure_storage (NOT in Hive)
+assets/
+  templates/
+    world_presets/
+      xuanhuan.json      # Full preset pack
+      xianxia.json
+      wuxia.json
+      urban.json
+      scifi.json
+      ...
 ```
 
-**Confidence:** HIGH -- verified via pub.dev API (hive_ce 2.19.3, hive_ce_flutter 2.3.4), Context7 docs (encryption, adapter generation examples).
+JSON (not YAML) is the better choice for template data because:
+1. **json_serializable** is already in the project -- template models get free serialization
+2. **Consistency** -- every domain entity (PlotNode, CharacterCard, SkillDocument) uses JSON
+3. **No parser needed** -- `dart:convert` is built-in, `yaml` requires an extra parse step
+4. **Editor tooling** -- JSON has better editor support for large structured data files
+5. **Validation** -- JSON schemas can validate template files at build time
+
+Template data is loaded via `rootBundle.loadString()` (for read-only bundled templates) and stored in Hive boxes after user customization (for user-modified copies).
+
+**No new package needed.** Use existing `json_annotation` + `json_serializable` + `dart:convert` + Hive CE.
+
+**Confidence:** HIGH -- yaml 3.1.3 verified in `flutter pub deps`, json_serializable already in pubspec.yaml, rootBundle is Flutter standard API.
 
 ---
 
-## Windows Desktop Support
+### Onboarding Wizard UI
 
 | Technology | Version | Purpose | Why |
 |------------|---------|---------|-----|
-| **window_manager** | ^0.5.1 | Native window management | Control window size, title bar, minimization behavior. Essential for a desktop-first writing app. |
+| **Flutter Stepper** (built-in) | N/A | Multi-step wizard for first-run experience | Built-in Material widget, enhanced in Flutter 3.44 with customizable header/content padding. Sufficient for a linear wizard (select genre -> name project -> configure AI provider -> done). |
+| **Flutter PageView** (built-in) | N/A | Page-based navigation for wizard steps | More flexible than Stepper for custom layouts. PageController manages state, supports animated transitions. Used for non-linear wizard flows where steps may vary. |
 
-### Windows IME (Input Method Editor)
+**Why no dedicated onboarding package:**
 
-Flutter's Windows embedder communicates with Windows Text Services Framework (TSF) natively. Since Flutter 3.x, CJK IME support (Chinese input methods: Wubi, Sogou, etc.) works through the standard `TextField` and text editing widgets. Key points:
+Packages like `introduction_screen` or `flutter_onboarding_slider` add dependency weight for functionality easily built with PageView + a few custom widgets. The wizard has specific MuseFlow logic (genre selection triggers template load, AI provider test, opening generation) that generic packages cannot handle without heavy customization. Building with built-in widgets gives full control.
 
-- **No special package needed** -- Flutter's built-in `TextInputPlugin` on Windows handles IME composition
-- **appflowy_editor** uses its own text input handling that integrates with Flutter's platform channels, so IME support is inherited
-- The `TextEditingValue` and `TextEditingDelta` APIs handle composing text (the underlined in-progress text during IME input)
-- **Constraint from PROJECT.md**: "Must use system-level IME, must not embed in-app input fields" -- this is satisfied by default Flutter behavior on Windows
+**Onboarding state storage:** Use existing `appSettings` Hive box with a `onboardingCompleted` boolean key. No new storage needed.
 
-**Confidence:** MEDIUM -- verified via Flutter docs (TextInputClient, insertContent API), but Chinese IME specifically with appflowy_editor on Windows should be tested early in development. The appflowy_editor team (AppFlowy itself) is heavily Chinese-user-facing, so IME support is a priority for them.
+**Confidence:** HIGH -- Stepper and PageView are Flutter SDK built-ins, verified via Context7 Flutter docs confirming 3.44 Stepper enhancements.
 
 ---
 
-## Navigation & Routing
-
-| Technology | Version | Purpose | Why |
-|------------|---------|---------|-----|
-| **go_router** | ^17.2.3 | Declarative routing | Flutter's recommended router. Deep linking, nested routes, redirect guards. Handles Windows desktop + Android navigation patterns. |
-
-**Confidence:** HIGH -- verified via pub.dev API.
-
----
-
-## Supporting Libraries
-
-| Library | Version | Purpose | When to Use |
-|---------|---------|---------|-------------|
-| uuid | latest | Generate unique IDs for entities | All domain entities (manuscripts, chapters, characters, plot nodes) |
-| logger | latest | Structured logging | Debug and development logging. Use `debugPrint` per project rules for UI debugging. |
-| google_fonts | latest | Custom typography | Writer-facing app needs beautiful fonts. appflowy_editor integrates with google_fonts for text styles. |
-| markdown | latest | Markdown parsing/rendering | Import/export of fragments and chapters in Markdown format. |
-| path_provider | latest | Platform-specific paths | Locate app data directory for Hive initialization and export files. |
-| share_plus | latest | Share functionality | Export and share manuscripts from Android. |
-| file_picker | latest | File selection | Import/export files on Windows and Android. |
-| url_launcher | latest | Open external URLs | Help links, license links, etc. |
-| connectivity_plus | latest | Network status detection | Detect offline state for local-first behavior and API call guards. |
-| json_annotation | latest | JSON serialization annotations | Pairs with `json_serializable` for DTO serialization. |
-
----
-
-## Code Generation & Dev Tools
-
-| Tool | Version | Purpose |
-|------|---------|---------|
-| build_runner | latest | Runs all code generators |
-| json_serializable | latest | JSON serialization for DTOs |
-| flutter_lints | latest | Lint rules (project uses strict analysis) |
-
----
-
-## What NOT to Use
+## What NOT to Add
 
 | Technology | Why NOT | What to Use Instead |
 |------------|---------|-------------------|
-| **sqflite / drift** | Overkill for a document-oriented writing app. Relational schema adds friction for flexible story structure. | hive_ce for NoSQL document storage |
-| **Isar** | From the same author as Hive but heavier. Adds native binary dependencies. Hive CE is sufficient and lighter. | hive_ce |
-| **firebase** | PROJECT.md explicitly excludes cloud sync for MVP. Adds Google dependency, privacy concerns for a creative writing tool. | hive_ce (local-only) |
-| **supabase** | Same as firebase -- cloud backend excluded from MVP scope. | hive_ce (local-only) |
-| **get_it / injectable** | Riverpod handles dependency injection natively. Adding a separate DI framework creates dual IoC containers. | Riverpod providers for DI |
-| **bloc / cubit** | PROJECT mandates Riverpod. Bloc and Riverpod serve the same role. Mixing them is counterproductive. | Riverpod AsyncNotifier |
-| **provider** | Legacy state management. Riverpod is the evolution. Using both causes confusion. | Riverpod |
-| **shared_preferences** | Inappropriate for structured data. Only useful for trivial key-value settings. Hive boxes handle settings storage better. | hive_ce boxes |
-| **flutter_quill** | Lacks built-in floating toolbar. Delta-based model harder to query for story structure. | appflowy_editor |
-| **dart_openai** | Older, less maintained OpenAI wrapper. `openai_dart` is the modern, type-safe alternative with broader OpenAI-compatible API support. | openai_dart |
-| **http** (raw) | Low-level HTTP client. All LLM SDKs handle their own HTTP. Only needed if building a custom API from scratch. | LLM SDKs (openai_dart, anthropic_sdk_dart, ollama_dart) |
+| **syncfusion_flutter_charts** | Commercial license restrictions. Heavy package that risks the 100MB Windows install constraint. Overkill for 3-4 chart types. | fl_chart |
+| **victory_flutter** | Less actively maintained than fl_chart. Smaller community. No clear advantage for our use case. | fl_chart |
+| **introduction_screen** | Generic onboarding carousel. Cannot handle MuseFlow-specific wizard logic (AI provider test, genre-triggered template load). Adds a dependency for trivial PageView wrapping. | Flutter PageView + Stepper |
+| **flutter_onboarding_slider** | Same as above -- too generic, adds unnecessary dependency. | Flutter PageView |
+| **graphview alternatives** (none exist) | There is no other mature Flutter graph visualization library. graphview is the only option with layout algorithms, custom nodes, and interaction support. | graphview |
+| **CustomPainter from scratch** | Implementing force-directed layout, node hit-testing, edge rendering, zoom/pan transforms, and animated transitions from scratch would take weeks and be a maintenance burden. graphview handles all of this. | graphview |
+| **shared_preferences** | Onboarding state is a single boolean flag. Goes in existing `appSettings` Hive box. Adding shared_preferences creates a second key-value store alongside Hive, which is confusing. | Hive CE `appSettings` box |
+| **yaml for template files** | YAML would add a non-standard data format alongside the JSON used everywhere else. JSON templates with json_serializable is consistent with existing patterns. | JSON with json_serializable |
+
+---
+
+## New Storage Patterns
+
+### Writing Statistics (New Hive Box)
+
+```
+Boxes (new):
+  - writingStats      -> { statId: WritingSession }
+    Fields: date, projectId, wordCount, wordsAdded, wordsDeleted,
+            aiAssistedCount, sessionDurationMinutes, timestamp
+  - dailyStats        -> { dateKey: DailyAggregate }
+    Fields: date, totalWordsWritten, totalSessions, totalAiUsage,
+            averageSpeed (words/min), projectId -> wordCount map
+```
+
+Writing stats are append-only time series data. Each writing session creates a `WritingSession` record. Daily aggregates are computed from sessions and cached in `dailyStats` for fast dashboard rendering.
+
+Aggregate queries (total words across all projects, monthly trends) scan `dailyStats` which has one entry per day. This is efficient for the expected data volume (hundreds of entries, not millions).
+
+### Template Data (Asset Bundle + Hive Cache)
+
+```
+Boxes (new):
+  - worldPresets      -> { presetId: WorldPreset }
+    Populated on first load from asset bundle JSON files.
+    User-customized copies stored here with isModified flag.
+```
+
+Bundled templates are read-only. When a user customizes a template, a copy is created in the `worldPresets` Hive box with `isModified: true` and `sourcePresetId` pointing to the original. This preserves the original template for reference while allowing user modifications.
+
+### Onboarding State (Existing Box)
+
+```
+Boxes (existing):
+  - appSettings       -> add key: 'onboardingCompleted' (bool)
+                         add key: 'firstRunDate' (DateTime ISO string)
+```
+
+No new box needed. Onboarding state is two keys in the existing app settings box.
+
+---
+
+## Integration Points with Existing Stack
+
+### Story Arc Visualization + PlotNode (Existing)
+
+The graphview integration maps directly to the existing `PlotNode` model:
+
+```dart
+// PlotNode already has:
+//   causeNodeIds, consequenceNodeIds, relatedNodeIds, linkedForeshadowingIds
+//   structuralRole (setup/development/turn/climax/resolution)
+//   writingStatus (notStarted/drafting/complete/needsRevision)
+
+// Mapping to graphview:
+final graph = Graph()..isTree = false;  // plot nodes are NOT a tree
+
+for (final node in plotNodes) {
+  graph.addNode(Node.Id(node.id));
+}
+for (final node in plotNodes) {
+  for (final causeId in node.causeNodeIds) {
+    graph.addEdge(
+      Node.Id(causeId), Node.Id(node.id),
+      paint: Paint()..color = Colors.blue,  // causal chain
+    );
+  }
+  for (final relatedId in node.relatedNodeIds) {
+    graph.addEdge(
+      Node.Id(node.id), Node.Id(relatedId),
+      paint: Paint()..color = Colors.grey..strokeWidth = 1,  // lateral
+    );
+  }
+}
+```
+
+The existing `PlotNodeRepository` (Hive-based) provides all CRUD operations. The graph visualization is a read-only view with drag-to-reposition. Node position persistence requires adding `positionX`/`positionY` fields to PlotNode (or a separate mapping box).
+
+### Writing Analytics + Editor (Existing)
+
+Word count tracking hooks into the existing editor pipeline:
+- `super_editor` provides `EditTransaction` events that can be counted for words added/deleted
+- AI-assisted text changes are already tracked via `DiffState` and `ProvenanceAttribution`
+- Session tracking starts when the editor page is mounted and ends on dispose
+
+### Template System + Skill System (Existing)
+
+World-building presets map directly to the existing `SkillDocument` and `WorldSetting` models:
+- A full preset pack is a bundle of pre-populated `SkillDocument` + `CharacterCard` + `WorldSetting` entities
+- When a user selects a preset, entities are created in their knowledge base via existing repositories
+- The existing `SkillSections` structure (powerHierarchy, factionRelations, rules, taboos, terminology) is populated by the preset
+
+### Onboarding + go_router (Existing)
+
+First-run detection uses `go_router` redirect guards:
+
+```dart
+GoRouter(
+  redirect: (context, state) {
+    final onboardingDone = /* read from appSettings box */;
+    if (!onboardingDone && state.matchedLocation != '/onboarding') {
+      return '/onboarding';
+    }
+    return null;
+  },
+)
+```
 
 ---
 
 ## Installation
 
 ```bash
-# Create Flutter project (if not already scaffolded)
-flutter create --org com.museflow --platforms windows,android museflow
+# NEW packages for v1.1 milestone
+flutter pub add fl_chart       # Writing analytics charts
+flutter pub add graphview      # Story arc interactive graph
 
-# Core framework
-flutter pub add flutter_riverpod riverpod_annotation freezed_annotation json_annotation
+# No other new packages needed -- yaml is transitive, Stepper/PageView are built-in
+# json_serializable and hive_ce are already installed
+```
 
-# Editor
-flutter pub add appflowy_editor google_fonts
+### Asset bundle configuration (pubspec.yaml addition)
 
-# AI Integration
-flutter pub add openai_dart anthropic_sdk_dart ollama_dart
-
-# Storage
-flutter pub add hive_ce hive_ce_flutter flutter_secure_storage
-
-# Desktop
-flutter pub add window_manager
-
-# Navigation
-flutter pub add go_router
-
-# Supporting
-flutter pub add uuid logger markdown path_provider share_plus file_picker url_launcher connectivity_plus
-
-# Dev dependencies
-flutter pub add --dev build_runner riverpod_generator freezed json_serializable flutter_lints
+```yaml
+flutter:
+  assets:
+    - assets/templates/world_presets/
 ```
 
 ---
 
-## Platform-Specific Notes
+## Install Budget Impact
 
-### Windows Desktop
-- `window_manager` for native window control (size, title, minimize behavior)
-- Flutter's TSF integration handles Chinese/Japanese/Korean IME natively
-- `flutter_secure_storage` uses Windows Credential Manager for API key encryption
-- Target: install package < 100MB (PROJECT.md constraint)
-- File export/import via `file_picker` and `path_provider`
+| Package | Estimated Size Impact | Notes |
+|---------|----------------------|-------|
+| fl_chart | ~200KB | Pure Dart, no native code, no assets |
+| graphview | ~50KB | Pure Dart, no native code |
+| Template JSON assets | ~100KB total | ~10KB per genre preset, 8-10 genres |
+| **Total new impact** | **~350KB** | Well within 100MB constraint |
 
-### Android
-- Standard Flutter Android embedding
-- `flutter_secure_storage` uses Android Keystore for API key encryption
-- Share via `share_plus`
-- `connectivity_plus` for network state awareness
+Current Windows build estimated at ~60-70MB (Flutter engine + super_editor + existing deps). Adding 350KB leaves significant headroom under 100MB.
 
 ---
 
@@ -288,10 +296,55 @@ flutter pub add --dev build_runner riverpod_generator freezed json_serializable 
 
 | Source | Confidence | What It Verified |
 |--------|------------|------------------|
-| pub.dev API (live queries) | HIGH | All package versions verified current as of 2026-05-31 |
-| Context7 / appflowy_editor docs | HIGH | FloatingToolbar API, custom blocks, EditorState, desktop setup |
-| Context7 / Riverpod docs | HIGH | AsyncNotifier, code generation, @riverpod annotation patterns |
-| Context7 / openai_dart docs | HIGH | Custom baseUrl for OpenAI-compatible APIs (DeepSeek, Ollama, Groq, Azure) |
-| Context7 / hive_ce docs | HIGH | Encryption, adapter generation, isolate support, transactions |
-| Context7 / Flutter docs | MEDIUM | Windows TSF/IME integration, TextInputClient API |
-| Local Flutter SDK | HIGH | Flutter 3.44.0 stable / Dart 3.5.4 confirmed installed |
+| `flutter pub add --dry-run` (live) | HIGH | fl_chart 1.2.0 and graphview 1.5.1 resolve cleanly with Flutter 3.44 |
+| pub.dev / fl_chart | HIGH | Version 1.2.0, MIT license, min Flutter 3.27.4, no native deps |
+| pub.dev / graphview | HIGH | Version 1.5.1, MIT license, GraphViewController API, layout algorithms |
+| Context7 / fl_chart docs | HIGH | LineChart, BarChart, PieChart API, FlTransformationConfig for pan/zoom |
+| Context7 / graphview docs | HIGH | Builder pattern, node dragging, FruchtermanReingoldAlgorithm, edge rendering |
+| Context7 / Flutter docs | HIGH | Stepper widget enhanced in 3.44, PageView API |
+| `flutter pub deps` (live) | HIGH | yaml 3.1.3 already transitive in dependency tree |
+| Existing codebase analysis | HIGH | PlotNode model fields, PlotNodeRepository pattern, SkillDocument structure |
+
+---
+
+## Chinese Web Novel Genre Taxonomy (for Template Presets)
+
+**Confidence:** MEDIUM -- based on domain knowledge of Chinese web novel platforms. Should be validated by browsing 起点/番茄 category pages during implementation.
+
+The top genres on Qidian (起点中文网) and Fanqie (番茄小说) that map to world-building presets:
+
+| Genre | Chinese | Key World-Building Elements | Preset Complexity |
+|-------|---------|---------------------------|-------------------|
+| Xuanhuan (Eastern Fantasy) | 玄幻 | Cultivation levels, elemental systems, beast realms, tournament arcs | High -- full preset |
+| Xianxia (Immortal Cultivation) | 仙侠 | Dao/immortality system, heavenly tribulations, spiritual energy, pill refining | High -- full preset |
+| Wuxia (Martial Arts) | 武侠 | Martial arts schools, jianghu politics, weapon systems, chivalry codes | Medium |
+| Urban (Modern City) | 都市 | Company/power hierarchies, modern technology, social dynamics | Medium |
+| Sci-Fi (Science Fiction) | 科幻 | Tech trees, space colonization, AI/robot rules, physics constraints | High -- full preset |
+| Historical | 历史 | Dynasty systems, court politics, military ranks, cultural customs | Medium |
+| Fantasy (Western) | 奇幻 | Magic systems, racial hierarchies, guild structures, deity pantheons | High -- full preset |
+| E-sports / Gaming | 游戏 | Game class systems, skill trees, guild mechanics, tournament brackets | Medium |
+| Military | 军事 | Rank systems, unit structures, strategic doctrines, technology eras | Medium |
+| Suspense / Thriller | 悬疑 | Clue structures, psychological profiles, timeline management | Low -- lightweight template |
+
+Priority presets (most popular on both platforms): Xuanhuan, Xianxia, Urban, Sci-Fi, Wuxia.
+
+Each full preset contains: SkillSections (powerHierarchy, factionRelations, rules, taboos, terminology) + sample CharacterCard templates + WorldSetting template with geography and techLevel.
+
+---
+
+## Chinese Novel Genre Data Sources
+
+**Confidence:** LOW -- web search API was unavailable during research. Must be verified during implementation.
+
+Recommended sources for genre category structures:
+
+| Source | URL | Use |
+|--------|-----|-----|
+| Qidian (起点中文网) | `www.qidian.com` | Category navigation -- browse all genre classifications |
+| Fanqie (番茄小说) | `fanqienovel.com` | Category pages -- cross-reference with Qidian for coverage |
+| Qidian ranking pages | `www.qidian.com/rank/` | Popularity data to prioritize which genres get full presets |
+
+The genre taxonomy above covers the top categories. During implementation, browse these sites to:
+1. Verify the genre list is complete and current
+2. Get sub-genre classifications (e.g., 玄幻 splits into 异世大陆, 东方玄幻, etc.)
+3. Identify trending genres that may warrant additional presets

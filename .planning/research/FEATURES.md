@@ -1,282 +1,169 @@
-# Feature Landscape: AI-Assisted Creative Writing / Novel Writing Tools
+# Features Research: v1.1 创作体验升级
 
-**Domain:** AI creative writing assistants (Chinese + Western markets)
-**Researched:** 2026-05-31
-**Confidence:** MEDIUM (web search rate-limited; data from official sites + training knowledge)
+**Researched:** 2026-06-04
+**Milestone:** v1.1 创作体验升级
 
----
+## Chinese Novel Genre Taxonomy
 
-## Research Sources & Methodology
+Curated from 起点中文网 and 番茄小说 (2025-2026 platform data).
 
-| Source | Data Obtained | Confidence |
-|--------|--------------|------------|
-| Sudowrite.com homepage (fetched) | Feature descriptions: Describe, Write, Expand, Story Bible, Canvas, Brainstorm, Feedback, Muse 1.5 model | HIGH |
-| Biling AI / 笔灵AI homepage (fetched) | Full novel feature menu: AI小说, 黄金开头, 小说大纲, 小说生成器, 小说拆书, 小说预审核, 小说水文助手, 降AIGC痕迹 | HIGH |
-| MetaCat / 秘塔写作猫 (fetched) | General writing tool: grammar, proofreading, rewrite, multi-template; NOT novel-specific | HIGH |
-| Jasper.ai homepage (fetched) | Enterprise marketing focus, not fiction; confirmed NOT a competitor for novel tools | HIGH |
-| Training knowledge: NovelAI, 墨语AI, 星火认知, ChatGPT writing patterns | Feature lists, common complaints, market positioning | LOW-MEDIUM |
+Sources: [起点中文网](https://www.qidian.com/), [番茄小说 App Store](https://apps.apple.com/cn/app/), [中国作家网 网络文学多元化发展](https://www.chinawriter.com.cn/n1/2026/0108/c404027-40641641.html)
 
----
+### Male-Frequency (男频) — 8 Primary Genres
 
-## Market Overview: Tool Positioning
+| Genre | Chinese | Sub-types | Template Focus |
+|-------|---------|-----------|----------------|
+| Xuanhuan (Eastern Fantasy) | 玄幻 | 东方玄幻, 异世大陆, 高武世界 | Power systems, cultivation stages, realm hierarchy |
+| Xianxia (Immortal Cultivation) | 仙侠 | 修真文明, 古典仙侠, 都市修仙 | Cultivation methods, spiritual realms, tribulation system |
+| Wuxia (Martial Arts) | 武侠 | 传统武侠, 新派武侠 | Martial arts styles, jianghu factions, honor codes |
+| Urban | 都市 | 都市生活, 都市异能, 娱乐明星 | Modern setting, hidden powers, career progression |
+| History | 历史 | 架空历史, 历史穿越 | Historical periods, political intrigue, military strategy |
+| Sci-Fi | 科幻 | 末世危机, 星际文明, 时空穿梭 | Tech levels, space operas, post-apocalyptic survival |
+| Games | 游戏 | 虚拟网游, 游戏异界 | Game mechanics, class systems, leveling |
+| Military | 军事 | 军事战争, 军事谍战 | War campaigns, espionage, tactical planning |
 
-### Western Market
+### Female-Frequency (女频) — 6 Primary Genres
 
-| Tool | Target User | Core Approach | Price Tier |
-|------|------------|---------------|------------|
-| **Sudowrite** | Novelists, fiction writers | AI co-pilot with Story Bible, Canvas, Describe/Write/Expand modes; Muse 1.5 fiction model | $10-29/mo |
-| **NovelAI** | Creative writers, privacy-focused | Custom fiction-tuned models (Kayra/Clio), Lorebook for world-building, anime image gen; uncensored | $10-25/mo |
-| **ChatGPT/Claude** | General-purpose | Prompt-based writing assistance; no built-in story structure or character memory | Free-$20/mo |
-| **Jasper** | Marketing teams | NOT fiction-focused; brand voice, campaigns, SEO content | $39-99/mo |
-| **Scrivener** (+ AI plugins) | Traditional novelists | Long-form manuscript organizer; AI via external plugins | One-time $59 |
+| Genre | Chinese | Sub-types | Template Focus |
+|-------|---------|-----------|----------------|
+| Ancient Romance | 古代言情 | 穿越架空, 宫闱宅斗 | Court intrigue, family politics, romantic dynamics |
+| Modern Romance | 现代言情 | 豪门世家, 婚恋情缘 | Contemporary settings, relationship arcs |
+| Fantasy Romance | 仙侠奇缘 | 古典仙侠 | Cultivation + romance blend |
+| Youth/Campus | 浪漫青春 | 青春校园 | Coming-of-age, school settings |
+| Sci-Fi Romance | 科幻空间 | 末世科幻 | Survival + romance |
+| Game Romance | 游戏竞技 | 网游情缘 | Virtual worlds + romance |
 
-### Chinese Market
+### 2025-2026 Trending Genres
 
-| Tool | Target User | Core Approach | Price Tier |
-|------|------------|---------------|------------|
-| **笔灵AI** | 网文作者、学生、职场 | Full-spectrum writing tool with dedicated novel module: 大纲生成, 黄金开头, 小说拆书, 预审核, 降AIGC痕迹 | Freemium |
-| **墨语AI** | 网文作者 | Novel-specific: 大纲生成, 章节续写, 角色设定, 情节推演, 风格模仿; deep understanding of 网文 tropes (玄幻/言情/都市) | Subscription |
-| **秘塔写作猫** | 通用写作人群 | Grammar/proofreading, rewrite, multi-template; novel support secondary | Freemium |
-| **星火认知** (讯飞) | General AI assistant | Writing as one of many capabilities; not novel-specific | Subscription |
+Based on 番茄小说 2025年度关键词报告 and 起点年度数据:
 
----
+1. **都市修仙 (Urban Cultivation)** — 修仙2.0, 单日搜索 Top 2 on 番茄
+2. **都市脑洞 (Urban Creative)** — 男频顶流, 异能+高武+脑洞
+3. **现实+ (Reality Fusion)** — 现实+玄幻/科幻/穿越, 年增20万部
+4. **古言重生 (Ancient Rebirth)** — 女频持续火爆
+5. **末世高武 (Post-Apocalyptic High Martial)** — 末世+高武融合
 
-## TABLE STAKES (Must-Have Features)
-
-Features users expect. Missing these = product feels incomplete or amateur.
-
-### Editor
-
-| Feature | Why Expected | Complexity | Who Has It |
-|---------|--------------|------------|------------|
-| **Rich text editor with basic formatting** | Writing happens here; plain text only feels broken | Med | All tools |
-| **Selection-based floating menu** | Select text, get AI actions -- the core interaction pattern for AI writing tools | Med | Sudowrite, 笔灵AI |
-| **Undo/redo with AI action rollback** | AI generates bad text; must be easily reversible | Med | Sudowrite, NovelAI |
-| **Chapter/section organization** | Novels are structured; flat document = unusable for long-form | Med | Sudowrite, NovelAI |
-| **Dark mode / theme** | Writers write at night; eye strain is real | Low | Sudowrite (8 themes, 5 dark modes) |
-| **Focus / distraction-free mode** | Core writing UX expectation | Low | Sudowrite |
-| **Word count / progress tracking** | Novelists track output religiously | Low | All tools |
-| **Auto-save** | Losing work is unacceptable | Low | All tools |
-| **Chinese IME compatibility** | Table stake for Chinese market; must support 搜狗/五笔/拼音 | Med | 笔灵AI, 秘塔写作猫 |
-
-### AI Integration
-
-| Feature | Why Expected | Complexity | Who Has It |
-|---------|--------------|------------|------------|
-| **Text continuation / autocomplete** | The "Write" feature -- basic AI writing assistance | Med | Sudowrite, NovelAI, all Chinese tools |
-| **Text rewrite / polish** | Select text, improve it -- core AI writing interaction | Med | Sudowrite, 笔灵AI, 秘塔写作猫 |
-| **Custom API key input** | Users have their own LLM access; locking to one provider is a dealbreaker | Low-Med | NovelAI (own models), others via config |
-| **Multiple model support** | Users want to choose between quality tiers and costs | Med | Most tools now support this |
-| **Prompt-based free editing** | "Tell the AI what to do in your own words" | Low | Sudowrite, ChatGPT-based tools |
-
-### Knowledge Base / Context
-
-| Feature | Why Expected | Complexity | Who Has It |
-|---------|--------------|------------|------------|
-| **Character profiles / cards** | AI that forgets your character's name is useless | Med | Sudowrite (Story Bible), NovelAI (Lorebook), 墨语AI |
-| **Story settings / world-building notes** | Without context, AI generates generic content | Med | Sudowrite, NovelAI, 墨语AI |
-| **Context injection into AI calls** | Knowledge base must actually influence AI output | High | Sudowrite, NovelAI |
-
-### Format / Export
-
-| Feature | Why Expected | Complexity | Who Has It |
-|---------|--------------|------------|------------|
-| **Export to TXT / DOCX** | Writers need to submit to platforms or editors | Low | All tools |
-| **Punctuation/format cleanup** | AI output often has broken Chinese punctuation (mixed 全角/半角) | Low | 笔灵AI, 秘塔写作猫 |
-| **Markdown support** | Standard writing format | Low | Most tools |
+**Total curated genres for MVP:** 14 primary (8 男频 + 6 女频), ~30 sub-types
 
 ---
 
-## DIFFERENTIATORS (Competitive Advantage Features)
+## Feature 1: 预设世界观模板库 (World-Building Template Library)
 
-Features that set a product apart. Not expected, but highly valued.
+### Table Stakes
+- **Genre selection grid** — User picks genre from curated list with icons/preview
+- **One-click template instantiation** — Creates WorldSetting + CharacterCard archetypes from template
+- **Template preview** — Shows what the template includes before committing
+- **Editable after creation** — Templates create editable entities, not locked presets
+- **AI-assisted detail completion** — AI fills in template blanks based on user's story concept
 
-### Editor
+### Differentiators
+- **Genre-specific foreshadowing patterns** — Templates include common plot devices for the genre (e.g., 玄幻: hidden bloodline → awakening → tribulation)
+- **Opening hook samples** — 3 sample opening paragraphs per genre template
+- **Cross-genre blending** — User can mix elements from 2 templates (e.g., 都市+仙侠 = 都市修仙)
+- **Community-inspired "trending" badges** — Templates tagged with 2025-2026 hot genres
 
-| Feature | Value Proposition | Complexity | Who Has It | MuseFlow Relevance |
-|---------|-------------------|------------|------------|-------------------|
-| **Fragment/idea capture mode (子弹笔记)** | Captures messy inspirations before they vanish -- uniquely matches "拙笔" workflow | Med | None (unique to MuseFlow) | **CORE** -- this IS the differentiator |
-| **Visual story canvas / timeline** | Spatial view of plot, character arcs, themes | High | Sudowrite (Canvas) | Valuable but defer |
-| **Side-by-side AI suggestion panel** | Compare AI output alongside original without replacing | Med | Sudowrite | Adopt |
+### Anti-Features
+- ❌ Community template sharing — Requires backend, out of scope for local-first app
+- ❌ User-created templates from scratch — Too complex for v1.1, template editing is enough
+- ❌ Auto-updating templates from internet — Local-only app, no cloud dependency
 
-### AI Integration
-
-| Feature | Value Proposition | Complexity | Who Has It | MuseFlow Relevance |
-|---------|-------------------|------------|------------|-------------------|
-| **Anti-AI-scent (反AI味)** | Output that doesn't read like ChatGPT -- the #1 complaint about all AI writing tools | Med | 笔灵AI (降AIGC痕迹, but post-hoc); NOBODY does it via prompt engineering during generation | **CORE** -- MuseFlow's soul |
-| **Tone/style matching to author's voice** | AI writes like YOU, not like a chatbot | High | Sudowrite (Muse 1.5 trained on fiction) | High priority |
-| **Brainstorming / "yes, and" mode** | Infinite ideation partner that builds on ideas | Med | Sudowrite (Brainstorm) | Valuable |
-| **Describe mode** | Expand thin descriptions into vivid sensory prose | Med | Sudowrite (Describe) | Aligns with "AI整理成段" |
-| **Expand mode** | Build out scenes from outline-level detail | Med | Sudowrite (Expand) | Aligns with fragment-to-paragraph |
-| **AI feedback / critique** | Three actionable improvement areas per chapter | Med-High | Sudowrite (Feedback) | Phase 2 |
-| **Fragment-to-paragraph synthesis** | Turn messy notes into coherent prose -- uniquely matches "拙笔" need | High | None (unique to MuseFlow) | **CORE** |
-
-### Knowledge Base / Story Structure
-
-| Feature | Value Proposition | Complexity | Who Has It | MuseFlow Relevance |
-|---------|-------------------|------------|------------|-------------------|
-| **Automatic knowledge injection** | AI reads relevant character/world info without user manually selecting it | High | Partial (Sudowrite Story Bible auto-references); NovelAI Lorebook triggers on keywords | **CORE** -- reduces friction |
-| **Foreshadowing / plot thread tracking** | Track planted seeds and ensure payoff -- no tool does this well | High | None well | **CORE** differentiator |
-| **Character consistency guardian** | AI flags when character behavior contradicts established traits | High | Conceptual in some tools; nobody implements well | **CORE** |
-| **Story structure / beat management** | Visual plot structure with act breaks, turning points | High | Sudowrite (Story Engine beats) | High priority |
-| **Logic loop detection** | Flag contradictions in timeline, character knowledge, world rules | High | None | Unique differentiator |
-| **World-building skill system** | AI helps CREATE complete world settings + guards against deviation during writing | Very High | None (partial: NovelAI Lorebook stores info but doesn't help create it) | **CORE** -- "Skill" system |
-
-### Model Management
-
-| Feature | Value Proposition | Complexity | Who Has It | MuseFlow Relevance |
-|---------|-------------------|------------|------------|-------------------|
-| **OpenAI/Claude/DeepSeek/Ollama compatibility** | User choice of model; local models for privacy | Med | Most tools support 2-3; none support all four seamlessly | Table stake for tech-savvy users |
-| **Model marketplace / switching** | Easy switching between providers based on cost/quality tradeoff | Med | Some Chinese tools | Standard |
-| **Custom base URL** | Essential for Chinese users (proxies, mirrors, local deployments) | Low | NovelAI (own), others via config | Must-have for Chinese market |
-
-### Format / Export
-
-| Feature | Value Proposition | Complexity | Who Has It | MuseFlow Relevance |
-|---------|-------------------|------------|------------|-------------------|
-| **Platform-specific formatting** (起点/晋江/番茄) | Chinese web novel platforms have specific formatting rules | Med | 笔灵AI (投稿攻略) | Defer |
-| **降AIGC / AI detection evasion** | Major concern in Chinese market; platforms are cracking down on AI content | High | 笔灵AI (dedicated feature) | **CORE** -- but do it via prompt engineering, not post-processing |
+### Complexity: **Medium**
 
 ---
 
-## ANTI-FEATURES (Things to Deliberately NOT Build)
+## Feature 2: 故事弧可视化 (Story Arc Visualization)
 
-| Anti-Feature | Why Avoid | What to Do Instead |
-|--------------|-----------|-------------------|
-| **One-click full novel generation** | Violates core philosophy; enables spam/garbage content; platforms are banning AI-only content; attracts wrong users | Enforce fragment-then-refine workflow; mandatory human-in-the-loop at every paragraph |
-| **One-click full chapter generation** | Same problem; removes author's voice; leads to generic AI prose | Generate paragraph-by-paragraph with human review between each |
-| **AI ghostwriting mode (no human editing required)** | Product becomes a spam tool; legal/copyright risk; destroys brand positioning | Every AI output must be explicitly accepted/modified by user |
-| **Content detection bypass (explicit)** | Ethical gray area; antagonizes platforms; legally risky | "Anti-AI-scent" via prompt engineering that produces naturally human-sounding text, not deception tools |
-| **Pre-built world template library (in MVP)** | Massive content creation effort; different users want different genres; premature optimization | Ship the Skill system (AI-assisted creation) first; templates can be crowd-sourced later |
-| **Cloud sync / account system** | Adds infrastructure complexity; privacy concerns; not needed for MVP | Local-first storage with export; cloud sync is Phase 3+ |
-| **Real-time collaboration / multi-user editing** | Single-user creative tool; massive engineering effort; not core value | Stay single-player; the "collaboration" is human+AI, not human+human |
-| **iOS/macOS support (in MVP)** | Dilutes engineering focus; Flutter desktop+mobile is already ambitious | Windows + Android first; iOS/macOS after product-market fit |
-| **Social/community features** | Writing tools are not social networks; adds moderation burden | Focus on the writing experience; community can be Discord/forum |
-| **Built-in publishing/submission** | Each platform has different APIs, rules, and review processes | Export to standard formats; let users submit manually |
-| **Image generation for scenes/covers** | Scope creep; different technical stack; many dedicated tools exist | Focus on text quality; recommend external image tools |
-| **General-purpose writing modes (email, reports, marketing)** | Dilutes the novel-specific positioning; competes with Jasper/笔灵AI directly | Stay laser-focused on fiction/novel writing |
+### Table Stakes
+- **Node graph from PlotNode data** — Automatically generates graph from existing story structure
+- **Connection lines** — Shows plot progression (sequential) and foreshadowing links (dashed)
+- **Node details on tap** — Shows PlotNode title, chapter, structural role, writing status
+- **Zoom and pan** — Mouse wheel zoom, drag to pan canvas
+- **Color-coded roles** — Setup/development/turn/climax/resolution each have distinct colors
 
----
+### Differentiators
+- **Drag-to-reorder nodes** — User can rearrange plot nodes by dragging them on the graph
+- **Edit node properties inline** — Tap node → edit title/role/status directly on graph
+- **Foreshadowing arc lines** — Dashed lines connecting foreshadow → resolution nodes
+- **Minimap** — Overview thumbnail for navigating large graphs
+- **Export as image** — Save graph visualization as PNG
 
-## FEATURE DEPENDENCIES
+### Anti-Features
+- ❌ Auto-layout algorithms (force-directed, hierarchical) — v1.1 uses manual positioning only
+- ❌ Real-time collaboration on graph — Single-user app
+- ❌ 3D visualization — Unnecessary, 2D canvas sufficient
+- ❌ Animation playback of story progression — Nice-to-have for future version
 
-```
-Fragment Capture Mode ──────────────────────────────────────┐
-    |                                                        |
-    v                                                        v
-AI Fragment-to-Paragraph Synthesis ──────> Rich Text Editor <── Selection Floating Menu
-    |                                           |                      |
-    |                                           v                      v
-Knowledge Base (Character Cards, Settings) ──> AI Rewrite/Polish <── Tone/Style Matching
-    |                                           |
-    v                                           v
-Auto Knowledge Injection ──────────────> Anti-AI-Scent (Prompt Layer)
-    |
-    v
-Character Consistency Guardian ──────> Foreshadowing Tracker
-    |
-    v
-World-Building Skill System ──────> Logic Loop Detection
-```
-
-### Dependency Chain (build order)
-
-1. **Rich Text Editor** (foundation -- everything else builds on this)
-2. **Fragment Capture Mode** (MuseFlow's unique entry point)
-3. **Selection Floating Menu** (core AI interaction)
-4. **Knowledge Base (character + settings)** (context storage)
-5. **AI Fragment-to-Paragraph Synthesis** (requires: editor + fragments + knowledge base)
-6. **Auto Knowledge Injection** (requires: knowledge base + AI calls)
-7. **Anti-AI-Scent via Prompts** (requires: AI calls working)
-8. **Character Consistency Guardian** (requires: knowledge base + auto injection)
-9. **Foreshadowing Tracker** (requires: story structure data)
-10. **World-Building Skill System** (requires: knowledge base + AI + consistency guardian)
-11. **Logic Loop Detection** (requires: all above)
+### Complexity: **High**
+- Custom CustomPainter with gesture handling OR graphview library
+- Virtual viewport for large graphs (100+ nodes)
+- Performance-critical rendering path
+- Depends on existing PlotNode + Foreshadowing domain data
 
 ---
 
-## WHAT NOVEL AUTHORS COMPLAIN ABOUT (Pain Points)
+## Feature 3: 开篇引导 (Onboarding Wizard + AI Opening Generator)
 
-Based on training knowledge and community sentiment. Confidence: MEDIUM (could not verify via fresh web search).
+### Table Stakes (First-Run Wizard)
+- **First-run detection** — Show wizard only on first app launch
+- **Step 1: Pick a genre** — Genre grid with descriptions
+- **Step 2: Name your world** — Quick world creation with genre template auto-loaded
+- **Step 3: Create first character** — Character name + role, AI suggests personality traits
+- **Step 4: Write first lines** — AI generates 3 opening variants based on genre + world + character
+- **Skip option** — "跳过" button on every step, exit to main app
+- **Progress indicator** — Step dots showing current position
 
-### Universal Complaints (Western + Chinese)
+### Differentiators (AI Opening Generator)
+- **Accessible from editor** — Not just first-run, any time user wants opening inspiration
+- **3 variant styles** — AI generates 3 different tones/opening approaches
+- **User selects → refine** — Pick one, then refine in editor with AI toolbar
+- **Context-aware** — Uses existing world settings and characters as context
 
-| Complaint | Root Cause | MuseFlow Opportunity |
-|-----------|-----------|---------------------|
-| **"AI writing sounds like AI"** | Models default to formal, hedging, enumeration-style prose ("however", "moreover", "it's important to note") | Anti-AI-scent is the #1 feature opportunity |
-| **"AI forgets my character's personality"** | Context windows are limited; character details get lost in long works | Knowledge base auto-injection + consistency guardian |
-| **"AI loses track of the plot over long works"** | No persistent memory of story structure; each session starts fresh | Story structure layer + foreshadowing tracking |
-| **"AI generates generic, predictable plots"** | Models converge on common narrative patterns; no genre-specific training | World-building Skill system + author voice matching |
-| **"I spend more time editing AI output than writing myself"** | One-shot generation produces mediocre text; no iterative refinement workflow | Fragment-to-paragraph with human-at-every-step |
-| **"AI can't maintain consistent tone"** | No style memory; tone drifts across chapters | Style matching + anti-AI-scent prompts |
+### Anti-Features
+- ❌ Mandatory completion — User can always skip
+- ❌ Tutorial overlays (coachmarks) — Not a feature tour, it's a creation flow
+- ❌ Video tutorials — Overkill, text + AI guidance sufficient
+- ❌ Account creation step — Local-only app, no accounts
 
-### Chinese-Market-Specific Complaints
-
-| Complaint | Root Cause | MuseFlow Opportunity |
-|-----------|-----------|---------------------|
-| **"AI写出来的小说被平台下架"** (AI novels get taken down) | Chinese web novel platforms actively detecting and banning AI content | Anti-AI-scent is existential for Chinese market |
-| **"AI不懂网文套路"** (AI doesn't understand web novel tropes) | Western-trained models lack understanding of 玄幻/修仙/言情 conventions | World-building Skill system can encode genre knowledge |
-| **"一键生成太假了"** (One-click generation is too fake) | Full-auto generation produces soulless content; readers can tell | Force human-in-the-loop; no one-click generation |
-| **"AI生成的角色人设崩塌"** (AI-generated characters break character) | No persistent character memory; traits drift or contradict | Character consistency guardian |
-| **"标点符号乱七八糟"** (Punctuation is a mess) | Mixed 全角/半角, English punctuation in Chinese text, Markdown artifacts | Format cleanup as built-in feature |
-
-### Western-Market-Specific Complaints
-
-| Complaint | Root Cause | MuseFlow Opportunity |
-|-----------|-----------|---------------------|
-| **"Lorebook/Lore management is too complex"** | NovelAI's Lorebook requires manual keyword triggers and careful configuration | Auto-injection instead of manual triggers |
-| **"Story Engine produces formulaic beats"** | Sudowrite's beat system leads to predictable three-act structures | Flexible structure that adapts to author's vision |
-| **"Token limits are too restrictive"** | Word count caps on subscription tiers frustrate prolific writers | Support local models (Ollama) for unlimited usage |
-| **"No offline capability"** | All major tools are cloud-dependent; bad for travel or low-connectivity | Local-first architecture; offline editing |
+### Complexity: **Medium**
 
 ---
 
-## MVP RECOMMENDATION (for MuseFlow)
+## Feature 4: 写作数据统计 (Writing Statistics)
 
-### Phase 1: Foundation + Core Differentiators
+### Table Stakes
+- **Total word count** — Across all projects
+- **Writing streak** — Consecutive days with writing activity
+- **AI assist ratio** — % of text that involved AI interaction
+- **Chapter word counts** — Per-chapter breakdown
+- **Session duration** — Time spent in active editing per session
 
-1. **Rich text editor** with selection floating menu and Chinese IME support
-2. **Fragment capture mode** (bullet-journal style idea input)
-3. **Knowledge base**: character cards + story settings (manual creation first)
-4. **AI fragment-to-paragraph synthesis** (the core "messy notes -> prose" flow)
-5. **Selection floating menu**: rewrite / polish / free-form edit
-6. **Anti-AI-scent via prompt engineering** (invisible to user, built into all AI calls)
-7. **Custom API key + base URL** (OpenAI/Claude/DeepSeek/Ollama)
-8. **Format cleanup** (punctuation, spacing, Markdown artifacts)
-9. **Export to TXT/DOCX**
+### Differentiators
+- **Writing speed trend chart** — Line chart showing words/hour over time (fl_chart)
+- **Daily word count bar chart** — Bar chart for last 30 days (fl_chart)
+- **AI usage pie chart** — Visual breakdown of AI vs manual writing (fl_chart)
+- **Milestone badges** — "First 1000 words", "10K words", "30-day streak"
+- **Export stats** — Save statistics as image or text report
 
-### Phase 2: Story Intelligence
+### Anti-Features
+- ❌ Social sharing of stats — No account system
+- ❌ Comparative benchmarks (vs other authors) — No cloud, no community data
+- ❌ Real-time word count in editor overlay — Distracting, stats page is sufficient
+- ❌ Goal-setting and notifications — Future version
 
-1. **Auto knowledge injection** (AI reads relevant character/settings automatically)
-2. **Character consistency guardian** (flag contradictions)
-3. **Foreshadowing / plot thread tracking**
-4. **Story beat / chapter outline management**
-5. **World-building Skill system** (AI-assisted creation + real-time guard)
-
-### Phase 3: Advanced Features
-
-1. **Logic loop detection**
-2. **Style/voice matching** (learn from author's previous writing)
-3. **Platform-specific export templates** (起点/晋江/番茄)
-4. **AI feedback / critique mode**
-5. **Visual story canvas / timeline**
-
-### Defer Indefinitely
-
-- One-click full generation
-- Cloud sync / accounts
-- Social features
-- Built-in publishing
-- Image generation
-- iOS/macOS (until PMF)
+### Complexity: **Medium-Low**
 
 ---
 
-## Sources
+## Feature Priority by Complexity vs Impact
 
-- Sudowrite.com homepage (fetched 2026-05-31): Describe, Write, Expand, Story Bible, Canvas, Brainstorm, Feedback, Muse 1.5 model
-- Biling AI / 笔灵AI homepage (fetched 2026-05-31): Full novel feature JSON structure
-- MetaCat / 秘塔写作猫 homepage (fetched 2026-05-31): General writing tool confirmation
-- Jasper.ai homepage (fetched 2026-05-31): Marketing tool, not fiction
-- Training knowledge (NovelAI features, 墨语AI positioning, 星火认知 capabilities): LOW-MEDIUM confidence, needs fresh verification
-- Note: Web search tools were rate-limited during research; findings marked LOW confidence should be verified during phase-specific research
+| Feature | Complexity | Impact | Dependencies |
+|---------|-----------|--------|-------------|
+| Onboarding wizard | Medium | High (new user retention) | Templates (reuses gallery) |
+| World-building templates | Medium | High (cold-start problem) | None — standalone |
+| Writing statistics | Medium-Low | Medium (engagement) | Editor hooks needed |
+| Story arc visualization | High | Medium-High (power user) | PlotNode data exists |
+
+**Recommended build order:** Templates → Onboarding → Stats → Visualization
+
+---
+*Features researched: 2026-06-04 for v1.1 milestone*
