@@ -15,6 +15,12 @@ class SettingsRepository {
 
   SettingsRepository(this._box);
 
+  /// The underlying Hive settings box.
+  ///
+  /// Exposed for sibling repositories (e.g. OnboardingProgressRepository)
+  /// that need to persist data in the same encrypted box.
+  Box<dynamic> get box => _box;
+
   /// Saves the window size to the encrypted settings box.
   Future<void> saveWindowSize(Size size) async {
     await _box.put(_windowSizeKey, {
