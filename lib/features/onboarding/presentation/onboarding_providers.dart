@@ -1,5 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive_ce/hive.dart';
+import 'package:museflow/features/knowledge/infrastructure/character_card_repository.dart';
+import 'package:museflow/features/knowledge/infrastructure/world_setting_repository.dart';
 import 'package:museflow/features/onboarding/infrastructure/onboarding_progress_repository.dart';
 
 /// Provides an [OnboardingProgressRepository] backed by a Hive box.
@@ -14,4 +16,22 @@ final onboardingRepositoryProvider =
     FutureProvider<OnboardingProgressRepository>((ref) async {
   final box = await Hive.openBox('settings');
   return OnboardingProgressRepository(box);
+});
+
+/// Provides a [WorldSettingRepository] for entity creation during onboarding.
+///
+/// Scoped to onboarding to avoid coupling to the broken providers.dart chain.
+final onboardingWorldSettingRepositoryProvider =
+    FutureProvider<WorldSettingRepository>((ref) async {
+  final box = await Hive.openBox<dynamic>('world_settings');
+  return WorldSettingRepository(box);
+});
+
+/// Provides a [CharacterCardRepository] for entity creation during onboarding.
+///
+/// Scoped to onboarding to avoid coupling to the broken providers.dart chain.
+final onboardingCharacterCardRepositoryProvider =
+    FutureProvider<CharacterCardRepository>((ref) async {
+  final box = await Hive.openBox<dynamic>('character_cards');
+  return CharacterCardRepository(box);
 });
