@@ -4,8 +4,8 @@ import 'package:museflow/features/ai/infrastructure/preset_providers.dart';
 
 void main() {
   group('PresetProviders', () {
-    test('should return exactly 3 preset providers', () {
-      expect(PresetProviders.all.length, 3);
+    test('should return exactly 4 preset providers', () {
+      expect(PresetProviders.all.length, 4);
     });
 
     test('OpenAI preset should have correct configuration', () {
@@ -66,6 +66,29 @@ void main() {
 
     test('requiresApiKey should be false for Ollama', () {
       expect(PresetProviders.requiresApiKey(AiProviderType.ollama), false);
+    });
+
+    test('Claude preset should have correct configuration', () {
+      final claude = PresetProviders.all.firstWhere(
+        (p) => p.type == AiProviderType.claude,
+      );
+      expect(claude.id, 'preset-claude');
+      expect(claude.name, 'Claude');
+      expect(claude.baseUrl, 'https://api.anthropic.com/v1/');
+      expect(claude.model, 'claude-sonnet-4-20250514');
+      expect(claude.type, AiProviderType.claude);
+    });
+
+    test('getById returns Claude preset by ID', () {
+      final claude = PresetProviders.getById('preset-claude');
+      expect(claude, isNotNull);
+      expect(claude!.name, 'Claude');
+      expect(claude.baseUrl, 'https://api.anthropic.com/v1/');
+      expect(claude.model, 'claude-sonnet-4-20250514');
+    });
+
+    test('requiresApiKey should be true for Claude', () {
+      expect(PresetProviders.requiresApiKey(AiProviderType.claude), true);
     });
   });
 }
