@@ -4,6 +4,8 @@ import 'package:museflow/core/domain/fragment.dart';
 import 'package:museflow/features/knowledge/domain/character_card.dart';
 import 'package:museflow/features/knowledge/domain/skill_document.dart';
 import 'package:museflow/features/knowledge/domain/world_setting.dart';
+import 'package:museflow/features/manuscript/domain/chapter.dart';
+import 'package:museflow/features/manuscript/domain/manuscript.dart';
 import 'package:museflow/features/story_structure/domain/foreshadowing_entry.dart';
 import 'package:museflow/features/story_structure/domain/guardian_annotation.dart';
 import 'package:museflow/features/story_structure/domain/plot_node.dart';
@@ -20,6 +22,7 @@ abstract class HiveTypeIds {
   static const int foreshadowingEntry = 6;
   static const int plotNode = 7;
   static const int guardianAnnotation = 8;
+  static const int chapter = 9;
 }
 
 /// Manual Hive TypeAdapter for [Fragment].
@@ -245,6 +248,64 @@ class GuardianAnnotationAdapter extends TypeAdapter<GuardianAnnotation> {
   bool operator ==(Object other) =>
       identical(this, other) ||
       other is GuardianAnnotationAdapter &&
+          runtimeType == other.runtimeType &&
+          typeId == other.typeId;
+}
+
+/// Manual Hive TypeAdapter for [Manuscript].
+///
+/// Delegates serialization to fromJson/toJson.
+class ManuscriptAdapter extends TypeAdapter<Manuscript> {
+  @override
+  final int typeId = HiveTypeIds.manuscript;
+
+  @override
+  Manuscript read(BinaryReader reader) {
+    final json = reader.readMap() as Map<String, dynamic>;
+    return Manuscript.fromJson(json);
+  }
+
+  @override
+  void write(BinaryWriter writer, Manuscript obj) {
+    writer.writeMap(obj.toJson());
+  }
+
+  @override
+  int get hashCode => typeId.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is ManuscriptAdapter &&
+          runtimeType == other.runtimeType &&
+          typeId == other.typeId;
+}
+
+/// Manual Hive TypeAdapter for [Chapter].
+///
+/// Delegates serialization to fromJson/toJson.
+class ChapterAdapter extends TypeAdapter<Chapter> {
+  @override
+  final int typeId = HiveTypeIds.chapter;
+
+  @override
+  Chapter read(BinaryReader reader) {
+    final json = reader.readMap() as Map<String, dynamic>;
+    return Chapter.fromJson(json);
+  }
+
+  @override
+  void write(BinaryWriter writer, Chapter obj) {
+    writer.writeMap(obj.toJson());
+  }
+
+  @override
+  int get hashCode => typeId.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is ChapterAdapter &&
           runtimeType == other.runtimeType &&
           typeId == other.typeId;
 }

@@ -69,6 +69,8 @@ void main() async {
   Hive.registerAdapter(ForeshadowingEntryAdapter());
   Hive.registerAdapter(PlotNodeAdapter());
   Hive.registerAdapter(GuardianAnnotationAdapter());
+  Hive.registerAdapter(ManuscriptAdapter());
+  Hive.registerAdapter(ChapterAdapter());
 
   // Read saved window geometry before showing the window
   final geometry = await _readSavedGeometry();
