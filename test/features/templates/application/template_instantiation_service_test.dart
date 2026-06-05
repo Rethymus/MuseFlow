@@ -69,6 +69,83 @@ void main() {
       expect(worldBox.values, isEmpty);
       expect(characterBox.values, hasLength(2));
     });
+
+    test('editing a field changes its source marker to userEdited', () {
+      final draft = service.createDraft(_template());
+
+      final originalField = draft.world.description;
+      expect(originalField.source, TemplateFieldSource.templateDefault);
+
+      final editedField = originalField.edit('用户修改的描述');
+      final updatedDraft = draft.copyWith(
+        world: draft.world.copyWith(description: editedField),
+      );
+
+      expect(updatedDraft.world.description.value, '用户修改的描述');
+      expect(
+        updatedDraft.world.description.source,
+        TemplateFieldSource.userEdited,
+      );
+      // Other fields remain unchanged
+      expect(
+        updatedDraft.world.name.source,
+        TemplateFieldSource.templateDefault,
+      );
+    });
+
+    test('saveDraft returns created entity summary with names and ids', () async {
+      final draft = service.createDraft(_template());
+
+      final result = await service.saveDraft(draft);
+
+      // World was selected and saved
+      expect(result.worldSetting, isNotNull);
+      expect(result.worldSetting!.name, '断岳九州');
+      expect(result.worldSetting!.id, isNotEmpty);
+
+      // All three characters were selected and saved
+      expect(result.characterCards, hasLength(3));
+      final characterNames = result.characterCards.map((c) => c.name).toList();
+      expect(characterNames, containsAll(['角色一', '角色二', '角色三']));
+      for (final card in result.characterCards) {
+        expect(card.id, isNotEmpty);
+      }
+    });
+
+    test('foreshadowing arcs and opening samples are not saved to repositories', () async {
+      final draft = service.createDraft(_template());
+
+      // Template has foreshadowing arcs and opening samples in source data
+      final template = _template();
+      expect(template.foreshadowingArcs, isNotEmpty);
+      expect(template.openingSamples, isNotEmpty);
+
+      await service.saveDraft(draft);
+
+      // Verify only world_setting and character_card data exists in boxes
+      // worldBox should have exactly one entry (the world setting)
+      expect(worldBox.length, 1);
+      // characterBox should have exactly 3 entries (the characters)
+      expect(characterBox.length, 3);
+
+      // Verify world box contains world_setting data, not foreshadowing
+      final worldData = worldBox.values.first as Map;
+      expect(worldData.containsKey('name'), isTrue);
+      expect(worldData.containsKey('description'), isTrue);
+      // No foreshadowing or opening sample keys should exist
+      expect(worldData.containsKey('foreshadowingArcs'), isFalse);
+      expect(worldData.containsKey('openingSamples'), isFalse);
+
+      // Verify character box contains character data only
+      for (final charData in characterBox.values) {
+        final charMap = charData as Map;
+        expect(charMap.containsKey('name'), isTrue);
+        expect(charMap.containsKey('personality'), isTrue);
+        // No foreshadowing or opening sample data
+        expect(charMap.containsKey('foreshadowingArcs'), isFalse);
+        expect(charMap.containsKey('openingSamples'), isFalse);
+      }
+    });
   });
 }
 

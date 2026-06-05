@@ -73,6 +73,41 @@ void main() {
 
       expect(find.text('draft:male-xuanhuan-bloodline:少年不想修仙'), findsOneWidget);
     });
+
+    testWidgets('shows safe not-found state for missing template id', (tester) async {
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            worldTemplateRepositoryProvider.overrideWithValue(_repository()),
+          ],
+          child: const MaterialApp(
+            home: TemplatePreviewPage(templateId: 'non-existent-id'),
+          ),
+        ),
+      );
+
+      // Wait for the FutureBuilder to complete
+      await _pumpUntilFound(tester, find.text('未找到模板'), maxPumps: 20);
+
+      // Should show not-found message, no crash
+      expect(find.text('未找到模板'), findsOneWidget);
+      // Should NOT show template content
+      expect(find.text('使用模板'), findsNothing);
+    });
+
+    testWidgets('expanding opening samples shows all three styles', (tester) async {
+      await _pumpPreview(tester);
+      await _pumpUntilFound(tester, find.text('开篇示例'));
+
+      // Tap to expand opening samples section
+      await tester.tap(find.text('开篇示例'));
+      await tester.pump(const Duration(milliseconds: 300));
+
+      // All three style labels should be visible
+      expect(find.textContaining('场景切入'), findsOneWidget);
+      expect(find.textContaining('人物切入'), findsOneWidget);
+      expect(find.textContaining('悬念切入'), findsOneWidget);
+    });
   });
 }
 
