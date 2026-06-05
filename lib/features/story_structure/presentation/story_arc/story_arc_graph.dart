@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:graphview/GraphView.dart';
@@ -5,6 +7,7 @@ import 'package:museflow/core/presentation/providers.dart';
 import 'package:museflow/features/story_structure/domain/plot_node.dart';
 import 'package:museflow/features/story_structure/presentation/story_arc/node_edit_bottom_sheet.dart';
 import 'package:museflow/features/story_structure/presentation/story_arc/story_arc_edge_renderer.dart';
+import 'package:museflow/features/story_structure/presentation/story_arc/story_arc_minimap.dart';
 import 'package:museflow/features/story_structure/presentation/story_arc/story_arc_node.dart';
 
 /// Interactive story arc graph built from [PlotNode] relationships.
@@ -16,7 +19,26 @@ class StoryArcGraph extends ConsumerStatefulWidget {
 }
 
 class _StoryArcGraphState extends ConsumerState<StoryArcGraph> {
-  final GraphViewController _controller = GraphViewController();
+  final TransformationController _transformationController =
+      TransformationController();
+  late final GraphViewController _controller;
+  Timer? _positionSaveTimer;
+  bool _isDraggingNode = false;
+  final Map<String, Offset> _dragPositions = {};
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = GraphViewController(
+      transformationController: _transformationController,
+    );
+  }
+
+  @override
+  void dispose() {
+    _positionSaveTimer?.cancel();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -49,7 +71,8 @@ class _StoryArcGraphState extends ConsumerState<StoryArcGraph> {
 
     for (final plotNode in nodes) {
       final node = Node.Id(plotNode.id);
-      final savedPosition = positions[plotNode.id];
+      final savedPosition =
+          _dragPositions[plotNode.id] ?? positions[plotNode.id];
       if (savedPosition != null) node.position = savedPosition;
       graphNodes[plotNode.id] = node;
       graph.addNode(node);
@@ -110,30 +133,53 @@ class _StoryArcGraphState extends ConsumerState<StoryArcGraph> {
 
     final nodeById = {for (final node in nodes) node.id: node};
     final algorithm = FruchtermanReingoldAlgorithm(
-      FruchtermanReingoldConfiguration(
-        iterations: 50,
-        shuffleNodes: positions.isEmpty,
-      ),
+      FruchtermanReingoldConfiguration(iterations: 50, shuffleNodes: false),
       renderer: StoryArcEdgeRenderer(
         edgeTypes: edgeTypes,
         isDark: Theme.of(context).brightness == Brightness.dark,
       ),
     );
 
-    return GraphView.builder(
-      graph: graph,
-      algorithm: algorithm,
-      controller: _controller,
-      animated: true,
-      autoZoomToFit: true,
-      builder: (node) {
-        final id = node.key?.value as String;
-        final plotNode = nodeById[id]!;
-        return StoryArcNode(
-          plotNode: plotNode,
-          onTap: () => _showEditSheet(plotNode),
-        );
-      },
+    return Stack(
+      children: [
+        AbsorbPointer(
+          absorbing: _isDraggingNode,
+          child: GraphView.builder(
+            graph: graph,
+            algorithm: algorithm,
+            controller: _controller,
+            animated: true,
+            autoZoomToFit: true,
+            builder: (node) {
+              final id = node.key?.value as String;
+              final plotNode = nodeById[id]!;
+              return StoryArcNode(
+                plotNode: plotNode,
+                onTap: () => _showEditSheet(plotNode),
+                onPanStart: (_) => setState(() => _isDraggingNode = true),
+                onPanUpdate: (details) => _updateNodePosition(
+                  nodeId: id,
+                  node: node,
+                  delta: details.delta,
+                ),
+                onPanEnd: (_) {
+                  setState(() => _isDraggingNode = false);
+                  _debouncedSavePosition(id, node.position);
+                },
+              );
+            },
+          ),
+        ),
+        StoryArcMinimap(
+          plotNodes: nodes,
+          nodePositions: {
+            for (final entry in graphNodes.entries)
+              entry.key: entry.value.position,
+          },
+          transformationController: _transformationController,
+          graphCanvasSize: MediaQuery.sizeOf(context),
+        ),
+      ],
     );
   }
 
@@ -164,6 +210,30 @@ class _StoryArcGraphState extends ConsumerState<StoryArcGraph> {
 
     final edge = graph.addEdge(source, target, paint: paint);
     edgeTypes[edge] = type;
+  }
+
+  void _updateNodePosition({
+    required String nodeId,
+    required Node node,
+    required Offset delta,
+  }) {
+    final scale = _transformationController.value.getMaxScaleOnAxis();
+    final adjustedDelta = scale == 0 ? delta : delta / scale;
+    setState(() {
+      node.position = node.position + adjustedDelta;
+      _dragPositions[nodeId] = node.position;
+    });
+    _controller.focusedNode = node;
+    _controller.forceRecalculation();
+  }
+
+  void _debouncedSavePosition(String nodeId, Offset position) {
+    _positionSaveTimer?.cancel();
+    _positionSaveTimer = Timer(const Duration(seconds: 1), () {
+      ref
+          .read(nodePositionNotifierProvider.notifier)
+          .savePosition(nodeId, position);
+    });
   }
 
   void _showEditSheet(PlotNode? node) {

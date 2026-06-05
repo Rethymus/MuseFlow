@@ -6,8 +6,18 @@ import 'package:museflow/features/story_structure/presentation/story_arc/graph_c
 class StoryArcNode extends StatelessWidget {
   final PlotNode plotNode;
   final VoidCallback? onTap;
+  final GestureDragStartCallback? onPanStart;
+  final GestureDragUpdateCallback? onPanUpdate;
+  final GestureDragEndCallback? onPanEnd;
 
-  const StoryArcNode({super.key, required this.plotNode, this.onTap});
+  const StoryArcNode({
+    super.key,
+    required this.plotNode,
+    this.onTap,
+    this.onPanStart,
+    this.onPanUpdate,
+    this.onPanEnd,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -22,6 +32,9 @@ class StoryArcNode extends StatelessWidget {
       label: '编辑节点: ${plotNode.title}',
       child: GestureDetector(
         onTap: onTap,
+        onPanStart: onPanStart,
+        onPanUpdate: onPanUpdate,
+        onPanEnd: onPanEnd,
         child: CustomPaint(
           foregroundPainter: _PatternBorderPainter(
             color: GraphStatus.borderColor(plotNode.writingStatus),
