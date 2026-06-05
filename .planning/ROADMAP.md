@@ -25,8 +25,8 @@
 **Milestone Goal:** 在 v1.0 核心流程基础上，增加模板库降低冷启动门槛、引导流程让新用户快速上手、数据统计量化创作过程、故事弧可视化增强创作感知。
 
 - [x] **Phase 7: 预设世界观模板库** — 14种小说类型模板，一键创建世界设定+角色原型，AI补全空白字段
-- [ ] **Phase 8: 开篇引导** — 首次启动4步向导，AI开篇生成器（3种风格），引导可中断恢复
-- [ ] **Phase 9: 写作数据统计** — 全球/项目数据面板，fl_chart图表，成就徽章，性能无感采集
+- [x] **Phase 8: 开篇引导** — 首次启动4步向导，AI开篇生成器（3种风格），引导可中断恢复
+- [x] **Phase 9: 写作数据统计** — 全球/项目数据面板，fl_chart图表，成就徽章，性能无感采集
 - [ ] **Phase 10: 故事弧可视化** — graphview交互式节点图，缩放平移，拖拽排列，缩略图导航
 
 ## Phase Details
@@ -81,7 +81,7 @@ Plans:
 **Wave 3** *(blocked on Wave 2 completion)*
 
 - [x] 08-04: OpeningVariant model + OpeningGeneratorService (wave 3, depends on 08-01)
-- [ ] 08-05: OpeningStepPage + OpeningGeneratorSheet + toolbar button + wizard wiring (wave 3, depends on 08-01, 08-02, 08-03, 08-04)
+- [x] 08-05: OpeningStepPage + OpeningGeneratorSheet + toolbar button + wizard wiring (wave 3, depends on 08-01, 08-02, 08-03, 08-04)
 
 ### Phase 9: 写作数据统计
 
@@ -96,14 +96,26 @@ Plans:
   4. Achievement badges appear when milestones are reached (first 1K/10K/50K words, 7/30/100 consecutive writing days)
   5. User can clear all writing statistics from the settings page
 
-**Plans**: TBD
+**Plans**: 4 plans (3 executable + 1 gap closure) created 2026-06-04/05
 **UI hint**: yes
 
 Plans:
 
-- [ ] 09-01: Stats data model, Hive storage, and in-memory collector service
-- [ ] 09-02: Global and project stats pages with fl_chart visualizations
-- [ ] 09-03: Achievement badge system and settings clear action
+**Wave 1**
+
+- [x] 09-01: Stats data model, Hive storage, and in-memory collector service (wave 1)
+
+**Wave 2** *(blocked on Wave 1 completion)*
+
+- [x] 09-02: Global and project stats pages with fl_chart visualizations (wave 2, depends on 09-01)
+
+**Wave 3** *(blocked on Wave 2 completion)*
+
+- [x] 09-03: Achievement badge system and settings clear action (wave 3, depends on 09-01, 09-02)
+
+**Gap Closure** *(from VERIFICATION.md)*
+
+- [ ] 09-04: Fix navigation destination count assertions (5 → 6) in test/app/ tests
 
 ### Phase 10: 故事弧可视化
 
@@ -143,6 +155,6 @@ Note: Phases 9 and 10 are independent of each other (both depend only on v1.0). 
 | 5. Story Structure + Export | v1.0 | 4/4 | Complete | 2026-06-04 |
 | 6. Multi-Provider + Android | v1.0 | 3/3 | Complete | 2026-06-04 |
 | 7. 预设世界观模板库 | v1.1 | 3/3 | Implemented; manual template prose review pending | 2026-06-04 |
-| 8. 开篇引导 | v1.1 | 4/5 | In Progress|  |
-| 9. 写作数据统计 | v1.1 | 0/3 | Not started | - |
+| 8. 开篇引导 | v1.1 | 5/5 | Complete | 2026-06-04 |
+| 9. 写作数据统计 | v1.1 | 3/4 | Gap closure (09-04) pending | - |
 | 10. 故事弧可视化 | v1.1 | 0/3 | Not started | - |
