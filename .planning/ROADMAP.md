@@ -115,7 +115,7 @@ Plans:
 
 **Gap Closure** *(from VERIFICATION.md)*
 
-- [ ] 09-04: Fix navigation destination count assertions (5 → 6) in test/app/ tests
+- [x] 09-04: Fix navigation destination count assertions (5 → 6) in test/app/ tests
 
 ### Phase 10: 故事弧可视化
 
@@ -156,5 +156,5 @@ Note: Phases 9 and 10 are independent of each other (both depend only on v1.0). 
 | 6. Multi-Provider + Android | v1.0 | 3/3 | Complete | 2026-06-04 |
 | 7. 预设世界观模板库 | v1.1 | 3/3 | Implemented; manual template prose review pending | 2026-06-04 |
 | 8. 开篇引导 | v1.1 | 5/5 | Complete | 2026-06-04 |
-| 9. 写作数据统计 | v1.1 | 3/4 | Gap closure (09-04) pending | - |
+| 9. 写作数据统计 | v1.1 | 4/4 | Complete   | 2026-06-05 |
 | 10. 故事弧可视化 | v1.1 | 0/3 | Not started | - |
