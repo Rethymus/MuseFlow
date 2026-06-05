@@ -43,9 +43,11 @@ import 'package:museflow/features/stats/application/achievement_service.dart';
 import 'package:museflow/features/stats/domain/achievement_badge.dart';
 import 'package:museflow/features/stats/domain/stats_snapshot.dart';
 import 'package:museflow/features/stats/infrastructure/writing_stats_repository.dart';
+import 'package:museflow/features/manuscript/application/chapter_auto_save.dart';
 import 'package:museflow/features/manuscript/application/chapter_notifier.dart';
 import 'package:museflow/features/manuscript/application/manuscript_notifier.dart';
 import 'package:museflow/features/manuscript/infrastructure/chapter_repository.dart';
+import 'package:museflow/features/manuscript/infrastructure/manuscript_purge_service.dart';
 import 'package:museflow/features/manuscript/infrastructure/manuscript_repository.dart';
 import 'package:museflow/features/manuscript/domain/manuscript.dart';
 import 'package:museflow/features/manuscript/domain/chapter.dart';
@@ -643,3 +645,30 @@ final chapterNotifierProvider =
     AsyncNotifierProvider<ChapterNotifier, List<Chapter>>(
       ChapterNotifier.new,
     );
+
+/// Provides a [ChapterAutoSave] service for debounced document persistence.
+///
+/// Uses a 2-second debounce duration per D-19. Disposes the auto-save
+/// service when the provider is disposed.
+final chapterAutoSaveProvider = FutureProvider<ChapterAutoSave>((ref) async {
+  final repository = await ref.watch(chapterRepositoryProvider.future);
+  final autoSave = ChapterAutoSave(repository);
+  ref.onDispose(autoSave.dispose);
+  return autoSave;
+});
+
+/// Provides a [ManuscriptPurgeService] for 30-day soft-delete auto-purge.
+///
+/// Injects both [ManuscriptRepository] and [ChapterRepository] for
+/// cascade deletion (chapters before manuscripts).
+final manuscriptPurgeServiceProvider = FutureProvider<ManuscriptPurgeService>(
+  (ref) async {
+    final manuscriptRepo =
+        await ref.watch(manuscriptRepositoryProvider.future);
+    final chapterRepo = await ref.watch(chapterRepositoryProvider.future);
+    return ManuscriptPurgeService(
+      manuscriptRepository: manuscriptRepo,
+      chapterRepository: chapterRepo,
+    );
+  },
+);
