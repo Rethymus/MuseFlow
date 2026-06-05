@@ -164,9 +164,23 @@ class _NodeEditBottomSheetState extends ConsumerState<NodeEditBottomSheet> {
       return;
     }
 
+    final chapterText = _chapterController.text.trim();
+    final chapter = int.tryParse(chapterText);
+    if (chapter == null) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('请输入有效的章节号')));
+      return;
+    }
+    if (chapter <= 0) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('章节号必须大于0')));
+      return;
+    }
+
     setState(() => _isSaving = true);
     try {
-      final chapter = int.tryParse(_chapterController.text.trim()) ?? 1;
       final summary = _summaryController.text.trim();
       final node = _isEditing
           ? widget.node!.copyWith(

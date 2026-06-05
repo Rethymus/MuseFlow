@@ -72,4 +72,127 @@ void main() {
     expect(saved!.title, '新标题');
     expect(saved!.id, 'pn-1');
   });
+
+  testWidgets('should reject non-numeric chapter input', (tester) async {
+    PlotNode? saved;
+    final node = PlotNode(
+      id: 'pn-1',
+      title: '旧标题',
+      chapter: 1,
+      createdAt: DateTime(2026, 1, 1),
+    );
+
+    await tester.pumpWidget(
+      ProviderScope(
+        child: MaterialApp(
+          home: Scaffold(
+            body: NodeEditBottomSheet(
+              node: node,
+              onSave: (value) => saved = value,
+            ),
+          ),
+        ),
+      ),
+    );
+
+    await tester.enterText(find.widgetWithText(TextField, '1'), 'abc');
+    await tester.tap(find.text('保存修改'));
+    await tester.pump();
+
+    expect(saved, isNull);
+    expect(find.text('请输入有效的章节号'), findsOneWidget);
+    expect(find.text('编辑节点'), findsOneWidget);
+  });
+
+  testWidgets('should reject zero chapter input', (tester) async {
+    PlotNode? saved;
+    final node = PlotNode(
+      id: 'pn-1',
+      title: '旧标题',
+      chapter: 1,
+      createdAt: DateTime(2026, 1, 1),
+    );
+
+    await tester.pumpWidget(
+      ProviderScope(
+        child: MaterialApp(
+          home: Scaffold(
+            body: NodeEditBottomSheet(
+              node: node,
+              onSave: (value) => saved = value,
+            ),
+          ),
+        ),
+      ),
+    );
+
+    await tester.enterText(find.widgetWithText(TextField, '1'), '0');
+    await tester.tap(find.text('保存修改'));
+    await tester.pump();
+
+    expect(saved, isNull);
+    expect(find.text('章节号必须大于0'), findsOneWidget);
+    expect(find.text('编辑节点'), findsOneWidget);
+  });
+
+  testWidgets('should reject negative chapter input', (tester) async {
+    PlotNode? saved;
+    final node = PlotNode(
+      id: 'pn-1',
+      title: '旧标题',
+      chapter: 1,
+      createdAt: DateTime(2026, 1, 1),
+    );
+
+    await tester.pumpWidget(
+      ProviderScope(
+        child: MaterialApp(
+          home: Scaffold(
+            body: NodeEditBottomSheet(
+              node: node,
+              onSave: (value) => saved = value,
+            ),
+          ),
+        ),
+      ),
+    );
+
+    await tester.enterText(find.widgetWithText(TextField, '1'), '-1');
+    await tester.tap(find.text('保存修改'));
+    await tester.pump();
+
+    expect(saved, isNull);
+    expect(find.text('章节号必须大于0'), findsOneWidget);
+    expect(find.text('编辑节点'), findsOneWidget);
+  });
+
+  testWidgets('should save valid positive chapter input', (tester) async {
+    PlotNode? saved;
+    final node = PlotNode(
+      id: 'pn-1',
+      title: '旧标题',
+      chapter: 1,
+      createdAt: DateTime(2026, 1, 1),
+    );
+
+    await tester.pumpWidget(
+      ProviderScope(
+        child: MaterialApp(
+          home: Scaffold(
+            body: NodeEditBottomSheet(
+              node: node,
+              onSave: (value) => saved = value,
+            ),
+          ),
+        ),
+      ),
+    );
+
+    await tester.enterText(find.widgetWithText(TextField, '1'), '12');
+    await tester.tap(find.text('保存修改'));
+    await tester.pump();
+
+    expect(saved, isNotNull);
+    expect(saved!.chapter, 12);
+  });
 }
