@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
+import 'dart:ui';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive_ce/hive.dart';
@@ -48,12 +49,14 @@ import 'package:museflow/features/story_structure/application/guardian_check_ser
 import 'package:museflow/features/story_structure/application/guardian_context_builder.dart';
 import 'package:museflow/features/story_structure/application/guardian_notifier.dart';
 import 'package:museflow/features/story_structure/application/logic_guardian_service.dart';
+import 'package:museflow/features/story_structure/application/node_position_notifier.dart';
 import 'package:museflow/features/story_structure/application/plot_node_notifier.dart';
 import 'package:museflow/features/story_structure/application/export_service.dart';
 import 'package:museflow/features/story_structure/domain/foreshadowing_entry.dart';
 import 'package:museflow/features/story_structure/domain/plot_node.dart';
 import 'package:museflow/features/story_structure/infrastructure/foreshadowing_repository.dart';
 import 'package:museflow/features/story_structure/infrastructure/guardian_annotation_repository.dart';
+import 'package:museflow/features/story_structure/infrastructure/node_position_repository.dart';
 import 'package:museflow/features/story_structure/infrastructure/plot_node_repository.dart';
 import 'package:museflow/features/templates/application/template_completion_service.dart';
 import 'package:museflow/features/templates/application/template_instantiation_service.dart';
@@ -510,6 +513,22 @@ final plotNodeRepositoryProvider = FutureProvider<PlotNodeRepository>((
 final plotNodeNotifierProvider =
     AsyncNotifierProvider<PlotNodeNotifier, List<PlotNode>>(
       PlotNodeNotifier.new,
+    );
+
+/// Provides a [NodePositionRepository] backed by a Hive 'graph_positions' box.
+///
+/// Opens the box asynchronously, so consumers must await this provider.
+final nodePositionRepositoryProvider = FutureProvider<NodePositionRepository>((
+  ref,
+) async {
+  final box = await Hive.openBox<dynamic>('graph_positions');
+  return NodePositionRepository(box);
+});
+
+/// Provides a [NodePositionNotifier] for graph node position CRUD operations.
+final nodePositionNotifierProvider =
+    AsyncNotifierProvider<NodePositionNotifier, Map<String, Offset>>(
+      NodePositionNotifier.new,
     );
 
 /// Provides a [GuardianAnnotationRepository] backed by a Hive
