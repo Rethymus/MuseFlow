@@ -115,16 +115,28 @@ class _StoryArcGraphState extends ConsumerState<StoryArcGraph> {
           ),
         );
       }
+    }
 
-      for (final targetId in source.linkedForeshadowingIds) {
+    final nodesByForeshadowingId = <String, List<PlotNode>>{};
+    for (final node in nodes) {
+      for (final foreshadowingId in node.linkedForeshadowingIds) {
+        nodesByForeshadowingId
+            .putIfAbsent(foreshadowingId, () => <PlotNode>[])
+            .add(node);
+      }
+    }
+    for (final group in nodesByForeshadowingId.values) {
+      final sortedGroup = [...group]
+        ..sort((a, b) => a.chapter.compareTo(b.chapter));
+      for (var i = 0; i < sortedGroup.length - 1; i++) {
         _addTypedEdge(
           graph: graph,
           graphNodes: graphNodes,
           addedEdges: addedEdges,
           edgeTypes: edgeTypes,
-          sourceNode: sourceNode,
-          sourceId: source.id,
-          targetId: targetId,
+          sourceNode: graphNodes[sortedGroup[i].id]!,
+          sourceId: sortedGroup[i].id,
+          targetId: sortedGroup[i + 1].id,
           type: EdgeType.foreshadowing,
           paint: _edgePaint(Colors.amber.shade500, 1.5),
         );
