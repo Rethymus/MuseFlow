@@ -130,7 +130,8 @@ void main() {
       );
       expect(navRail.extended, isTrue);
 
-      // Labels should be visible for all destinations
+// Labels should be visible for all 6 destinations
+
       expect(find.text('捕捉器'), findsOneWidget);
       expect(find.text('编辑器'), findsOneWidget);
       expect(find.text('设置'), findsOneWidget);
@@ -181,11 +182,13 @@ void main() {
       // NavigationRail should NOT be present
       expect(find.byType(NavigationRail), findsNothing);
 
-      // NavigationBar should have 5 destinations with Chinese labels
+// NavigationBar should have 6 destinations with Chinese labels
+
       final navBar = tester.widget<NavigationBar>(
         find.byType(NavigationBar),
       );
-      expect(navBar.destinations.length, equals(5));
+expect(navBar.destinations.length, equals(6));
+
 
       // Labels should be visible in NavigationBar
       expect(find.text('捕捉器'), findsOneWidget);
@@ -197,7 +200,8 @@ void main() {
     });
 
     testWidgets(
-        'should have exactly 5 destinations with matching icons in both modes',
+'should have exactly 6 destinations with matching icons in both modes',
+
         (tester) async {
       // Test desktop mode
       tester.view.physicalSize = const Size(1200, 800);
@@ -209,7 +213,8 @@ void main() {
       final navRail = tester.widget<NavigationRail>(
         find.byType(NavigationRail),
       );
-      expect(navRail.destinations.length, equals(5));
+expect(navRail.destinations.length, equals(6));
+
 
       tester.view.resetPhysicalSize();
       tester.view.resetDevicePixelRatio();
@@ -224,7 +229,8 @@ void main() {
       final navBar = tester.widget<NavigationBar>(
         find.byType(NavigationBar),
       );
-      expect(navBar.destinations.length, equals(5));
+expect(navBar.destinations.length, equals(6));
+
 
       tester.view.resetPhysicalSize();
       tester.view.resetDevicePixelRatio();
