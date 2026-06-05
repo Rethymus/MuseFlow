@@ -36,12 +36,12 @@ Requirements for v1.1 创作体验升级 milestone. Each maps to roadmap phases.
 
 ### 故事弧可视化 (VIZO)
 
-- [ ] **VIZO-01**: 基于现有PlotNode数据自动生成交互式节点图（graphview库），支持缩放和平移
-- [ ] **VIZO-02**: 因果关系用有向实线连接，关联关系用灰色细线，伏笔关系用虚线标注
-- [ ] **VIZO-03**: 节点颜色按结构角色区分（铺垫/发展/转折/高潮/结局），边框样式按写作状态区分
-- [ ] **VIZO-04**: 点击节点可内联编辑标题、结构角色、写作状态
-- [ ] **VIZO-05**: 拖拽节点可重新排列位置，位置变化持久化
-- [ ] **VIZO-06**: 缩略图导航（Minimap）帮助在大图中快速定位
+- [x] **VIZO-01**: 基于现有PlotNode数据自动生成交互式节点图（graphview库），支持缩放和平移
+- [x] **VIZO-02**: 因果关系用有向实线连接，关联关系用灰色细线，伏笔关系用虚线标注
+- [x] **VIZO-03**: 节点颜色按结构角色区分（铺垫/发展/转折/高潮/结局），边框样式按写作状态区分
+- [x] **VIZO-04**: 点击节点可内联编辑标题、结构角色、写作状态
+- [x] **VIZO-05**: 拖拽节点可重新排列位置，位置变化持久化
+- [x] **VIZO-06**: 缩略图导航（Minimap）帮助在大图中快速定位
 
 ## v2 Requirements
 
@@ -107,12 +107,12 @@ Which phases cover which requirements. Updated during roadmap creation.
 | STAT-04 | Phase 9 | Pending |
 | STAT-05 | Phase 9 | Pending |
 | STAT-06 | Phase 9 | Pending |
-| VIZO-01 | Phase 10 | Pending |
-| VIZO-02 | Phase 10 | Pending |
-| VIZO-03 | Phase 10 | Pending |
-| VIZO-04 | Phase 10 | Pending |
-| VIZO-05 | Phase 10 | Pending |
-| VIZO-06 | Phase 10 | Pending |
+| VIZO-01 | Phase 10 | Complete |
+| VIZO-02 | Phase 10 | Complete |
+| VIZO-03 | Phase 10 | Complete |
+| VIZO-04 | Phase 10 | Complete |
+| VIZO-05 | Phase 10 | Complete |
+| VIZO-06 | Phase 10 | Complete |
 
 **Coverage:**
 - v1.1 requirements: 22 total
