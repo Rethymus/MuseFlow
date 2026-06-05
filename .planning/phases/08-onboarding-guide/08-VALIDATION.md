@@ -41,9 +41,13 @@ validated: 2026-06-05
 |---------|------|------|-------------|------------|-----------------|-----------|-------------------|-------------|--------|
 | 08-01-01 | 01 | 1 | ONBD-01 | — | N/A | unit | `flutter test test/features/onboarding/application/onboarding_redirect_test.dart` | ✅ present | ✅ green |
 | 08-01-02 | 01 | 1 | ONBD-06 | — | N/A | unit | `flutter test test/features/onboarding/application/onboarding_redirect_test.dart` | ✅ present | ✅ green |
+| 08-01-03 | 01 | 1 | ONBD-01 | — | N/A | unit | `flutter test test/features/onboarding/application/onboarding_provider_test.dart` | ✅ present | ✅ green |
 | 08-02-01 | 02 | 1 | ONBD-02 | — | N/A | widget | `flutter test test/features/onboarding/presentation/onboarding_wizard_test.dart` | ✅ present | ✅ green |
 | 08-02-02 | 02 | 1 | ONBD-02 | — | N/A | widget | `flutter test test/features/onboarding/presentation/onboarding_wizard_test.dart` | ✅ present | ✅ green |
 | 08-02-03 | 02 | 1 | ONBD-03 | — | N/A | unit | `flutter test test/features/onboarding/application/onboarding_progress_test.dart` | ✅ present | ✅ green |
+| 08-03-01 | 03 | 2 | ONBD-02 | — | Name required, max length 100 | widget | `flutter test test/features/onboarding/presentation/onboarding_wizard_test.dart` | ✅ present | ✅ green |
+| 08-03-02 | 03 | 2 | ONBD-02 | — | Name required, max length 50 | widget | `flutter test test/features/onboarding/presentation/onboarding_wizard_test.dart` | ✅ present | ✅ green |
+| 08-03-03 | 03 | 2 | ONBD-02 | — | Entity persistence via direct repository | widget | `flutter test test/features/onboarding/presentation/onboarding_wizard_test.dart` | ✅ present | ✅ green |
 | 08-04-01 | 04 | 3 | ONBD-04 | T-08-07, T-08-08, T-08-09 | Input length limit (500 chars), structured JSON parsing with graceful fallback, output truncation | unit | `flutter test test/features/onboarding/application/opening_generator_service_test.dart test/features/onboarding/domain/opening_variant_test.dart` | ✅ present | ✅ green |
 | 08-05-01 | 05 | 3 | ONBD-04 | — | N/A | widget | `flutter test test/features/onboarding/presentation/opening_variant_card_test.dart` | ✅ present | ✅ green |
 | 08-05-02 | 05 | 3 | ONBD-04 | T-08-10 | Concept input limited to 500 chars; generation uses provider override in test | widget | `flutter test test/features/onboarding/presentation/opening_step_page_test.dart` | ✅ present | ✅ green |
@@ -74,7 +78,29 @@ validated: 2026-06-05
 
 ---
 
-## Validation Audit 2026-06-05
+## Validation Audit 2026-06-05 (re-audit)
+
+Second Nyquist audit found 4 gaps in the Per-Task Verification Map:
+
+| Metric | Count |
+|--------|-------|
+| Gaps found | 4 |
+| Resolved | 4 |
+| Escalated | 0 |
+
+| Gap | Type | Resolution |
+|-----|------|------------|
+| 08-01-03 provider registration | MISSING → COVERED | New `onboarding_provider_test.dart` with 3 tests (provider creation, dependency chain, full contract) |
+| 08-03-01 WorldStepPage validation | DOCUMENTATION | Tests existed in `onboarding_wizard_test.dart` (4 tests); added to map |
+| 08-03-02 CharacterStepPage validation | DOCUMENTATION | Tests existed in `onboarding_wizard_test.dart` (4 tests); added to map |
+| 08-03-03 Entity creation integration | DOCUMENTATION | Tests existed in `onboarding_wizard_test.dart` (5 tests); added to map |
+
+- `flutter test test/features/onboarding/` — passed, 97 tests.
+- `flutter test test/features/editor/presentation/editor_toolbar_test.dart` — passed, 2 tests.
+
+---
+
+## Validation Audit 2026-06-05 (initial)
 
 Nyquist adversarial gap fill added direct behavioral coverage for all remaining Phase 8 UI gaps:
 
