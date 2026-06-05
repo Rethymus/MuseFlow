@@ -43,6 +43,12 @@ import 'package:museflow/features/stats/application/achievement_service.dart';
 import 'package:museflow/features/stats/domain/achievement_badge.dart';
 import 'package:museflow/features/stats/domain/stats_snapshot.dart';
 import 'package:museflow/features/stats/infrastructure/writing_stats_repository.dart';
+import 'package:museflow/features/manuscript/application/chapter_notifier.dart';
+import 'package:museflow/features/manuscript/application/manuscript_notifier.dart';
+import 'package:museflow/features/manuscript/infrastructure/chapter_repository.dart';
+import 'package:museflow/features/manuscript/infrastructure/manuscript_repository.dart';
+import 'package:museflow/features/manuscript/domain/manuscript.dart';
+import 'package:museflow/features/manuscript/domain/chapter.dart';
 import 'package:museflow/features/story_structure/application/foreshadowing_notifier.dart';
 import 'package:museflow/features/story_structure/application/foreshadowing_reminder_service.dart';
 import 'package:museflow/features/story_structure/application/guardian_check_service.dart';
@@ -605,3 +611,35 @@ Future<void> _dartIoFileWriter(String path, String content) async {
   final file = File(path);
   await file.writeAsString(content);
 }
+
+// ============================================================================
+// Manuscript & Chapter Providers
+// ============================================================================
+
+/// Provides a [ManuscriptRepository] backed by a Hive 'manuscripts' box.
+final manuscriptRepositoryProvider = FutureProvider<ManuscriptRepository>(
+  (ref) async {
+    final box = await Hive.openBox<dynamic>('manuscripts');
+    return ManuscriptRepository(box);
+  },
+);
+
+/// Provides a [ChapterRepository] backed by a Hive 'chapters' box.
+final chapterRepositoryProvider = FutureProvider<ChapterRepository>(
+  (ref) async {
+    final box = await Hive.openBox<dynamic>('chapters');
+    return ChapterRepository(box);
+  },
+);
+
+/// Provides a [ManuscriptNotifier] for manuscript CRUD operations.
+final manuscriptNotifierProvider =
+    AsyncNotifierProvider<ManuscriptNotifier, List<Manuscript>>(
+      ManuscriptNotifier.new,
+    );
+
+/// Provides a [ChapterNotifier] for chapter CRUD operations.
+final chapterNotifierProvider =
+    AsyncNotifierProvider<ChapterNotifier, List<Chapter>>(
+      ChapterNotifier.new,
+    );
