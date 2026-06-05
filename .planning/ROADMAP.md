@@ -132,14 +132,22 @@ Plans:
   4. User can tap a node to inline-edit its title, structural role, and writing status without leaving the graph view
   5. User can drag nodes to rearrange positions, with position changes persisted to storage; a minimap widget helps navigate large graphs
 
-**Plans**: TBD
+**Plans**: 3 executable plans created 2026-06-05
 **UI hint**: yes
 
 Plans:
 
-- [ ] 10-01: Graph data adapter (PlotNode → graphview model) and edge styling
-- [ ] 10-02: Interactive graph UI with zoom, pan, drag, and inline node editing
-- [ ] 10-03: Minimap navigation and position persistence
+**Wave 1**
+
+- [ ] 10-01: NodePosition data layer, graphview install, and semantic color utilities (wave 1)
+
+**Wave 2** *(blocked on Wave 1 completion)*
+
+- [ ] 10-02: Interactive graph UI with styled nodes/edges, inline editing, and tab integration (wave 2, depends on 10-01)
+
+**Wave 3** *(blocked on Wave 2 completion)*
+
+- [ ] 10-03: Node drag with position persistence and minimap overlay (wave 3, depends on 10-01, 10-02)
 
 ## Progress
 
