@@ -173,7 +173,7 @@ Plans:
 Plans:
 **Wave 1** *(foundation)*
 
-- [ ] 11-01: Domain entities (Manuscript, Chapter, Genre, ChapterExport) + Hive TypeAdapters + super_editor_markdown install (wave 1)
+- [x] 11-01: Domain entities (Manuscript, Chapter, Genre, ChapterExport) + Hive TypeAdapters + super_editor_markdown install (wave 1)
 
 **Wave 2** *(services)*
 
@@ -210,4 +210,4 @@ Note: Phases 9 and 10 are independent of each other (both depend only on v1.0). 
 | 8. 开篇引导 | v1.1 | 5/5 | Complete | 2026-06-04 |
 | 9. 写作数据统计 | v1.1 | 5/5 | Complete   | 2026-06-05 |
 | 10. 故事弧可视化 | v1.1 | 4/4 | Complete    | 2026-06-05 |
-| 11. 文稿库与章节管理 | v1.2 | 0/5 | Planning    | — |
+| 11. 文稿库与章节管理 | v1.2 | 1/5 | Executing   | 11-01 |
