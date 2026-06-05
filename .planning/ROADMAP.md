@@ -96,7 +96,7 @@ Plans:
   4. Achievement badges appear when milestones are reached (first 1K/10K/50K words, 7/30/100 consecutive writing days)
   5. User can clear all writing statistics from the settings page
 
-**Plans**: 4 plans (3 executable + 1 gap closure) created 2026-06-04/05
+**Plans**: 5 plans (4 executable + 1 gap closure) created 2026-06-04/05
 **UI hint**: yes
 
 Plans:
@@ -116,6 +116,8 @@ Plans:
 **Gap Closure** *(from VERIFICATION.md)*
 
 - [x] 09-04: Fix navigation destination count assertions (5 → 6) in test/app/ tests
+
+- [ ] 09-05: Fix navigation test router structure (add stats branch, update settings assertion)
 
 ### Phase 10: 故事弧可视化
 
