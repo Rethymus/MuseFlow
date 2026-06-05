@@ -36,36 +36,34 @@ Declared values (multiples of 4, matching existing codebase and Phase 08 UI-SPEC
 | Token | Value | Usage | Codebase Evidence |
 |-------|-------|-------|-------------------|
 | xs | 4px | Icon gaps, inline padding, tag vertical padding | Existing spacing pattern from Phase 08 |
-| sm | 8px | Compact element spacing, toolbar padding, button gaps | `EdgeInsets.symmetric(horizontal: 16, vertical: 8)` in capture_page.dart |
-| md | 16px | Default element spacing, page horizontal padding, card padding | `EdgeInsets.all(16)` in provider_card.dart, PlotNodeForm content spacing |
+| sm | 8px | Compact element spacing, toolbar padding, button gaps, compact form field spacing | `EdgeInsets.symmetric(horizontal: 16, vertical: 8)` in capture_page.dart |
+| md | 16px | Default element spacing, page horizontal padding, card padding, standard form field spacing | `EdgeInsets.all(16)` in provider_card.dart, PlotNodeForm content spacing |
 | lg | 24px | Section padding, icon sizes | `Icon(icon)` at default 24px; `SizedBox(height: 24)` in onboarding |
 | xl | 32px | Layout gaps, major section breaks | `SizedBox(height: 32)` in onboarding wizard |
 | 2xl | 48px | Major section breaks | Between sections in empty states |
 | 3xl | 64px | Page-level spacing | Empty state top margins |
 
 Exceptions:
-- 12px for form field vertical spacing (`const SizedBox(height: 12)` in PlotNodeForm) -- standard for form layouts
-- Card/tag border radius: 12px for cards, 4px for graph nodes (per D-03: rectangular nodes with 0-4px radius)
+- Form field vertical spacing uses `SizedBox(height: 16)` for standard separation in `NodeEditBottomSheet`; use `SizedBox(height: 8)` only inside compact inline groups.
+- Card/tag border radius: 12px for cards, 4px for graph nodes (per D-03: rectangular nodes with 0-4px radius).
 
 ---
 
 ## Typography
 
-Inherited from `app_theme.dart` comment and `GoogleFonts.notoSansScTextTheme()` (matching Phase 08):
+Inherited from `app_theme.dart` comment and `GoogleFonts.notoSansScTextTheme()` (matching Phase 08). Typography is constrained to 4 font sizes and 2 font weights only: w400 regular and w600 semibold.
 
 | Role | Size | Weight | Line Height | Usage |
 |------|------|--------|-------------|-------|
+| Label | 12px | w600 (semibold) | 1.3 | Chapter number badges, minimap labels, status indicators |
 | Body | 14px | w400 (regular) | 1.5 | Graph node title text, empty state descriptions, form labels |
-| Label | 12px | w500 (medium) | 1.3 | Chapter number badges, minimap labels, status indicators |
-| Heading | 20px | w600 (semi-bold) | 1.2 | Empty state headings, bottom sheet titles, tab labels |
-| Display | 28px | w700 (bold) | 1.2 | Page title "故事结构" (inherited from existing AppBar) |
-
-**Source:** `app_theme.dart` line 8 comment: "Typography follows UI-SPEC: body 14px w400, label 12px w500, heading 20px w600, display 28px w700."
+| Heading | 20px | w600 (semibold) | 1.2 | Empty state headings, bottom sheet titles, tab labels |
+| Display | 28px | w600 (semibold) | 1.2 | Page title "故事结构" (inherited from existing AppBar) |
 
 **Graph-specific typography (node builder):**
-- Node title: 14px w400, max 2 lines, ellipsis overflow (per D-01: node shows title)
-- Chapter badge: 10px w500, upper-right corner (per D-04: chapter number as badge)
-- Status icon: 16px (Material icon size) (per D-06: upper-right status icon)
+- Node title: 14px w400, max 2 lines, ellipsis overflow (per D-01: node shows title).
+- Chapter badge: 12px w600, upper-right corner (per D-04: chapter number as badge).
+- Status icon: Material icon only, not a text style; keep visually secondary to the 12px badge.
 
 ---
 
@@ -101,15 +99,15 @@ Accent reserved for:
 
 **Source:** CONTEXT.md D-05: "结构角色配色使用戏剧张力色调：铺垫=灰色、发展=绿色、转折=黄色、高潮=橙红、结局=深蓝。符合戏剧张力曲线。"
 
-**Writing Status Border Colors:**
+**Writing Status Border Colors and Styles:**
 | Status | Border Color | Border Style | Icon |
 |--------|--------------|---------------|------|
-| Not Started (未写) | `Color(0xFF6B7280)` (gray) | Solid 2px | `Icons.circle_outlined` |
+| Not Started (未写) | `Color(0xFF6B7280)` (gray) | Dashed 2px | `Icons.circle_outlined` |
 | Drafting (草稿) | `Color(0xFF3B82F6)` (blue) | Solid 2px | `Icons.edit` |
-| Complete (完成) | `Color(0xFF10B981)` (green) | Solid 2px | `Icons.check_circle` |
-| Needs Revision (待改) | `Color(0xFFF59E0B)` (amber) | Solid 2px | `Icons.warning` |
+| Complete (完成) | `Color(0xFF10B981)` (green) | Solid 2px plus check icon | `Icons.check_circle` |
+| Needs Revision (待改) | `Color(0xFFF59E0B)` (amber) | Dotted 2px plus warning icon | `Icons.warning` |
 
-**Source:** CONTEXT.md D-06: "写作状态通过边框 + 图标结合表示。边框样式区分状态，右上角状态图标辅助传达。"
+**Source:** CONTEXT.md D-06: "写作状态通过边框 + 图标结合表示。边框样式区分状态，右上角状态图标辅助传达。" Border style must distinguish status; color and icon are supporting cues.
 
 **Edge Colors (per CONTEXT.md D-09 through D-12):**
 | Edge Type | Color | Stroke Width | Style | Arrow | Marker |
@@ -124,13 +122,15 @@ Accent reserved for:
 
 ## Copywriting Contract
 
-All copy in Simplified Chinese, consistent with existing UI and PlotNodeForm labels.
+All copy in Simplified Chinese, consistent with existing UI and PlotNodeForm labels. CTA labels must use action-specific verb + object wording.
 
 | Element | Copy |
 |---------|------|
 | Primary CTA (graph tab) | "弧线图" (Story Arc Graph) |
 | Primary CTA (create node) | "创建第一个节点" (Create first node) - empty state button |
-| Primary CTA (save node) | "保存" (Save) - bottom sheet action |
+| Primary CTA (save node) | "保存节点" (Save node) - bottom sheet action for new nodes |
+| Primary CTA (save edits) | "保存修改" (Save changes) - bottom sheet action for existing nodes |
+| Dismiss unsaved changes | "放弃修改" (Discard changes) - bottom sheet cancel action when fields are dirty |
 | Empty state heading | "暂无剧情节点" (No plot nodes yet) |
 | Empty state body | "创建情节点来可视化你的故事弧线结构" (Create plot nodes to visualize your story arc structure) |
 | Error state (no nodes) | Same as empty state - graph shows empty state illustration |
@@ -140,13 +140,13 @@ All copy in Simplified Chinese, consistent with existing UI and PlotNodeForm lab
 | Form field labels (reuse PlotNodeForm) | "标题" (Title), "章节号" (Chapter), "摘要" (Summary), "结构角色" (Structural Role), "写作状态" (Writing Status) |
 | Structural role labels (reuse PlotNodeForm) | "铺垫" (Setup), "发展" (Development), "转折" (Turn), "高潮" (Climax), "收束" (Resolution) |
 | Writing status labels (reuse PlotNodeForm) | "未写" (Not Started), "草稿" (Drafting), "完成" (Complete), "待改" (Needs Revision) |
-| Minimap label | None (minimap is visual-only, no text labels) |
+| Minimap label | None (minimap is visual-only, no visible text labels) |
 | Tab label (new tab) | "弧线图" (Story Arc Graph) - added to existing TabBar |
 
 **Source:** Empty state copy from CONTEXT.md D-16: "空状态显示'暂无剧情节点'插图和'创建第一个节点'按钮". Form labels reuse existing PlotNodeForm `_roleLabel()` and `_statusLabel()` functions.
 
 **Destructive actions:**
-- **Delete node** (from bottom sheet): "删除" button → confirmation dialog "确定要删除节点'{title}'吗？" (Are you sure you want to delete node '{title'?)
+- **Delete node** (from bottom sheet): "删除节点" button → confirmation dialog "确定要删除节点“{title}”吗？此操作无法撤销。" (Are you sure you want to delete node "{title}"? This cannot be undone.)
 - **Clear all positions** (from settings, future): "清除所有节点位置" → "清除后节点将恢复默认布局，确定清除？" (This will reset all node positions, confirm?)
 
 ---
@@ -207,9 +207,11 @@ All copy in Simplified Chinese, consistent with existing UI and PlotNodeForm lab
 | Interaction | Behavior |
 |-------------|----------|
 | Tap node | Open `NodeEditBottomSheet` via `showModalBottomSheet(isScrollControlled: true)` |
-| Bottom sheet swipe down | Close bottom sheet, discard unsaved changes |
-| "保存" button | Validate fields → call `PlotNodeNotifier.save()` → close sheet |
-| "取消" button | Close bottom sheet, discard changes |
+| Bottom sheet swipe down with no changes | Close bottom sheet |
+| Bottom sheet swipe down with unsaved changes | Show discard confirmation; confirmation CTA is "放弃修改" |
+| "保存节点" button | Validate fields → call `PlotNodeNotifier.save()` → close sheet |
+| "保存修改" button | Validate fields → call `PlotNodeNotifier.save()` → close sheet |
+| "放弃修改" button | Close bottom sheet and discard local changes |
 | Form field change | Update local state, no auto-save |
 
 **Source:** CONTEXT.md D-13: "点击节点弹出底部表单（BottomSheet）进行编辑。符合Flutter移动端习惯。"
@@ -304,11 +306,11 @@ All copy in Simplified Chinese, consistent with existing UI and PlotNodeForm lab
 ```
 +----------------------------+
 |  标题文本 (14px w400)      |  <- Title, max 2 lines, ellipsis
-|  [Ch1]                     |  <- Chapter badge (10px w500), upper-right
+|  [Ch1]                     |  <- Chapter badge (12px w600), upper-right
 |                            |  <- Background color by structural role
-|  [✓]                       |  <- Status icon (16px), upper-right
+|  [✓]                       |  <- Status icon, upper-right
 +----------------------------+
-  ^^^^^^^^^^                  <- Border 2px by writing status
+  ^^^^^^^^^^                  <- Border 2px by writing status; style is dashed/solid/dotted per status
 ```
 
 **Node dimensions (per CONTEXT.md D-01, D-02):**
@@ -323,7 +325,7 @@ All copy in Simplified Chinese, consistent with existing UI and PlotNodeForm lab
 - Chapter badge positioned at `top: 4, right: 4` (D-04: "章节号在右上角")
 - Status icon positioned at `top: 4, right: 24` (D-06: "右上角状态图标")
 - Background color from `GraphColor.forRole(structuralRole)`
-- Border from `Border.all(color: GraphStatus.borderColor(writingStatus), width: 2)`
+- Border from `GraphStatus.borderColor(writingStatus)` and `GraphStatus.borderPattern(writingStatus)` using 2px dashed/solid/dotted styling per writing status
 
 ### NodeEditBottomSheet (Bottom Sheet Form)
 
@@ -355,15 +357,16 @@ All copy in Simplified Chinese, consistent with existing UI and PlotNodeForm lab
 |  | 写作状态 ▼               |   |  <- DropdownFormField
 |  +--------------------------------------------+   |
 |                                                    |
-|  [取消]                           [保存]          |  <- Bottom action bar
+|  [放弃修改]                       [保存修改]      |  <- Bottom action bar for edit mode
+|  [放弃修改]                       [保存节点]      |  <- Bottom action bar for create mode
 +--------------------------------------------------+
 ```
 
 **Bottom sheet specs:**
 - `showModalBottomSheet(isScrollControlled: true, shape: RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(16))))`
 - Padding: `EdgeInsets.fromLTRB(16, 8, 16, 16)` + `MediaQuery.of(context).viewInsets.bottom` for keyboard
-- Field spacing: `SizedBox(height: 12)` between fields (reuse PlotNodeForm pattern)
-- Action buttons: `TextButton` (取消) + `FilledButton` (保存)
+- Field spacing: `SizedBox(height: 16)` between fields; use `SizedBox(height: 8)` only inside compact inline groups
+- Action buttons: `TextButton` (放弃修改) + `FilledButton` (保存节点 or 保存修改)
 
 ### StoryArcMinimap (Minimap Overlay)
 
@@ -456,7 +459,7 @@ All copy in Simplified Chinese, consistent with existing UI and PlotNodeForm lab
 | Form validation errors | `SnackBar` with `Semantics` live region for screen readers |
 | Minimap (visual-only) | `Semantics(label: '故事弧缩略图，当前视口已高亮')` for context, no interactive elements |
 | Empty state | `Semantics` wrapper with live region announcing "暂无剧情节点" |
-| Color-only indicators (node colors) | Node has text label (title) + icon (status) + border (status) -- not color-dependent |
+| Color-only indicators (node colors) | Node has text label (title) + icon (status) + border style (status) -- not color-dependent |
 | Edge type distinction | Edge styles use pattern (solid/dashed), thickness, and arrow presence -- not color-dependent |
 
 ---
@@ -481,7 +484,7 @@ All copy in Simplified Chinese, consistent with existing UI and PlotNodeForm lab
 | **CONTEXT.md (Phase 10)** | 16 locked decisions (D-01 through D-16): node component design, color scheme, edge styles, editing UI, storage approach, empty state |
 | **RESEARCH.md (Phase 10)** | Graphview library choice, architecture patterns, edge rendering approach, node drag pattern, minimap implementation |
 | **REQUIREMENTS.md** | VIZO-01 through VIZO-06 requirements for graph functionality |
-| **app_theme.dart** | Material 3 dark indigo theme, Noto Sans SC font, typography scale (body 14, label 12, heading 20, display 28) |
+| **app_theme.dart** | Material 3 dark indigo theme, Noto Sans SC font, typography scale constrained here to 12/14/20/28 and w400/w600 |
 | **Phase 08 UI-SPEC** | Spacing scale (8-point scale), color usage patterns (60/30/10 split), interaction patterns from onboarding |
 | **PlotNode entity** | Enum types (PlotNodeWritingStatus, PlotNodeStructuralRole), field definitions, relationship lists |
 | **PlotNodeForm** | Form field labels, dropdown options, validation patterns, `_roleLabel()` and `_statusLabel()` label functions |
