@@ -19,23 +19,21 @@ void main() {
       adapter.dispose();
     });
 
-    test('should return list of model IDs for a valid endpoint', () async {
-      // This test uses a real endpoint that may or may not be reachable.
-      // The contract is: returns List<String> on success, empty list on failure.
+    test('should return a list type when provider fetch fails', () async {
+      // No live network or API key is required for validation. The automated
+      // contract is that unsupported/unreachable endpoints fall back silently.
       final models = await adapter.fetchModelList(
         apiKey: 'test-key',
-        baseUrl: 'https://httpbin.org',
+        baseUrl: 'not-a-valid-url',
       );
-      // httpbin.org is not an OpenAI endpoint, so it should return empty list
-      // (silent fallback per D-08)
       expect(models, isA<List<String>>());
+      expect(models, isEmpty);
     });
 
     test('should return empty list on any error (silent fallback)', () async {
-      // Invalid URL that will fail
       final models = await adapter.fetchModelList(
         apiKey: 'invalid-key',
-        baseUrl: 'https://invalid.nonexistent.domain.example/v1',
+        baseUrl: 'http://127.0.0.1:1/v1',
       );
       expect(models, isEmpty);
     });

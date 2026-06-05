@@ -51,6 +51,22 @@ class _TestSettingsPage extends StatelessWidget {
       const Scaffold(body: Center(child: Text('TEST_SETTINGS')));
 }
 
+class _TestKnowledgePage extends StatelessWidget {
+  const _TestKnowledgePage();
+
+  @override
+  Widget build(BuildContext context) =>
+      const Scaffold(body: Center(child: Text('TEST_KNOWLEDGE')));
+}
+
+class _TestStoryStructurePage extends StatelessWidget {
+  const _TestStoryStructurePage();
+
+  @override
+  Widget build(BuildContext context) =>
+      const Scaffold(body: Center(child: Text('TEST_STORY_STRUCTURE')));
+}
+
 /// Creates a test router with the same shell structure as the real app,
 /// but with simple placeholder pages instead of SuperEditor.
 GoRouter _createTestRouter() {
@@ -81,6 +97,22 @@ GoRouter _createTestRouter() {
           StatefulShellBranch(
             routes: [
               GoRoute(
+                path: AppConstants.knowledge,
+                builder: (context, state) => const _TestKnowledgePage(),
+              ),
+            ],
+          ),
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: AppConstants.storyStructure,
+                builder: (context, state) => const _TestStoryStructurePage(),
+              ),
+            ],
+          ),
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
                 path: AppConstants.settings,
                 builder: (context, state) => const _TestSettingsPage(),
               ),
@@ -102,7 +134,7 @@ Widget _createTestApp() {
 
 void main() {
   group('Navigation Destinations', () {
-    testWidgets('should render 3 destinations with correct Chinese labels',
+    testWidgets('should render destinations with correct Chinese labels',
         (tester) async {
       tester.view.physicalSize = const Size(1200, 800);
       tester.view.devicePixelRatio = 1.0;
@@ -110,9 +142,10 @@ void main() {
       await tester.pumpWidget(_createTestApp());
       await tester.pumpAndSettle();
 
-      // All 3 labels should be visible in extended NavigationRail
       expect(find.text('捕捉器'), findsOneWidget);
       expect(find.text('编辑器'), findsOneWidget);
+      expect(find.text('知识库'), findsOneWidget);
+      expect(find.text('故事结构'), findsOneWidget);
       expect(find.text('设置'), findsOneWidget);
 
       tester.view.resetPhysicalSize();
@@ -179,11 +212,11 @@ void main() {
       // Should show settings content
       expect(find.text('TEST_SETTINGS'), findsOneWidget);
 
-      // NavigationRail should show index 2 selected
+      // NavigationRail should show settings branch selected.
       final navRail = tester.widget<NavigationRail>(
         find.byType(NavigationRail),
       );
-      expect(navRail.selectedIndex, equals(2));
+      expect(navRail.selectedIndex, equals(4));
 
       tester.view.resetPhysicalSize();
       tester.view.resetDevicePixelRatio();

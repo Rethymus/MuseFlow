@@ -35,6 +35,7 @@ class CharacterCard implements KnowledgeEntity {
     this.updatedAt,
   }) {
     // T-04-01: Validate field lengths at domain layer
+    _validateNameText(name, 'name');
     if (name.length > 100) {
       throw ArgumentError.value(
         name,
@@ -72,6 +73,7 @@ class CharacterCard implements KnowledgeEntity {
       );
     }
     for (var i = 0; i < aliases.length; i++) {
+      _validateNameText(aliases[i], 'aliases[$i]');
       if (aliases[i].length > 50) {
         throw ArgumentError.value(
           aliases[i],
@@ -194,5 +196,19 @@ class CharacterCard implements KnowledgeEntity {
       if (a[i] != b[i]) return false;
     }
     return true;
+  }
+
+  static void _validateNameText(String value, String fieldName) {
+    if (_containsControlCharacter(value)) {
+      throw ArgumentError.value(
+        value,
+        fieldName,
+        'Must not contain control characters',
+      );
+    }
+  }
+
+  static bool _containsControlCharacter(String value) {
+    return value.runes.any((rune) => rune < 0x20 || rune == 0x7f);
   }
 }

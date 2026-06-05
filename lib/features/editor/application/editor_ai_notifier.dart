@@ -11,15 +11,15 @@
 /// Follows the same pattern as [SynthesisNotifier] for consistency.
 library;
 
+import 'dart:async';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:museflow/core/presentation/providers.dart';
 import 'package:museflow/features/ai/application/prompt_pipeline.dart';
 import 'package:museflow/features/ai/domain/ai_exception.dart';
 import 'package:museflow/features/ai/domain/ai_provider.dart';
 import 'package:museflow/features/ai/presentation/banned_phrase_settings.dart';
-import 'package:museflow/features/ai/presentation/synthesis_notifier.dart';
 import 'package:museflow/features/editor/application/diff_calculator.dart';
-import 'package:museflow/features/editor/application/editor_prompt_pipeline.dart';
 import 'package:museflow/features/editor/domain/diff_state.dart';
 import 'package:museflow/features/editor/domain/editor_ai_state.dart';
 import 'package:museflow/features/editor/infrastructure/provenance_attribution.dart';
@@ -113,7 +113,8 @@ class EditorAINotifier extends Notifier<EditorAIState> {
     }
 
     // Build prompt via editor pipeline
-    final pipeline = EditorPromptPipeline();
+    final pipeline =
+        await ref.read(editorPromptPipelineProvider.future);
     final bannedPhrases = await _getBannedPhrases();
 
     // D-15: Inject active anchors into the prompt context
@@ -194,6 +195,14 @@ class EditorAINotifier extends Notifier<EditorAIState> {
 
     // D-12: Clear one-time anchors after AI operation completes
     ref.read(contextAnchorNotifierProvider.notifier).clearOneTime();
+
+    // Phase 4: advisory consistency warnings for active skill constraints.
+    unawaited(
+      ref
+          .read(deviationNotifierProvider.notifier)
+          .checkDeviations(result.processedText)
+          .catchError((_) {}),
+    );
   }
 
   /// Accepts a single sentence diff at [index].

@@ -51,9 +51,12 @@ dependencies:
   connectivity_plus: ^7.0.0
   json_annotation: ^4.12.0
   follow_the_leader: ^0.5.3
+  fl_chart: ^1.2.0
 
 dev_dependencies:
   flutter_test:
+    sdk: flutter
+  integration_test:
     sdk: flutter
 
   flutter_lints: ^6.0.0
@@ -65,3 +68,5 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
+  assets:
+    - assets/templates/world_presets/templates_zh.json

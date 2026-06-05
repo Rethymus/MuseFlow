@@ -53,27 +53,38 @@ class _KnowledgeBasePageState extends ConsumerState<KnowledgeBasePage>
         children: [
           Padding(
             padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
-            child: TextField(
-              controller: _searchController,
-              decoration: InputDecoration(
-                hintText: '搜索名称或别名...',
-                prefixIcon: const Icon(Icons.search),
-                suffixIcon: _searchQuery.isNotEmpty
-                    ? IconButton(
-                        icon: const Icon(Icons.clear),
-                        onPressed: () {
-                          _searchController.clear();
-                          setState(() => _searchQuery = '');
-                        },
-                      )
-                    : null,
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                OutlinedButton.icon(
+                  onPressed: () => context.go(AppConstants.knowledgeTemplates),
+                  icon: const Icon(Icons.auto_awesome),
+                  label: const Text('模板库'),
                 ),
-                contentPadding: const EdgeInsets.symmetric(horizontal: 16),
-                isDense: true,
-              ),
-              onChanged: (value) => setState(() => _searchQuery = value),
+                const SizedBox(height: 8),
+                TextField(
+                  controller: _searchController,
+                  decoration: InputDecoration(
+                    hintText: '搜索名称或别名...',
+                    prefixIcon: const Icon(Icons.search),
+                    suffixIcon: _searchQuery.isNotEmpty
+                        ? IconButton(
+                            icon: const Icon(Icons.clear),
+                            onPressed: () {
+                              _searchController.clear();
+                              setState(() => _searchQuery = '');
+                            },
+                          )
+                        : null,
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    contentPadding: const EdgeInsets.symmetric(horizontal: 16),
+                    isDense: true,
+                  ),
+                  onChanged: (value) => setState(() => _searchQuery = value),
+                ),
+              ],
             ),
           ),
           Expanded(
@@ -134,8 +145,8 @@ class _CharacterCardList extends ConsumerWidget {
         final filtered = searchQuery.isEmpty
             ? cards
             : ref
-                    .read(characterCardNotifierProvider.notifier)
-                    .searchByName(searchQuery);
+                  .read(characterCardNotifierProvider.notifier)
+                  .searchByName(searchQuery);
 
         if (filtered.isEmpty) {
           return Center(
@@ -143,8 +154,8 @@ class _CharacterCardList extends ConsumerWidget {
               searchQuery.isEmpty ? '暂无角色卡\n点击 + 创建' : '未找到匹配的角色卡',
               textAlign: TextAlign.center,
               style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                    color: Theme.of(context).colorScheme.outline,
-                  ),
+                color: Theme.of(context).colorScheme.outline,
+              ),
             ),
           );
         }
@@ -237,8 +248,8 @@ class _WorldSettingList extends ConsumerWidget {
         final filtered = searchQuery.isEmpty
             ? settings
             : ref
-                    .read(worldSettingNotifierProvider.notifier)
-                    .searchByName(searchQuery);
+                  .read(worldSettingNotifierProvider.notifier)
+                  .searchByName(searchQuery);
 
         if (filtered.isEmpty) {
           return Center(
@@ -246,8 +257,8 @@ class _WorldSettingList extends ConsumerWidget {
               searchQuery.isEmpty ? '暂无世界观\n点击 + 创建' : '未找到匹配的世界观',
               textAlign: TextAlign.center,
               style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                    color: Theme.of(context).colorScheme.outline,
-                  ),
+                color: Theme.of(context).colorScheme.outline,
+              ),
             ),
           );
         }
@@ -301,7 +312,9 @@ class _WorldSettingTile extends ConsumerWidget {
           TextButton(
             onPressed: () {
               Navigator.of(ctx).pop();
-              ref.read(worldSettingNotifierProvider.notifier).delete(setting.id);
+              ref
+                  .read(worldSettingNotifierProvider.notifier)
+                  .delete(setting.id);
             },
             child: const Text('删除'),
           ),

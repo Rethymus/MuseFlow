@@ -14,7 +14,12 @@ import 'package:museflow/features/knowledge/presentation/skill_list_page.dart';
 import 'package:museflow/features/knowledge/presentation/world_setting_form.dart';
 import 'package:museflow/features/onboarding/presentation/onboarding_wizard_page.dart';
 import 'package:museflow/features/settings/presentation/settings_page.dart';
+import 'package:museflow/features/stats/presentation/project_stats_page.dart';
+import 'package:museflow/features/stats/presentation/writing_stats_page.dart';
 import 'package:museflow/features/story_structure/presentation/story_structure_page.dart';
+import 'package:museflow/features/templates/presentation/template_draft_page.dart';
+import 'package:museflow/features/templates/presentation/template_gallery_page.dart';
+import 'package:museflow/features/templates/presentation/template_preview_page.dart';
 import 'package:museflow/shared/constants/app_constants.dart';
 import 'package:museflow/shared/theme/app_theme.dart';
 
@@ -80,8 +85,7 @@ class MuseFlowApp extends ConsumerWidget {
                   routes: [
                     GoRoute(
                       path: 'character/new',
-                      builder: (context, state) =>
-                          const CharacterCardForm(),
+                      builder: (context, state) => const CharacterCardForm(),
                     ),
                     GoRoute(
                       path: 'character/:id',
@@ -92,8 +96,7 @@ class MuseFlowApp extends ConsumerWidget {
                     ),
                     GoRoute(
                       path: 'setting/new',
-                      builder: (context, state) =>
-                          const WorldSettingForm(),
+                      builder: (context, state) => const WorldSettingForm(),
                     ),
                     GoRoute(
                       path: 'setting/:id',
@@ -108,7 +111,31 @@ class MuseFlowApp extends ConsumerWidget {
                     ),
                     GoRoute(
                       path: 'skills/new',
-                      builder: (context, state) => const SkillGenerationWizard(),
+                      builder: (context, state) =>
+                          const SkillGenerationWizard(),
+                    ),
+                    GoRoute(
+                      path: 'templates',
+                      builder: (context, state) => const TemplateGalleryPage(),
+                    ),
+                    GoRoute(
+                      path: 'templates/:id/draft',
+                      builder: (context, state) {
+                        final id = state.pathParameters['id'];
+                        final concept =
+                            state.uri.queryParameters['concept'] ?? '';
+                        return TemplateDraftPage(
+                          templateId: id,
+                          initialConcept: concept,
+                        );
+                      },
+                    ),
+                    GoRoute(
+                      path: 'templates/:id',
+                      builder: (context, state) {
+                        final id = state.pathParameters['id'];
+                        return TemplatePreviewPage(templateId: id);
+                      },
                     ),
                   ],
                 ),
@@ -124,6 +151,21 @@ class MuseFlowApp extends ConsumerWidget {
               ],
             ),
             // Branch 4: Settings (with AI providers sub-route)
+            StatefulShellBranch(
+              routes: [
+                GoRoute(
+                  path: AppConstants.stats,
+                  builder: (context, state) => const WritingStatsPage(),
+                  routes: [
+                    GoRoute(
+                      path: 'project',
+                      builder: (context, state) => const ProjectStatsPage(),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+            // Branch 5: Settings (with AI providers sub-route)
             StatefulShellBranch(
               routes: [
                 GoRoute(

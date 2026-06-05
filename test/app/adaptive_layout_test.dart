@@ -38,6 +38,14 @@ class _TestKnowledgePage extends StatelessWidget {
       const Scaffold(body: Center(child: Text('TEST_KNOWLEDGE')));
 }
 
+class _TestStoryStructurePage extends StatelessWidget {
+  const _TestStoryStructurePage();
+
+  @override
+  Widget build(BuildContext context) =>
+      const Scaffold(body: Center(child: Text('TEST_STORY_STRUCTURE')));
+}
+
 /// Creates a test router with the same shell structure as the real app.
 GoRouter _createTestRouter() {
   return GoRouter(
@@ -67,16 +75,24 @@ GoRouter _createTestRouter() {
           StatefulShellBranch(
             routes: [
               GoRoute(
-                path: AppConstants.settings,
-                builder: (context, state) => const _TestSettingsPage(),
+                path: AppConstants.knowledge,
+                builder: (context, state) => const _TestKnowledgePage(),
               ),
             ],
           ),
           StatefulShellBranch(
             routes: [
               GoRoute(
-                path: AppConstants.knowledge,
-                builder: (context, state) => const _TestKnowledgePage(),
+                path: AppConstants.storyStructure,
+                builder: (context, state) => const _TestStoryStructurePage(),
+              ),
+            ],
+          ),
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: AppConstants.settings,
+                builder: (context, state) => const _TestSettingsPage(),
               ),
             ],
           ),
@@ -114,11 +130,12 @@ void main() {
       );
       expect(navRail.extended, isTrue);
 
-      // Labels should be visible for all 4 destinations
+      // Labels should be visible for all destinations
       expect(find.text('捕捉器'), findsOneWidget);
       expect(find.text('编辑器'), findsOneWidget);
       expect(find.text('设置'), findsOneWidget);
       expect(find.text('知识库'), findsOneWidget);
+      expect(find.text('故事结构'), findsOneWidget);
 
       tester.view.resetPhysicalSize();
       tester.view.resetDevicePixelRatio();
@@ -164,11 +181,11 @@ void main() {
       // NavigationRail should NOT be present
       expect(find.byType(NavigationRail), findsNothing);
 
-      // NavigationBar should have 4 destinations with Chinese labels
+      // NavigationBar should have 5 destinations with Chinese labels
       final navBar = tester.widget<NavigationBar>(
         find.byType(NavigationBar),
       );
-      expect(navBar.destinations.length, equals(4));
+      expect(navBar.destinations.length, equals(5));
 
       // Labels should be visible in NavigationBar
       expect(find.text('捕捉器'), findsOneWidget);
@@ -180,7 +197,7 @@ void main() {
     });
 
     testWidgets(
-        'should have exactly 4 destinations with matching icons in both modes',
+        'should have exactly 5 destinations with matching icons in both modes',
         (tester) async {
       // Test desktop mode
       tester.view.physicalSize = const Size(1200, 800);
@@ -192,7 +209,7 @@ void main() {
       final navRail = tester.widget<NavigationRail>(
         find.byType(NavigationRail),
       );
-      expect(navRail.destinations.length, equals(4));
+      expect(navRail.destinations.length, equals(5));
 
       tester.view.resetPhysicalSize();
       tester.view.resetDevicePixelRatio();
@@ -207,7 +224,7 @@ void main() {
       final navBar = tester.widget<NavigationBar>(
         find.byType(NavigationBar),
       );
-      expect(navBar.destinations.length, equals(4));
+      expect(navBar.destinations.length, equals(5));
 
       tester.view.resetPhysicalSize();
       tester.view.resetDevicePixelRatio();

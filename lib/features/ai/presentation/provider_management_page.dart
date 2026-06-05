@@ -6,6 +6,7 @@ import 'package:museflow/features/ai/infrastructure/preset_providers.dart';
 import 'package:museflow/features/ai/presentation/parameter_validation.dart';
 import 'package:museflow/features/ai/presentation/provider_card.dart';
 import 'package:museflow/features/ai/presentation/provider_management_notifier.dart';
+import 'package:museflow/shared/constants/app_constants.dart';
 
 /// AI Provider management settings page.
 ///
@@ -34,6 +35,7 @@ class _ProviderManagementPageState
   AiProviderType _selectedType = AiProviderType.custom;
   bool _obscureApiKey = true;
   bool _isEditing = false;
+  bool _showList = true;
   String? _editingProviderId;
 
   @override
@@ -60,7 +62,7 @@ class _ProviderManagementPageState
     super.dispose();
   }
 
-  void _clearForm() {
+  void _clearForm({bool showListOnNarrow = false}) {
     _nameController.clear();
     _baseUrlController.clear();
     _apiKeyController.clear();
@@ -73,6 +75,7 @@ class _ProviderManagementPageState
       _isEditing = false;
       _editingProviderId = null;
       _obscureApiKey = true;
+      _showList = showListOnNarrow;
     });
     ref.read(providerManagementProvider.notifier).clearSelection();
   }
@@ -90,6 +93,7 @@ class _ProviderManagementPageState
       _selectedType = preset.type;
       _isEditing = false;
       _editingProviderId = null;
+      _showList = false;
     });
     ref.read(providerManagementProvider.notifier).startFromPreset(preset);
   }
@@ -99,14 +103,14 @@ class _ProviderManagementPageState
     _baseUrlController.text = provider.baseUrl;
     _modelController.text = provider.model;
     // Convert nullable params to text: null -> empty, non-null -> string
-    _temperatureController.text =
-        provider.temperature?.toString() ?? '';
+    _temperatureController.text = provider.temperature?.toString() ?? '';
     _topPController.text = provider.topP?.toString() ?? '';
     _maxTokensController.text = provider.maxTokens?.toString() ?? '';
     setState(() {
       _selectedType = provider.type;
       _isEditing = true;
       _editingProviderId = provider.id;
+      _showList = false;
     });
     // Load API key from secure storage
     final service = ref.read(providerServiceProvider).asData?.value;
@@ -133,9 +137,9 @@ class _ProviderManagementPageState
 
   Future<void> _handleSave() async {
     if (!_validateForm()) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('请填写所有必填字段')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('请填写所有必填字段')));
       return;
     }
 
@@ -233,7 +237,7 @@ class _ProviderManagementPageState
     );
     if (confirmed == true) {
       await ref.read(providerManagementProvider.notifier).deleteProvider(id);
-      _clearForm();
+      _clearForm(showListOnNarrow: true);
     }
   }
 
@@ -252,20 +256,75 @@ class _ProviderManagementPageState
       ),
       body: mgmtState.isLoading
           ? const Center(child: CircularProgressIndicator())
-          : Row(
-              children: [
-                // Left panel: Provider list
-                SizedBox(
-                  width: 300,
-                  child: _buildLeftPanel(context, mgmtState, presets),
-                ),
-                const VerticalDivider(width: 1),
-                // Right panel: Configuration form
-                Expanded(
-                  child: _buildRightPanel(context, mgmtState),
-                ),
-              ],
+          : LayoutBuilder(
+              builder: (context, constraints) {
+                final isNarrow =
+                    constraints.maxWidth <
+                    AppConstants.sidebarCollapsedBreakpoint;
+
+                if (isNarrow) {
+                  return Column(
+                    children: [
+                      _buildMobileSwitcher(context, mgmtState),
+                      Expanded(
+                        child: AnimatedSwitcher(
+                          duration: const Duration(milliseconds: 180),
+                          child: _showList
+                              ? _buildLeftPanel(context, mgmtState, presets)
+                              : _buildRightPanel(context, mgmtState),
+                        ),
+                      ),
+                    ],
+                  );
+                }
+
+                return Row(
+                  children: [
+                    SizedBox(
+                      width: 300,
+                      child: _buildLeftPanel(context, mgmtState, presets),
+                    ),
+                    const VerticalDivider(width: 1),
+                    Expanded(child: _buildRightPanel(context, mgmtState)),
+                  ],
+                );
+              },
             ),
+    );
+  }
+
+  Widget _buildMobileSwitcher(
+    BuildContext context,
+    ProviderManagementState mgmtState,
+  ) {
+    final theme = Theme.of(context);
+
+    return Material(
+      color: theme.colorScheme.surface,
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(8, 8, 8, 4),
+        child: Row(
+          children: [
+            TextButton.icon(
+              onPressed: () => setState(() => _showList = true),
+              icon: const Icon(Icons.arrow_back),
+              label: const Text('返回列表'),
+            ),
+            const Spacer(),
+            if (_showList)
+              FilledButton.tonalIcon(
+                onPressed: () => _clearForm(),
+                icon: const Icon(Icons.add),
+                label: const Text('新建'),
+              )
+            else
+              Text(
+                mgmtState.selectedProvider?.name ?? '模型配置',
+                style: theme.textTheme.labelLarge,
+              ),
+          ],
+        ),
+      ),
     );
   }
 
@@ -290,13 +349,15 @@ class _ProviderManagementPageState
             ),
           ),
         ),
-        ...presets.map((preset) => Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-              child: ProviderCard(
-                provider: preset,
-                onTap: () => _fillFromPreset(preset),
-              ),
-            )),
+        ...presets.map(
+          (preset) => Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+            child: ProviderCard(
+              provider: preset,
+              onTap: () => _fillFromPreset(preset),
+            ),
+          ),
+        ),
         // Custom provider option
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
@@ -311,7 +372,10 @@ class _ProviderManagementPageState
             ),
             onTap: () {
               _clearForm();
-              setState(() => _selectedType = AiProviderType.custom);
+              setState(() {
+                _selectedType = AiProviderType.custom;
+                _showList = false;
+              });
             },
           ),
         ),
@@ -357,19 +421,20 @@ class _ProviderManagementPageState
                       return ListTile(
                         dense: true,
                         selected: isSelected,
-                        selectedTileColor:
-                            colorScheme.primaryContainer.withAlpha(50),
-                        leading: Radio<String>(
-                          value: provider.id,
-                        ),
+                        selectedTileColor: colorScheme.primaryContainer
+                            .withAlpha(50),
+                        leading: Radio<String>(value: provider.id),
                         title: Text(provider.name),
                         subtitle: Text(
                           provider.model,
                           style: theme.textTheme.bodySmall,
                         ),
                         trailing: isActive
-                            ? Icon(Icons.check_circle,
-                                size: 16, color: colorScheme.primary)
+                            ? Icon(
+                                Icons.check_circle,
+                                size: 16,
+                                color: colorScheme.primary,
+                              )
                             : null,
                         onTap: () => _fillForEdit(provider),
                       );
@@ -402,18 +467,33 @@ class _ProviderManagementPageState
           // Provider type selector
           Text('模型类型', style: theme.textTheme.labelLarge),
           const SizedBox(height: 8),
-          SegmentedButton<AiProviderType>(
-            segments: const [
-              ButtonSegment(value: AiProviderType.openai, label: Text('OpenAI')),
-              ButtonSegment(value: AiProviderType.deepseek, label: Text('DeepSeek')),
-              ButtonSegment(value: AiProviderType.claude, label: Text('Claude')),
-              ButtonSegment(value: AiProviderType.ollama, label: Text('Ollama')),
-              ButtonSegment(value: AiProviderType.custom, label: Text('自定义')),
-            ],
-            selected: {_selectedType},
-            onSelectionChanged: (types) {
-              setState(() => _selectedType = types.first);
-            },
+          SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: SegmentedButton<AiProviderType>(
+              segments: const [
+                ButtonSegment(
+                  value: AiProviderType.openai,
+                  label: Text('OpenAI'),
+                ),
+                ButtonSegment(
+                  value: AiProviderType.deepseek,
+                  label: Text('DeepSeek'),
+                ),
+                ButtonSegment(
+                  value: AiProviderType.claude,
+                  label: Text('Claude'),
+                ),
+                ButtonSegment(
+                  value: AiProviderType.ollama,
+                  label: Text('Ollama'),
+                ),
+                ButtonSegment(value: AiProviderType.custom, label: Text('自定义')),
+              ],
+              selected: {_selectedType},
+              onSelectionChanged: (types) {
+                setState(() => _selectedType = types.first);
+              },
+            ),
           ),
           const SizedBox(height: 20),
 
@@ -481,6 +561,8 @@ class _ProviderManagementPageState
                     title: Text(
                       modelId,
                       style: theme.textTheme.bodySmall,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
                     ),
                     onTap: () {
                       _modelController.text = modelId;
@@ -503,9 +585,7 @@ class _ProviderManagementPageState
                 border: const OutlineInputBorder(),
                 suffixIcon: IconButton(
                   icon: Icon(
-                    _obscureApiKey
-                        ? Icons.visibility_off
-                        : Icons.visibility,
+                    _obscureApiKey ? Icons.visibility_off : Icons.visibility,
                   ),
                   onPressed: () {
                     setState(() => _obscureApiKey = !_obscureApiKey);
@@ -625,10 +705,7 @@ class _ProviderManagementPageState
                 ),
                 const SizedBox(width: 12),
               ],
-              OutlinedButton(
-                onPressed: _clearForm,
-                child: const Text('清空'),
-              ),
+              OutlinedButton(onPressed: _clearForm, child: const Text('清空')),
             ],
           ),
 
@@ -637,10 +714,7 @@ class _ProviderManagementPageState
           const SizedBox(height: 16),
 
           // Advanced mode toggle (disabled placeholder per D-04)
-          Text(
-            '高阶模式',
-            style: theme.textTheme.titleSmall,
-          ),
+          Text('高阶模式', style: theme.textTheme.titleSmall),
           const SizedBox(height: 4),
           Text(
             '为不同场景指定不同模型',

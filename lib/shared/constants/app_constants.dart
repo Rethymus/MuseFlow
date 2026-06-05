@@ -28,6 +28,10 @@ abstract class AppConstants {
   static const String knowledge = '/knowledge';
   static const String knowledgeCharacterNew = '/knowledge/character/new';
   static const String knowledgeSettingNew = '/knowledge/setting/new';
+  static const String knowledgeTemplates = '/knowledge/templates';
+  static const String knowledgeTemplateDraft = '/knowledge/templates/draft';
   static const String storyStructure = '/story-structure';
+  static const String stats = '/stats';
+  static const String statsProject = '/stats/project';
   static const String onboarding = '/onboarding';
 }

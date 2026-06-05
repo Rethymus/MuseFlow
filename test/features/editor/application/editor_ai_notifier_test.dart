@@ -19,6 +19,7 @@ import 'package:museflow/features/ai/domain/ai_provider.dart';
 import 'package:museflow/features/ai/infrastructure/openai_adapter.dart';
 import 'package:museflow/features/ai/presentation/synthesis_notifier.dart';
 import 'package:museflow/features/editor/application/editor_ai_notifier.dart';
+import 'package:museflow/features/editor/application/editor_prompt_pipeline.dart';
 import 'package:museflow/features/editor/domain/editor_ai_state.dart';
 import 'package:openai_dart/openai_dart.dart';
 
@@ -55,6 +56,9 @@ void main() {
           openaiAdapterProvider.overrideWithValue(fakeAdapter),
           activeProviderProvider.overrideWithValue(testProvider),
           activeApiKeyProvider.overrideWithValue(testApiKey),
+          editorPromptPipelineProvider.overrideWith(
+            (ref) async => EditorPromptPipeline(),
+          ),
         ],
       );
     }
@@ -367,6 +371,9 @@ class _FakeOpenAIAdapter extends OpenAIAdapter {
     required String baseUrl,
     required String model,
     required List<ChatMessage> messages,
+    double? temperature,
+    double? topP,
+    int? maxTokens,
   }) {
     return streamOutput ?? Stream.fromIterable(['默认文本']);
   }

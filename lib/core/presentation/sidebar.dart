@@ -31,8 +31,7 @@ class AdaptiveSidebar extends StatelessWidget {
     }
 
     // Desktop sidebar: NavigationRail
-    final isExtended =
-        screenWidth >= AppConstants.sidebarExtendedBreakpoint;
+    final isExtended = screenWidth >= AppConstants.sidebarExtendedBreakpoint;
 
     return NavigationRail(
       selectedIndex: currentIndex,
@@ -44,14 +43,14 @@ class AdaptiveSidebar extends StatelessWidget {
             ? Text(
                 '灵韵',
                 style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                      fontWeight: FontWeight.w700,
-                    ),
+                  fontWeight: FontWeight.w700,
+                ),
               )
             : Text(
                 '灵',
-                style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.w700,
-                    ),
+                style: Theme.of(
+                  context,
+                ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700),
               ),
       ),
       destinations: const [
@@ -74,6 +73,11 @@ class AdaptiveSidebar extends StatelessWidget {
           icon: Icon(Icons.account_tree_outlined),
           selectedIcon: Icon(Icons.account_tree),
           label: Text('故事结构'),
+        ),
+        NavigationRailDestination(
+          icon: Icon(Icons.insights_outlined),
+          selectedIcon: Icon(Icons.insights),
+          label: Text('统计'),
         ),
         NavigationRailDestination(
           icon: Icon(Icons.settings_outlined),
@@ -120,6 +124,11 @@ class _BottomNavBar extends StatelessWidget {
           icon: Icon(Icons.account_tree_outlined),
           selectedIcon: Icon(Icons.account_tree),
           label: '故事结构',
+        ),
+        NavigationDestination(
+          icon: Icon(Icons.insights_outlined),
+          selectedIcon: Icon(Icons.insights),
+          label: '统计',
         ),
         NavigationDestination(
           icon: Icon(Icons.settings_outlined),

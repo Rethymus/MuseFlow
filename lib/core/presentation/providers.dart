@@ -34,6 +34,14 @@ import 'package:museflow/features/knowledge/infrastructure/name_index.dart';
 import 'package:museflow/features/knowledge/infrastructure/skill_repository.dart';
 import 'package:museflow/features/knowledge/infrastructure/world_setting_repository.dart';
 import 'package:museflow/features/onboarding/infrastructure/onboarding_progress_repository.dart';
+import 'package:museflow/features/onboarding/application/opening_generator_service.dart';
+import 'package:museflow/features/stats/application/writing_stats_collector.dart';
+import 'package:museflow/features/stats/application/writing_stats_notifier.dart';
+import 'package:museflow/features/stats/application/achievement_notifier.dart';
+import 'package:museflow/features/stats/application/achievement_service.dart';
+import 'package:museflow/features/stats/domain/achievement_badge.dart';
+import 'package:museflow/features/stats/domain/stats_snapshot.dart';
+import 'package:museflow/features/stats/infrastructure/writing_stats_repository.dart';
 import 'package:museflow/features/story_structure/application/foreshadowing_notifier.dart';
 import 'package:museflow/features/story_structure/application/foreshadowing_reminder_service.dart';
 import 'package:museflow/features/story_structure/application/guardian_check_service.dart';
@@ -47,6 +55,9 @@ import 'package:museflow/features/story_structure/domain/plot_node.dart';
 import 'package:museflow/features/story_structure/infrastructure/foreshadowing_repository.dart';
 import 'package:museflow/features/story_structure/infrastructure/guardian_annotation_repository.dart';
 import 'package:museflow/features/story_structure/infrastructure/plot_node_repository.dart';
+import 'package:museflow/features/templates/application/template_completion_service.dart';
+import 'package:museflow/features/templates/application/template_instantiation_service.dart';
+import 'package:museflow/features/templates/infrastructure/world_template_repository.dart';
 export 'package:museflow/features/editor/application/context_anchor_notifier.dart'
     show contextAnchorNotifierProvider, ContextAnchorNotifier;
 export 'package:museflow/features/editor/presentation/editor_page.dart'
@@ -57,8 +68,9 @@ export 'package:museflow/features/editor/application/editor_ai_notifier.dart'
 /// Provides a [FragmentRepository] backed by a Hive 'fragments' box.
 ///
 /// Opens the box asynchronously, so consumers must await this provider.
-final fragmentRepositoryProvider =
-    FutureProvider<FragmentRepository>((ref) async {
+final fragmentRepositoryProvider = FutureProvider<FragmentRepository>((
+  ref,
+) async {
   final box = await Hive.openBox<Fragment>('fragments');
   return FragmentRepository(box);
 });
@@ -67,8 +79,9 @@ final fragmentRepositoryProvider =
 ///
 /// Uses AES encryption with a key stored in flutter_secure_storage.
 /// Falls back to generating a new key if none exists.
-final settingsRepositoryProvider =
-    FutureProvider<SettingsRepository>((ref) async {
+final settingsRepositoryProvider = FutureProvider<SettingsRepository>((
+  ref,
+) async {
   const encryptionKeyStoreKey = 'hive_encryption_key';
 
   final secureStorage = ref.read(secureStorageServiceProvider);
@@ -100,11 +113,12 @@ final settingsRepositoryProvider =
 ///
 /// Depends on [settingsRepositoryProvider] and accesses the shared box
 /// for onboarding progress and completion flag persistence.
-final onboardingProgressProvider =
-    FutureProvider<OnboardingProgressRepository>((ref) async {
-  final settingsRepo = await ref.watch(settingsRepositoryProvider.future);
-  return OnboardingProgressRepository(settingsRepo.box);
-});
+final onboardingProgressProvider = FutureProvider<OnboardingProgressRepository>(
+  (ref) async {
+    final settingsRepo = await ref.watch(settingsRepositoryProvider.future);
+    return OnboardingProgressRepository(settingsRepo.box);
+  },
+);
 
 /// Provides a singleton [SecureStorageService] instance.
 final secureStorageServiceProvider = Provider<SecureStorageService>((ref) {
@@ -114,8 +128,9 @@ final secureStorageServiceProvider = Provider<SecureStorageService>((ref) {
 /// Provides a [ProviderRepository] backed by a Hive 'ai_providers' box.
 ///
 /// Opens the box without encryption (API keys go to SecureStorage).
-final providerRepositoryProvider =
-    FutureProvider<ProviderRepository>((ref) async {
+final providerRepositoryProvider = FutureProvider<ProviderRepository>((
+  ref,
+) async {
   final box = await Hive.openBox<dynamic>('ai_providers');
   final secureStorage = ref.read(secureStorageServiceProvider);
   return ProviderRepository(box, secureStorage);
@@ -162,12 +177,16 @@ final promptPipelineProvider = FutureProvider<PromptPipeline>((ref) async {
   KnowledgeInjectionMiddleware? knowledgeMiddleware;
   SkillEnforcementMiddleware? skillMiddleware;
   try {
-    knowledgeMiddleware = await ref.watch(knowledgeInjectionMiddlewareProvider.future);
+    knowledgeMiddleware = await ref.watch(
+      knowledgeInjectionMiddlewareProvider.future,
+    );
   } catch (_) {
     knowledgeMiddleware = null;
   }
   try {
-    skillMiddleware = await ref.watch(skillEnforcementMiddlewareProvider.future);
+    skillMiddleware = await ref.watch(
+      skillEnforcementMiddlewareProvider.future,
+    );
   } catch (_) {
     skillMiddleware = null;
   }
@@ -202,16 +221,22 @@ final guardianContextBuilderProvider = Provider<GuardianContextBuilder>((ref) {
 ///
 /// Per D-16/D-17: Assembles prompts with operation-specific instructions
 /// and selected text instead of fragments.
-final editorPromptPipelineProvider = FutureProvider<EditorPromptPipeline>((ref) async {
+final editorPromptPipelineProvider = FutureProvider<EditorPromptPipeline>((
+  ref,
+) async {
   KnowledgeInjectionMiddleware? knowledgeMiddleware;
   SkillEnforcementMiddleware? skillMiddleware;
   try {
-    knowledgeMiddleware = await ref.watch(knowledgeInjectionMiddlewareProvider.future);
+    knowledgeMiddleware = await ref.watch(
+      knowledgeInjectionMiddlewareProvider.future,
+    );
   } catch (_) {
     knowledgeMiddleware = null;
   }
   try {
-    skillMiddleware = await ref.watch(skillEnforcementMiddlewareProvider.future);
+    skillMiddleware = await ref.watch(
+      skillEnforcementMiddlewareProvider.future,
+    );
   } catch (_) {
     skillMiddleware = null;
   }
@@ -240,17 +265,19 @@ final selectiveUndoServiceProvider = Provider<SelectiveUndoService>((ref) {
 /// Provides a [CharacterCardRepository] backed by a Hive 'character_cards' box.
 ///
 /// Opens the box asynchronously, so consumers must await this provider.
-final characterCardRepositoryProvider =
-    FutureProvider<CharacterCardRepository>((ref) async {
-  final box = await Hive.openBox<dynamic>('character_cards');
-  return CharacterCardRepository(box);
-});
+final characterCardRepositoryProvider = FutureProvider<CharacterCardRepository>(
+  (ref) async {
+    final box = await Hive.openBox<dynamic>('character_cards');
+    return CharacterCardRepository(box);
+  },
+);
 
 /// Provides a [WorldSettingRepository] backed by a Hive 'world_settings' box.
 ///
 /// Opens the box asynchronously, so consumers must await this provider.
-final worldSettingRepositoryProvider =
-    FutureProvider<WorldSettingRepository>((ref) async {
+final worldSettingRepositoryProvider = FutureProvider<WorldSettingRepository>((
+  ref,
+) async {
   final box = await Hive.openBox<dynamic>('world_settings');
   return WorldSettingRepository(box);
 });
@@ -266,8 +293,8 @@ final skillRepositoryProvider = FutureProvider<SkillRepository>((ref) async {
 /// Clean Architecture compliance.
 final characterCardNotifierProvider =
     AsyncNotifierProvider<CharacterCardNotifier, List<CharacterCard>>(
-  CharacterCardNotifier.new,
-);
+      CharacterCardNotifier.new,
+    );
 
 /// Provides a [WorldSettingNotifier] for world setting CRUD operations.
 ///
@@ -275,36 +302,43 @@ final characterCardNotifierProvider =
 /// Clean Architecture compliance.
 final worldSettingNotifierProvider =
     AsyncNotifierProvider<WorldSettingNotifier, List<WorldSetting>>(
-  WorldSettingNotifier.new,
-);
+      WorldSettingNotifier.new,
+    );
 
-final nameIndexServiceProvider =
-    NotifierProvider<NameIndexService, NameIndex>(NameIndexService.new);
+final nameIndexServiceProvider = NotifierProvider<NameIndexService, NameIndex>(
+  NameIndexService.new,
+);
 
 final knowledgeInjectionMiddlewareProvider =
     FutureProvider<KnowledgeInjectionMiddleware>((ref) async {
-  final nameIndex = ref.watch(nameIndexServiceProvider);
-  final characterRepository = await ref.watch(characterCardRepositoryProvider.future);
-  final worldSettingRepository = await ref.watch(worldSettingRepositoryProvider.future);
-  final tokenBudgetCalculator = ref.watch(tokenBudgetCalculatorProvider);
-  return KnowledgeInjectionMiddleware(
-    nameIndex: nameIndex,
-    characterRepository: characterRepository,
-    worldSettingRepository: worldSettingRepository,
-    tokenBudgetCalculator: tokenBudgetCalculator,
-  );
-});
+      final nameIndex = ref.watch(nameIndexServiceProvider);
+      final characterRepository = await ref.watch(
+        characterCardRepositoryProvider.future,
+      );
+      final worldSettingRepository = await ref.watch(
+        worldSettingRepositoryProvider.future,
+      );
+      final tokenBudgetCalculator = ref.watch(tokenBudgetCalculatorProvider);
+      return KnowledgeInjectionMiddleware(
+        nameIndex: nameIndex,
+        characterRepository: characterRepository,
+        worldSettingRepository: worldSettingRepository,
+        tokenBudgetCalculator: tokenBudgetCalculator,
+      );
+    });
 
 final skillEnforcementMiddlewareProvider =
     FutureProvider<SkillEnforcementMiddleware>((ref) async {
-  final repository = await ref.watch(skillRepositoryProvider.future);
-  return SkillEnforcementMiddleware(
-    skillRepository: repository,
-    tokenBudgetCalculator: ref.watch(tokenBudgetCalculatorProvider),
-  );
-});
+      final repository = await ref.watch(skillRepositoryProvider.future);
+      return SkillEnforcementMiddleware(
+        skillRepository: repository,
+        tokenBudgetCalculator: ref.watch(tokenBudgetCalculatorProvider),
+      );
+    });
 
-final skillGenerationServiceProvider = FutureProvider<SkillGenerationService>((ref) async {
+final skillGenerationServiceProvider = FutureProvider<SkillGenerationService>((
+  ref,
+) async {
   final provider = ref.watch(activeProviderProvider);
   final apiKey = ref.watch(activeApiKeyProvider);
   if (provider == null || apiKey == null || apiKey.isEmpty) {
@@ -320,42 +354,126 @@ final skillGenerationServiceProvider = FutureProvider<SkillGenerationService>((r
 
 final skillGenerationNotifierProvider =
     AsyncNotifierProvider<SkillGenerationNotifier, SkillGenerationState>(
-  SkillGenerationNotifier.new,
-);
+      SkillGenerationNotifier.new,
+    );
 
 final skillListNotifierProvider =
     AsyncNotifierProvider<SkillListNotifier, List<SkillDocument>>(
-  SkillListNotifier.new,
-);
+      SkillListNotifier.new,
+    );
 
 final deviationDetectionServiceProvider =
     FutureProvider<DeviationDetectionService>((ref) async {
-  final provider = ref.watch(activeProviderProvider);
-  final apiKey = ref.watch(activeApiKeyProvider);
-  if (provider == null || apiKey == null || apiKey.isEmpty) {
-    throw StateError('未配置可用的 AI 模型');
-  }
-  return DeviationDetectionService(
-    openAIAdapter: ref.watch(openaiAdapterProvider),
-    apiKey: apiKey,
-    baseUrl: provider.baseUrl,
-    model: provider.model,
-  );
-});
+      final provider = ref.watch(activeProviderProvider);
+      final apiKey = ref.watch(activeApiKeyProvider);
+      if (provider == null || apiKey == null || apiKey.isEmpty) {
+        throw StateError('未配置可用的 AI 模型');
+      }
+      return DeviationDetectionService(
+        openAIAdapter: ref.watch(openaiAdapterProvider),
+        apiKey: apiKey,
+        baseUrl: provider.baseUrl,
+        model: provider.model,
+      );
+    });
 
 final deviationNotifierProvider =
     AsyncNotifierProvider<DeviationNotifier, DeviationResult>(
-  DeviationNotifier.new,
+      DeviationNotifier.new,
+    );
+
+final worldTemplateRepositoryProvider = Provider<WorldTemplateRepository>((
+  ref,
+) {
+  return WorldTemplateRepository();
+});
+
+final templateInstantiationServiceProvider =
+    FutureProvider<TemplateInstantiationService>((ref) async {
+      final worldRepository = await ref.watch(
+        worldSettingRepositoryProvider.future,
+      );
+      final characterRepository = await ref.watch(
+        characterCardRepositoryProvider.future,
+      );
+      return TemplateInstantiationService(
+        worldSettingRepository: worldRepository,
+        characterCardRepository: characterRepository,
+      );
+    });
+
+final templateCompletionServiceProvider =
+    FutureProvider<TemplateCompletionService>((ref) async {
+      final provider = ref.watch(activeProviderProvider);
+      final apiKey = ref.watch(activeApiKeyProvider);
+      if (provider == null || apiKey == null || apiKey.isEmpty) {
+        throw StateError('未配置可用的 AI 模型');
+      }
+      return TemplateCompletionService(
+        openAIAdapter: ref.watch(openaiAdapterProvider),
+        apiKey: apiKey,
+        baseUrl: provider.baseUrl,
+        model: provider.model,
+      );
+    });
+
+final openingGeneratorServiceProvider = FutureProvider<OpeningGeneratorService>(
+  (ref) async {
+    final provider = ref.watch(activeProviderProvider);
+    final apiKey = ref.watch(activeApiKeyProvider);
+    if (provider == null || apiKey == null || apiKey.isEmpty) {
+      throw StateError('未配置可用的 AI 模型');
+    }
+    return OpeningGeneratorService(
+      openAIAdapter: ref.watch(openaiAdapterProvider),
+      apiKey: apiKey,
+      baseUrl: provider.baseUrl,
+      model: provider.model,
+    );
+  },
 );
+
+final writingStatsRepositoryProvider = FutureProvider<WritingStatsRepository>((
+  ref,
+) async {
+  final aggregateBox = await Hive.openBox<dynamic>('writing_stats');
+  final dailyBox = await Hive.openBox<dynamic>('daily_writing_stats');
+  final badgeBox = await Hive.openBox<dynamic>('achievement_badges');
+  return WritingStatsRepository(aggregateBox, dailyBox, badgeBox);
+});
+
+final writingStatsCollectorProvider = FutureProvider<WritingStatsCollector>((
+  ref,
+) async {
+  final repository = await ref.watch(writingStatsRepositoryProvider.future);
+  final collector = WritingStatsCollector(repository);
+  ref.onDispose(collector.dispose);
+  return collector;
+});
+
+final writingStatsNotifierProvider =
+    AsyncNotifierProvider<WritingStatsNotifier, StatsSnapshot>(
+      WritingStatsNotifier.new,
+    );
+
+final achievementServiceProvider = Provider<AchievementService>((ref) {
+  return const AchievementService();
+});
+
+final achievementNotifierProvider =
+    AsyncNotifierProvider<AchievementNotifier, List<AchievementBadge>>(
+      AchievementNotifier.new,
+    );
 
 /// Provides a [ForeshadowingRepository] backed by a Hive 'foreshadowing_entries' box.
 ///
 /// Opens the box asynchronously, so consumers must await this provider.
-final foreshadowingRepositoryProvider =
-    FutureProvider<ForeshadowingRepository>((ref) async {
-  final box = await Hive.openBox<dynamic>('foreshadowing_entries');
-  return ForeshadowingRepository(box);
-});
+final foreshadowingRepositoryProvider = FutureProvider<ForeshadowingRepository>(
+  (ref) async {
+    final box = await Hive.openBox<dynamic>('foreshadowing_entries');
+    return ForeshadowingRepository(box);
+  },
+);
 
 /// Provides a singleton [ForeshadowingReminderService] for deterministic reminder logic.
 ///
@@ -363,8 +481,8 @@ final foreshadowingRepositoryProvider =
 /// with the rest of the dependency graph.
 final foreshadowingReminderServiceProvider =
     Provider<ForeshadowingReminderService>((ref) {
-  return ForeshadowingReminderService();
-});
+      return ForeshadowingReminderService();
+    });
 
 /// Provides a [ForeshadowingNotifier] for foreshadowing entry CRUD operations.
 ///
@@ -372,14 +490,15 @@ final foreshadowingReminderServiceProvider =
 /// Clean Architecture compliance.
 final foreshadowingNotifierProvider =
     AsyncNotifierProvider<ForeshadowingNotifier, List<ForeshadowingEntry>>(
-  ForeshadowingNotifier.new,
-);
+      ForeshadowingNotifier.new,
+    );
 
 /// Provides a [PlotNodeRepository] backed by a Hive 'plot_nodes' box.
 ///
 /// Opens the box asynchronously, so consumers must await this provider.
-final plotNodeRepositoryProvider =
-    FutureProvider<PlotNodeRepository>((ref) async {
+final plotNodeRepositoryProvider = FutureProvider<PlotNodeRepository>((
+  ref,
+) async {
   final box = await Hive.openBox<dynamic>('plot_nodes');
   return PlotNodeRepository(box);
 });
@@ -390,8 +509,8 @@ final plotNodeRepositoryProvider =
 /// Clean Architecture compliance.
 final plotNodeNotifierProvider =
     AsyncNotifierProvider<PlotNodeNotifier, List<PlotNode>>(
-  PlotNodeNotifier.new,
-);
+      PlotNodeNotifier.new,
+    );
 
 /// Provides a [GuardianAnnotationRepository] backed by a Hive
 /// 'guardian_annotations' box.
@@ -399,31 +518,33 @@ final plotNodeNotifierProvider =
 /// Opens the box asynchronously, so consumers must await this provider.
 final guardianAnnotationRepositoryProvider =
     FutureProvider<GuardianAnnotationRepository>((ref) async {
-  final box = await Hive.openBox<dynamic>('guardian_annotations');
-  return GuardianAnnotationRepository(box);
-});
+      final box = await Hive.openBox<dynamic>('guardian_annotations');
+      return GuardianAnnotationRepository(box);
+    });
 
 /// Provides a [GuardianNotifier] for guardian annotation lifecycle management.
 ///
 /// Presentation layer uses this for check state and annotation dismissal.
 final guardianNotifierProvider =
     AsyncNotifierProvider<GuardianNotifier, GuardianCheckResult>(
-  GuardianNotifier.new,
-);
+      GuardianNotifier.new,
+    );
 
 /// Provides a [GuardianCheckService] for manual character consistency checks.
 ///
 /// Requires an active AI provider with API key. Throws [StateError] if
 /// no provider is configured (UI should check before triggering checks).
-final guardianCheckServiceProvider =
-    FutureProvider<GuardianCheckService>((ref) async {
+final guardianCheckServiceProvider = FutureProvider<GuardianCheckService>((
+  ref,
+) async {
   final provider = ref.watch(activeProviderProvider);
   final apiKey = ref.watch(activeApiKeyProvider);
   if (provider == null || apiKey == null || apiKey.isEmpty) {
     throw StateError('未配置可用的 AI 模型');
   }
-  final characterRepository =
-      await ref.watch(characterCardRepositoryProvider.future);
+  final characterRepository = await ref.watch(
+    characterCardRepositoryProvider.future,
+  );
   return GuardianCheckService.fromRepository(
     characterRepository: characterRepository,
     apiKey: apiKey,
@@ -436,8 +557,9 @@ final guardianCheckServiceProvider =
 ///
 /// Requires an active AI provider with API key. Throws [StateError] if
 /// no provider is configured (UI should check before triggering checks).
-final logicGuardianServiceProvider =
-    FutureProvider<LogicGuardianService>((ref) async {
+final logicGuardianServiceProvider = FutureProvider<LogicGuardianService>((
+  ref,
+) async {
   final provider = ref.watch(activeProviderProvider);
   final apiKey = ref.watch(activeApiKeyProvider);
   if (provider == null || apiKey == null || apiKey.isEmpty) {
@@ -455,9 +577,7 @@ final logicGuardianServiceProvider =
 /// Uses dart:io file writer for production. Injected via provider for
 /// consistency with the rest of the dependency graph.
 final exportServiceProvider = Provider<ExportService>((ref) {
-  return ExportService(
-    fileWriter: _dartIoFileWriter,
-  );
+  return ExportService(fileWriter: _dartIoFileWriter);
 });
 
 /// Production file writer using dart:io.

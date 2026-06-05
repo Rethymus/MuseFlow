@@ -3,16 +3,21 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:museflow/features/knowledge/domain/character_card.dart';
 import 'package:museflow/features/knowledge/domain/world_setting.dart';
+import 'package:museflow/core/presentation/providers.dart';
+import 'package:museflow/features/onboarding/domain/genre_option.dart';
+import 'package:museflow/features/onboarding/domain/opening_variant.dart';
 import 'package:museflow/features/onboarding/presentation/onboarding_providers.dart';
+import 'package:museflow/features/onboarding/presentation/opening_text_insertion.dart';
 import 'package:museflow/features/onboarding/presentation/wizard_steps/character_step_page.dart';
 import 'package:museflow/features/onboarding/presentation/wizard_steps/genre_step_page.dart';
+import 'package:museflow/features/onboarding/presentation/wizard_steps/opening_step_page.dart';
 import 'package:museflow/features/onboarding/presentation/wizard_steps/world_step_page.dart';
 import 'package:museflow/shared/constants/app_constants.dart';
 
 /// Full-screen onboarding wizard with 4-step PageView navigation.
 ///
 /// Steps: Genre -> World -> Character -> Opening
-/// Steps 1-3 are fully implemented. Step 4 is a stub for Plan 08-05.
+/// Steps: genre selection, world creation, character creation, AI opening.
 class OnboardingWizardPage extends ConsumerStatefulWidget {
   const OnboardingWizardPage({super.key});
 
@@ -29,12 +34,7 @@ class _OnboardingWizardPageState extends ConsumerState<OnboardingWizardPage> {
   static const int _totalSteps = 4;
 
   /// Step titles displayed in the progress area.
-  static const List<String> _stepTitles = [
-    '选择题材',
-    '构建世界',
-    '创建角色',
-    '写开篇',
-  ];
+  static const List<String> _stepTitles = ['选择题材', '构建世界', '创建角色', '写开篇'];
 
   static const List<String> _stepSubtitles = [
     '选择你感兴趣的故事类型',
@@ -50,6 +50,8 @@ class _OnboardingWizardPageState extends ConsumerState<OnboardingWizardPage> {
   // Controllers for CharacterStepPage fields.
   final _characterNameController = TextEditingController();
   final _characterDescriptionController = TextEditingController();
+  OpeningVariant? _selectedOpeningVariant;
+  String _selectedGenreName = '通用';
 
   // GlobalKey accessors for step form validation.
   final _worldStepKey = GlobalKey<WorldStepPageState>();
@@ -126,8 +128,9 @@ class _OnboardingWizardPageState extends ConsumerState<OnboardingWizardPage> {
 
   Future<void> _createWorldSetting() async {
     try {
-      final repository =
-          await ref.read(onboardingWorldSettingRepositoryProvider.future);
+      final repository = await ref.read(
+        onboardingWorldSettingRepositoryProvider.future,
+      );
       final setting = WorldSetting(
         id: '',
         name: _worldNameController.text.trim(),
@@ -137,17 +140,18 @@ class _OnboardingWizardPageState extends ConsumerState<OnboardingWizardPage> {
       await repository.add(setting);
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('世界观创建失败: $e')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('世界观创建失败: $e')));
       }
     }
   }
 
   Future<void> _createCharacterCard() async {
     try {
-      final repository =
-          await ref.read(onboardingCharacterCardRepositoryProvider.future);
+      final repository = await ref.read(
+        onboardingCharacterCardRepositoryProvider.future,
+      );
       final card = CharacterCard(
         id: '',
         name: _characterNameController.text.trim(),
@@ -157,14 +161,27 @@ class _OnboardingWizardPageState extends ConsumerState<OnboardingWizardPage> {
       await repository.add(card);
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('角色创建失败: $e')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('角色创建失败: $e')));
       }
     }
   }
 
   Future<void> _completeOnboarding() async {
+    final selectedOpening = _selectedOpeningVariant;
+    if (selectedOpening != null) {
+      insertOpeningText(
+        ref.read(editorProvider),
+        selectedOpening.text,
+        onAiInserted: (text) {
+          ref.read(writingStatsCollectorProvider.future).then((collector) {
+            collector.recordAiInsertion(text);
+          });
+        },
+      );
+    }
+
     try {
       final repository = await ref.read(onboardingRepositoryProvider.future);
       await repository.markCompleted();
@@ -193,8 +210,8 @@ class _OnboardingWizardPageState extends ConsumerState<OnboardingWizardPage> {
               color: isCompleted
                   ? Theme.of(context).colorScheme.primary
                   : isActive
-                      ? Theme.of(context).colorScheme.primary
-                      : Theme.of(context).colorScheme.outlineVariant,
+                  ? Theme.of(context).colorScheme.primary
+                  : Theme.of(context).colorScheme.outlineVariant,
               borderRadius: BorderRadius.circular(4),
             ),
           ),
@@ -225,9 +242,7 @@ class _OnboardingWizardPageState extends ConsumerState<OnboardingWizardPage> {
             onPressed: _skipStep,
             child: Text(
               '跳过',
-              style: TextStyle(
-                color: theme.colorScheme.onSurfaceVariant,
-              ),
+              style: TextStyle(color: theme.colorScheme.onSurfaceVariant),
             ),
           ),
           IconButton(
@@ -274,7 +289,16 @@ class _OnboardingWizardPageState extends ConsumerState<OnboardingWizardPage> {
               children: [
                 // Step 1: Genre selection
                 GenreStepPage(
-                  onSelected: (_) => _nextStep(),
+                  onSelected: (genreId) {
+                    _selectedGenreName = '通用';
+                    for (final genre in GenreOption.builtIn) {
+                      if (genre.id == genreId) {
+                        _selectedGenreName = genre.title;
+                        break;
+                      }
+                    }
+                    _nextStep();
+                  },
                 ),
                 // Step 2: World setting creation
                 WorldStepPage(
@@ -289,11 +313,13 @@ class _OnboardingWizardPageState extends ConsumerState<OnboardingWizardPage> {
                   characterDescriptionController:
                       _characterDescriptionController,
                 ),
-                // Step 4: Opening (stub for Plan 08-05)
-                const _StubStepPage(
-                  icon: Icons.edit_note,
-                  title: '撰写开篇',
-                  description: '这一步将在下一版本中实现',
+                OpeningStepPage(
+                  genreName: _selectedGenreName,
+                  worldDescription: _worldDescriptionController.text,
+                  characterDescription: _characterDescriptionController.text,
+                  onSelected: (variant) {
+                    _selectedOpeningVariant = variant;
+                  },
                 ),
               ],
             ),
@@ -320,47 +346,6 @@ class _OnboardingWizardPageState extends ConsumerState<OnboardingWizardPage> {
             ),
           ],
         ),
-      ),
-    );
-  }
-}
-
-/// Placeholder widget for unimplemented wizard steps.
-///
-/// Used by Plan 08-05. The step will be replaced with a full
-/// implementation when its plan is executed.
-class _StubStepPage extends StatelessWidget {
-  const _StubStepPage({
-    required this.icon,
-    required this.title,
-    required this.description,
-  });
-
-  final IconData icon;
-  final String title;
-  final String description;
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    return Center(
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(icon, size: 64, color: theme.colorScheme.outline),
-          const SizedBox(height: 16),
-          Text(
-            title,
-            style: theme.textTheme.titleLarge,
-          ),
-          const SizedBox(height: 8),
-          Text(
-            description,
-            style: theme.textTheme.bodyMedium?.copyWith(
-              color: theme.colorScheme.onSurfaceVariant,
-            ),
-          ),
-        ],
       ),
     );
   }

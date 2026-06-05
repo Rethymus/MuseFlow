@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:museflow/features/onboarding/presentation/opening_generator_sheet.dart';
 import 'package:super_editor/super_editor.dart';
 
 /// Fixed formatting toolbar with 6 controls for the rich text editor.
@@ -96,6 +97,18 @@ class _EditorToolbarState extends State<EditorToolbar> {
                 isActive: _isListNode(ListItemType.ordered),
                 onPressed: () => _setList(ListItemType.ordered),
               ),
+              const SizedBox(width: 4),
+              SizedBox(
+                height: 24,
+                child: VerticalDivider(color: colorScheme.outline),
+              ),
+              const SizedBox(width: 4),
+              _FormatToggleButton(
+                icon: Icons.auto_stories,
+                tooltip: '开篇生成',
+                isActive: false,
+                onPressed: () => _showOpeningGenerator(context),
+              ),
             ],
           );
         },
@@ -110,8 +123,9 @@ class _EditorToolbarState extends State<EditorToolbar> {
     if (selection == null) return false;
 
     if (selection.isCollapsed) {
-      return widget.editor.composer.preferences.currentAttributions
-          .contains(boldAttribution);
+      return widget.editor.composer.preferences.currentAttributions.contains(
+        boldAttribution,
+      );
     }
 
     // For expanded selection, check if document has bold at the range
@@ -142,8 +156,9 @@ class _EditorToolbarState extends State<EditorToolbar> {
     if (selection == null) return false;
 
     if (selection.isCollapsed) {
-      return widget.editor.composer.preferences.currentAttributions
-          .contains(italicsAttribution);
+      return widget.editor.composer.preferences.currentAttributions.contains(
+        italicsAttribution,
+      );
     }
 
     return _hasAttributionInRange(italicsAttribution, selection);
@@ -230,21 +245,14 @@ class _EditorToolbarState extends State<EditorToolbar> {
 
     // If already this list type, revert to paragraph
     if (node is ListItemNode && node.type == type) {
-      final newNode = ParagraphNode(
-        id: node.id,
-        text: node.text,
-      );
+      final newNode = ParagraphNode(id: node.id, text: node.text);
       widget.editor.execute([
         ReplaceNodeRequest(existingNodeId: node.id, newNode: newNode),
       ]);
       return;
     }
 
-    final newNode = ListItemNode(
-      id: node.id,
-      itemType: type,
-      text: node.text,
-    );
+    final newNode = ListItemNode(id: node.id, itemType: type, text: node.text);
 
     widget.editor.execute([
       ReplaceNodeRequest(existingNodeId: node.id, newNode: newNode),
@@ -254,10 +262,14 @@ class _EditorToolbarState extends State<EditorToolbar> {
   // --- Helpers ---
 
   /// Check if an attribution exists at any point in the given selection range.
-  bool _hasAttributionInRange(Attribution attribution, DocumentSelection range) {
+  bool _hasAttributionInRange(
+    Attribution attribution,
+    DocumentSelection range,
+  ) {
     try {
       final baseOffset = (range.base.nodePosition as TextNodePosition).offset;
-      final extentOffset = (range.extent.nodePosition as TextNodePosition).offset;
+      final extentOffset =
+          (range.extent.nodePosition as TextNodePosition).offset;
       final start = baseOffset < extentOffset ? baseOffset : extentOffset;
       final end = baseOffset < extentOffset ? extentOffset : baseOffset;
 
@@ -275,6 +287,10 @@ class _EditorToolbarState extends State<EditorToolbar> {
     } catch (_) {
       return false;
     }
+  }
+
+  Future<void> _showOpeningGenerator(BuildContext context) {
+    return showOpeningGeneratorSheet(context);
   }
 }
 
@@ -313,22 +329,18 @@ class _HeadingMenuItem extends PopupMenuItem<NamedAttribution> {
     required NamedAttribution attribution,
     required bool isActive,
   }) : super(
-          value: attribution,
-          child: Builder(
-            builder: (context) {
-              final colorScheme = Theme.of(context).colorScheme;
-              return Row(
-                children: [
-                  Expanded(child: Text(label)),
-                  if (isActive)
-                    Icon(
-                      Icons.check,
-                      size: 16,
-                      color: colorScheme.primary,
-                    ),
-                ],
-              );
-            },
-          ),
-        );
+         value: attribution,
+         child: Builder(
+           builder: (context) {
+             final colorScheme = Theme.of(context).colorScheme;
+             return Row(
+               children: [
+                 Expanded(child: Text(label)),
+                 if (isActive)
+                   Icon(Icons.check, size: 16, color: colorScheme.primary),
+               ],
+             );
+           },
+         ),
+       );
 }

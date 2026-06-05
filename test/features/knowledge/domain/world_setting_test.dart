@@ -193,6 +193,39 @@ void main() {
         );
       });
 
+      test('should reject name containing control characters', () {
+        expect(
+          () => WorldSetting(
+            id: 'id',
+            name: 'Valid\nName',
+            description: '',
+            rules: '',
+            factions: '',
+            geography: '',
+            techLevel: '',
+            createdAt: now,
+          ),
+          throwsArgumentError,
+        );
+      });
+
+      test('should reject alias containing control characters', () {
+        expect(
+          () => WorldSetting(
+            id: 'id',
+            name: 'Valid',
+            description: '',
+            rules: '',
+            factions: '',
+            geography: '',
+            techLevel: '',
+            aliases: ['Bad\tAlias'],
+            createdAt: now,
+          ),
+          throwsArgumentError,
+        );
+      });
+
       test('should reject description exceeding 5000 characters', () {
         expect(
           () => WorldSetting(

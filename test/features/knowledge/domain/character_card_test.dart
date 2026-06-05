@@ -177,6 +177,35 @@ void main() {
         );
       });
 
+      test('should reject name containing control characters', () {
+        expect(
+          () => CharacterCard(
+            id: 'id',
+            name: 'Valid\nName',
+            personality: '',
+            appearance: '',
+            backstory: '',
+            createdAt: now,
+          ),
+          throwsArgumentError,
+        );
+      });
+
+      test('should reject alias containing control characters', () {
+        expect(
+          () => CharacterCard(
+            id: 'id',
+            name: 'Valid',
+            personality: '',
+            appearance: '',
+            backstory: '',
+            aliases: ['Bad\tAlias'],
+            createdAt: now,
+          ),
+          throwsArgumentError,
+        );
+      });
+
       test('should reject personality exceeding 5000 characters', () {
         expect(
           () => CharacterCard(

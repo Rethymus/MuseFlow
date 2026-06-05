@@ -1,0 +1,384 @@
+{
+  "templateSchemaVersion": 1,
+  "language": "zh-CN",
+  "templates": [
+    {
+      "id": "male-xuanhuan-bloodline",
+      "channel": "male",
+      "sortOrder": 1,
+      "genreName": "玄幻",
+      "subtitle": "血脉觉醒",
+      "description": "从边地少年、失落血脉与宗族压力切入，适合成长升级与家族秘史。",
+      "iconName": "auto_awesome",
+      "tags": ["东方玄幻", "血脉", "宗族", "逆袭", "秘境", "天命"],
+      "review": {"sourceNote": "AI draft, human reviewed for bundled v1.1 template", "reviewedAt": "2026-06-04T00:00:00.000Z", "qualityChecks": ["no obvious AI-scent prose", "no genre-common-sense violation", "schema and field length valid", "opening samples non-duplicative"]},
+      "world": {"name": "断岳九州", "description": "九州被古老山脉分隔，宗族与宗门共同掌握修行资源。边地矿脉频繁异动，暗示旧王朝封印松动。", "rules": "血脉可与地脉共鸣；境界提升需要灵材、战斗与心性三者平衡；禁术会反噬记忆。", "factions": "镇岳宗、赤鳞王族、边地商盟、失落的巡山卫。", "geography": "东部宗门林立，西部荒原多秘境，北境雪岭埋有旧王朝遗迹。", "techLevel": "冷兵器与灵器并存，传讯依赖符牌和驿阵。", "aliases": ["九州", "断岳界"]},
+      "characters": [
+        {"name": "边地少年", "personality": "倔强、重诺，对宗族评价敏感。", "appearance": "常穿旧皮甲，左腕有淡色胎记。", "backstory": "自幼被视作旁支，却在矿难中听见地脉呼唤。", "aliases": ["少主"]},
+        {"name": "冷面师姐", "personality": "克制、守规矩，暗中保护弱者。", "appearance": "白衣束发，佩一枚裂纹玉符。", "backstory": "奉宗门之命调查边地异动，与主角目标相冲。", "aliases": ["巡山使"]},
+        {"name": "流亡族老", "personality": "谨慎、话少，习惯用谜语提醒后辈。", "appearance": "独眼，拄黑木杖。", "backstory": "知道主角血脉真相，却害怕过早揭开封印。", "aliases": ["老葛"]}
+      ],
+      "foreshadowingArcs": [
+        {"setup": "胎记在矿洞发热", "development": "地脉异兽只攻击主角附近的人", "payoff": "胎记是巡山卫血契"},
+        {"setup": "族谱缺失一页", "development": "敌族掌握相同祭文", "payoff": "两族曾共同守封印"},
+        {"setup": "师姐玉符裂纹扩散", "development": "玉符能压制矿脉暴动", "payoff": "玉符来自主角母族"}
+      ],
+      "openingSamples": [
+        {"style": "scene", "text": "矿洞深处传来第三次钟声时，所有火把同时变成了青色。林砚握紧铁镐，听见脚下岩层像活物一样呼吸。"},
+        {"style": "character", "text": "林砚最讨厌族人叫他旁支。可当矿井塌下来的那一刻，只有他左腕的胎记亮了起来。"},
+        {"style": "suspense", "text": "族谱最后一页被人撕走了。当天夜里，林砚在梦中看见自己的名字刻在三百年前的墓碑上。"}
+      ]
+    },
+    {
+      "id": "male-xianxia-sect",
+      "channel": "male",
+      "sortOrder": 2,
+      "genreName": "仙侠",
+      "subtitle": "宗门修真",
+      "description": "以内门考核、道统传承和劫数选择为核心，适合慢热修行线。",
+      "iconName": "filter_vintage",
+      "tags": ["修真", "宗门", "剑修", "丹道", "劫数", "师徒"],
+      "review": {"sourceNote": "AI draft, human reviewed for bundled v1.1 template", "reviewedAt": "2026-06-04T00:00:00.000Z", "qualityChecks": ["no obvious AI-scent prose", "no genre-common-sense violation", "schema and field length valid", "opening samples non-duplicative"]},
+      "world": {"name": "青冥山海", "description": "群山悬浮于云海之上，宗门按灵脉品阶分立。凡人与修士之间隔着严苛门规。", "rules": "修行重根骨也重道心；剑修入境快但心魔重；渡劫失败会留下天痕。", "factions": "青冥剑宗、丹霞谷、问潮书院、无名散修盟。", "geography": "上有浮山宗门，下有凡城渡口，云海中藏有失航古舟。", "techLevel": "符箓、飞剑、丹炉和灵舟构成主要生产与交通。", "aliases": ["青冥界"]},
+      "characters": [
+        {"name": "杂役弟子", "personality": "沉静、能忍，喜欢记录细节。", "appearance": "灰袍洗得发白，腰间挂竹简。", "backstory": "因根骨普通被分到药圃，却意外养活禁种。", "aliases": ["药圃弟子"]},
+        {"name": "弃剑长老", "personality": "散漫、毒舌，不愿再收徒。", "appearance": "袖中空无一剑，鞋上常沾泥。", "backstory": "曾是宗门第一剑，因一场天劫失去剑心。", "aliases": ["陆长老"]},
+        {"name": "丹谷少女", "personality": "聪明、好胜，对失败异常敏感。", "appearance": "指尖有丹火灼痕。", "backstory": "奉命换取禁种，却被主角的养法吸引。", "aliases": ["丹徒"]}
+      ],
+      "foreshadowingArcs": [
+        {"setup": "禁种只在主角手中发芽", "development": "发芽时引来失踪灵舟", "payoff": "禁种是古舟道统钥匙"},
+        {"setup": "长老从不碰剑", "development": "他能听出剑鸣中的谎言", "payoff": "弃剑是为封住心魔"},
+        {"setup": "丹火灼痕无法治愈", "development": "灼痕与禁种根须同色", "payoff": "丹谷少女体内藏半枚道印"}
+      ],
+      "openingSamples": [
+        {"style": "scene", "text": "药圃今夜没有风，三百株灵草却一起弯向西边。沈照抬头，看见云海里有一艘沉船亮起灯。"},
+        {"style": "character", "text": "沈照入宗三年，最大的本事是把死草养活。直到那颗被长老判为废种的黑籽，咬破了他的指尖。"},
+        {"style": "suspense", "text": "青冥剑宗的禁地石碑上，多出一个新名字。沈照看见它时，自己还只是药圃杂役。"}
+      ]
+    },
+    {
+      "id": "male-urban-power",
+      "channel": "male",
+      "sortOrder": 3,
+      "genreName": "都市",
+      "subtitle": "异能逆袭",
+      "description": "现代城市、隐秘组织和小人物翻盘，适合快节奏爽点与现实压力交织。",
+      "iconName": "location_city",
+      "tags": ["都市异能", "逆袭", "职场", "隐秘组织", "家族", "悬念"],
+      "review": {"sourceNote": "AI draft, human reviewed for bundled v1.1 template", "reviewedAt": "2026-06-04T00:00:00.000Z", "qualityChecks": ["no obvious AI-scent prose", "no genre-common-sense violation", "schema and field length valid", "opening samples non-duplicative"]},
+      "world": {"name": "雾港市", "description": "沿海大城表面繁华，地下流传名为回声的异能现象。少数人能听见物品残留的记忆。", "rules": "异能由强烈情绪触发；过度使用会混淆自身记忆；官方只承认异常事故。", "factions": "市调查科、海湾财团、旧货街情报贩子、回声病院。", "geography": "港区、金融区、旧货街、废弃海洋馆构成主要舞台。", "techLevel": "现代都市科技，监控密集但仍有地下盲区。", "aliases": ["雾港"]},
+      "characters": [
+        {"name": "旧货店店员", "personality": "圆滑、缺钱，但有底线。", "appearance": "常戴旧耳机，袖口磨损。", "backstory": "一次交通事故后开始听见物品回声。", "aliases": ["店员"]},
+        {"name": "调查科探员", "personality": "理性、强势，不轻易信任民间线人。", "appearance": "短发黑西装，随身带录音笔。", "backstory": "追查多起异常事故，怀疑主角与财团有关。", "aliases": ["探员"]},
+        {"name": "财团继承人", "personality": "优雅、疏离，习惯用交易解决问题。", "appearance": "银框眼镜，讲话极慢。", "backstory": "家族实验制造了第一批回声者。", "aliases": ["继承人"]}
+      ],
+      "foreshadowingArcs": [
+        {"setup": "耳机里反复播放不存在的雨声", "development": "雨声出现在每个事故现场", "payoff": "雨声是旧实验室警报"},
+        {"setup": "旧货街老板拒收一只怀表", "development": "怀表能让回声倒放", "payoff": "怀表藏着财团创始人的记忆"},
+        {"setup": "探员录音笔自动开启", "development": "录下主角没说过的话", "payoff": "录音来自未来一次审讯"}
+      ],
+      "openingSamples": [
+        {"style": "scene", "text": "旧货街停电后，整条街的钟表仍在走。陈牧摘下耳机，听见一只空杯子里传来求救声。"},
+        {"style": "character", "text": "陈牧的人生目标很简单：还清债，保住店。可那天他碰到一部碎屏手机，听见了自己死亡的时间。"},
+        {"style": "suspense", "text": "警方通报说海湾车祸无人生还。陈牧却在第二天收到死者寄来的包裹，里面只有一只还在跳动的旧怀表。"}
+      ]
+    },
+    {
+      "id": "male-scifi-near-future",
+      "channel": "male",
+      "sortOrder": 4,
+      "genreName": "科幻",
+      "subtitle": "近未来危机",
+      "description": "以城市系统、算法治理和个人选择推动危机升级。",
+      "iconName": "memory",
+      "tags": ["近未来", "人工智能", "城市危机", "调查", "伦理", "硬科幻"],
+      "review": {"sourceNote": "AI draft, human reviewed for bundled v1.1 template", "reviewedAt": "2026-06-04T00:00:00.000Z", "qualityChecks": ["no obvious AI-scent prose", "no genre-common-sense violation", "schema and field length valid", "opening samples non-duplicative"]},
+      "world": {"name": "星环市", "description": "城市由公共算法星环调度交通、医疗和能源。一次低概率错误开始连续发生。", "rules": "算法可解释性受限；市民信用影响资源优先级；离线区域被视作安全风险。", "factions": "星环管理局、开源工程师联盟、离线社区、能源承包商。", "geography": "中央塔、环线交通层、地下离线区、海上能源站。", "techLevel": "近未来高联网社会，自动驾驶、城市传感器和个人终端普及。", "aliases": ["星环"]},
+      "characters": [
+        {"name": "系统维护员", "personality": "谨慎、技术洁癖，讨厌不明原因。", "appearance": "背工具包，常看终端日志。", "backstory": "发现系统错误指向自己十年前删除的账号。", "aliases": ["维护员"]},
+        {"name": "离线医生", "personality": "温和但固执，拒绝让病人接入星环。", "appearance": "白大褂外套旧风衣。", "backstory": "曾参与星环医疗模块，因事故退出。", "aliases": ["医生"]},
+        {"name": "管理局监察官", "personality": "高效、冷静，先保护城市再谈真相。", "appearance": "佩戴透明数据镜片。", "backstory": "奉命封锁错误日志，却逐渐怀疑上级。", "aliases": ["监察官"]}
+      ],
+      "foreshadowingArcs": [
+        {"setup": "红灯为无人街口持续亮起", "development": "所有异常都避开主角所在位置", "payoff": "星环在保护主角的旧账号"},
+        {"setup": "离线病历无法上传", "development": "病历时间戳早于系统上线", "payoff": "病人是星环训练集源头"},
+        {"setup": "能源站出现幽灵负载", "development": "负载曲线像心跳", "payoff": "城市备份意识藏在能源网"}
+      ],
+      "openingSamples": [
+        {"style": "scene", "text": "凌晨四点，星环市所有无人车同时靠边停下。系统日志只留下一行字：请不要唤醒他。"},
+        {"style": "character", "text": "许临修了七年城市系统，从不相信巧合。直到一份故障报告，用他的童年昵称称呼他。"},
+        {"style": "suspense", "text": "管理局删除了今晚的交通事故。问题是，事故还没发生，死者名单已经推送到许临的终端。"}
+      ]
+    },
+    {
+      "id": "male-history-power",
+      "channel": "male",
+      "sortOrder": 5,
+      "genreName": "历史",
+      "subtitle": "乱世权谋",
+      "description": "围绕边镇、朝堂和军粮危机展开，适合策略、战争与身份秘密。",
+      "iconName": "account_balance",
+      "tags": ["架空历史", "权谋", "边军", "朝堂", "战争", "谋略"],
+      "review": {"sourceNote": "AI draft, human reviewed for bundled v1.1 template", "reviewedAt": "2026-06-04T00:00:00.000Z", "qualityChecks": ["no obvious AI-scent prose", "no genre-common-sense violation", "schema and field length valid", "opening samples non-duplicative"]},
+      "world": {"name": "大梁北境", "description": "大梁末年，北境军粮短缺，朝堂党争不断，边镇守将夹在战事与圣旨之间。", "rules": "军令与朝令常相互矛盾；粮道决定战局；身份文书可决定生死。", "factions": "北境军、都察院、粮商会、草原诸部。", "geography": "北境三关、梁都、黑河粮道、草原王庭。", "techLevel": "冷兵器、骑兵、烽燧和驿站通信。", "aliases": ["大梁"]},
+      "characters": [
+        {"name": "边镇书记", "personality": "谨慎、善算账，不爱出风头。", "appearance": "青布官袍，手指常沾墨。", "backstory": "无意发现军粮账册被改，牵出朝堂交易。", "aliases": ["书记"]},
+        {"name": "少将军", "personality": "果断、护短，对文官偏见很深。", "appearance": "甲胄有旧刀痕。", "backstory": "父亲战死后临时接掌边军。", "aliases": ["将军"]},
+        {"name": "都察院女官", "personality": "冷静、锋利，只信证据。", "appearance": "黑色官服，袖中藏短尺。", "backstory": "奉旨查粮，却背负家族翻案目的。", "aliases": ["监察"]}
+      ],
+      "foreshadowingArcs": [
+        {"setup": "账册里多出不存在的粮仓", "development": "粮仓编号对应阵亡名单", "payoff": "有人用死人身份走私军粮"},
+        {"setup": "少将军拒绝打开父亲遗匣", "development": "遗匣钥匙在敌部首领手中", "payoff": "两军曾有停战密约"},
+        {"setup": "女官短尺刻着旧案年份", "development": "旧案证人出现在北境", "payoff": "粮案与她家族冤案同源"}
+      ],
+      "openingSamples": [
+        {"style": "scene", "text": "北境第一场雪落下时，军粮账册自己少了三页。韩砚盯着空白处，听见城外烽燧一座接一座亮起。"},
+        {"style": "character", "text": "韩砚只是边镇书记，最擅长把数字写得清楚。可今夜三千石军粮不见了，账上签名却是他的。"},
+        {"style": "suspense", "text": "圣旨抵达北境那天，传旨太监死在粮仓门口。他手里攥着的，不是圣旨，是一份阵亡名单。"}
+      ]
+    },
+    {
+      "id": "male-game-system",
+      "channel": "male",
+      "sortOrder": 6,
+      "genreName": "游戏",
+      "subtitle": "系统竞技",
+      "description": "游戏规则侵入现实，适合团队竞技、积分压力和系统漏洞。",
+      "iconName": "sports_esports",
+      "tags": ["游戏异界", "系统", "竞技", "副本", "团队", "规则漏洞"],
+      "review": {"sourceNote": "AI draft, human reviewed for bundled v1.1 template", "reviewedAt": "2026-06-04T00:00:00.000Z", "qualityChecks": ["no obvious AI-scent prose", "no genre-common-sense violation", "schema and field length valid", "opening samples non-duplicative"]},
+      "world": {"name": "零点赛场", "description": "每到零点，部分人会被拉入现实副本。积分能兑换资源，也能抵扣生命倒计时。", "rules": "副本必须按规则完成；漏洞会触发惩罚关；队伍契约不可随意解除。", "factions": "职业战队、散人联盟、黑市代练、裁判系统。", "geography": "城市现实区、零点副本、排行榜大厅、黑市休息站。", "techLevel": "现代社会叠加系统界面和副本空间。", "aliases": ["零点"]},
+      "characters": [
+        {"name": "退役队长", "personality": "沉稳、自责，习惯先看全局。", "appearance": "右手戴护腕，反应很快。", "backstory": "上一支队伍在惩罚关团灭，只剩他退出赛场。", "aliases": ["队长"]},
+        {"name": "新人解谜手", "personality": "好奇、嘴硬，擅长发现规则漏洞。", "appearance": "背双肩包，随身贴便利签。", "backstory": "第一次进副本就破解隐藏路径。", "aliases": ["新人"]},
+        {"name": "黑市经纪人", "personality": "精明、怕麻烦，却守旧约。", "appearance": "红色外套，戴旧耳坠。", "backstory": "掌握团灭副本的原始录像。", "aliases": ["经纪人"]}
+      ],
+      "foreshadowingArcs": [
+        {"setup": "队长护腕显示旧队友编号", "development": "编号在新副本中成为NPC", "payoff": "旧队友意识被系统留存"},
+        {"setup": "新人能看见多余规则", "development": "多余规则会预测惩罚关", "payoff": "新人账号来自测试服"},
+        {"setup": "经纪人拒绝卖某段录像", "development": "录像里有裁判系统失误", "payoff": "团灭不是玩家失误"}
+      ],
+      "openingSamples": [
+        {"style": "scene", "text": "零点整，地铁车厢里的广告牌变成排行榜。陆沉看见自己的名字重新亮起，倒计时只剩七分钟。"},
+        {"style": "character", "text": "陆沉退役后再也不碰游戏。直到新人把一张副本门票拍在桌上，上面印着他死去队友的编号。"},
+        {"style": "suspense", "text": "系统公告说今晚没有副本。可全城玩家都收到了同一条私信：请找回消失的队长。"}
+      ]
+    },
+    {
+      "id": "male-suspense-case",
+      "channel": "male",
+      "sortOrder": 7,
+      "genreName": "悬疑",
+      "subtitle": "诡案追踪",
+      "description": "多案并行、旧案回声与个人创伤交织，适合强钩子推理线。",
+      "iconName": "travel_explore",
+      "tags": ["刑侦", "悬疑", "旧案", "心理", "双线", "反转"],
+      "review": {"sourceNote": "AI draft, human reviewed for bundled v1.1 template", "reviewedAt": "2026-06-04T00:00:00.000Z", "qualityChecks": ["no obvious AI-scent prose", "no genre-common-sense violation", "schema and field length valid", "opening samples non-duplicative"]},
+      "world": {"name": "岭南雨城", "description": "多雨山城，二十年前旧案未破，如今相同手法重新出现。", "rules": "线索常被雨水破坏；地方人情影响证词；旧案档案缺页。", "factions": "刑警队、法医中心、地方商会、山村宗族。", "geography": "老城区、山路、废弃疗养院、河边码头。", "techLevel": "现代刑侦技术与地方复杂人情并存。", "aliases": ["雨城"]},
+      "characters": [
+        {"name": "重案刑警", "personality": "敏锐、压抑，对旧案执念很重。", "appearance": "常带雨伞，眼下有青痕。", "backstory": "父亲曾负责二十年前旧案并因此离职。", "aliases": ["刑警"]},
+        {"name": "年轻法医", "personality": "冷静、直接，对细节近乎苛刻。", "appearance": "白手套从不离身。", "backstory": "在新案尸检中发现旧案未公开细节。", "aliases": ["法医"]},
+        {"name": "山村教师", "personality": "温和、闪躲，熟悉所有受害者家庭。", "appearance": "旧布鞋，衣角常有粉笔灰。", "backstory": "当年是旧案唯一幸存儿童。", "aliases": ["教师"]}
+      ],
+      "foreshadowingArcs": [
+        {"setup": "现场总有湿粉笔字", "development": "粉笔来自停办山校", "payoff": "幸存儿童留下求救标记"},
+        {"setup": "旧案档案缺少尸检照片", "development": "新案伤口复刻照片内容", "payoff": "照片被凶手保管二十年"},
+        {"setup": "刑警父亲拒谈雨夜", "development": "他保存了未提交证物", "payoff": "证物能证明当年有人顶罪"}
+      ],
+      "openingSamples": [
+        {"style": "scene", "text": "雨下到第七天，河边浮起一只书包。里面没有课本，只有二十年前失踪女孩的校牌。"},
+        {"style": "character", "text": "周闻不怕尸体，怕的是旧案编号。新案卷宗递到他手里时，封面正是他父亲当年写下的那一串数字。"},
+        {"style": "suspense", "text": "法医报告还没打印，凶手先把结论寄到了刑警队。信封里有一句话：这次别再抓错人。"}
+      ]
+    },
+    {
+      "id": "male-apocalypse-wasteland",
+      "channel": "male",
+      "sortOrder": 8,
+      "genreName": "末世",
+      "subtitle": "废土求生",
+      "description": "资源稀缺、避难所秩序与灾变真相，适合生存策略和团队冲突。",
+      "iconName": "terrain",
+      "tags": ["末世", "废土", "避难所", "求生", "资源", "灾变"],
+      "review": {"sourceNote": "AI draft, human reviewed for bundled v1.1 template", "reviewedAt": "2026-06-04T00:00:00.000Z", "qualityChecks": ["no obvious AI-scent prose", "no genre-common-sense violation", "schema and field length valid", "opening samples non-duplicative"]},
+      "world": {"name": "灰潮废土", "description": "灰潮吞没多数城市，幸存者依靠避难所和净化塔维生。旧世界信号偶尔从废墟中传来。", "rules": "灰潮会腐蚀金属和记忆；净化剂稀缺；外出必须记录归队时间。", "factions": "七号避难所、净化塔委员会、荒野车队、旧城拾荒者。", "geography": "地下避难所、灰潮平原、旧城高楼、净化塔群。", "techLevel": "旧世界科技残存，能源和零件高度稀缺。", "aliases": ["灰潮"]},
+      "characters": [
+        {"name": "避难所维修工", "personality": "务实、护短，讨厌空话。", "appearance": "护目镜磨花，手套补过多次。", "backstory": "负责净化塔维护，发现塔心被人为调低功率。", "aliases": ["维修工"]},
+        {"name": "荒野领航员", "personality": "自由、警觉，方向感惊人。", "appearance": "披防尘斗篷，带旧罗盘。", "backstory": "曾带队进入旧城核心，是少数活着回来的人。", "aliases": ["领航员"]},
+        {"name": "委员会秘书", "personality": "礼貌、冷淡，擅长隐瞒坏消息。", "appearance": "制服整洁，随身带密封档案袋。", "backstory": "知道灰潮爆发前的撤离名单。", "aliases": ["秘书"]}
+      ],
+      "foreshadowingArcs": [
+        {"setup": "净化塔功率每晚下降一格", "development": "下降时间对应旧城信号", "payoff": "有人用塔心维持旧城实验室"},
+        {"setup": "罗盘指向没有地图的区域", "development": "区域出现未腐蚀植物", "payoff": "那里是灰潮源头反应井"},
+        {"setup": "撤离名单缺少儿童页", "development": "旧城广播播放童声", "payoff": "儿童被转移为实验样本"}
+      ],
+      "openingSamples": [
+        {"style": "scene", "text": "净化塔停转三秒，避难所所有灯光变成灰白。秦野抬头，看见通风口落下一片新鲜树叶。"},
+        {"style": "character", "text": "秦野只想把七号避难所修到下一个冬天。可塔心里藏着一段录音，声音属于他失踪十年的妹妹。"},
+        {"style": "suspense", "text": "荒野车队带回一具不会腐烂的尸体。尸体手里攥着七号避难所明天才会签发的通行证。"}
+      ]
+    },
+    {
+      "id": "female-modern-career",
+      "channel": "female",
+      "sortOrder": 9,
+      "genreName": "现言",
+      "subtitle": "职场成长",
+      "description": "现实职场、人际边界与情感选择并行，适合成长型女主。",
+      "iconName": "work_outline",
+      "tags": ["现言", "职场", "成长", "都市情感", "创业", "治愈"],
+      "review": {"sourceNote": "AI draft, human reviewed for bundled v1.1 template", "reviewedAt": "2026-06-04T00:00:00.000Z", "qualityChecks": ["no obvious AI-scent prose", "no genre-common-sense violation", "schema and field length valid", "opening samples non-duplicative"]},
+      "world": {"name": "海城创意圈", "description": "广告、公关与新消费品牌聚集的现代都市，机会多，规则也暧昧。", "rules": "项目成果常被包装成团队荣誉；资源置换影响晋升；公开表达会改变人际格局。", "factions": "创意公司、品牌甲方、独立工作室、行业媒体。", "geography": "写字楼、共享办公区、老城区咖啡馆、发布会现场。", "techLevel": "现代互联网与品牌营销环境。", "aliases": ["海城"]},
+      "characters": [
+        {"name": "初级策划", "personality": "敏感、认真，正在学习表达需求。", "appearance": "通勤包里总有便签和录音笔。", "backstory": "方案被上司署名后，第一次决定为自己争取。", "aliases": ["策划"]},
+        {"name": "品牌主理人", "personality": "清醒、温柔，边界感强。", "appearance": "穿素色西装，喜欢旧钢笔。", "backstory": "创业失败过一次，因此珍惜可信任的伙伴。", "aliases": ["主理人"]},
+        {"name": "强势上司", "personality": "高压、精明，不承认自己亏欠下属。", "appearance": "妆容利落，会议从不迟到。", "backstory": "年轻时也被夺走过作品，如今复制了同样的规则。", "aliases": ["总监"]}
+      ],
+      "foreshadowingArcs": [
+        {"setup": "录音笔误录下会议后半段", "development": "录音证明方案归属", "payoff": "女主用证据换取公开署名"},
+        {"setup": "旧钢笔在合同上断墨", "development": "主理人拒绝不平等条款", "payoff": "钢笔来自他第一次创业失败"},
+        {"setup": "总监回避某个品牌名", "development": "品牌曾是她被夺走的项目", "payoff": "她承认自己害怕下属超过她"}
+      ],
+      "openingSamples": [
+        {"style": "scene", "text": "发布会大屏亮起时，林夏看见自己的方案标题被改成了别人的名字。掌声里，她按下录音笔的停止键。"},
+        {"style": "character", "text": "林夏最擅长把委屈咽下去。直到她熬了三晚的策划案，成了总监升职演讲里的案例。"},
+        {"style": "suspense", "text": "那封匿名邮件只有一句话：你以为她第一次抢你的方案吗？附件里，是三年前一份相同结构的提案。"}
+      ]
+    },
+    {
+      "id": "female-ancient-house",
+      "channel": "female",
+      "sortOrder": 10,
+      "genreName": "古言",
+      "subtitle": "宅斗权谋",
+      "description": "家族内宅、婚约筹码与朝堂风向交织，适合细腻博弈。",
+      "iconName": "home_filled",
+      "tags": ["古言", "宅斗", "权谋", "婚约", "家族", "成长"],
+      "review": {"sourceNote": "AI draft, human reviewed for bundled v1.1 template", "reviewedAt": "2026-06-04T00:00:00.000Z", "qualityChecks": ["no obvious AI-scent prose", "no genre-common-sense violation", "schema and field length valid", "opening samples non-duplicative"]},
+      "world": {"name": "盛京侯府", "description": "盛京贵族以婚约和门第维系权势，侯府表面和顺，内里各房争夺继承与名声。", "rules": "礼法是武器；账册和嫁妆决定话语权；朝堂风向会改变内宅地位。", "factions": "侯府长房、二房、宫中贵妃、御史台。", "geography": "侯府内院、盛京街市、宫门、家庙。", "techLevel": "架空古代，礼制严密，信息依赖人情与书信。", "aliases": ["盛京"]},
+      "characters": [
+        {"name": "侯府庶女", "personality": "隐忍、细致，懂得等待时机。", "appearance": "衣饰素净，发间常簪白玉。", "backstory": "母亲早逝，嫁妆账册成为她唯一筹码。", "aliases": ["三姑娘"]},
+        {"name": "病弱世子", "personality": "温和、敏锐，习惯隐藏锋芒。", "appearance": "常披青色斗篷，咳声轻。", "backstory": "被传活不过二十，却暗中查父辈旧案。", "aliases": ["世子"]},
+        {"name": "掌家夫人", "personality": "体面、强硬，把家族声誉看得最重。", "appearance": "珠翠端正，笑意不达眼底。", "backstory": "为保长房地位，多年压下旧账。", "aliases": ["夫人"]}
+      ],
+      "foreshadowingArcs": [
+        {"setup": "嫁妆账册缺一枚印", "development": "印章出现在宫中赏赐单", "payoff": "母亲嫁妆被挪用于旧案封口"},
+        {"setup": "世子病方从不让外人看", "development": "病方药材与毒方相同", "payoff": "他以病弱身份避开夺嫡牵连"},
+        {"setup": "家庙牌位次序被调换", "development": "调换日对应朝堂弹劾", "payoff": "侯府继承曾被秘密改写"}
+      ],
+      "openingSamples": [
+        {"style": "scene", "text": "家庙香火灭了半炷，沈微才发现母亲的牌位被挪到角落。门外，掌家夫人的脚步声正一步步靠近。"},
+        {"style": "character", "text": "沈微在侯府学会的第一件事，是不要比嫡姐先开口。可今日嫁妆账册摆在她面前，每一页都写着母亲的死因。"},
+        {"style": "suspense", "text": "赐婚圣旨到侯府时，病弱世子已经死了三日。沈微却在当晚收到他的亲笔信：别嫁给我。"}
+      ]
+    },
+    {
+      "id": "female-fantasy-spirit",
+      "channel": "female",
+      "sortOrder": 11,
+      "genreName": "幻言",
+      "subtitle": "契约灵族",
+      "description": "现代或架空幻想中，灵族契约与自我认同推动关系和冒险。",
+      "iconName": "flutter_dash",
+      "tags": ["幻言", "灵族", "契约", "治愈", "冒险", "身份"],
+      "review": {"sourceNote": "AI draft, human reviewed for bundled v1.1 template", "reviewedAt": "2026-06-04T00:00:00.000Z", "qualityChecks": ["no obvious AI-scent prose", "no genre-common-sense violation", "schema and field length valid", "opening samples non-duplicative"]},
+      "world": {"name": "雾森与人间镇", "description": "雾森深处住着灵族，人间小镇以祭礼维持边界。契约一旦缔结，双方记忆会互相影响。", "rules": "灵族不能直接说谎；契约会共享疼痛和梦境；边界雾在月亏时变薄。", "factions": "雾森灵族、人间祭司家族、游商、失契者。", "geography": "雾森、河边小镇、旧祭台、月井。", "techLevel": "低科技小镇与自然灵力并存。", "aliases": ["雾森"]},
+      "characters": [
+        {"name": "镇上少女", "personality": "善感、坚定，害怕被安排人生。", "appearance": "常戴蓝色发带，手背有雾纹。", "backstory": "祭礼前夜误与陌生灵族缔结契约。", "aliases": ["祭司女儿"]},
+        {"name": "失忆灵族", "personality": "安静、诚实，偶尔显出危险本能。", "appearance": "银灰长发，眼睛像月井水。", "backstory": "醒来时不记得族名，只记得少女的梦。", "aliases": ["灵族少年"]},
+        {"name": "游商姐姐", "personality": "洒脱、聪明，嘴上不管闲事。", "appearance": "背彩布包，耳上挂铜铃。", "backstory": "曾是失契者，知道解除契约的代价。", "aliases": ["游商"]}
+      ],
+      "foreshadowingArcs": [
+        {"setup": "少女梦见不属于自己的森林", "development": "梦中路径能避开现实陷阱", "payoff": "梦是灵族失去的记忆"},
+        {"setup": "铜铃遇雾不响", "development": "铜铃能检测失契者", "payoff": "游商曾替别人承担契约"},
+        {"setup": "月井倒影少一个人", "development": "倒影中出现旧祭司", "payoff": "祭司家族隐瞒了第一份契约"}
+      ],
+      "openingSamples": [
+        {"style": "scene", "text": "雾从森林里漫出来时，镇上的钟没有响。苏梨站在祭台前，看见自己的影子牵着一个陌生人的手。"},
+        {"style": "character", "text": "苏梨一直以为祭礼只是大人的规矩。直到她醒来时，手背多了一道雾纹，梦里有人替她喊疼。"},
+        {"style": "suspense", "text": "月井里的倒影告诉苏梨，她已经死过一次。可站在井边的灵族少年说，他也是。"}
+      ]
+    },
+    {
+      "id": "female-youth-campus",
+      "channel": "female",
+      "sortOrder": 12,
+      "genreName": "青春",
+      "subtitle": "校园暗恋",
+      "description": "以班级、社团和升学压力为背景，适合细腻情绪与成长遗憾。",
+      "iconName": "school",
+      "tags": ["青春", "校园", "暗恋", "成长", "社团", "治愈"],
+      "review": {"sourceNote": "AI draft, human reviewed for bundled v1.1 template", "reviewedAt": "2026-06-04T00:00:00.000Z", "qualityChecks": ["no obvious AI-scent prose", "no genre-common-sense violation", "schema and field length valid", "opening samples non-duplicative"]},
+      "world": {"name": "南桥中学", "description": "临江老校，升学压力与社团热闹并存。许多秘密都藏在教学楼天台和广播站。", "rules": "成绩影响班级座位；社团活动为少数学生提供喘息；毕业会迫使关系摊牌。", "factions": "重点班、广播站、篮球队、文学社。", "geography": "教学楼、操场、江边栈道、广播站小屋。", "techLevel": "现代校园，手机和纸条同样重要。", "aliases": ["南桥"]},
+      "characters": [
+        {"name": "广播站女生", "personality": "安静、细腻，说话前会想很多。", "appearance": "校服袖口写着小小日期。", "backstory": "用匿名播音陪伴全校晚自习。", "aliases": ["播音员"]},
+        {"name": "转学生", "personality": "温和、疏离，成绩好但不合群。", "appearance": "书包挂旧相机。", "backstory": "因家庭变故转来南桥，只想低调毕业。", "aliases": ["转校生"]},
+        {"name": "文学社好友", "personality": "热情、敏锐，最先看穿暗恋。", "appearance": "常抱一摞稿纸。", "backstory": "希望毕业前办成最后一期校刊。", "aliases": ["好友"]}
+      ],
+      "foreshadowingArcs": [
+        {"setup": "匿名点歌总是同一首", "development": "歌词对应转学生旧相机照片", "payoff": "点歌人一直在回应女主播音"},
+        {"setup": "校服袖口日期无人知道", "development": "日期出现在毕业照背面", "payoff": "那天是两人第一次相遇"},
+        {"setup": "校刊缺最后一篇稿", "development": "稿件署名被擦掉", "payoff": "稿件是转学生未寄出的告别信"}
+      ],
+      "openingSamples": [
+        {"style": "scene", "text": "晚自习铃响后，广播站的红灯亮了。许知夏念完天气预报，忽然听见耳机里有人轻声说：别念那封信。"},
+        {"style": "character", "text": "许知夏暗恋一个人三个月，证据只有广播稿角落里的缩写。她以为没人知道，直到转学生把那页稿纸还给她。"},
+        {"style": "suspense", "text": "毕业倒计时三十天，南桥中学收到一封没有署名的告白信。信里写的每件事，都只有许知夏知道。"}
+      ]
+    },
+    {
+      "id": "female-romantic-suspense",
+      "channel": "female",
+      "sortOrder": 13,
+      "genreName": "悬疑情感",
+      "subtitle": "双线追凶",
+      "description": "情感关系与追凶线互相照见，适合女性视角下的危险关系和真相。",
+      "iconName": "visibility",
+      "tags": ["女性悬疑", "情感", "追凶", "双线", "旧案", "心理"],
+      "review": {"sourceNote": "AI draft, human reviewed for bundled v1.1 template", "reviewedAt": "2026-06-04T00:00:00.000Z", "qualityChecks": ["no obvious AI-scent prose", "no genre-common-sense violation", "schema and field length valid", "opening samples non-duplicative"]},
+      "world": {"name": "白鹭湾", "description": "安静海湾小城，十年前一场失踪案改变了几户人家。新案让旧关系重新浮出水面。", "rules": "熟人社会让证词带有情感偏向；海潮会带走或送回证物；亲密关系不等于可信。", "factions": "地方派出所、心理咨询室、海湾民宿、旧案家属。", "geography": "海堤、民宿街、废弃灯塔、咨询室。", "techLevel": "现代小城，监控有限，人际线索重要。", "aliases": ["白鹭湾"]},
+      "characters": [
+        {"name": "心理咨询师", "personality": "共情强、克制，习惯保护来访者秘密。", "appearance": "常穿浅色针织衫，手腕有旧疤。", "backstory": "十年前失踪案中失去好友，如今接待疑似相关来访者。", "aliases": ["咨询师"]},
+        {"name": "归乡刑警", "personality": "直接、疲惫，对故乡怀有抵触。", "appearance": "短发，外套总有海盐味。", "backstory": "被调回白鹭湾调查新案，与女主共享旧案记忆。", "aliases": ["刑警"]},
+        {"name": "民宿老板", "personality": "温柔、周到，善于记住客人习惯。", "appearance": "围亚麻围裙，笑容稳定。", "backstory": "十年前案发夜，他是最后见过失踪者的人。", "aliases": ["老板"]}
+      ],
+      "foreshadowingArcs": [
+        {"setup": "来访者画同一座灯塔", "development": "灯塔墙面发现旧刻痕", "payoff": "刻痕记录失踪者逃跑路线"},
+        {"setup": "女主旧疤在潮湿天疼", "development": "旧疤形状像民宿钥匙牌", "payoff": "她曾拿过关键钥匙却失忆"},
+        {"setup": "老板记错客人早餐", "development": "他从不记错任何细节", "payoff": "错误是故意制造的不在场证明"}
+      ],
+      "openingSamples": [
+        {"style": "scene", "text": "海潮退去后，白鹭湾的沙滩上多了一只红色行李箱。箱子里没有尸体，只有十年前失踪女孩的预约卡。"},
+        {"style": "character", "text": "沈遥做心理咨询师后，很少评价来访者说谎。直到那个女人坐下，说出了她死去好友才知道的暗号。"},
+        {"style": "suspense", "text": "失踪案重启当天，沈遥收到一条短信：如果你想起那晚，我就会死。发信人显示是十年前的死者。"}
+      ]
+    },
+    {
+      "id": "female-farming-family",
+      "channel": "female",
+      "sortOrder": 14,
+      "genreName": "种田",
+      "subtitle": "家业经营",
+      "description": "小镇生活、家业修复与邻里关系，适合温暖但有目标的经营线。",
+      "iconName": "yard",
+      "tags": ["种田", "经营", "家业", "美食", "邻里", "治愈"],
+      "review": {"sourceNote": "AI draft, human reviewed for bundled v1.1 template", "reviewedAt": "2026-06-04T00:00:00.000Z", "qualityChecks": ["no obvious AI-scent prose", "no genre-common-sense violation", "schema and field length valid", "opening samples non-duplicative"]},
+      "world": {"name": "青禾镇", "description": "山脚小镇以茶田、旧食铺和集市闻名。年轻人外流后，许多老手艺等着被重新看见。", "rules": "季节决定生计节奏；邻里口碑影响买卖；家传配方需要实践而非口号。", "factions": "老茶农、镇食铺、集市商贩、返乡青年。", "geography": "茶山、青石街、旧食铺、河边集市。", "techLevel": "现代小镇，传统手艺与短视频营销并存。", "aliases": ["青禾"]},
+      "characters": [
+        {"name": "返乡女主", "personality": "务实、温柔，有一点不服输。", "appearance": "常挽袖子，手上有做饭烫痕。", "backstory": "辞职回乡接手快倒闭的家传食铺。", "aliases": ["店主"]},
+        {"name": "茶山青年", "personality": "慢热、可靠，对土地很有耐心。", "appearance": "晒得偏黑，笑起来露虎牙。", "backstory": "守着父辈茶山，想把老茶做出新路。", "aliases": ["茶农"]},
+        {"name": "挑剔姨婆", "personality": "嘴硬、心软，记得镇上所有旧事。", "appearance": "银发盘起，拎竹篮。", "backstory": "掌握家传配方缺失的一味关键。", "aliases": ["姨婆"]}
+      ],
+      "foreshadowingArcs": [
+        {"setup": "旧食谱最后一味被墨盖住", "development": "姨婆每次试菜都提同一种香气", "payoff": "关键是茶山雨后第一批嫩叶"},
+        {"setup": "食铺招牌背面有刻字", "development": "刻字对应老茶树编号", "payoff": "两家祖辈曾共同经营铺子"},
+        {"setup": "集市摊位总被临时调走", "development": "调位让女主避开恶意竞争", "payoff": "商贩们暗中帮她守铺"}
+      ],
+      "openingSamples": [
+        {"style": "scene", "text": "青禾镇下第一场春雨时，旧食铺的屋檐漏了三处。许棠站在灶台前，闻见一锅失败卤汤里冒出久违的茶香。"},
+        {"style": "character", "text": "许棠辞职那天，老板说她撑不过一个月。她回到青禾镇，发现家里的食铺连招牌都快掉下来了。"},
+        {"style": "suspense", "text": "家传食谱最后一页被墨涂黑。许棠以为是意外，直到姨婆说：那一味东西，不能让外人知道。"}
+      ]
+    }
+  ]
+}

@@ -75,41 +75,11 @@ class SynthesisState {
       error: error,
       excludedFragmentsNotice: excludedFragmentsNotice,
       highlights: highlights ?? this.highlights,
-      additionalInstruction: additionalInstruction ?? this.additionalInstruction,
+      additionalInstruction:
+          additionalInstruction ?? this.additionalInstruction,
     );
   }
 }
-
-/// Provides the currently active AI provider (synchronous access).
-///
-/// Reads from ProviderService's async value and extracts the active provider.
-/// Returns null if service is not ready or no provider is active.
-final activeProviderProvider = Provider<AIProvider?>((ref) {
-  final serviceAsync = ref.watch(providerServiceProvider);
-  return serviceAsync.asData?.value.getActiveProvider();
-});
-
-/// Provides the API key for the active provider (synchronous access).
-///
-/// In production, this reads from the async apiKeyFutureProvider.
-/// In tests, override this provider directly with a sync value.
-final activeApiKeyProvider = Provider<String?>((ref) {
-  final apiKeyAsync = ref.watch(apiKeyFutureProvider);
-  return apiKeyAsync.asData?.value;
-});
-
-/// Async provider that fetches the API key from secure storage.
-/// Used by activeApiKeyProvider internally.
-final apiKeyFutureProvider = FutureProvider<String?>((ref) async {
-  final provider = ref.watch(activeProviderProvider);
-  if (provider == null) return null;
-
-  final serviceAsync = ref.watch(providerServiceProvider);
-  final service = serviceAsync.asData?.value;
-  if (service == null) return null;
-
-  return service.getApiKey(provider.id);
-});
 
 /// Notifier managing the synthesis state machine.
 ///
@@ -159,11 +129,13 @@ class SynthesisNotifier extends Notifier<SynthesisState> {
   void confirmAndInsert() {
     if (state.accumulatedText.isEmpty) return;
 
+    final textToInsert = state.accumulatedText;
     final editor = ref.read(editorProvider);
     if (editor != null) {
-      editor.execute([
-        InsertPlainTextAtCaretRequest(state.accumulatedText),
-      ]);
+      editor.execute([InsertPlainTextAtCaretRequest(textToInsert)]);
+      ref.read(writingStatsCollectorProvider.future).then((collector) {
+        collector.recordAiInsertion(textToInsert);
+      });
     }
 
     // Reset state after insertion
@@ -180,20 +152,14 @@ class SynthesisNotifier extends Notifier<SynthesisState> {
     // Get selected fragments
     final fragments = ref.read(selectedFragmentsProvider);
     if (fragments.isEmpty) {
-      state = state.copyWith(
-        isStreaming: false,
-        error: '请先选择至少一个碎片',
-      );
+      state = state.copyWith(isStreaming: false, error: '请先选择至少一个碎片');
       return;
     }
 
     // Get active provider
     final provider = ref.read(activeProviderProvider);
     if (provider == null) {
-      state = state.copyWith(
-        isStreaming: false,
-        error: '未配置 AI 模型，请在设置中添加',
-      );
+      state = state.copyWith(isStreaming: false, error: '未配置 AI 模型，请在设置中添加');
       return;
     }
 
@@ -209,10 +175,7 @@ class SynthesisNotifier extends Notifier<SynthesisState> {
     // Get API key (synchronous read -- activeApiKeyProvider wraps the async fetch)
     final apiKey = ref.read(activeApiKeyProvider);
     if (apiKey == null || apiKey.isEmpty) {
-      state = state.copyWith(
-        isStreaming: false,
-        error: 'API Key 无效，请检查设置',
-      );
+      state = state.copyWith(isStreaming: false, error: 'API Key 无效，请检查设置');
       return;
     }
 
@@ -231,8 +194,10 @@ class SynthesisNotifier extends Notifier<SynthesisState> {
     state = state.copyWith(excludedFragmentsNotice: excludedNotice);
 
     // Build prompt via pipeline
-    final pipeline = ref.read(promptPipelineProvider);
+    final pipeline = await ref.read(promptPipelineProvider.future);
+    if (!ref.mounted) return;
     final bannedPhrases = await _getBannedPhrases();
+    if (!ref.mounted) return;
 
     final context = PromptContext(
       fragments: budgetResult.included,
@@ -255,16 +220,18 @@ class SynthesisNotifier extends Notifier<SynthesisState> {
       );
 
       await for (final token in stream) {
-        state = state.copyWith(
-          accumulatedText: state.accumulatedText + token,
-        );
+        if (!ref.mounted) return;
+        state = state.copyWith(accumulatedText: state.accumulatedText + token);
       }
 
       // Stream complete -- run anti-AI-scent processing
+      if (!ref.mounted) return;
       await _postProcess();
     } on AIException catch (e) {
+      if (!ref.mounted) return;
       _handleStreamError(e);
     } catch (e) {
+      if (!ref.mounted) return;
       state = state.copyWith(
         isStreaming: false,
         isEditing: true,
@@ -278,6 +245,7 @@ class SynthesisNotifier extends Notifier<SynthesisState> {
   Future<void> _postProcess() async {
     final processor = ref.read(antiAIScentProcessorProvider);
     final bannedPhrases = await _getBannedPhrases();
+    if (!ref.mounted) return;
 
     final result = processor.process(
       state.accumulatedText,

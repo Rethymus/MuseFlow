@@ -11,6 +11,7 @@ import 'package:museflow/features/editor/presentation/editor_toolbar.dart';
 import 'package:museflow/features/editor/presentation/floating_toolbar.dart';
 import 'package:museflow/features/editor/presentation/status_bar.dart';
 import 'package:museflow/features/knowledge/presentation/quick_insert_dialog.dart';
+import 'package:museflow/features/knowledge/presentation/deviation_warning_widget.dart';
 import 'package:super_editor/super_editor.dart';
 
 /// Stylesheet that extends the default with AI-provenance background styling.
@@ -32,9 +33,7 @@ TextStyle _provenanceInlineTextStyler(
 
   // If the text has AI provenance, apply a subtle blue background
   if (attributions.contains(aiProvenanceAttribution)) {
-    style = style.copyWith(
-      backgroundColor: provenanceColor,
-    );
+    style = style.copyWith(backgroundColor: provenanceColor);
   }
 
   return style;
@@ -72,23 +71,51 @@ class EditorPage extends ConsumerStatefulWidget {
 class _EditorPageState extends ConsumerState<EditorPage> {
   late final Editor _editor;
   late final SelectionLayerLinks _selectionLinks;
+  late final EditListener _statsEditListener;
 
   @override
   void initState() {
     super.initState();
     _editor = createDefaultEditor();
     _selectionLinks = SelectionLayerLinks();
+    _statsEditListener = FunctionalEditListener((_) {
+      _recordStatsSnapshot();
+    });
+    _editor.addListener(_statsEditListener);
     // Expose editor via provider for synthesis text insertion per D-07
     WidgetsBinding.instance.addPostFrameCallback((_) {
       ref.read(editorProvider.notifier).setEditor(_editor);
+      _recordStatsSnapshot();
     });
   }
 
   @override
   void dispose() {
+    _editor.removeListener(_statsEditListener);
+    ref.read(writingStatsCollectorProvider.future).then((collector) {
+      collector.flush();
+    });
     ref.read(editorProvider.notifier).setEditor(null);
     _editor.composer.dispose();
     super.dispose();
+  }
+
+  void _recordStatsSnapshot() {
+    final plainText = _documentPlainText(_editor.document);
+    ref.read(writingStatsCollectorProvider.future).then((collector) {
+      collector.recordTextSnapshot(plainText);
+    });
+  }
+
+  String _documentPlainText(Document document) {
+    final buffer = StringBuffer();
+    for (final node in document) {
+      if (node is TextNode) {
+        if (buffer.isNotEmpty) buffer.writeln();
+        buffer.write(node.text.toPlainText());
+      }
+    }
+    return buffer.toString();
   }
 
   void _toggleBold() {
@@ -136,8 +163,11 @@ class _EditorPageState extends ConsumerState<EditorPage> {
         LogicalKeySet(LogicalKeyboardKey.control, LogicalKeyboardKey.keyI):
             const _ItalicIntent(),
         // EDIT-06: Ctrl+Shift+Z for AI undo (separate from Ctrl+Z)
-        LogicalKeySet(LogicalKeyboardKey.control, LogicalKeyboardKey.shift,
-            LogicalKeyboardKey.keyZ): const _UndoAIIntent(),
+        LogicalKeySet(
+          LogicalKeyboardKey.control,
+          LogicalKeyboardKey.shift,
+          LogicalKeyboardKey.keyZ,
+        ): const _UndoAIIntent(),
         LogicalKeySet(LogicalKeyboardKey.control, LogicalKeyboardKey.keyK):
             const _QuickInsertIntent(),
       },
@@ -167,6 +197,7 @@ class _EditorPageState extends ConsumerState<EditorPage> {
               children: [
                 // Fixed toolbar at top
                 EditorToolbar(editor: _editor),
+                const DeviationWarningWidget(),
                 // Divider between toolbar and editor
                 Divider(height: 1, thickness: 1, color: colorScheme.outline),
                 // Editor area with centered layout
@@ -194,27 +225,29 @@ class _EditorPageState extends ConsumerState<EditorPage> {
                             // Diff highlights overlay
                             const DiffOverlayBuilder(),
                             // Floating toolbar for AI actions
-                            FunctionalSuperEditorLayerBuilder(
-                              (context, editContext) {
-                                return ContentLayerProxyWidget(
-                                  child: FloatingToolbar(
-                                    editor: _editor,
-                                    selectionLayerLinks: _selectionLinks,
-                                  ),
-                                );
-                              },
-                            ),
+                            FunctionalSuperEditorLayerBuilder((
+                              context,
+                              editContext,
+                            ) {
+                              return ContentLayerProxyWidget(
+                                child: FloatingToolbar(
+                                  editor: _editor,
+                                  selectionLayerLinks: _selectionLinks,
+                                ),
+                              );
+                            }),
                             // Accept/reject action bar for pending diffs
-                            FunctionalSuperEditorLayerBuilder(
-                              (context, editContext) {
-                                return ContentLayerProxyWidget(
-                                  child: AcceptRejectBar(
-                                    editor: _editor,
-                                    selectionLayerLinks: _selectionLinks,
-                                  ),
-                                );
-                              },
-                            ),
+                            FunctionalSuperEditorLayerBuilder((
+                              context,
+                              editContext,
+                            ) {
+                              return ContentLayerProxyWidget(
+                                child: AcceptRejectBar(
+                                  editor: _editor,
+                                  selectionLayerLinks: _selectionLinks,
+                                ),
+                              );
+                            }),
                             // Default caret overlay
                             const DefaultCaretOverlayBuilder(),
                           ],
@@ -315,7 +348,10 @@ class _SelectionLeadersLayerBuilder implements SuperEditorLayerBuilder {
   final SelectionLayerLinks links;
 
   @override
-  ContentLayerWidget build(BuildContext context, SuperEditorContext editContext) {
+  ContentLayerWidget build(
+    BuildContext context,
+    SuperEditorContext editContext,
+  ) {
     return SelectionLeadersDocumentLayer(
       document: editContext.document,
       selection: editContext.composer.selectionNotifier,

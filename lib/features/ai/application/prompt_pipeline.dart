@@ -14,6 +14,8 @@ import 'package:museflow/features/ai/application/prompt_middlewares/persona_inje
 import 'package:museflow/features/ai/application/prompt_middlewares/system_prompt_middleware.dart';
 import 'package:museflow/features/ai/application/prompt_middlewares/user_content_middleware.dart';
 import 'package:museflow/features/editor/domain/editor_ai_state.dart';
+import 'package:museflow/features/knowledge/application/knowledge_injection_middleware.dart';
+import 'package:museflow/features/knowledge/application/skill_enforcement_middleware.dart';
 import 'package:openai_dart/openai_dart.dart';
 
 /// Abstract interface for context anchors that can be injected into prompts.
@@ -153,12 +155,17 @@ class PromptPipeline {
   const PromptPipeline({required this.middlewares});
 
   /// Creates a pipeline with the default middleware ordering per AI-04.
-  factory PromptPipeline.withDefaultMiddlewares() {
+  factory PromptPipeline.withDefaultMiddlewares({
+    KnowledgeInjectionMiddleware? knowledgeInjectionMiddleware,
+    SkillEnforcementMiddleware? skillEnforcementMiddleware,
+  }) {
     return PromptPipeline(
       middlewares: [
         SystemPromptMiddleware(),
         PersonaInjectionMiddleware(),
         BannedListMiddleware(),
+        if (knowledgeInjectionMiddleware != null) knowledgeInjectionMiddleware,
+        if (skillEnforcementMiddleware != null) skillEnforcementMiddleware,
         UserContentMiddleware(),
       ],
     );

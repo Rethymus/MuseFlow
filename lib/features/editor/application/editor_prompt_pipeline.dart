@@ -15,6 +15,8 @@ import 'package:museflow/features/ai/application/prompt_middlewares/persona_inje
 import 'package:museflow/features/ai/application/prompt_middlewares/system_prompt_middleware.dart';
 import 'package:museflow/features/editor/application/context_anchor_middleware.dart';
 import 'package:museflow/features/editor/domain/editor_ai_state.dart';
+import 'package:museflow/features/knowledge/application/knowledge_injection_middleware.dart';
+import 'package:museflow/features/knowledge/application/skill_enforcement_middleware.dart';
 import 'package:openai_dart/openai_dart.dart';
 
 /// Prompt pipeline specialized for editor AI operations.
@@ -24,12 +26,17 @@ import 'package:openai_dart/openai_dart.dart';
 /// replaces [UserContentMiddleware] with editor-specific middlewares.
 class EditorPromptPipeline extends PromptPipeline {
   /// Creates an editor prompt pipeline with the correct middleware ordering.
-  EditorPromptPipeline()
+  EditorPromptPipeline({
+    KnowledgeInjectionMiddleware? knowledgeInjectionMiddleware,
+    SkillEnforcementMiddleware? skillEnforcementMiddleware,
+  })
       : super(
           middlewares: [
             SystemPromptMiddleware(),
             PersonaInjectionMiddleware(),
             BannedListMiddleware(),
+            if (knowledgeInjectionMiddleware != null) knowledgeInjectionMiddleware,
+            if (skillEnforcementMiddleware != null) skillEnforcementMiddleware,
             const ContextAnchorMiddleware(),
             EditorOperationMiddleware(),
             EditorUserContentMiddleware(),
