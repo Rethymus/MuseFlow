@@ -644,22 +644,19 @@ GoRouter _createRouter() {
 | A4 | Chinese character count (excluding whitespace) is a sufficient word count metric for progress tracking | Code Examples | If users expect mixed-language counting (e.g., English words + Chinese characters), the counting algorithm needs adjustment. |
 | A5 | The existing `Editor` instance can have its `Document` swapped without recreating the entire widget tree | Pitfall 1 | If SuperEditor 0.3.0-dev doesn't support clean Document swap, the EditorPage may need to be fully rebuilt on chapter switch, causing UX degradation. |
 
-## Open Questions
+## Open Questions (RESOLVED)
 
-1. **SuperEditor Document Swap Mechanism**
-   - What we know: SuperEditor 0.3.0 separates Editor/Document/Composer. The Editor takes a `document` parameter.
-   - What's unclear: Can we replace the `Document` reference in an existing `Editor` without disposing and recreating it? Or do we need to create a new `Editor` with the new `Document`?
-   - Recommendation: The planner should create a small proof-of-concept task early (Wave 1) to verify Document swap behavior. If the Editor must be recreated, use `Key`-based widget rebuild with `ValueKey(chapterId)`.
+1. **SuperEditor Document Swap Mechanism** (RESOLVED)
+   - Resolution: Use `ValueKey(chapterId)` on the SuperEditor widget to force a clean rebuild when switching chapters. SuperEditor 0.3.0 separates Editor/Document/Composer, but the Editor is tightly coupled to its Document at the widget level. Key-based rebuild is the reliable approach -- it clears undo history per-document (acceptable at chapter boundaries) and avoids stale state. The EditorHolderNotifier is updated to the new Editor instance on each switch.
+   - Implemented in: Plan 04, Task 2 (EditorWithSidebar)
 
-2. **`super_editor_markdown` Version Compatibility**
-   - What we know: `super_editor_markdown` is the official companion package. It's referenced in Context7 docs.
-   - What's unclear: The exact version that's compatible with `super_editor: ^0.3.0-dev.20`.
-   - Recommendation: Run `flutter pub add super_editor_markdown` and verify resolution succeeds. If there's a conflict, pin a compatible version.
+2. **`super_editor_markdown` Version Compatibility** (RESOLVED)
+   - Resolution: Let pub dependency resolution find the compatible version. `flutter pub add super_editor_markdown` without version constraint lets Dart's resolver pick the matching release for `super_editor: ^0.3.0-dev.20`. If resolution fails, the executor pins the version that matches. The package is marked [ASSUMED] in the Package Legitimacy Audit (official companion from superlistapp).
+   - Implemented in: Plan 01, Task 1 (package install)
 
-3. **Bottom Nav Hiding Strategy**
-   - What we know: CONTEXT.md says bottom nav is hidden when inside a manuscript editor.
-   - What's unclear: Whether to use a top-level GoRoute (outside StatefulShellRoute) or a nested navigator within Branch 1 with a conditional scaffold.
-   - Recommendation: Use a top-level GoRoute for `/manuscript/:id/editor`. This gives full control over the scaffold (no bottom nav). The library page stays inside StatefulShellRoute Branch 1. This matches the pattern described in Pitfall 4.
+3. **Bottom Nav Hiding Strategy** (RESOLVED)
+   - Resolution: Use a top-level GoRoute (outside StatefulShellRoute) for `/manuscript/:id/editor` and `/manuscript/:id/settings`. This gives the editor full control over its Scaffold (no bottom nav, custom AppBar with back button). The library page remains as Branch 1 default inside StatefulShellRoute. This matches Pitfall 4 and is implemented in Plan 03, Task 2.
+   - Implemented in: Plan 03, Task 2 (route wiring)
 
 ## Environment Availability
 
