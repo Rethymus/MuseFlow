@@ -27,7 +27,7 @@
 - [x] **Phase 7: 预设世界观模板库** — 14种小说类型模板，一键创建世界设定+角色原型，AI补全空白字段
 - [x] **Phase 8: 开篇引导** — 首次启动4步向导，AI开篇生成器（3种风格），引导可中断恢复
 - [x] **Phase 9: 写作数据统计** — 全球/项目数据面板，fl_chart图表，成就徽章，性能无感采集
-- [ ] **Phase 10: 故事弧可视化** — graphview交互式节点图，缩放平移，拖拽排列，缩略图导航
+- [x] **Phase 10: 故事弧可视化** — graphview交互式节点图，缩放平移，拖拽排列，缩略图导航 (completed 2026-06-05)
 
 ## Phase Details
 
@@ -139,15 +139,15 @@ Plans:
 
 **Wave 1**
 
-- [ ] 10-01: NodePosition data layer, graphview install, and semantic color utilities (wave 1)
+- [x] 10-01: NodePosition data layer, graphview install, and semantic color utilities (wave 1)
 
 **Wave 2** *(blocked on Wave 1 completion)*
 
-- [ ] 10-02: Interactive graph UI with styled nodes/edges, inline editing, and tab integration (wave 2, depends on 10-01)
+- [x] 10-02: Interactive graph UI with styled nodes/edges, inline editing, and tab integration (wave 2, depends on 10-01)
 
 **Wave 3** *(blocked on Wave 2 completion)*
 
-- [ ] 10-03: Node drag with position persistence and minimap overlay (wave 3, depends on 10-01, 10-02)
+- [x] 10-03: Node drag with position persistence and minimap overlay (wave 3, depends on 10-01, 10-02)
 
 ## Progress
 
@@ -167,4 +167,4 @@ Note: Phases 9 and 10 are independent of each other (both depend only on v1.0). 
 | 7. 预设世界观模板库 | v1.1 | 3/3 | Implemented; manual template prose review pending | 2026-06-04 |
 | 8. 开篇引导 | v1.1 | 5/5 | Complete | 2026-06-04 |
 | 9. 写作数据统计 | v1.1 | 5/5 | Complete   | 2026-06-05 |
-| 10. 故事弧可视化 | v1.1 | 0/3 | Not started | - |
+| 10. 故事弧可视化 | v1.1 | 3/3 | Complete   | 2026-06-05 |
