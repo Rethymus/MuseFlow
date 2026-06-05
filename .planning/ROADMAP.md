@@ -3,7 +3,8 @@
 ## Milestones
 
 - ✅ **v1.0 MVP** — Phases 0–6 (shipped 2026-06-04)
-- 🚧 **v1.1 创作体验升级** — Phases 7–10 (in progress)
+- ✅ **v1.1 创作体验升级** — Phases 7–10 (shipped 2026-06-05)
+- 📋 **v1.2 多文稿架构** — Phase 11 (planning)
 
 ## Phases
 
@@ -20,14 +21,20 @@
 
 </details>
 
-### 🚧 v1.1 创作体验升级 (In Progress)
+### 🚧 v1.1 创作体验升级 (Shipped)
 
 **Milestone Goal:** 在 v1.0 核心流程基础上，增加模板库降低冷启动门槛、引导流程让新用户快速上手、数据统计量化创作过程、故事弧可视化增强创作感知。
 
 - [x] **Phase 7: 预设世界观模板库** — 14种小说类型模板，一键创建世界设定+角色原型，AI补全空白字段
 - [x] **Phase 8: 开篇引导** — 首次启动4步向导，AI开篇生成器（3种风格），引导可中断恢复
 - [x] **Phase 9: 写作数据统计** — 全球/项目数据面板，fl_chart图表，成就徽章，性能无感采集
-- [x] **Phase 10: 故事弧可视化** — graphview交互式节点图，缩放平移，拖拽排列，缩略图导航 (completed 2026-06-05)
+- [x] **Phase 10: 故事弧可视化** — graphview交互式节点图，缩放平移，拖拽排列，缩略图导航
+
+### 📋 v1.2 多文稿架构 (Planning)
+
+**Milestone Goal:** 将 MuseFlow 从"单一编辑器"升级为"多文稿管理平台"，支持章节级编辑和多线程并行创作。
+
+- [ ] **Phase 11: 文稿库与章节管理** — 多文稿 CRUD、章节实体与导航、编辑器章节级切换、数据迁移、模板策略修订
 
 ## Phase Details
 
@@ -116,7 +123,6 @@ Plans:
 **Gap Closure** *(from VERIFICATION.md)*
 
 - [x] 09-04: Fix navigation destination count assertions (5 → 6) in test/app/ tests
-
 - [x] 09-05: Fix navigation test router structure (add stats branch, update settings assertion)
 
 ### Phase 10: 故事弧可视化
@@ -149,10 +155,46 @@ Plans:
 
 - [x] 10-03: Node drag with position persistence and minimap overlay (wave 3, depends on 10-01, 10-02)
 
+### Phase 11: 文稿库与章节管理
+
+**Goal**: 将 MuseFlow 从单一编辑器升级为多文稿管理平台，支持文稿 CRUD、章节实体与导航、编辑器章节级切换、数据迁移和模板策略修订
+**Depends on**: Phase 10 (v1.1 shipped — editor and knowledge base domain entities exist)
+**Success Criteria** (what must be TRUE):
+
+  1. User can create, view, edit, soft-delete manuscripts from a library homepage (card grid with genre-colored covers)
+  2. User can create, rename, reorder (drag & drop), split, merge, duplicate, and delete chapters within a manuscript
+  3. Editor switches chapter documents when user selects a different chapter in the left sidebar
+  4. Chapter content auto-saves with debounced + forced-save guarantees (on chapter switch, navigation, app lifecycle)
+  5. Manuscript creation from template auto-creates WorldSetting + CharacterCards + chapter skeleton
+  6. Export supports chapter-aware structure (per-chapter content, not flat manuscriptText)
+
+**Plans**: 5 executable plans created 2026-06-06
+
+Plans:
+**Wave 1** *(foundation)*
+
+- [ ] 11-01: Domain entities (Manuscript, Chapter, Genre, ChapterExport) + Hive TypeAdapters + super_editor_markdown install (wave 1)
+
+**Wave 2** *(services)*
+
+- [ ] 11-02: Repositories, notifiers, auto-save service, purge service, sort utility, provider registration (wave 2, depends on 11-01)
+
+**Wave 3** *(library UI + routing)*
+
+- [ ] 11-03: ManuscriptLibraryPage, ManuscriptCard, ManuscriptCreateDialog, ManuscriptSettingsPage, route wiring (wave 3, depends on 11-02)
+
+**Wave 4** *(editor + sidebar)*
+
+- [ ] 11-04: EditorWithSidebar, ChapterSidebar, chapter dialogs, document switching, auto-save integration (wave 4, depends on 11-02, 11-03)
+
+**Wave 5** *(integration)*
+
+- [ ] 11-05: ExportBundle chapters, template chapter skeleton, AI chapter context, StatusBar progress, purge startup (wave 5, depends on 11-04)
+
 ## Progress
 
 **Execution Order:**
-Phases execute in numeric order: 7 → 8 → 9 → 10
+Phases execute in numeric order: 7 → 8 → 9 → 10 → 11
 Note: Phases 9 and 10 are independent of each other (both depend only on v1.0). They can run in parallel if desired.
 
 | Phase | Milestone | Plans Complete | Status | Completed |
@@ -168,3 +210,4 @@ Note: Phases 9 and 10 are independent of each other (both depend only on v1.0). 
 | 8. 开篇引导 | v1.1 | 5/5 | Complete | 2026-06-04 |
 | 9. 写作数据统计 | v1.1 | 5/5 | Complete   | 2026-06-05 |
 | 10. 故事弧可视化 | v1.1 | 4/4 | Complete    | 2026-06-05 |
+| 11. 文稿库与章节管理 | v1.2 | 0/5 | Planning    | — |
