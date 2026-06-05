@@ -67,6 +67,14 @@ class _TestStoryStructurePage extends StatelessWidget {
       const Scaffold(body: Center(child: Text('TEST_STORY_STRUCTURE')));
 }
 
+class _TestStatsPage extends StatelessWidget {
+  const _TestStatsPage();
+
+  @override
+  Widget build(BuildContext context) =>
+      const Scaffold(body: Center(child: Text('TEST_STATS')));
+}
+
 /// Creates a test router with the same shell structure as the real app,
 /// but with simple placeholder pages instead of SuperEditor.
 GoRouter _createTestRouter() {
@@ -107,6 +115,14 @@ GoRouter _createTestRouter() {
               GoRoute(
                 path: AppConstants.storyStructure,
                 builder: (context, state) => const _TestStoryStructurePage(),
+              ),
+            ],
+          ),
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: AppConstants.stats,
+                builder: (context, state) => const _TestStatsPage(),
               ),
             ],
           ),
@@ -216,7 +232,7 @@ void main() {
       final navRail = tester.widget<NavigationRail>(
         find.byType(NavigationRail),
       );
-      expect(navRail.selectedIndex, equals(4));
+      expect(navRail.selectedIndex, equals(5));
 
       tester.view.resetPhysicalSize();
       tester.view.resetDevicePixelRatio();
