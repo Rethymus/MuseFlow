@@ -26,7 +26,9 @@ class NodePositionRepository {
     try {
       final json = _box.get(plotNodeId);
       if (json == null) return null;
-      return NodePosition.fromJson(json as Map<String, dynamic>).toOffset();
+      return NodePosition.fromJson(
+        Map<String, dynamic>.from(json as Map),
+      ).toOffset();
     } catch (e) {
       throw StateError('Failed to read node position $plotNodeId: $e');
     }
@@ -39,7 +41,9 @@ class NodePositionRepository {
       for (final key in _box.keys) {
         final json = _box.get(key);
         if (json == null) continue;
-        final position = NodePosition.fromJson(json as Map<String, dynamic>);
+        final position = NodePosition.fromJson(
+          Map<String, dynamic>.from(json as Map),
+        );
         positions[position.plotNodeId] = position.toOffset();
       }
       return positions;
