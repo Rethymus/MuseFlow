@@ -21,6 +21,9 @@ Thumbs.db
 # Coverage
 coverage/
 
+# Flutter crash logs
+flutter_*.log
+
 # Generated
 *.g.dart
 *.freezed.dart
