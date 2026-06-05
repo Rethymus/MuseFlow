@@ -97,7 +97,7 @@ Widget _createTestApp() {
 
 void main() {
   group('App Shell Navigation', () {
-    testWidgets('should render NavigationRail with 4 destinations',
+    testWidgets('should render NavigationRail with 6 destinations',
         (tester) async {
       tester.view.physicalSize = const Size(1200, 800);
       tester.view.devicePixelRatio = 1.0;
@@ -108,12 +108,12 @@ void main() {
       // Should find NavigationRail
       expect(find.byType(NavigationRail), findsOneWidget);
 
-      // Should have 4 navigation destinations with Chinese labels
+      // Should have 6 navigation destinations with Chinese labels
       // Use find.byType to locate NavigationRailDestination labels
       final navRail = tester.widget<NavigationRail>(
         find.byType(NavigationRail),
       );
-      expect(navRail.destinations.length, equals(4));
+      expect(navRail.destinations.length, equals(6));
 
       // Verify labels exist in the widget tree
       expect(find.text('捕捉器'), findsOneWidget);
@@ -179,11 +179,11 @@ void main() {
       expect(find.byType(NavigationBar), findsOneWidget);
       expect(find.byType(NavigationRail), findsNothing);
 
-      // Should have 4 destinations
+      // Should have 6 destinations
       final navBar = tester.widget<NavigationBar>(
         find.byType(NavigationBar),
       );
-      expect(navBar.destinations.length, equals(4));
+      expect(navBar.destinations.length, equals(6));
 
       tester.view.resetPhysicalSize();
       tester.view.resetDevicePixelRatio();
