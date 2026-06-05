@@ -8,6 +8,7 @@ import 'package:museflow/features/story_structure/presentation/foreshadowing_for
 import 'package:museflow/features/story_structure/presentation/guardian_panel.dart';
 import 'package:museflow/features/story_structure/presentation/plot_node_form.dart';
 import 'package:museflow/features/story_structure/presentation/plot_timeline.dart';
+import 'package:museflow/features/story_structure/presentation/story_arc/story_arc_graph.dart';
 import 'package:museflow/features/story_structure/presentation/format_clean_preview_dialog.dart';
 import 'package:museflow/features/story_structure/presentation/export_dialog.dart';
 import 'package:super_editor/super_editor.dart';
@@ -30,7 +31,7 @@ class _StoryStructurePageState extends ConsumerState<StoryStructurePage>
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 4, vsync: this);
+    _tabController = TabController(length: 5, vsync: this);
   }
 
   @override
@@ -50,6 +51,7 @@ class _StoryStructurePageState extends ConsumerState<StoryStructurePage>
           tabs: const [
             Tab(text: '伏笔'),
             Tab(text: '剧情线'),
+            Tab(text: '弧线图'),
             Tab(text: '守护'),
             Tab(text: '整理与导出'),
           ],
@@ -60,6 +62,7 @@ class _StoryStructurePageState extends ConsumerState<StoryStructurePage>
         children: const [
           _ForeshadowingSection(),
           PlotTimeline(),
+          StoryArcGraph(),
           GuardianPanel(),
           _FinishExportSection(),
         ],
@@ -76,24 +79,21 @@ class _StoryStructurePageState extends ConsumerState<StoryStructurePage>
   }
 
   void _showPlotNodeForm(BuildContext context) {
-    showDialog<void>(
-      context: context,
-      builder: (_) => const PlotNodeForm(),
-    );
+    showDialog<void>(context: context, builder: (_) => const PlotNodeForm());
   }
 
   Widget? _buildFAB() {
     return switch (_tabController.index) {
       0 => FloatingActionButton(
-          onPressed: () => _showForeshadowingForm(context),
-          tooltip: '新建伏笔',
-          child: const Icon(Icons.add),
-        ),
-      1 => FloatingActionButton(
-          onPressed: () => _showPlotNodeForm(context),
-          tooltip: '新建情节点',
-          child: const Icon(Icons.add),
-        ),
+        onPressed: () => _showForeshadowingForm(context),
+        tooltip: '新建伏笔',
+        child: const Icon(Icons.add),
+      ),
+      1 || 2 => FloatingActionButton(
+        onPressed: () => _showPlotNodeForm(context),
+        tooltip: '新建情节点',
+        child: const Icon(Icons.add),
+      ),
       _ => null,
     };
   }
@@ -134,10 +134,7 @@ class _ForeshadowingSection extends ConsumerWidget {
                   SizedBox(height: 16),
                   Text(
                     '还没有伏笔',
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.w600,
-                    ),
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
                   ),
                   SizedBox(height: 8),
                   Text(
@@ -195,10 +192,7 @@ class _ReminderBadges extends ConsumerWidget {
         runSpacing: 4,
         children: reminders.map((reminder) {
           return Chip(
-            avatar: Icon(
-              _reminderIcon(reminder.kind),
-              size: 16,
-            ),
+            avatar: Icon(_reminderIcon(reminder.kind), size: 16),
             label: Text(reminder.message),
             visualDensity: VisualDensity.compact,
           );
@@ -294,9 +288,7 @@ class _ForeshadowingTile extends ConsumerWidget {
           TextButton(
             onPressed: () {
               Navigator.of(ctx).pop();
-              ref
-                  .read(foreshadowingNotifierProvider.notifier)
-                  .delete(entry.id);
+              ref.read(foreshadowingNotifierProvider.notifier).delete(entry.id);
             },
             child: const Text('删除'),
           ),
@@ -369,10 +361,7 @@ class _FinishExportSection extends ConsumerWidget {
             const SizedBox(height: 16),
             const Text(
               '整理成可交付的稿件',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.w600,
-              ),
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
             ),
             const SizedBox(height: 8),
             const Text(
@@ -469,12 +458,15 @@ class _FinishExportSection extends ConsumerWidget {
     final worldState = ref.read(worldSettingNotifierProvider);
     final skillState = ref.read(skillListNotifierProvider);
 
-    final characters =
-        (characterState.asData?.value ?? []).map((c) => c.toJson()).toList();
-    final worlds =
-        (worldState.asData?.value ?? []).map((w) => w.toJson()).toList();
-    final skills =
-        (skillState.asData?.value ?? []).map((s) => s.toJson()).toList();
+    final characters = (characterState.asData?.value ?? [])
+        .map((c) => c.toJson())
+        .toList();
+    final worlds = (worldState.asData?.value ?? [])
+        .map((w) => w.toJson())
+        .toList();
+    final skills = (skillState.asData?.value ?? [])
+        .map((s) => s.toJson())
+        .toList();
     final activeSkillIds = (skillState.asData?.value ?? [])
         .where((s) => s.isActive)
         .map((s) => s.id)
