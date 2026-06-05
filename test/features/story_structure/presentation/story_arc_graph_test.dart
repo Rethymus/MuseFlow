@@ -2,10 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:museflow/core/presentation/providers.dart';
+import 'package:museflow/features/story_structure/application/foreshadowing_notifier.dart';
 import 'package:museflow/features/story_structure/application/node_position_notifier.dart';
 import 'package:museflow/features/story_structure/application/plot_node_notifier.dart';
+import 'package:museflow/features/story_structure/domain/foreshadowing_entry.dart';
 import 'package:museflow/features/story_structure/domain/plot_node.dart';
 import 'package:museflow/features/story_structure/presentation/story_arc/story_arc_graph.dart';
+import 'package:museflow/features/story_structure/presentation/story_structure_page.dart';
 
 void main() {
   PlotNode node({
@@ -71,6 +74,42 @@ void main() {
     expect(find.text('初遇'), findsOneWidget);
     expect(find.text('高潮节点'), findsOneWidget);
   });
+  testWidgets('should rebuild FAB for graph and guardian tab changes', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          foreshadowingNotifierProvider.overrideWith(
+            () => _FakeForeshadowingNotifier(),
+          ),
+          plotNodeNotifierProvider.overrideWith(
+            () => _FakePlotNodeNotifier([]),
+          ),
+          nodePositionNotifierProvider.overrideWith(
+            () => _FakeNodePositionNotifier(),
+          ),
+        ],
+        child: const MaterialApp(home: StoryStructurePage()),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.byTooltip('新建伏笔'), findsOneWidget);
+
+    await tester.tap(find.text('弧线图'));
+    await tester.pumpAndSettle();
+    expect(find.byTooltip('新建情节点'), findsOneWidget);
+
+    await tester.tap(find.text('守护'));
+    await tester.pumpAndSettle();
+    expect(find.byTooltip('新建情节点'), findsNothing);
+  });
+}
+
+class _FakeForeshadowingNotifier extends ForeshadowingNotifier {
+  @override
+  Future<List<ForeshadowingEntry>> build() async => const [];
 }
 
 class _FakePlotNodeNotifier extends PlotNodeNotifier {
