@@ -22,7 +22,7 @@ class _StoryArcGraphState extends ConsumerState<StoryArcGraph> {
   final TransformationController _transformationController =
       TransformationController();
   late final GraphViewController _controller;
-  Timer? _positionSaveTimer;
+  final Map<String, Timer> _positionSaveTimers = {};
   bool _isDraggingNode = false;
   final Map<String, Offset> _dragPositions = {};
 
@@ -36,7 +36,10 @@ class _StoryArcGraphState extends ConsumerState<StoryArcGraph> {
 
   @override
   void dispose() {
-    _positionSaveTimer?.cancel();
+    for (final timer in _positionSaveTimers.values) {
+      timer.cancel();
+    }
+    _positionSaveTimers.clear();
     super.dispose();
   }
 
@@ -240,8 +243,9 @@ class _StoryArcGraphState extends ConsumerState<StoryArcGraph> {
   }
 
   void _debouncedSavePosition(String nodeId, Offset position) {
-    _positionSaveTimer?.cancel();
-    _positionSaveTimer = Timer(const Duration(seconds: 1), () {
+    _positionSaveTimers[nodeId]?.cancel();
+    _positionSaveTimers[nodeId] = Timer(const Duration(seconds: 1), () {
+      _positionSaveTimers.remove(nodeId);
       ref
           .read(nodePositionNotifierProvider.notifier)
           .savePosition(nodeId, position);

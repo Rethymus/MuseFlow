@@ -32,12 +32,20 @@ class _StoryStructurePageState extends ConsumerState<StoryStructurePage>
   void initState() {
     super.initState();
     _tabController = TabController(length: 5, vsync: this);
+    _tabController.addListener(_handleTabChange);
   }
 
   @override
   void dispose() {
+    _tabController.removeListener(_handleTabChange);
     _tabController.dispose();
     super.dispose();
+  }
+
+  void _handleTabChange() {
+    if (_tabController.indexIsChanging) return;
+    if (!mounted) return;
+    setState(() {});
   }
 
   @override

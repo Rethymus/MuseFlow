@@ -46,6 +46,38 @@ void main() {
       expect(positions['pn-2'], const Offset(300, 400));
     });
 
+    test('should read Hive dynamic map values after reload', () async {
+      final dynamicMap = <dynamic, dynamic>{
+        'plotNodeId': 'pn-1',
+        'x': 100,
+        'y': 200,
+      };
+      await box.put('pn-1', dynamicMap);
+
+      final retrieved = repository.getPosition('pn-1');
+      expect(retrieved, const Offset(100, 200));
+    });
+
+    test('should read all Hive dynamic map values after reload', () async {
+      final dynamicMapOne = <dynamic, dynamic>{
+        'plotNodeId': 'pn-1',
+        'x': 100,
+        'y': 200,
+      };
+      final dynamicMapTwo = <dynamic, dynamic>{
+        'plotNodeId': 'pn-2',
+        'x': 300,
+        'y': 400,
+      };
+      await box.put('pn-1', dynamicMapOne);
+      await box.put('pn-2', dynamicMapTwo);
+
+      final positions = repository.getAllPositions();
+      expect(positions, hasLength(2));
+      expect(positions['pn-1'], const Offset(100, 200));
+      expect(positions['pn-2'], const Offset(300, 400));
+    });
+
     test('should delete a position', () async {
       await repository.save(testPosition);
       await repository.delete('pn-1');
