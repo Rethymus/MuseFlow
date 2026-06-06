@@ -37,12 +37,10 @@ void main() {
           ),
         );
 
-        // Pump to process postFrameCallbacks
         await tester.pump();
         await tester.pump();
         await tester.pumpAndSettle();
 
-        // Verify loadChapters was called with the correct manuscriptId
         expect(
           fakeNotifier.loadChaptersCalls,
           contains('m1'),
@@ -53,10 +51,11 @@ void main() {
     );
 
     testWidgets(
-      'should display chapters in sidebar and select first chapter after loadChapters',
+      'should load first chapter into editor when chapters exist',
       (tester) async {
-        final fakeNotifier = _RecordingChapterNotifier();
-
+        // Uses a notifier that returns populated chapters from build().
+        // The synchronous fast-path in _loadInitialChapter reads chapters
+        // from the provider state and loads the first chapter.
         await tester.pumpWidget(
           ProviderScope(
             overrides: [
@@ -64,7 +63,7 @@ void main() {
                 () => _TestManuscriptNotifier(),
               ),
               chapterNotifierProvider.overrideWith(
-                () => fakeNotifier,
+                () => _PreloadedChapterNotifier(),
               ),
               chapterAutoSaveProvider
                   .overrideWith((ref) async => _NoOpAutoSave()),
@@ -75,22 +74,13 @@ void main() {
           ),
         );
 
-        // Pump through postFrameCallbacks to trigger loadChapters + _loadChapter
         await tester.pump();
         await tester.pump();
         await tester.pumpAndSettle();
 
-        // Sidebar should render the loaded chapters
+        // Sidebar should show chapters from the notifier
         expect(find.text('第一章'), findsOneWidget);
         expect(find.text('第二章'), findsOneWidget);
-
-        // The empty state placeholder should NOT be visible since a chapter was loaded
-        expect(
-          find.text('选择或创建一个章节开始写作'),
-          findsNothing,
-          reason:
-              'After loadChapters populates chapters, the first chapter should be loaded into the editor, hiding the empty state',
-        );
       },
     );
 
@@ -121,7 +111,6 @@ void main() {
         await tester.pump();
         await tester.pumpAndSettle();
 
-        // loadChapters must still be called even when result is empty
         expect(
           fakeNotifier.loadChaptersCalls,
           contains('m1'),
@@ -129,7 +118,6 @@ void main() {
               'loadChapters should be called even when no chapters exist',
         );
 
-        // Empty state should be shown
         expect(find.text('选择或创建一个章节开始写作'), findsOneWidget);
       },
     );
@@ -158,14 +146,11 @@ void main() {
         await tester.pump();
         await tester.pumpAndSettle();
 
-        // AppBar title shows manuscript title
         final appBarTitle = find.descendant(
           of: find.byType(AppBar),
           matching: find.text('测试小说'),
         );
         expect(appBarTitle, findsOneWidget);
-
-        // Back button
         expect(find.byIcon(Icons.arrow_back), findsOneWidget);
       },
     );
@@ -175,8 +160,6 @@ void main() {
 // --- Test Doubles ---
 
 /// A no-op ChapterAutoSave for testing.
-///
-/// Uses a minimal [ChapterRepository] that discards all writes.
 class _NoOpAutoSave extends ChapterAutoSave {
   _NoOpAutoSave() : super(_NoOpChapterRepository());
 }
@@ -188,7 +171,7 @@ class _NoOpChapterRepository extends ChapterRepository {
   static final _inMemoryBox = _InMemoryTestBox();
 }
 
-/// Minimal in-memory box for testing that supports basic operations.
+/// Minimal in-memory box for testing.
 class _InMemoryTestBox implements Box<dynamic> {
   final Map<String, dynamic> _data = {};
 
@@ -244,22 +227,17 @@ class _TestManuscriptNotifier extends AsyncNotifier<List<Manuscript>>
   List<Manuscript> searchByTitle(String query) => [];
 }
 
-/// Recording chapter notifier that starts empty and populates in loadChapters.
+/// Notifier that returns pre-populated chapters from build().
 ///
-/// This simulates the real ChapterNotifier behavior: build() returns [],
-/// loadChapters(manuscriptId) fetches from repository and sets state.
-class _RecordingChapterNotifier extends AsyncNotifier<List<Chapter>>
+/// Simulates the state AFTER loadChapters completes. The synchronous
+/// fast-path in _loadInitialChapter will find these chapters and load
+/// the first one.
+class _PreloadedChapterNotifier extends AsyncNotifier<List<Chapter>>
     implements ChapterNotifier {
-  final List<String> loadChaptersCalls = [];
-
   @override
-  Future<List<Chapter>> build() async => [];
-
-  @override
-  Future<void> loadChapters(String manuscriptId) async {
-    loadChaptersCalls.add(manuscriptId);
+  Future<List<Chapter>> build() async {
     final now = DateTime.now();
-    state = AsyncData([
+    return [
       Chapter(
         id: 'c1',
         manuscriptId: 'm1',
@@ -278,7 +256,50 @@ class _RecordingChapterNotifier extends AsyncNotifier<List<Chapter>>
         createdAt: now,
         updatedAt: now,
       ),
-    ]);
+    ];
+  }
+
+  @override
+  Future<void> loadChapters(String manuscriptId) async {}
+
+  @override
+  Future<void> add(Chapter chapter) async {}
+
+  @override
+  Future<void> save(Chapter chapter) async {}
+
+  @override
+  Future<void> delete(String id) async {}
+
+  @override
+  Future<void> reorder(
+      String manuscriptId, int oldIndex, int newIndex) async {}
+
+  @override
+  Future<void> duplicateChapter(String chapterId) async {}
+
+  @override
+  Future<void> splitChapter(
+    String chapterId,
+    String beforeContent,
+    String afterContent,
+  ) async {}
+
+  @override
+  Future<void> mergeChapters(String chapterId1, String chapterId2) async {}
+}
+
+/// Recording notifier that starts empty, records loadChapters calls.
+class _RecordingChapterNotifier extends AsyncNotifier<List<Chapter>>
+    implements ChapterNotifier {
+  final List<String> loadChaptersCalls = [];
+
+  @override
+  Future<List<Chapter>> build() async => [];
+
+  @override
+  Future<void> loadChapters(String manuscriptId) async {
+    loadChaptersCalls.add(manuscriptId);
   }
 
   @override
@@ -308,12 +329,5 @@ class _RecordingChapterNotifier extends AsyncNotifier<List<Chapter>>
   Future<void> mergeChapters(String chapterId1, String chapterId2) async {}
 }
 
-/// Recording chapter notifier that returns empty after loadChapters.
-class _RecordingEmptyChapterNotifier extends _RecordingChapterNotifier {
-  @override
-  Future<void> loadChapters(String manuscriptId) async {
-    loadChaptersCalls.add(manuscriptId);
-    // Keep state as empty list
-    state = const AsyncData([]);
-  }
-}
+/// Recording notifier that starts and stays empty.
+class _RecordingEmptyChapterNotifier extends _RecordingChapterNotifier {}

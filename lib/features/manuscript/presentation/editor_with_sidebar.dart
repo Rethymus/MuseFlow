@@ -101,10 +101,23 @@ class _EditorWithSidebarState extends ConsumerState<EditorWithSidebar>
     });
   }
 
-  /// Loads the first chapter on initial entry.
+  /// Loads persisted chapters for the manuscript and selects the first one.
+  ///
+  /// Per SC-2/SC-3: Calls [ChapterNotifier.loadChapters] to fetch chapters
+  /// from the repository, then loads the first chapter into the editor.
+  /// ChapterNotifier.build() deliberately returns an empty list, so this
+  /// explicit load is required on every editor entry.
   void _loadInitialChapter() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
+
+      // Always trigger loadChapters to ensure data is fresh from repository.
+      // If build() already returned data, loadChapters will refresh it.
+      ref
+          .read(chapterNotifierProvider.notifier)
+          .loadChapters(widget.manuscriptId);
+
+      // Read current chapter state and load first chapter if available.
       final chapters =
           ref.read(chapterNotifierProvider).asData?.value ?? [];
       if (chapters.isEmpty) return;
