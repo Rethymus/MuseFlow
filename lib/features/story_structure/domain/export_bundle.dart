@@ -1,3 +1,4 @@
+import 'package:museflow/features/manuscript/domain/chapter_export.dart';
 import 'package:museflow/features/story_structure/domain/foreshadowing_entry.dart';
 import 'package:museflow/features/story_structure/domain/plot_node.dart';
 import 'package:museflow/features/story_structure/domain/guardian_annotation.dart';
@@ -41,6 +42,13 @@ class ExportBundle {
   /// IDs of currently active skills.
   final List<String> activeSkillIds;
 
+  /// Chapter-structured content for chapter-aware exports.
+  ///
+  /// Per D-23: When non-empty, consumers should prefer this over flat
+  /// [manuscriptText] for chapter-structured output. The [manuscriptText]
+  /// field remains for backward compatibility.
+  final List<ChapterExport> chapters;
+
   /// Additional metadata (app version, etc.).
   final Map<String, dynamic> metadata;
 
@@ -48,6 +56,7 @@ class ExportBundle {
     required this.schemaVersion,
     this.exportedAt,
     required this.manuscriptText,
+    this.chapters = const [],
     this.foreshadowingEntries = const [],
     this.plotNodes = const [],
     this.guardianAnnotations = const [],
@@ -66,27 +75,36 @@ class ExportBundle {
           ? DateTime.parse(json['exportedAt'] as String)
           : null,
       manuscriptText: json['manuscriptText'] as String? ?? '',
-      foreshadowingEntries: (json['foreshadowingEntries'] as List<dynamic>)
-          .map((e) => ForeshadowingEntry.fromJson(e as Map<String, dynamic>))
-          .toList(),
-      plotNodes: (json['plotNodes'] as List<dynamic>)
-          .map((e) => PlotNode.fromJson(e as Map<String, dynamic>))
-          .toList(),
-      guardianAnnotations: (json['guardianAnnotations'] as List<dynamic>)
-          .map(
-              (e) => GuardianAnnotation.fromJson(e as Map<String, dynamic>))
-          .toList(),
-      characterCards: (json['characterCards'] as List<dynamic>)
-          .map((e) => e as Map<String, dynamic>)
-          .toList(),
-      worldSettings: (json['worldSettings'] as List<dynamic>)
-          .map((e) => e as Map<String, dynamic>)
-          .toList(),
-      skillDocuments: (json['skillDocuments'] as List<dynamic>)
-          .map((e) => e as Map<String, dynamic>)
-          .toList(),
+      foreshadowingEntries: (json['foreshadowingEntries'] as List<dynamic>?)
+              ?.map((e) => ForeshadowingEntry.fromJson(e as Map<String, dynamic>))
+              .toList() ??
+          const [],
+      plotNodes: (json['plotNodes'] as List<dynamic>?)
+              ?.map((e) => PlotNode.fromJson(e as Map<String, dynamic>))
+              .toList() ??
+          const [],
+      guardianAnnotations: (json['guardianAnnotations'] as List<dynamic>?)
+              ?.map((e) => GuardianAnnotation.fromJson(e as Map<String, dynamic>))
+              .toList() ??
+          const [],
+      characterCards: (json['characterCards'] as List<dynamic>?)
+              ?.map((e) => e as Map<String, dynamic>)
+              .toList() ??
+          const [],
+      worldSettings: (json['worldSettings'] as List<dynamic>?)
+              ?.map((e) => e as Map<String, dynamic>)
+              .toList() ??
+          const [],
+      skillDocuments: (json['skillDocuments'] as List<dynamic>?)
+              ?.map((e) => e as Map<String, dynamic>)
+              .toList() ??
+          const [],
       activeSkillIds:
           (json['activeSkillIds'] as List<dynamic>?)?.cast<String>() ?? const [],
+      chapters: (json['chapters'] as List<dynamic>?)
+              ?.map((e) => ChapterExport.fromJson(e as Map<String, dynamic>))
+              .toList() ??
+          const [],
       metadata: (json['metadata'] as Map<String, dynamic>?) ?? const {},
     );
   }
@@ -106,6 +124,7 @@ class ExportBundle {
       'worldSettings': worldSettings,
       'skillDocuments': skillDocuments,
       'activeSkillIds': activeSkillIds,
+      'chapters': chapters.map((e) => e.toJson()).toList(),
       'metadata': metadata,
     };
   }
@@ -124,6 +143,7 @@ class ExportBundle {
         _mapListEquals(other.worldSettings, worldSettings) &&
         _mapListEquals(other.skillDocuments, skillDocuments) &&
         _listEquals(other.activeSkillIds, activeSkillIds) &&
+        _listEquals(other.chapters, chapters) &&
         _mapEquals(other.metadata, metadata);
   }
 
@@ -139,6 +159,7 @@ class ExportBundle {
         Object.hashAll(worldSettings),
         Object.hashAll(skillDocuments),
         Object.hashAll(activeSkillIds),
+        Object.hashAll(chapters),
         metadata,
       );
 

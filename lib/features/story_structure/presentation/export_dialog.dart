@@ -147,6 +147,18 @@ class _ExportDialogState extends ConsumerState<ExportDialog> {
                 color: colorScheme.onSurfaceVariant,
               ),
             ),
+
+            // Chapter count info when chapters present
+            if (widget.bundle.chapters.isNotEmpty) ...[
+              const SizedBox(height: 8),
+              Text(
+                '包含 ${widget.bundle.chapters.length} 个章节',
+                style: TextStyle(
+                  fontSize: 12,
+                  color: colorScheme.onSurfaceVariant,
+                ),
+              ),
+            ],
             const SizedBox(height: 16),
 
             // Path picker
