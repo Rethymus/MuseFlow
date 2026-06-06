@@ -1,207 +1,178 @@
 # Project Research Summary
 
-**Project:** MuseFlow (AI-assisted creative writing tool for Chinese novelists)
-**Domain:** Flutter desktop+mobile AI writing assistant
-**Researched:** 2026-05-31
+**Project:** MuseFlow v1.3 -- User-Perspective Full-Flow Validation
+**Domain:** AI-assisted Chinese creative writing tool validation via 100-chapter xianxia novel production
+**Researched:** 2026-06-06
 **Confidence:** HIGH
 
 ## Executive Summary
 
-MuseFlow is a local-first, human-AI collaborative novel writing tool targeting Chinese web novel authors on Windows and Android. The product differentiates through a three-stage creative pipeline (Capture -> Organize -> Edit) with an anti-AI-scent system that makes AI-assisted text read as human-written -- the single most important feature for Chinese authors facing platform bans on AI content. The competitive landscape includes Sudowrite (Western), NovelAI (privacy-focused), and Biling/Moyu AI (Chinese market), but no existing tool combines fragment-based capture with anti-AI-scent and story structure tracking.
+MuseFlow v1.3 is a validation milestone, not a feature-build milestone. The goal is to use the app as a real author to write a 100-chapter (~10K word) cultivation novel, exercising every feature in production conditions. The validation covers nine user-journey stages from cold-start onboarding through export, with a token consumption audit running throughout. This is dogfooding methodology applied systematically: the deliverables are a pain-point report, automated regression tests, and a token cost analysis.
 
-The recommended approach is a Clean Architecture Flutter application using Riverpod for state management, Hive CE for local storage, and a multi-provider AI adapter layer supporting OpenAI, Claude, DeepSeek, and Ollama. The architecture centers on a PromptPipeline middleware chain that assembles context (knowledge base injection, skill enforcement, anti-AI-flavor instructions) before every AI call, paired with a PostProcessor pipeline that filters AI cliches and normalizes Chinese punctuation. The rich text editor must support floating selection toolbars, Chinese IME composition on Windows, and large documents (300K+ characters).
+The recommended approach is a two-track strategy. **Track A** is the creative track: manually write the 100-chapter novel using MuseFlow, logging every interruption, UX friction point, and data-loss scare in a structured interruption log. **Track B** is the automation track: build token auditing infrastructure into the existing Clean Architecture, then write Dart test scripts that replay the core flows (chapter CRUD, fragment synthesis, export) with both fake and real AI adapters. Track B's infrastructure must be built before Track A begins in earnest, because token data from early AI calls is irrecoverable if instrumentation is added late.
 
-The key risks are: (1) CJK IME composition breaking on Windows -- existential for the target market, (2) large document performance degradation in the rich text editor, (3) AI content detection by Chinese novel platforms, and (4) token budget exhaustion from knowledge base injection. All four are mitigable with correct editor choice (super_editor), chapter-based document chunking, multi-layer anti-AI-scent systems, and relevance-based context selection. The editor choice is the most consequential technical decision and must be validated with a benchmark spike before any feature code is written.
-
-## Editor Decision: super_editor
-
-**Recommendation: Use super_editor, NOT appflowy_editor.**
-
-This resolves a conflict between research files. STACK.md recommends appflowy_editor 6.2.0 for its built-in `FloatingToolbar` widget. ARCHITECTURE.md and PITFALLS.md both recommend super_editor. After weighing the evidence against project requirements:
-
-| Criterion | appflowy_editor | super_editor | Weight | Winner |
-|-----------|----------------|--------------|--------|--------|
-| Built-in floating toolbar | Yes -- `FloatingToolbar` widget, zero custom code | No built-in, but `OverlayPortal` + `Follower` pattern documented | Medium | appflowy_editor |
-| CJK IME on Windows | Inherited from Flutter TSF; no dedicated IME changelog entries | Dedicated desktop IME support since July 2022, actively maintained | **Critical** | **super_editor** |
-| Large document performance (300K+ chars) | Block-based, re-layouts blocks on change | Partial layout/invalidation -- only re-layouts affected regions | **Critical** | **super_editor** |
-| Custom node types | `BlockComponentBuilder` for custom blocks | `ComponentBuilder` pattern for custom renderers | Medium | Tie |
-| Prose writing focus | Designed for block-editor/productivity (Notion alternative) | General purpose, document model suits prose | Low | super_editor |
-| Dependency footprint | Larger (AppFlowy ecosystem baggage) | Lighter | Low | super_editor |
-
-**Verdict:** The project targets Chinese novel authors on Windows. CJK IME compatibility and 300K+ character performance are existential requirements, not nice-to-haves. A floating toolbar can be built with super_editor's `OverlayPortal`/`Follower` pattern (well-documented in Context7). IME correctness and large document performance cannot be retrofitted. The wrong editor choice would require a complete rewrite.
-
-**Validation spike required:** Before Phase 1 feature work, create a benchmark comparing super_editor with a 100K+ character Chinese document. Test keystroke latency, memory usage, scroll performance, and IME composition with Sogou Pinyin and Wubi.
+The dominant risk is the **hidden cost multiplier**. Every editor AI operation silently triggers a deviation detection AI call (`unawaited` fire-and-forget in `editor_ai_notifier.dart`). Combined with the 7-layer prompt middleware chain that injects ~2,000-4,500 tokens of context overhead per call, a single chapter with synthesis + rewrite + polish generates 6 API calls, not the 3 the user sees. Over 100 chapters on GPT-4o this hits $5-6, and with retries, guardian checks, and multi-model testing, costs could reach $20-30. Token auditing instrumentation must be the first thing built.
 
 ## Key Findings
 
 ### Recommended Stack
 
-Flutter 3.44.0 / Dart 3.5.4 provides the foundation. Riverpod (with code generation) handles state management and dependency injection. Hive CE provides local NoSQL storage with encryption support. The AI layer uses openai_dart (covers OpenAI, DeepSeek, Ollama via custom baseUrl), anthropic_sdk_dart (Claude), and ollama_dart (local models). Go_router handles cross-platform navigation. Window_manager handles Windows desktop window behavior.
+The existing production stack (Flutter 3.44.0, super_editor, Riverpod, Hive CE, openai_dart) is validated and out of scope. The only addition needed for v1.3 is **mocktail ^1.0.4** as a dev dependency, replacing hand-rolled fakes in integration tests that need call verification and per-invocation stubbing. Everything else -- `integration_test` SDK, `dart:io` for automation scripts, transitive `test`/`args`/`path` packages -- is already available. Patrol was rejected (no Windows support), mockito was rejected (build_runner overhead per mock class), and golden/screenshot tools were rejected (v1.3 validates data correctness, not pixel fidelity).
 
-**Core technologies:**
-- **super_editor**: Rich text editor -- CJK IME support, partial layout for large documents, popover toolbar pattern
-- **flutter_riverpod + riverpod_generator**: State management -- code-gen providers, AsyncNotifier for AI streaming
-- **hive_ce + hive_ce_flutter**: Local storage -- active fork of Hive, encryption, isolate support, type adapter generation
-- **openai_dart**: AI API client -- type-safe, custom baseUrl covers OpenAI/DeepSeek/Ollama
-- **anthropic_sdk_dart**: Claude API client -- required because Claude has a non-OpenAI-compatible API
-- **flutter_secure_storage**: API key encryption -- uses Windows Credential Manager / Android Keystore
-- **freezed**: Immutable data classes -- union types for Result/Either, copyWith generation
-- **go_router**: Declarative routing -- nested routes, deep linking, redirect guards
-- **window_manager**: Windows desktop -- native window control
+**Core additions:**
+- **mocktail ^1.0.4**: mocking library for integration test provider overrides -- zero codegen, supports `verify()` for call-count assertions needed by token audit tests
+- **integration_test/ SDK** (already present): full user-journey tests via `IntegrationTestWidgetsFlutterBinding` on Windows desktop
+- **test/automation/ scripts** (new directory): standalone Dart tests using `ProviderContainer` without widget tree, for the 100-chapter orchestration loop
 
-### Expected Features
+### Expected Features (Validation Activities)
 
-**Must have (table stakes):**
-- Rich text editor with basic formatting and Chinese IME support
-- Selection-based floating menu for AI actions (rewrite, polish, custom edit)
-- Undo/redo with AI action rollback
-- Chapter/section organization
-- Dark mode and focus mode
-- Word count and progress tracking
-- Auto-save
-- Text continuation, rewrite, and polish
-- Custom API key input with base URL support
-- Multiple model support (OpenAI/Claude/DeepSeek/Ollama)
-- Character profiles and story settings (knowledge base)
-- Context injection into AI calls
-- Export to TXT/DOCX with format cleanup
+All features below ship in the codebase from v1.0-v1.2. The "features" here are validation activities organized by dependency order.
 
-**Should have (competitive differentiators):**
-- Fragment capture mode (bullet-journal inspiration input) -- unique to MuseFlow
-- Fragment-to-paragraph AI synthesis -- unique to MuseFlow
-- Anti-AI-scent via prompt engineering (invisible to user) -- core product soul
-- Automatic knowledge injection (AI reads relevant context without user selecting)
-- Foreshadowing and plot thread tracking -- no competitor does this well
-- Character consistency guardian -- flags contradictions with established traits
-- World-building Skill system (AI-assisted creation + real-time deviation guard)
-- Tone/style matching to author voice
+**Must validate (table stakes):**
+- V2a: Create and manage 100 chapters -- proves core reliability at scale
+- V1c: Floating AI toolbar (tone rewrite, paragraph polish, free input) with real Chinese prose -- proves core value
+- V2c: Auto-save reliability during rapid chapter operations -- proves data safety
+- V4b: Three-format export (Markdown/TXT/JSON) of complete manuscript -- proves output quality
 
-**Defer (v2+):**
-- Visual story canvas / timeline
-- Platform-specific export templates (Qidian/Jinjiang/Tomato)
-- Style/voice learning from author's previous writing
-- AI feedback/critique mode
-- Logic loop detection
-- iOS/macOS support, cloud sync, social features
+**Should validate (differentiators):**
+- V3a: Foreshadowing plant-track-resolve across chapters -- proves structural story management works
+- V5: Token consumption audit with cost projection -- proves economic viability for target users
+- Anti-AI-scent blind-read test -- proves or disproves the product's soul claim
+
+**Defer:**
+- Multi-provider parallel testing, real device testing, accessibility audit, 1000+ chapter stress test
 
 ### Architecture Approach
 
-The system follows Clean Architecture with strict dependency direction: Presentation -> Application -> Domain <- Infrastructure. Domain layer is pure Dart with zero external dependencies. The core architectural pattern is a **PromptPipeline middleware chain** in the Application layer that assembles AI prompts through sequential stages. AI providers are abstracted behind an `AIProvider` interface with concrete adapters registered in an `AIProviderRegistry`.
+Token auditing and test automation are **observer-sidecar patterns**: they tap into existing streams and repositories without modifying domain logic. The `TokenAuditRecord` is a separate domain entity in its own Hive box with `chapterId` as a foreign-key reference -- it is never mixed into `Chapter` or `Manuscript` entities. Token counting happens at the notifier level (where business context like operation type and chapter ID is available), not inside `OpenAIAdapter` (which lacks that context) and not as a `PromptMiddleware` (which runs before the API call and cannot measure output).
 
-**Major components:**
-1. **PromptPipeline** (Application layer) -- middleware chain for context injection, skill enforcement, anti-AI-scent
-2. **PostProcessor pipeline** (Application layer) -- filters AI cliches, normalizes Chinese punctuation, checks consistency
-3. **AI Adapter layer** (Infrastructure) -- provider abstraction with OpenAI/DeepSeek/Ollama and Claude adapters
-4. **Knowledge Base** (Domain + Infrastructure) -- character profiles, world settings, story structure in Hive with auto-injection indexes
-5. **Fragment Capture system** (Domain + Presentation) -- bullet-journal input feeding into AI synthesis
-6. **super_editor integration** (Presentation) -- rich text editor with custom floating toolbar and text provenance
+**Major components (new):**
+1. **TokenAuditRecord + TokenAuditRepository** -- domain entity and Hive persistence for per-call token records
+2. **TokenAuditNotifier** -- aggregates audit records for presentation (total cost, per-chapter breakdown)
+3. **Automation test scripts** -- `test/automation/` with `ScenarioRunner`, `AssertionCollector`, `FakeXianxiaAdapter` for replayable validation
+
+**Modified components (minimal):**
+- `SynthesisNotifier._fetchKeyAndStream()` and `EditorAINotifier._fetchKeyAndStream()` -- add token counting before/after stream
+- `providers.dart` -- register 2-3 new providers
+- `writing_stats_page.dart` -- add token audit summary section
+
+**Explicitly unchanged:** `OpenAIAdapter`, `PromptPipeline`/`PromptMiddleware`, `TokenBudgetCalculator`, `ChapterAutoSave`, all domain entities (`Chapter`, `Manuscript`), `WritingStatsCollector`.
 
 ### Critical Pitfalls
 
-1. **CJK IME composition breaks on Windows** -- Validate with Sogou, Wubi, Microsoft Pinyin in Phase 0. Use super_editor with dedicated desktop IME support.
-2. **Rich text editor dies with large documents** -- Chinese novels reach 300K-1M characters. Use super_editor partial layout + chapter-based chunking. Never load more than 2-3 chapters.
-3. **Token limit kills novel-length context** -- 30 character profiles + world settings can consume 40K-56K tokens. Implement relevance-based context selection and per-model context window awareness.
-4. **AI content detection on Chinese platforms** -- Existential risk. Multi-layer anti-AI-scent (prompt + post-processing + style injection). Validate with detection tools.
-5. **Editor choice is irreversible** -- Migrating editors after features are built is catastrophic. Benchmark spike before any feature code.
+1. **Token consumption death spiral** -- Hidden deviation detection calls double API costs. Every editor AI operation triggers an unawaited deviation check. Over 100 chapters this means 600 API calls, not 300. Prevent by instrumenting token counting per operation before starting, and making deviation detection opt-in during validation.
+
+2. **Knowledge base consistency erosion** -- Character cards and world settings are static data that go stale as the story evolves. A character introduced as mortal in chapter 1 becomes a Golden Core cultivator by chapter 50, but the KB still says mortal unless manually updated. Prevent with mandatory KB review every 10 chapters.
+
+3. **Anti-AI-scent bypass on structural patterns** -- The `AntiAIScentProcessor` catches phrase-level cliches (14-entry synonym map) but misses sentence rhythm uniformity, transition formula, and cultivation-specific structural patterns that accumulate over 100 chapters. Prevent by expanding the banned list with xianxia-specific cliches and running blind-read tests every 25 chapters.
+
+4. **Test script assumptions break with real creative data** -- Automated scripts written against predictable data break on mixed CJK punctuation, markdown remnants in AI output, name variations (formal vs diminutive), and variable-length chapters. Prevent by generating test fixtures from the first 10 real chapters before trusting the automation suite.
+
+5. **Context anchor and chapter summary staleness** -- Chapter summaries injected into AI prompts drift from actual content as chapters are rewritten, split, or reordered. By chapter 80, the "previous chapter summary" may describe events that no longer exist. Prevent with manual summary verification at milestones (chapters 25, 50, 75).
 
 ## Implications for Roadmap
 
-### Phase 0: Technical Validation Spikes
+Based on combined research, the validation should proceed in 5 phases ordered by dependency and risk:
 
-**Rationale:** Three existential technical risks must be resolved before any feature code. Editor choice, IME compatibility, and large document performance determine feasibility of the entire project.
-**Delivers:** Validated editor choice, IME compatibility report, performance benchmarks, package compatibility matrix
-**Addresses:** Risk validation
-**Avoids:** Pitfalls 1.1 (CJK IME), 1.2 (large documents), 1.3 (package compatibility)
+### Phase 1: Token Audit Infrastructure
+**Rationale:** Token auditing must be built before any AI calls happen, because per-call token data is irrecoverable retroactively. The hidden deviation detection calls (Pitfall 1) make this the highest-priority infrastructure.
+**Delivers:** `TokenAuditRecord`, `TokenAuditRepository`, Hive box, unit tests, and integration into `SynthesisNotifier` + `EditorAINotifier`
+**Addresses:** V5a (token tracking setup)
+**Avoids:** Pitfall 1 (token death spiral) by making costs visible from the first call
+**Research flag:** Standard patterns -- follows existing `WritingStatsCollector`/`WritingStatsRepository` conventions exactly
 
-### Phase 1: Foundation + Editor Core
+### Phase 2: Automation Test Harness
+**Rationale:** Build the `FakeXianxiaAdapter`, `ScenarioRunner`, and `AssertionCollector` before writing chapters. This enables replayable validation and catches infrastructure bugs early. Can be built in parallel with Phase 1.
+**Delivers:** `test/automation/` directory with 5 files, `ProviderContainer` helper, canned xianxia text fixtures
+**Addresses:** Test automation foundation for all subsequent phases
+**Avoids:** Pitfall 4 (test assumptions) by generating fixtures from first 10 real chapters
+**Research flag:** Standard patterns -- extends existing `_FakeOpenAIAdapter` pattern from `synthesis_notifier_test.dart`
 
-**Rationale:** Domain entities and repository interfaces are the base everything depends on. Editor integration with floating toolbar and chapter organization is the most complex single component. Hive migration strategy and prompt template system must exist before feature work.
-**Delivers:** Domain entities, repository interfaces, Hive with migration support, app shell with navigation, super_editor integration with floating toolbar, chapter-based document model, text provenance, prompt template skeleton
-**Addresses:** Editor, chapters, dark mode, auto-save, word count, undo/redo, focus mode
-**Avoids:** Pitfalls 5.1 (hardcoded prompts), 5.2 (no provenance), 5.5 (Hive migration)
+### Phase 3: World-Building and First 30 Chapters
+**Rationale:** The world-building phase seeds the knowledge base that all subsequent AI operations depend on. Writing the first 30 chapters validates the core creative loop (fragment capture -> synthesis -> editing -> save) and generates enough data to test at scale.
+**Delivers:** Xianxia knowledge base (characters, world settings, skills), first 30 chapters of the novel, initial pain-point log entries
+**Addresses:** V1a (onboarding), V1b (capture + synthesis), V1c (AI toolbar), V2a (chapter CRUD), V2c (auto-save), V3a (foreshadowing planting), V5b (token data collection starts)
+**Avoids:** Pitfall 2 (KB staleness) via mandatory review at chapter 30, Pitfall 3 (anti-AI-scent) via blind-read test at chapter 25
+**Research flag:** Needs deeper research -- the creative writing workflow is inherently unpredictable; plan for iterative pain-point triage
 
-### Phase 2: AI Infrastructure + Core AI Features
+### Phase 4: Full Manuscript (Chapters 31-100) and Story Structure
+**Rationale:** Chapters 31-100 stress-test the features that only matter at scale: foreshadowing resolution, consistency guardian, visualization with 50+ nodes, and 100-chapter export. Story structure validation requires accumulated plot threads.
+**Delivers:** Complete 100-chapter manuscript, foreshadowing resolution validation, consistency guardian results, story arc visualization at scale, three-format export validation
+**Addresses:** V2b (reorder/split/merge), V3a (foreshadowing resolution), V3b (logic/consistency guard), V3c (visualization at 100 nodes), V4a (format cleaning), V4b (three-format export), V4c (large export stress test)
+**Avoids:** Pitfall 5 (summary staleness) via manual verification at chapters 50, 75, Pitfall 7 (foreshadowing fatigue) by setting xianxia-appropriate thresholds, Pitfall 9 (visualization overload) by testing at 50 nodes before continuing to 100
+**Research flag:** Needs deeper research -- story structure at 100 chapters has no established patterns in the codebase; Phase 10 (v1.1) built the graph but never tested at this scale
 
-**Rationale:** AI adapter layer with multi-provider support is a stated requirement. PromptPipeline and anti-AI-scent are the product's soul. Fragment-to-paragraph synthesis validates the full pipeline.
-**Delivers:** AI provider abstraction, OpenAI adapter, PromptPipeline middleware chain, anti-AI-scent system, streaming handling, token budget calculator, settings page, fragment-to-paragraph synthesis, basic knowledge base CRUD
-**Uses:** openai_dart, flutter_secure_storage, Riverpod AsyncNotifier
-**Implements:** PromptPipeline, PostProcessor, AI Adapter layer, KnowledgeInjector
-**Avoids:** Pitfalls 2.1 (token limits), 2.2 (streaming), 2.3 (injection), 2.4 (cost), 2.5 (coupling), 2.6 (AI slop)
-
-### Phase 3: Multi-Provider + Story Intelligence
-
-**Rationale:** Add Claude/DeepSeek/Ollama adapters following the OpenAI pattern. Build story structure features that differentiate MuseFlow: foreshadowing tracking, character consistency, Skill enforcement.
-**Delivers:** All AI adapters, format cleaner, export, character consistency guardian, foreshadowing tracking, Skill enforcement, story structure page
-**Avoids:** Pitfalls 3.2 (character consistency), 3.3 (story continuity), 4.3 (platform formats)
-
-### Phase 4: Polish + Android Optimization
-
-**Rationale:** Desktop is stable. Optimize for Android, validate anti-AI-scent with real users, add brainstorming/describe modes.
-**Delivers:** Android optimization, anti-AI-scent validation, advanced AI modes, UX polish
+### Phase 5: Analysis, Pain-Point Report, and Automated Tests
+**Rationale:** Final synthesis of all validation data. The token audit report, pain-point report, and automated regression tests for discovered bugs are the milestone's ship deliverables.
+**Delivers:** Token cost analysis with per-chapter breakdown, structured pain-point report (bugs / UX friction / feature gaps), automated regression tests for discovered issues, 100-chapter novel as proof artifact, three-format exported files
+**Addresses:** V5b (cost analysis), V1d (anti-AI-scent effectiveness assessment), all remaining validation deliverables
+**Avoids:** Pitfall 8 (single-model bias) by writing at least 10 chapters with alternative models during analysis phase, Pitfall 10 (validation confound) by using the structured interruption log to separate bugs from creative challenges
+**Research flag:** Standard patterns -- report generation follows established markdown conventions; test writing follows existing unit/widget test patterns
 
 ### Phase Ordering Rationale
 
-- Phase 0 first because editor choice is irreversible and existential risks must be validated
-- Phase 1 before Phase 2 because all AI features depend on the editor working with Chinese text
-- Phase 2 before Phase 3 because story intelligence requires stable editor and AI infrastructure
-- Multi-provider in Phase 3 (not Phase 2) to avoid scope creep; OpenAI alone validates architecture
-- Android last because Windows desktop is primary per PROJECT.md
+- Phase 1 (token audit) must come first because token data is irrecoverable if AI calls happen before instrumentation is in place. The hidden deviation detection calls make this a budget concern, not just a nice-to-have metric.
+- Phase 2 (automation harness) should run in parallel with Phase 1 because it has zero coupling to token audit code -- it is pure test infrastructure.
+- Phase 3 (first 30 chapters) cannot start until Phase 1 is complete, because every chapter involves AI calls that must be audited. The 30-chapter boundary provides the first meaningful checkpoint for KB freshness, foreshadowing tracking, and anti-AI-scent effectiveness.
+- Phase 4 (chapters 31-100) depends on Phase 3's accumulated state. The scale-dependent features (100-node visualization, 100-chapter export, cross-chapter consistency) only become testable with sufficient chapter count.
+- Phase 5 (analysis) is the synthesis phase that consumes data from all prior phases. It must come last.
 
 ### Research Flags
 
-Phases needing deeper research during planning:
-- **Phase 0:** Editor benchmark with real Chinese text -- no documentation substitute for measurement
-- **Phase 2:** Anti-AI-scent effectiveness validation -- generate samples, run through detection tools
-- **Phase 2:** Token budget calculation for Chinese text -- empirical validation needed
-- **Phase 3:** Chinese novel platform export format specs -- change frequently, verify at implementation time
+Phases likely needing deeper research during planning:
+- **Phase 3:** The creative writing workflow is inherently human-driven. The plan needs to define how to structure the "manual writing" sessions alongside automated validation, and how to handle the tension between "write naturally" and "test systematically."
+- **Phase 4:** Story structure visualization at 100 nodes has never been tested. The plan should budget time for performance debugging if the graph becomes unusable.
 
-Phases with standard patterns (skip research-phase):
-- **Phase 1:** Domain entities, Hive setup, Riverpod providers are well-documented
-- **Phase 3:** Additional AI adapters follow Phase 2's OpenAI pattern
+Phases with standard patterns (skip additional research):
+- **Phase 1:** Follows `WritingStatsCollector`/`WritingStatsRepository` conventions exactly. Well-documented in codebase.
+- **Phase 2:** Extends existing `_FakeOpenAIAdapter` pattern. Well-documented in `synthesis_notifier_test.dart`.
+- **Phase 5:** Report generation and regression test writing follow established project conventions.
 
 ## Confidence Assessment
 
 | Area | Confidence | Notes |
 |------|------------|-------|
-| Stack | HIGH | All versions verified via pub.dev and Context7. Flutter 3.44.0 confirmed locally. |
-| Features | MEDIUM | Competitive analysis from fresh fetches. Training knowledge for some Chinese tools needs verification. |
-| Architecture | HIGH | Established patterns (middleware, adapter, repository). Super Editor toolbar documented. No Flutter-specific AI orchestration reference. |
-| Pitfalls | HIGH | CJK IME issues in Flutter tracker. Large doc performance is architectural. Token math deterministic. AI detection is arms race. |
+| Stack | HIGH | Only one new dependency (mocktail). Existing infrastructure verified with 930+ passing tests. Flutter integration test SDK confirmed working on Windows. |
+| Features | HIGH | All features ship in v1.0-v1.2. Validation activities are clearly scoped with dependency ordering. Feature dependencies mapped from codebase analysis. |
+| Architecture | HIGH | Observer-sidecar pattern is clean and follows existing codebase conventions. Modified components are minimal (2 notifiers + providers.dart + 1 page). Direct codebase analysis of 50+ files confirms integration points. |
+| Pitfalls | HIGH | Critical pitfalls (token spiral, KB staleness, anti-AI-scent bypass) are codebase-verified with specific file/line references. Token cost estimates backed by actual middleware budget caps and current model pricing. |
 
 **Overall confidence:** HIGH
 
 ### Gaps to Address
 
-- **Anti-AI-scent effectiveness is unproven:** Banned phrase lists are from domain knowledge, not empirical testing. Must validate with real Chinese prose and AI detection tools in Phase 2.
-- **super_editor CJK IME on Windows needs hands-on validation:** Documentation suggests strong support but only real testing with Sogou, Wubi, Microsoft Pinyin on Windows confirms. Phase 0 spike required.
-- **Chinese novel platform format specs are stale:** Export format requirements for Qidian/Jinjiang/Tomato not freshly verified. Defer to Phase 3.
-- **Streaming SSE into super_editor:** Buffering tokens and batch-inserting into MutableDocument needs prototyping. No reference implementation found.
-- **Token counting for Chinese text:** Estimates of 1-2 tokens per character are approximate. Build and validate token estimation utility in Phase 2.
+- **Anti-AI-scent effectiveness for xianxia prose is unproven.** The 14-entry synonym map targets general Chinese AI patterns, not genre-specific ones. The validation itself is the first real test. The plan should budget time to expand the banned phrase list before writing begins.
+- **Chapter summary regeneration mechanism does not exist.** Summaries go stale when chapters are edited, split, or reordered. The plan should define whether to build an auto-regeneration feature or rely on manual verification at milestones.
+- **Deviation detection scope is limited to skill documents.** It does not check against character cards or world settings. The plan should decide whether to extend deviation detection scope or accept this limitation during validation.
+- **Token estimation accuracy (1.8x multiplier for Chinese) is approximate.** OpenAI's `stream_options: { include_usage: true }` could provide exact counts but requires adapter changes. The plan should decide whether estimated tokens are sufficient for v1.3 or if exact counts are needed.
+- **Real creative data may surface unknown edge cases.** Mixed CJK punctuation, nested dialogue, and markdown remnants from AI output are predicted but not yet observed at scale. The first 10 chapters will reveal the actual edge case landscape.
 
 ## Sources
 
 ### Primary (HIGH confidence)
-- Context7 / super_editor docs -- popover toolbar, document model, ComponentBuilder, IME support
-- Context7 / appflowy_editor docs -- FloatingToolbar API, BlockComponentBuilder
-- Context7 / Riverpod docs -- AsyncNotifier, code generation, @riverpod annotation
-- Context7 / openai_dart docs -- custom baseUrl for OpenAI-compatible APIs
-- Context7 / hive_ce docs -- encryption, adapter generation, isolate support
-- Context7 / Flutter docs -- Windows TSF/IME integration, TextInputClient, Isolate.run()
-- pub.dev API -- all package versions verified 2026-05-31
-- Flutter GitHub issue tracker -- #66896, #101553, #118917 (CJK IME)
+- Project codebase analysis -- 183 source files, 117 test files, 930+ passing tests, all architecture decisions verified against actual code
+- pub.dev API (live queries) -- mocktail ^1.0.4 verified current
+- Context7 / Flutter integration_test docs -- Windows desktop support, binding API, performance profiling
+- Context7 / mocktail docs -- zero-codegen API, verify/capture patterns
+- Context7 / Riverpod docs -- ProviderContainer override patterns, AsyncNotifier conventions
+- DeepSeek API pricing page -- per-token costs for budget projections
+- v1.0/v1.1/v1.2 milestone audits and retrospectives -- known risks, tech debt, gap patterns
 
 ### Secondary (MEDIUM confidence)
-- Sudowrite.com homepage (fetched 2026-05-31) -- Describe, Write, Expand, Story Bible, Canvas
-- Biling AI homepage (fetched 2026-05-31) -- full novel feature menu
-- MetaCat homepage (fetched 2026-05-31) -- general writing tool
-- Jasper.ai homepage (fetched 2026-05-31) -- marketing focus
-- OWASP LLM Top 10 -- prompt injection guidance
+- "Context Is a Budget" (foojay.io) -- token optimization patterns for context engineering
+- "Lost in Stories: Consistency Bugs in Long Story Generation by LLMs" (arXiv) -- academic study on LLM consistency degradation over long narratives
+- "Token Cost Trap: Why AI Agent ROI Breaks at Scale" (Medium) -- quadratic cost growth patterns in agent loops
+- "C-ReD: Chinese AI Text Detection Benchmark" (arXiv) -- systematic approaches to Chinese AI text detection
+- Scrivener large-project failure reports (Literature & Latte forum, KBoards) -- what breaks at scale in writing tools
+- JetBrains dogfooding methodology (JetBrains Blog) -- validation approach structure
+- Hive CE GitHub issues -- reliability concerns with sustained write loads
 
-### Tertiary (LOW confidence, needs validation)
-- Training knowledge: NovelAI, Moyu AI, Xinghuo features -- not freshly verified
-- Anti-AI-scent banned phrase lists -- need empirical testing
-- Chinese novel platform export specs -- change frequently
+### Tertiary (LOW confidence)
+- "Chinese Language Tokenization Efficiency" (arXiv) -- Chinese token overhead ratios vary by model
+- "Detect AI-Generated Text via Stylometric Features" (ACL Anthology) -- 91.8% F1 on Chinese text via stylometric detection
+- Pangram Labs AI writing pattern guide -- structural AI detection beyond phrase-level
+- Stack Overflow complex Flutter flow testing -- integration test patterns for multi-screen workflows
 
 ---
-*Research completed: 2026-05-31*
+*Research completed: 2026-06-06*
 *Ready for roadmap: yes*
