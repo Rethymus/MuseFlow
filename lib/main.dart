@@ -75,6 +75,7 @@ void main() async {
   Hive.registerAdapter(GuardianAnnotationAdapter());
   Hive.registerAdapter(ManuscriptAdapter());
   Hive.registerAdapter(ChapterAdapter());
+  Hive.registerAdapter(TokenAuditRecordAdapter());
 
   // Purge soft-deleted manuscripts older than 30 days (D-21).
   // Non-critical startup task -- errors are logged but do not block app launch.

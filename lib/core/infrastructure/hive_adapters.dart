@@ -6,6 +6,7 @@ import 'package:museflow/features/knowledge/domain/skill_document.dart';
 import 'package:museflow/features/knowledge/domain/world_setting.dart';
 import 'package:museflow/features/manuscript/domain/chapter.dart';
 import 'package:museflow/features/manuscript/domain/manuscript.dart';
+import 'package:museflow/features/stats/domain/token_audit_record.dart';
 import 'package:museflow/features/story_structure/domain/foreshadowing_entry.dart';
 import 'package:museflow/features/story_structure/domain/guardian_annotation.dart';
 import 'package:museflow/features/story_structure/domain/plot_node.dart';
@@ -23,6 +24,7 @@ abstract class HiveTypeIds {
   static const int plotNode = 7;
   static const int guardianAnnotation = 8;
   static const int chapter = 9;
+  static const int tokenAuditRecord = 10;
 }
 
 /// Manual Hive TypeAdapter for [Fragment].
@@ -306,6 +308,35 @@ class ChapterAdapter extends TypeAdapter<Chapter> {
   bool operator ==(Object other) =>
       identical(this, other) ||
       other is ChapterAdapter &&
+          runtimeType == other.runtimeType &&
+          typeId == other.typeId;
+}
+
+/// Manual Hive TypeAdapter for [TokenAuditRecord].
+///
+/// Delegates serialization to fromJson/toJson.
+class TokenAuditRecordAdapter extends TypeAdapter<TokenAuditRecord> {
+  @override
+  final int typeId = HiveTypeIds.tokenAuditRecord;
+
+  @override
+  TokenAuditRecord read(BinaryReader reader) {
+    final json = reader.readMap() as Map<String, dynamic>;
+    return TokenAuditRecord.fromJson(json);
+  }
+
+  @override
+  void write(BinaryWriter writer, TokenAuditRecord obj) {
+    writer.writeMap(obj.toJson());
+  }
+
+  @override
+  int get hashCode => typeId.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is TokenAuditRecordAdapter &&
           runtimeType == other.runtimeType &&
           typeId == other.typeId;
 }
