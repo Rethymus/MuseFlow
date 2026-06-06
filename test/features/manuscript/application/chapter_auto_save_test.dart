@@ -116,6 +116,79 @@ void main() {
     expect(chapter, isNotNull);
   });
 
+  test('dispose does not rely on unawaited flush for persistence', () async {
+    // Per SC-4: dispose must only cancel the debounce timer and release
+    // resources. Persistence guarantee comes from explicit awaited
+    // forceSave() calls before transitions, not from unawaited dispose flush.
+    await box.put('ch-1', _createChapter().toJson());
+
+    autoSave.onDocumentChanged('ch-1', 'dirty content');
+
+    // Force save explicitly (the guaranteed path), then dispose
+    await autoSave.forceSave();
+
+    // Verify content was persisted through the explicit forceSave
+    expect(repository.getById('ch-1')!.documentContent, equals('dirty content'));
+
+    // Now dispose. After dispose, any pending dirty data should NOT
+    // be expected to persist because dispose only cancels timers.
+    autoSave.onDocumentChanged('ch-1', 'post-save dirty');
+    autoSave.dispose();
+
+    // Wait to verify no unawaited flush occurred
+    await Future<void>.delayed(const Duration(milliseconds: 200));
+
+    // Content should still be 'dirty content' (not 'post-save dirty')
+    // because dispose cancelled the debounce timer without flushing
+    expect(
+      repository.getById('ch-1')!.documentContent,
+      equals('dirty content'),
+    );
+
+    // Set to null so tearDown doesn't double-dispose
+    autoSave = ChapterAutoSave(
+      repository,
+      debounceDuration: const Duration(milliseconds: 100),
+    );
+  });
+
+  test('dispose cancels debounce timer without flushing', () async {
+    // Verify that dispose only cancels the timer and does not attempt
+    // an unawaited async flush. The debounce timer callback should never fire.
+    await box.put('ch-1', _createChapter(documentContent: 'original').toJson());
+
+    autoSave.onDocumentChanged('ch-1', 'timer-pending content');
+
+    // Dispose immediately -- timer should be cancelled, not flushed
+    autoSave.dispose();
+
+    // Wait long enough that the debounce timer would have fired if not cancelled
+    await Future<void>.delayed(const Duration(milliseconds: 200));
+
+    // Content should remain original because dispose cancelled the timer
+    // without flushing (per SC-4: no unawaited async flush in dispose)
+    final chapter = repository.getById('ch-1');
+    expect(chapter!.documentContent, equals('original'));
+
+    // Replace autoSave to avoid double-dispose in tearDown
+    autoSave = ChapterAutoSave(
+      repository,
+      debounceDuration: const Duration(milliseconds: 100),
+    );
+  });
+
+  test('forceSave is awaitable and returns after persistence completes', () async {
+    await box.put('ch-1', _createChapter().toJson());
+
+    autoSave.onDocumentChanged('ch-1', 'awaitable content');
+
+    // Await forceSave -- it must complete before we proceed
+    await autoSave.forceSave();
+
+    // Content must be persisted immediately after await
+    expect(repository.getById('ch-1')!.documentContent, equals('awaitable content'));
+  });
+
   test('switching chapters saves pending changes for previous chapter', () async {
     await box.put('ch-1', _createChapter(id: 'ch-1', documentContent: 'content 1').toJson());
     await box.put('ch-2', _createChapter(id: 'ch-2', documentContent: 'content 2').toJson());

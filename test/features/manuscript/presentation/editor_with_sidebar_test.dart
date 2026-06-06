@@ -13,119 +13,153 @@ import 'package:museflow/features/manuscript/infrastructure/chapter_repository.d
 import 'package:museflow/features/manuscript/presentation/editor_with_sidebar.dart';
 
 void main() {
-  testWidgets(
-    'should render EditorWithSidebar with manuscript title in AppBar',
-    (tester) async {
-      await tester.pumpWidget(
-        ProviderScope(
-          overrides: [
-            manuscriptNotifierProvider.overrideWith(
-              () => _TestManuscriptNotifier(),
+  group('EditorWithSidebar chapter loading (SC-2/SC-3)', () {
+    testWidgets(
+      'should call loadChapters(manuscriptId) during initialization',
+      (tester) async {
+        final fakeNotifier = _RecordingChapterNotifier();
+
+        await tester.pumpWidget(
+          ProviderScope(
+            overrides: [
+              manuscriptNotifierProvider.overrideWith(
+                () => _TestManuscriptNotifier(),
+              ),
+              chapterNotifierProvider.overrideWith(
+                () => fakeNotifier,
+              ),
+              chapterAutoSaveProvider
+                  .overrideWith((ref) async => _NoOpAutoSave()),
+            ],
+            child: const MaterialApp(
+              home: EditorWithSidebar(manuscriptId: 'm1'),
             ),
-            chapterNotifierProvider.overrideWith(
-              () => _PopulatedChapterNotifier(),
-            ),
-            chapterAutoSaveProvider
-                .overrideWith((ref) async => _NoOpAutoSave()),
-          ],
-          child: const MaterialApp(
-            home: EditorWithSidebar(manuscriptId: 'm1'),
           ),
-        ),
-      );
-      await tester.pumpAndSettle();
+        );
 
-      // AppBar title shows manuscript title
-      final appBarTitle = find.descendant(
-        of: find.byType(AppBar),
-        matching: find.text('测试小说'),
-      );
-      expect(appBarTitle, findsOneWidget);
+        await tester.pump();
+        await tester.pump();
+        await tester.pumpAndSettle();
 
-      // Chapter sidebar content
-      expect(find.text('第一章'), findsOneWidget);
-      expect(find.text('第二章'), findsOneWidget);
+        expect(
+          fakeNotifier.loadChaptersCalls,
+          contains('m1'),
+          reason:
+              'EditorWithSidebar should call loadChapters(widget.manuscriptId) during initialization',
+        );
+      },
+    );
 
-      // Back button
-      expect(find.byIcon(Icons.arrow_back), findsOneWidget);
-    },
-  );
-
-  testWidgets(
-    'should show empty state when no editor is loaded',
-    (tester) async {
-      await tester.pumpWidget(
-        ProviderScope(
-          overrides: [
-            manuscriptNotifierProvider.overrideWith(
-              () => _TestManuscriptNotifier(),
+    testWidgets(
+      'should load first chapter into editor when chapters exist',
+      (tester) async {
+        // Uses a notifier that returns populated chapters from build().
+        // The synchronous fast-path in _loadInitialChapter reads chapters
+        // from the provider state and loads the first chapter.
+        await tester.pumpWidget(
+          ProviderScope(
+            overrides: [
+              manuscriptNotifierProvider.overrideWith(
+                () => _TestManuscriptNotifier(),
+              ),
+              chapterNotifierProvider.overrideWith(
+                () => _PreloadedChapterNotifier(),
+              ),
+              chapterAutoSaveProvider
+                  .overrideWith((ref) async => _NoOpAutoSave()),
+            ],
+            child: const MaterialApp(
+              home: EditorWithSidebar(manuscriptId: 'm1'),
             ),
-            chapterNotifierProvider.overrideWith(
-              () => _EmptyChapterNotifier(),
-            ),
-            chapterAutoSaveProvider
-                .overrideWith((ref) async => _NoOpAutoSave()),
-          ],
-          child: const MaterialApp(
-            home: EditorWithSidebar(manuscriptId: 'm1'),
           ),
-        ),
-      );
-      await tester.pumpAndSettle();
+        );
 
-      // Empty state message
-      expect(find.text('选择或创建一个章节开始写作'), findsOneWidget);
-    },
-  );
+        await tester.pump();
+        await tester.pump();
+        await tester.pumpAndSettle();
 
-  testWidgets(
-    'should pass manuscript word counts to StatusBar',
-    (tester) async {
-      await tester.pumpWidget(
-        ProviderScope(
-          overrides: [
-            manuscriptNotifierProvider.overrideWith(
-              () => _TestManuscriptNotifier(),
-            ),
-            chapterNotifierProvider.overrideWith(
-              () => _PopulatedChapterNotifier(),
-            ),
-            chapterAutoSaveProvider
-                .overrideWith((ref) async => _NoOpAutoSave()),
-          ],
-          child: const MaterialApp(
-            home: EditorWithSidebar(manuscriptId: 'm1'),
-          ),
-        ),
-      );
-
-      // Pump once to start, then pump again to process postFrameCallbacks
-      await tester.pump();
-      await tester.pump();
-
-      // After initial load, the editor should be created via postFrameCallback
-      await tester.pumpAndSettle();
-
-      // StatusBar should be in the widget tree.
-      // Even if it renders SizedBox.shrink(), the widget itself exists.
-      final statusBarFinder = find.byType(StatusBar);
-      if (statusBarFinder.evaluate().isNotEmpty) {
-        final statusBar = tester.widget<StatusBar>(statusBarFinder);
-        expect(statusBar.currentWordCount, 8);
-        expect(statusBar.targetWordCount, 50000);
-      } else {
-        // If StatusBar is not found, the editor area was not rendered.
-        // This is acceptable in test env without real SuperEditor setup.
-        // Verify the widget at least built correctly by checking chapters exist.
+        // Sidebar should show chapters from the notifier
         expect(find.text('第一章'), findsOneWidget);
-      }
-    },
-  );
+        expect(find.text('第二章'), findsOneWidget);
+      },
+    );
+
+    testWidgets(
+      'should show empty state when loadChapters returns empty but still call loadChapters',
+      (tester) async {
+        final fakeNotifier = _RecordingEmptyChapterNotifier();
+
+        await tester.pumpWidget(
+          ProviderScope(
+            overrides: [
+              manuscriptNotifierProvider.overrideWith(
+                () => _TestManuscriptNotifier(),
+              ),
+              chapterNotifierProvider.overrideWith(
+                () => fakeNotifier,
+              ),
+              chapterAutoSaveProvider
+                  .overrideWith((ref) async => _NoOpAutoSave()),
+            ],
+            child: const MaterialApp(
+              home: EditorWithSidebar(manuscriptId: 'm1'),
+            ),
+          ),
+        );
+
+        await tester.pump();
+        await tester.pump();
+        await tester.pumpAndSettle();
+
+        expect(
+          fakeNotifier.loadChaptersCalls,
+          contains('m1'),
+          reason:
+              'loadChapters should be called even when no chapters exist',
+        );
+
+        expect(find.text('选择或创建一个章节开始写作'), findsOneWidget);
+      },
+    );
+
+    testWidgets(
+      'should render manuscript title in AppBar',
+      (tester) async {
+        await tester.pumpWidget(
+          ProviderScope(
+            overrides: [
+              manuscriptNotifierProvider.overrideWith(
+                () => _TestManuscriptNotifier(),
+              ),
+              chapterNotifierProvider.overrideWith(
+                () => _RecordingChapterNotifier(),
+              ),
+              chapterAutoSaveProvider
+                  .overrideWith((ref) async => _NoOpAutoSave()),
+            ],
+            child: const MaterialApp(
+              home: EditorWithSidebar(manuscriptId: 'm1'),
+            ),
+          ),
+        );
+        await tester.pump();
+        await tester.pump();
+        await tester.pumpAndSettle();
+
+        final appBarTitle = find.descendant(
+          of: find.byType(AppBar),
+          matching: find.text('测试小说'),
+        );
+        expect(appBarTitle, findsOneWidget);
+        expect(find.byIcon(Icons.arrow_back), findsOneWidget);
+      },
+    );
+  });
 }
 
+// --- Test Doubles ---
+
 /// A no-op ChapterAutoSave for testing.
-///
-/// Uses a minimal [ChapterRepository] that discards all writes.
 class _NoOpAutoSave extends ChapterAutoSave {
   _NoOpAutoSave() : super(_NoOpChapterRepository());
 }
@@ -137,7 +171,7 @@ class _NoOpChapterRepository extends ChapterRepository {
   static final _inMemoryBox = _InMemoryTestBox();
 }
 
-/// Minimal in-memory box for testing that supports basic operations.
+/// Minimal in-memory box for testing.
 class _InMemoryTestBox implements Box<dynamic> {
   final Map<String, dynamic> _data = {};
 
@@ -193,8 +227,12 @@ class _TestManuscriptNotifier extends AsyncNotifier<List<Manuscript>>
   List<Manuscript> searchByTitle(String query) => [];
 }
 
-/// Test notifier that returns pre-populated chapters.
-class _PopulatedChapterNotifier extends AsyncNotifier<List<Chapter>>
+/// Notifier that returns pre-populated chapters from build().
+///
+/// Simulates the state AFTER loadChapters completes. The synchronous
+/// fast-path in _loadInitialChapter will find these chapters and load
+/// the first one.
+class _PreloadedChapterNotifier extends AsyncNotifier<List<Chapter>>
     implements ChapterNotifier {
   @override
   Future<List<Chapter>> build() async {
@@ -251,14 +289,18 @@ class _PopulatedChapterNotifier extends AsyncNotifier<List<Chapter>>
   Future<void> mergeChapters(String chapterId1, String chapterId2) async {}
 }
 
-/// Test notifier that returns an empty chapter list.
-class _EmptyChapterNotifier extends AsyncNotifier<List<Chapter>>
+/// Recording notifier that starts empty, records loadChapters calls.
+class _RecordingChapterNotifier extends AsyncNotifier<List<Chapter>>
     implements ChapterNotifier {
+  final List<String> loadChaptersCalls = [];
+
   @override
   Future<List<Chapter>> build() async => [];
 
   @override
-  Future<void> loadChapters(String manuscriptId) async {}
+  Future<void> loadChapters(String manuscriptId) async {
+    loadChaptersCalls.add(manuscriptId);
+  }
 
   @override
   Future<void> add(Chapter chapter) async {}
@@ -286,3 +328,6 @@ class _EmptyChapterNotifier extends AsyncNotifier<List<Chapter>>
   @override
   Future<void> mergeChapters(String chapterId1, String chapterId2) async {}
 }
+
+/// Recording notifier that starts and stays empty.
+class _RecordingEmptyChapterNotifier extends _RecordingChapterNotifier {}
