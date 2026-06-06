@@ -188,6 +188,13 @@ class _EditorWithSidebarState extends ConsumerState<EditorWithSidebar>
     });
   }
 
+  /// Navigates to manuscript settings after forcing pending edits to persist.
+  Future<void> _openSettings() async {
+    await _forceSaveAsync();
+    if (!mounted) return;
+    context.go('/manuscript/${widget.manuscriptId}/settings');
+  }
+
   /// Navigates to the previous chapter in the list.
   void _goToPreviousChapter() {
     final chapters = ref.read(chapterNotifierProvider).asData?.value ?? [];
@@ -578,8 +585,7 @@ class _EditorWithSidebarState extends ConsumerState<EditorWithSidebar>
                 IconButton(
                   tooltip: '文稿设置',
                   icon: const Icon(Icons.settings_outlined),
-                  onPressed: () =>
-                      context.go('/manuscript/${widget.manuscriptId}/settings'),
+                  onPressed: _openSettings,
                 ),
               ],
             ),
