@@ -34,7 +34,7 @@
 
 **Milestone Goal:** 将 MuseFlow 从"单一编辑器"升级为"多文稿管理平台"，支持章节级编辑和多线程并行创作。
 
-- [ ] **Phase 11: 文稿库与章节管理** — 多文稿 CRUD、章节实体与导航、编辑器章节级切换、数据迁移、模板策略修订
+- [x] **Phase 11: 文稿库与章节管理** — 多文稿 CRUD、章节实体与导航、编辑器章节级切换、数据迁移、模板策略修订 (completed 2026-06-06)
 
 ## Phase Details
 
@@ -189,7 +189,7 @@ Plans:
 
 **Wave 5** *(integration)*
 
-- [ ] 11-05: ExportBundle chapters, template chapter skeleton, AI chapter context, StatusBar progress, purge startup (wave 5, depends on 11-04)
+- [x] 11-05: ExportBundle chapters, template chapter skeleton, AI chapter context, StatusBar progress, purge startup (wave 5, depends on 11-04)
 
 ## Progress
 
@@ -210,4 +210,4 @@ Note: Phases 9 and 10 are independent of each other (both depend only on v1.0). 
 | 8. 开篇引导 | v1.1 | 5/5 | Complete | 2026-06-04 |
 | 9. 写作数据统计 | v1.1 | 5/5 | Complete   | 2026-06-05 |
 | 10. 故事弧可视化 | v1.1 | 4/4 | Complete    | 2026-06-05 |
-| 11. 文稿库与章节管理 | v1.2 | 4/5 | In Progress|  |
+| 11. 文稿库与章节管理 | v1.2 | 5/5 | Complete   | 2026-06-06 |
