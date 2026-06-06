@@ -99,6 +99,7 @@ class _EditorWithSidebarState extends ConsumerState<EditorWithSidebar>
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
       ref.read(chapterAutoSaveProvider.future).then((autoSave) {
+        if (!mounted) return;
         _autoSave = autoSave;
       });
     });
