@@ -39,7 +39,7 @@ void main() {
 
         await tester.pump();
         await tester.pump();
-        await tester.pumpAndSettle();
+        await tester.pump(const Duration(milliseconds: 100));
 
         expect(
           fakeNotifier.loadChaptersCalls,
@@ -76,11 +76,44 @@ void main() {
 
         await tester.pump();
         await tester.pump();
-        await tester.pumpAndSettle();
+        await tester.pump(const Duration(milliseconds: 100));
 
         // Sidebar should show chapters from the notifier
         expect(find.text('第一章'), findsOneWidget);
         expect(find.text('第二章'), findsOneWidget);
+      },
+    );
+
+    testWidgets(
+      'should await loadChapters and load first chapter when build starts empty',
+      (tester) async {
+        final fakeNotifier = _AsyncLoadingChapterNotifier();
+
+        await tester.pumpWidget(
+          ProviderScope(
+            overrides: [
+              manuscriptNotifierProvider.overrideWith(
+                () => _TestManuscriptNotifier(),
+              ),
+              chapterNotifierProvider.overrideWith(
+                () => fakeNotifier,
+              ),
+              chapterAutoSaveProvider
+                  .overrideWith((ref) async => _NoOpAutoSave()),
+            ],
+            child: const MaterialApp(
+              home: EditorWithSidebar(manuscriptId: 'm1'),
+            ),
+          ),
+        );
+
+        await tester.pump();
+        await tester.pump();
+        await tester.pump(const Duration(milliseconds: 100));
+
+        expect(fakeNotifier.loadChaptersCalls, contains('m1'));
+        expect(find.text('第一章'), findsOneWidget);
+        expect(find.text('选择或创建一个章节开始写作'), findsNothing);
       },
     );
 
@@ -109,7 +142,7 @@ void main() {
 
         await tester.pump();
         await tester.pump();
-        await tester.pumpAndSettle();
+        await tester.pump(const Duration(milliseconds: 100));
 
         expect(
           fakeNotifier.loadChaptersCalls,
@@ -144,7 +177,7 @@ void main() {
         );
         await tester.pump();
         await tester.pump();
-        await tester.pumpAndSettle();
+        await tester.pump(const Duration(milliseconds: 100));
 
         final appBarTitle = find.descendant(
           of: find.byType(AppBar),
@@ -327,6 +360,36 @@ class _RecordingChapterNotifier extends AsyncNotifier<List<Chapter>>
 
   @override
   Future<void> mergeChapters(String chapterId1, String chapterId2) async {}
+}
+
+/// Notifier that starts empty, then asynchronously loads chapters.
+class _AsyncLoadingChapterNotifier extends _RecordingChapterNotifier {
+  @override
+  Future<void> loadChapters(String manuscriptId) async {
+    loadChaptersCalls.add(manuscriptId);
+    await Future<void>.delayed(Duration.zero);
+    final now = DateTime.now();
+    state = AsyncData([
+      Chapter(
+        id: 'c1',
+        manuscriptId: manuscriptId,
+        title: '第一章',
+        sortOrder: 0,
+        documentContent: '一二三四五',
+        createdAt: now,
+        updatedAt: now,
+      ),
+      Chapter(
+        id: 'c2',
+        manuscriptId: manuscriptId,
+        title: '第二章',
+        sortOrder: 1,
+        documentContent: 'abc',
+        createdAt: now,
+        updatedAt: now,
+      ),
+    ]);
+  }
 }
 
 /// Recording notifier that starts and stays empty.

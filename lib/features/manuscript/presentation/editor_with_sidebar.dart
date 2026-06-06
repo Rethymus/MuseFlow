@@ -109,16 +109,17 @@ class _EditorWithSidebarState extends ConsumerState<EditorWithSidebar>
   /// ChapterNotifier.build() deliberately returns an empty list, so this
   /// explicit load is required on every editor entry.
   void _loadInitialChapter() {
-    WidgetsBinding.instance.addPostFrameCallback((_) {
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
       if (!mounted) return;
 
       // Always trigger loadChapters to ensure data is fresh from repository.
-      // If build() already returned data, loadChapters will refresh it.
-      ref
+      // Await it before reading state because build() starts with an empty list.
+      await ref
           .read(chapterNotifierProvider.notifier)
           .loadChapters(widget.manuscriptId);
+      if (!mounted) return;
 
-      // Read current chapter state and load first chapter if available.
+      // Read loaded chapter state and load first chapter if available.
       final chapters = ref.read(chapterNotifierProvider).asData?.value ?? [];
       if (chapters.isEmpty) return;
       setState(() {
@@ -658,7 +659,7 @@ class _EditorWithSidebarState extends ConsumerState<EditorWithSidebar>
         Divider(height: 1, thickness: 1, color: colorScheme.outline),
         // Editor content
         Expanded(
-          child: SingleChildScrollView(
+          child: Padding(
             padding: const EdgeInsets.all(24.0),
             child: Center(
               child: ConstrainedBox(
