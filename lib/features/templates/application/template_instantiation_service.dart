@@ -1,5 +1,7 @@
 import 'package:museflow/features/knowledge/infrastructure/character_card_repository.dart';
 import 'package:museflow/features/knowledge/infrastructure/world_setting_repository.dart';
+import 'package:museflow/features/manuscript/domain/chapter.dart';
+import 'package:museflow/features/manuscript/infrastructure/chapter_repository.dart';
 import 'package:museflow/features/templates/application/template_draft.dart';
 import 'package:museflow/features/templates/domain/world_template.dart';
 
@@ -7,10 +9,12 @@ class TemplateInstantiationService {
   const TemplateInstantiationService({
     required this.worldSettingRepository,
     required this.characterCardRepository,
+    required this.chapterRepository,
   });
 
   final WorldSettingRepository worldSettingRepository;
   final CharacterCardRepository characterCardRepository;
+  final ChapterRepository chapterRepository;
 
   TemplateDraft createDraft(
     WorldTemplate template, {
@@ -57,9 +61,28 @@ class TemplateInstantiationService {
       );
     }
 
+    // Create chapter skeleton entities when manuscriptId is provided
+    final createdChapters = <Chapter>[];
+    if (draft.manuscriptId != null && draft.chapterTitles.isNotEmpty) {
+      for (var i = 0; i < draft.chapterTitles.length; i++) {
+        final chapter = await chapterRepository.add(Chapter(
+          id: '',
+          manuscriptId: draft.manuscriptId!,
+          title: draft.chapterTitles[i],
+          sortOrder: i,
+          status: '草稿',
+          documentContent: '',
+          createdAt: DateTime.now(),
+          updatedAt: DateTime.now(),
+        ));
+        createdChapters.add(chapter);
+      }
+    }
+
     return TemplateCreationResult(
       worldSetting: createdWorld,
       characterCards: createdCharacters.cast(),
+      chapters: createdChapters,
     );
   }
 

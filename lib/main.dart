@@ -1,11 +1,15 @@
 import 'dart:convert';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive_ce_flutter/hive_flutter.dart';
 import 'package:museflow/app.dart';
 import 'package:museflow/core/infrastructure/hive_adapters.dart';
 import 'package:museflow/core/infrastructure/secure_storage_service.dart';
+import 'package:museflow/features/manuscript/infrastructure/chapter_repository.dart';
+import 'package:museflow/features/manuscript/infrastructure/manuscript_purge_service.dart';
+import 'package:museflow/features/manuscript/infrastructure/manuscript_repository.dart';
 import 'package:window_manager/window_manager.dart';
 
 /// Reads saved window geometry from the encrypted settings box.
@@ -71,6 +75,23 @@ void main() async {
   Hive.registerAdapter(GuardianAnnotationAdapter());
   Hive.registerAdapter(ManuscriptAdapter());
   Hive.registerAdapter(ChapterAdapter());
+
+  // Purge soft-deleted manuscripts older than 30 days (D-21).
+  // Non-critical startup task -- errors are logged but do not block app launch.
+  try {
+    final manuscriptsBox = await Hive.openBox<dynamic>('manuscripts');
+    final chaptersBox = await Hive.openBox<dynamic>('chapters');
+    final purgeService = ManuscriptPurgeService(
+      manuscriptRepository: ManuscriptRepository(manuscriptsBox),
+      chapterRepository: ChapterRepository(chaptersBox),
+    );
+    final purged = await purgeService.purgeExpired();
+    if (purged > 0) {
+      debugPrint('ManuscriptPurgeService: purged $purged expired manuscripts');
+    }
+  } catch (e) {
+    debugPrint('ManuscriptPurgeService: purge failed (non-critical): $e');
+  }
 
   // Read saved window geometry before showing the window
   final geometry = await _readSavedGeometry();

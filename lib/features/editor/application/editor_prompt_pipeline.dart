@@ -13,6 +13,7 @@ import 'package:museflow/features/ai/application/prompt_pipeline.dart';
 import 'package:museflow/features/ai/application/prompt_middlewares/banned_list_middleware.dart';
 import 'package:museflow/features/ai/application/prompt_middlewares/persona_injection_middleware.dart';
 import 'package:museflow/features/ai/application/prompt_middlewares/system_prompt_middleware.dart';
+import 'package:museflow/features/editor/application/chapter_context_middleware.dart';
 import 'package:museflow/features/editor/application/context_anchor_middleware.dart';
 import 'package:museflow/features/editor/domain/editor_ai_state.dart';
 import 'package:museflow/features/knowledge/application/knowledge_injection_middleware.dart';
@@ -38,6 +39,7 @@ class EditorPromptPipeline extends PromptPipeline {
             if (knowledgeInjectionMiddleware != null) knowledgeInjectionMiddleware,
             if (skillEnforcementMiddleware != null) skillEnforcementMiddleware,
             const ContextAnchorMiddleware(),
+            const ChapterContextMiddleware(),
             EditorOperationMiddleware(),
             EditorUserContentMiddleware(),
           ],

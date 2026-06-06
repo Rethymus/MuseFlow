@@ -407,9 +407,13 @@ final templateInstantiationServiceProvider =
       final characterRepository = await ref.watch(
         characterCardRepositoryProvider.future,
       );
+      final chapterRepo = await ref.watch(
+        chapterRepositoryProvider.future,
+      );
       return TemplateInstantiationService(
         worldSettingRepository: worldRepository,
         characterCardRepository: characterRepository,
+        chapterRepository: chapterRepo,
       );
     });
 

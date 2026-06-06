@@ -7,6 +7,7 @@ import 'package:hive_ce/hive.dart';
 import 'package:museflow/core/presentation/providers.dart';
 import 'package:museflow/features/knowledge/infrastructure/character_card_repository.dart';
 import 'package:museflow/features/knowledge/infrastructure/world_setting_repository.dart';
+import 'package:museflow/features/manuscript/infrastructure/chapter_repository.dart';
 import 'package:museflow/features/templates/application/template_completion_service.dart';
 import 'package:museflow/features/templates/application/template_instantiation_service.dart';
 import 'package:museflow/features/templates/infrastructure/world_template_repository.dart';
@@ -19,6 +20,7 @@ void main() {
     late Directory tempDir;
     late Box<dynamic> worldBox;
     late Box<dynamic> characterBox;
+    late Box<dynamic> chaptersBox;
 
     setUp(() async {
       tempDir = await Directory.systemTemp.createTemp(
@@ -27,6 +29,7 @@ void main() {
       Hive.init(tempDir.path);
       worldBox = await Hive.openBox<dynamic>('world_settings_test');
       characterBox = await Hive.openBox<dynamic>('character_cards_test');
+      chaptersBox = await Hive.openBox<dynamic>('chapters_test');
     });
 
     tearDown(() async {
@@ -45,6 +48,7 @@ void main() {
               return TemplateInstantiationService(
                 worldSettingRepository: WorldSettingRepository(worldBox),
                 characterCardRepository: CharacterCardRepository(characterBox),
+                chapterRepository: ChapterRepository(chaptersBox),
               );
             }),
           ],
@@ -87,6 +91,7 @@ void main() {
               return TemplateInstantiationService(
                 worldSettingRepository: WorldSettingRepository(worldBox),
                 characterCardRepository: CharacterCardRepository(characterBox),
+                chapterRepository: ChapterRepository(chaptersBox),
               );
             }),
             templateCompletionServiceProvider.overrideWith((ref) async {

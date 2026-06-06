@@ -82,16 +82,42 @@ class ExportService {
 
   /// Builds TXT content from the export bundle.
   ///
-  /// Returns readable manuscript text with stable LF line endings.
+  /// When the bundle has chapters, produces chapter-separated output with
+  /// plain text title separators. Otherwise returns flat manuscript text
+  /// with stable LF line endings.
   String buildTxt(ExportBundle bundle) {
+    if (bundle.chapters.isNotEmpty) {
+      final sorted = List.of(bundle.chapters)
+        ..sort((a, b) => a.sortOrder.compareTo(b.sortOrder));
+      final buffer = StringBuffer();
+      for (final chapter in sorted) {
+        buffer.writeln(chapter.title);
+        buffer.writeln(chapter.content);
+        buffer.writeln();
+      }
+      return buffer.toString().replaceAll('\r\n', '\n').replaceAll('\r', '\n');
+    }
     return bundle.manuscriptText.replaceAll('\r\n', '\n').replaceAll('\r', '\n');
   }
 
   /// Builds Markdown content from the export bundle.
   ///
-  /// Returns paragraph-separated manuscript text preserving blank lines
-  /// between paragraphs.
+  /// When the bundle has chapters, produces chapter-aware output with
+  /// '## {title}' headers between chapters sorted by sortOrder.
+  /// Otherwise returns flat manuscript text with stable LF line endings.
   String buildMarkdown(ExportBundle bundle) {
+    if (bundle.chapters.isNotEmpty) {
+      final sorted = List.of(bundle.chapters)
+        ..sort((a, b) => a.sortOrder.compareTo(b.sortOrder));
+      final buffer = StringBuffer();
+      for (final chapter in sorted) {
+        buffer.writeln('## ${chapter.title}');
+        buffer.writeln();
+        buffer.writeln(chapter.content);
+        buffer.writeln();
+      }
+      return buffer.toString().replaceAll('\r\n', '\n').replaceAll('\r', '\n');
+    }
     return bundle.manuscriptText.replaceAll('\r\n', '\n').replaceAll('\r', '\n');
   }
 

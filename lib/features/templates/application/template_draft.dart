@@ -1,5 +1,6 @@
 import 'package:museflow/features/knowledge/domain/character_card.dart';
 import 'package:museflow/features/knowledge/domain/world_setting.dart';
+import 'package:museflow/features/manuscript/domain/chapter.dart';
 
 enum TemplateFieldSource { templateDefault, aiCompleted, userEdited }
 
@@ -147,6 +148,8 @@ class TemplateDraft {
     required this.storyConcept,
     required this.world,
     required this.characters,
+    this.manuscriptId,
+    this.chapterTitles = const ['世界观铺垫', '角色登场', '主线开启'],
   });
 
   final String templateId;
@@ -154,16 +157,27 @@ class TemplateDraft {
   final WorldSettingDraft world;
   final List<CharacterCardDraft> characters;
 
+  /// Optional manuscript ID to associate chapter skeletons with.
+  final String? manuscriptId;
+
+  /// Chapter titles to create as skeleton entities when saving.
+  /// Defaults to genre-appropriate titles per D-20.
+  final List<String> chapterTitles;
+
   TemplateDraft copyWith({
     String? storyConcept,
     WorldSettingDraft? world,
     List<CharacterCardDraft>? characters,
+    String? manuscriptId,
+    List<String>? chapterTitles,
   }) {
     return TemplateDraft(
       templateId: templateId,
       storyConcept: storyConcept ?? this.storyConcept,
       world: world ?? this.world,
       characters: characters ?? this.characters,
+      manuscriptId: manuscriptId ?? this.manuscriptId,
+      chapterTitles: chapterTitles ?? this.chapterTitles,
     );
   }
 }
@@ -172,10 +186,14 @@ class TemplateCreationResult {
   const TemplateCreationResult({
     this.worldSetting,
     required this.characterCards,
+    this.chapters = const [],
   });
 
   final WorldSetting? worldSetting;
   final List<CharacterCard> characterCards;
+
+  /// Chapter skeleton entities created when manuscriptId was provided.
+  final List<Chapter> chapters;
 }
 
 List<String> _splitAliases(String value) {
