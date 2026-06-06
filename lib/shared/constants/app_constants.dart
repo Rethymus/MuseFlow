@@ -34,4 +34,8 @@ abstract class AppConstants {
   static const String stats = '/stats';
   static const String statsProject = '/stats/project';
   static const String onboarding = '/onboarding';
+
+  // --- Manuscript routes ---
+  static const String manuscriptEditor = '/manuscript/:id/editor';
+  static const String manuscriptSettings = '/manuscript/:id/settings';
 }

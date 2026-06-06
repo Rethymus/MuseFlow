@@ -7,6 +7,8 @@ import 'package:museflow/features/ai/presentation/banned_phrase_settings.dart';
 import 'package:museflow/features/ai/presentation/provider_management_page.dart';
 import 'package:museflow/features/capture/presentation/capture_page.dart';
 import 'package:museflow/features/editor/presentation/editor_page.dart';
+import 'package:museflow/features/manuscript/presentation/manuscript_library_page.dart';
+import 'package:museflow/features/manuscript/presentation/manuscript_settings_page.dart';
 import 'package:museflow/features/knowledge/presentation/character_card_form.dart';
 import 'package:museflow/features/knowledge/presentation/knowledge_base_page.dart';
 import 'package:museflow/features/knowledge/presentation/skill_generation_wizard.dart';
@@ -53,6 +55,26 @@ class MuseFlowApp extends ConsumerWidget {
           path: AppConstants.onboarding,
           builder: (context, state) => const OnboardingWizardPage(),
         ),
+        // Top-level manuscript routes -- outside StatefulShellRoute per
+        // RESEARCH Pitfall 4 so bottom nav is hidden inside editor.
+        GoRoute(
+          path: AppConstants.manuscriptEditor,
+          builder: (context, state) {
+            // Placeholder for Plan 04 -- EditorWithSidebar will replace this.
+            final id = state.pathParameters['id'] ?? '';
+            return Scaffold(
+              appBar: AppBar(title: const Text('编辑器')),
+              body: Center(child: Text('Editor for manuscript: $id\n(Plan 04)')),
+            );
+          },
+        ),
+        GoRoute(
+          path: AppConstants.manuscriptSettings,
+          builder: (context, state) {
+            final id = state.pathParameters['id']!;
+            return ManuscriptSettingsPage(manuscriptId: id);
+          },
+        ),
         StatefulShellRoute.indexedStack(
           builder: (context, state, navigationShell) {
             return AppShellScaffold(navigationShell: navigationShell);
@@ -67,12 +89,12 @@ class MuseFlowApp extends ConsumerWidget {
                 ),
               ],
             ),
-            // Branch 1: Editor (home screen, per D-03)
+            // Branch 1: Manuscript Library (home screen, per D-06)
             StatefulShellBranch(
               routes: [
                 GoRoute(
                   path: AppConstants.editor,
-                  builder: (context, state) => const EditorPage(),
+                  builder: (context, state) => const ManuscriptLibraryPage(),
                 ),
               ],
             ),
