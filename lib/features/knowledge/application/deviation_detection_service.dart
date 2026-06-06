@@ -2,6 +2,8 @@ import 'dart:convert';
 
 import 'package:museflow/features/ai/infrastructure/openai_adapter.dart';
 import 'package:museflow/features/knowledge/domain/skill_document.dart';
+import 'package:museflow/features/stats/application/token_audit_service.dart';
+import 'package:museflow/features/stats/domain/audit_operation_type.dart';
 import 'package:openai_dart/openai_dart.dart';
 
 enum DeviationSeverity { low, medium, clear }
@@ -50,23 +52,30 @@ class DeviationDetectionService {
   final String apiKey;
   final String baseUrl;
   final String model;
+  final TokenAuditService? auditService;
 
   const DeviationDetectionService({
     required this.openAIAdapter,
     required this.apiKey,
     required this.baseUrl,
     required this.model,
+    this.auditService,
   });
 
   Future<DeviationResult> detectDeviations(
     String text,
-    List<SkillDocument> activeSkills,
-  ) async {
+    List<SkillDocument> activeSkills, {
+    String? manuscriptId,
+    String? chapterId,
+  }) async {
     if (text.trim().isEmpty || activeSkills.isEmpty) {
       return const DeviationResult(warnings: []);
     }
 
     final prompt = _buildPrompt(text, activeSkills);
+    // Capture input for audit
+    final inputText = 'System: 你是小说设定一致性审校员，只输出 JSON。\nUser: $prompt';
+
     try {
       final buffer = StringBuffer();
       final stream = openAIAdapter.createStream(
@@ -78,6 +87,18 @@ class DeviationDetectionService {
           ChatMessage.user(prompt),
         ],
         maxTokens: 1024,
+        onUsage: (usage) {
+          // Only record if audit service is provided
+          auditService?.recordAudit(
+            usage: usage,
+            modelName: model,
+            operationType: AuditOperationType.deviationDetect,
+            manuscriptId: manuscriptId ?? '',
+            chapterId: chapterId,
+            inputText: inputText,
+            outputText: buffer.toString(),
+          );
+        },
       );
       await for (final token in stream) {
         buffer.write(token);

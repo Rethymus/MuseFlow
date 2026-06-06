@@ -241,6 +241,8 @@ class _FloatingToolbarState extends ConsumerState<FloatingToolbar> {
           startOffset,
           endOffset,
           userInstruction: userInstruction,
+          manuscriptId: null, // TODO: pass actual manuscript ID when context available
+          chapterId: null, // TODO: pass actual chapter ID when context available
         );
 
     // Reset free-input state after starting

@@ -2,6 +2,8 @@ import 'dart:convert';
 
 import 'package:museflow/features/ai/infrastructure/openai_adapter.dart';
 import 'package:museflow/features/templates/application/template_draft.dart';
+import 'package:museflow/features/stats/application/token_audit_service.dart';
+import 'package:museflow/features/stats/domain/audit_operation_type.dart';
 import 'package:openai_dart/openai_dart.dart';
 
 typedef TemplateCompletionStream =
@@ -26,6 +28,7 @@ class TemplateCompletionService {
     this.baseUrl,
     this.model,
     this.completionStream,
+    this.auditService,
   });
 
   final OpenAIAdapter? openAIAdapter;
@@ -33,24 +36,50 @@ class TemplateCompletionService {
   final String? baseUrl;
   final String? model;
   final TemplateCompletionStream? completionStream;
+  final TokenAuditService? auditService;
 
   Future<TemplateCompletionResult> completeBlankFields(
-    TemplateDraft draft,
-  ) async {
+    TemplateDraft draft, {
+    String? manuscriptId,
+  }) async {
     try {
       final messages = _buildMessages(draft);
-      final stream =
-          completionStream?.call(messages) ??
-          openAIAdapter!.createStream(
-            apiKey: apiKey!,
-            baseUrl: baseUrl!,
-            model: model!,
-            messages: messages,
-          );
+      // Capture input for audit (use story concept)
+      final inputText = draft.storyConcept;
+
       final buffer = StringBuffer();
-      await for (final chunk in stream) {
-        buffer.write(chunk);
+
+      if (completionStream != null) {
+        // Test path
+        final stream = completionStream!.call(messages);
+        await for (final chunk in stream) {
+          buffer.write(chunk);
+        }
+      } else {
+        // Production path with audit
+        final stream = openAIAdapter!.createStream(
+          apiKey: apiKey!,
+          baseUrl: baseUrl!,
+          model: model!,
+          messages: messages,
+          onUsage: (usage) {
+            // Only record if audit service is provided
+            auditService?.recordAudit(
+              usage: usage,
+              modelName: model!,
+              operationType: AuditOperationType.templateComplete,
+              manuscriptId: manuscriptId ?? '',
+              chapterId: null,
+              inputText: inputText,
+              outputText: buffer.toString(),
+            );
+          },
+        );
+        await for (final chunk in stream) {
+          buffer.write(chunk);
+        }
       }
+
       final decoded = jsonDecode(buffer.toString()) as Map<String, dynamic>;
       return TemplateCompletionResult(
         draft: _applyCompletion(draft, decoded),

@@ -23,6 +23,7 @@ import 'package:museflow/features/ai/domain/ai_provider.dart';
 import 'package:museflow/features/ai/presentation/banned_phrase_settings.dart';
 import 'package:museflow/features/capture/presentation/capture_provider.dart';
 import 'package:museflow/core/presentation/providers.dart';
+import 'package:museflow/features/stats/domain/audit_operation_type.dart';
 import 'package:super_editor/super_editor.dart';
 
 /// Immutable state for the synthesis flow.
@@ -206,6 +207,12 @@ class SynthesisNotifier extends Notifier<SynthesisState> {
     );
     final messages = pipeline.build(context);
 
+    // Capture input text for audit (approximate from fragments)
+    final inputText = budgetResult.included.map((f) => f.text).join('\n');
+
+    // Get audit service
+    final auditService = await ref.read(tokenAuditServiceProvider.future);
+
     // Start streaming
     final adapter = ref.read(openaiAdapterProvider);
     try {
@@ -217,6 +224,18 @@ class SynthesisNotifier extends Notifier<SynthesisState> {
         temperature: provider.temperature,
         topP: provider.topP,
         maxTokens: provider.maxTokens,
+        onUsage: (usage) {
+          // Record audit after stream completes successfully
+          auditService.recordAudit(
+            usage: usage,
+            modelName: provider.model,
+            operationType: AuditOperationType.synthesis,
+            manuscriptId: '', // TODO: pass from caller when manuscript context available
+            chapterId: null,
+            inputText: inputText,
+            outputText: state.accumulatedText,
+          );
+        },
       );
 
       await for (final token in stream) {

@@ -9,6 +9,8 @@ import 'dart:convert';
 
 import 'package:museflow/features/ai/infrastructure/openai_adapter.dart';
 import 'package:museflow/features/onboarding/domain/opening_variant.dart';
+import 'package:museflow/features/stats/application/token_audit_service.dart';
+import 'package:museflow/features/stats/domain/audit_operation_type.dart';
 import 'package:openai_dart/openai_dart.dart';
 
 /// Typedef for test-only stream override.
@@ -46,6 +48,7 @@ class OpeningGeneratorService {
     this.baseUrl,
     this.model,
     this.openingStream,
+    this.auditService,
   });
 
   final OpenAIAdapter? openAIAdapter;
@@ -55,6 +58,9 @@ class OpeningGeneratorService {
 
   /// Test-only override for the streaming function.
   final OpeningStream? openingStream;
+
+  /// Optional audit service for token usage tracking.
+  final TokenAuditService? auditService;
 
   /// Generates 3 opening variants via a single AI streaming call.
   ///
@@ -71,6 +77,7 @@ class OpeningGeneratorService {
     required String worldDescription,
     required String characterDescription,
     String? storyConcept,
+    String? manuscriptId,
   }) async {
     try {
       final messages = _buildMessages(
@@ -80,17 +87,40 @@ class OpeningGeneratorService {
         storyConcept: storyConcept,
       );
 
-      final stream = openingStream?.call(messages) ??
-          openAIAdapter!.createStream(
-            apiKey: apiKey!,
-            baseUrl: baseUrl!,
-            model: model!,
-            messages: messages,
-          );
+      // Capture input for audit (use descriptions)
+      final inputText = 'Genre: $genreName\nWorld: $worldDescription\nCharacter: $characterDescription';
 
       final buffer = StringBuffer();
-      await for (final chunk in stream) {
-        buffer.write(chunk);
+
+      if (openingStream != null) {
+        // Test path
+        final stream = openingStream!.call(messages);
+        await for (final chunk in stream) {
+          buffer.write(chunk);
+        }
+      } else {
+        // Production path with audit
+        final stream = openAIAdapter!.createStream(
+          apiKey: apiKey!,
+          baseUrl: baseUrl!,
+          model: model!,
+          messages: messages,
+          onUsage: (usage) {
+            // Only record if audit service is provided
+            auditService?.recordAudit(
+              usage: usage,
+              modelName: model!,
+              operationType: AuditOperationType.opening,
+              manuscriptId: manuscriptId ?? '',
+              chapterId: null,
+              inputText: inputText,
+              outputText: buffer.toString(),
+            );
+          },
+        );
+        await for (final chunk in stream) {
+          buffer.write(chunk);
+        }
       }
 
       final raw = buffer.toString().trim();

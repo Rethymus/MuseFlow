@@ -23,6 +23,7 @@ import 'package:museflow/features/editor/application/diff_calculator.dart';
 import 'package:museflow/features/editor/domain/diff_state.dart';
 import 'package:museflow/features/editor/domain/editor_ai_state.dart';
 import 'package:museflow/features/editor/infrastructure/provenance_attribution.dart';
+import 'package:museflow/features/stats/domain/audit_operation_type.dart';
 import 'package:super_editor/super_editor.dart';
 
 /// Notifier managing editor AI operations with streaming state.
@@ -48,6 +49,8 @@ class EditorAINotifier extends Notifier<EditorAIState> {
   /// - [selectionStartOffset]: Start offset within the node
   /// - [selectionEndOffset]: End offset within the node
   /// - [userInstruction]: Custom instruction for free-input operations
+  /// - [manuscriptId]: Optional manuscript ID for audit tracking
+  /// - [chapterId]: Optional chapter ID for audit tracking
   void startOperation(
     EditorAIOperation operation,
     String selectedText,
@@ -55,6 +58,8 @@ class EditorAINotifier extends Notifier<EditorAIState> {
     int selectionStartOffset,
     int selectionEndOffset, {
     String? userInstruction,
+    String? manuscriptId,
+    String? chapterId,
   }) {
     // Reset cancel flag
     _cancelled = false;
@@ -81,7 +86,7 @@ class EditorAINotifier extends Notifier<EditorAIState> {
     }
 
     // Kick off async streaming
-    _fetchKeyAndStream(provider, operation, selectedText, userInstruction);
+    _fetchKeyAndStream(provider, operation, selectedText, userInstruction, manuscriptId, chapterId);
   }
 
   /// Cancels the current streaming operation.
@@ -101,6 +106,8 @@ class EditorAINotifier extends Notifier<EditorAIState> {
     EditorAIOperation operation,
     String selectedText,
     String? userInstruction,
+    String? manuscriptId,
+    String? chapterId,
   ) async {
     // Get API key
     final apiKey = ref.read(activeApiKeyProvider);
@@ -130,6 +137,19 @@ class EditorAINotifier extends Notifier<EditorAIState> {
     );
     final messages = pipeline.build(context);
 
+    // Capture input text for audit (use selected text)
+    final inputText = selectedText;
+
+    // Get audit service
+    final auditService = await ref.read(tokenAuditServiceProvider.future);
+
+    // Map operation to audit operation type
+    final auditOperationType = switch (operation) {
+      EditorAIOperation.toneRewrite => AuditOperationType.rewrite,
+      EditorAIOperation.paragraphPolish => AuditOperationType.polish,
+      EditorAIOperation.freeInput => AuditOperationType.freeInput,
+    };
+
     // Start streaming
     final adapter = ref.read(openaiAdapterProvider);
     try {
@@ -141,6 +161,18 @@ class EditorAINotifier extends Notifier<EditorAIState> {
         temperature: provider.temperature,
         topP: provider.topP,
         maxTokens: provider.maxTokens,
+        onUsage: (usage) {
+          // Record audit after stream completes successfully
+          auditService.recordAudit(
+            usage: usage,
+            modelName: provider.model,
+            operationType: auditOperationType,
+            manuscriptId: manuscriptId ?? '',
+            chapterId: chapterId,
+            inputText: inputText,
+            outputText: state.progressText ?? '',
+          );
+        },
       );
 
       await for (final token in stream) {

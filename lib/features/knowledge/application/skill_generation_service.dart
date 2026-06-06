@@ -3,6 +3,8 @@ import 'dart:convert';
 
 import 'package:museflow/features/ai/infrastructure/openai_adapter.dart';
 import 'package:museflow/features/knowledge/domain/skill_document.dart';
+import 'package:museflow/features/stats/application/token_audit_service.dart';
+import 'package:museflow/features/stats/domain/audit_operation_type.dart';
 import 'package:openai_dart/openai_dart.dart';
 
 class SkillGenerationService {
@@ -10,15 +12,17 @@ class SkillGenerationService {
   final String apiKey;
   final String baseUrl;
   final String model;
+  final TokenAuditService? auditService;
 
   const SkillGenerationService({
     required this.openAIAdapter,
     required this.apiKey,
     required this.baseUrl,
     required this.model,
+    this.auditService,
   });
 
-  Stream<String> generateSkillStream(String conceptDescription) {
+  Stream<String> generateSkillStream(String conceptDescription, {String? manuscriptId}) async* {
     final messages = [
       ChatMessage.system(
         '你是小说世界观设定顾问。请根据作者的概念生成结构化中文设定文档，必须包含以下 Markdown 二级标题：## 力量等级体系、## 门派/势力关系、## 世界规则、## 禁忌/限制、## 专用术语。内容要可执行、具体、避免空泛。',
@@ -26,13 +30,34 @@ class SkillGenerationService {
       ChatMessage.user('设定概念：\n$conceptDescription'),
     ];
 
-    return openAIAdapter.createStream(
+    // Capture input for audit (use concept description)
+    final inputText = conceptDescription;
+    final buffer = StringBuffer();
+
+    final stream = openAIAdapter.createStream(
       apiKey: apiKey,
       baseUrl: baseUrl,
       model: model,
       messages: messages,
       maxTokens: 4096,
+      onUsage: (usage) {
+        // Only record if audit service is provided
+        auditService?.recordAudit(
+          usage: usage,
+          modelName: model,
+          operationType: AuditOperationType.skillGen,
+          manuscriptId: manuscriptId ?? '',
+          chapterId: null,
+          inputText: inputText,
+          outputText: buffer.toString(),
+        );
+      },
     );
+
+    await for (final chunk in stream) {
+      buffer.write(chunk);
+      yield chunk;
+    }
   }
 
   SkillDocument parseSkillDocument({
