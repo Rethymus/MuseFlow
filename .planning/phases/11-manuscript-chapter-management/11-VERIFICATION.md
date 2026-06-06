@@ -1,107 +1,146 @@
 ---
 phase: 11-manuscript-chapter-management
-status: gaps_found
-verified: 2026-06-06T02:18:25Z
-score: 3/6
-gaps:
-  - truth: "SC-2/SC-3: User can manage existing chapters and the editor switches documents when selecting a chapter"
-    status: failed
-    reason: "EditorWithSidebar never calls ChapterNotifier.loadChapters(manuscriptId) on entry. ChapterNotifier.build() returns an empty list, so existing chapters are not loaded into the sidebar and _loadInitialChapter reads an empty provider state. Existing chapter content is inaccessible from the editor route."
-    artifacts:
-      - path: "lib/features/manuscript/presentation/editor_with_sidebar.dart"
-        issue: "initState calls _loadInitialChapter(), but _loadInitialChapter only reads chapterNotifierProvider.asData and never triggers loadChapters(widget.manuscriptId)."
-      - path: "lib/features/manuscript/application/chapter_notifier.dart"
-        issue: "build() returns [] by design; loadChapters(manuscriptId) must be called by the editor or sidebar for data to flow."
-    missing:
-      - "Call ref.read(chapterNotifierProvider.notifier).loadChapters(widget.manuscriptId) during EditorWithSidebar initialization, then load the first chapter after the load completes."
-  - truth: "SC-4: Chapter content auto-saves with debounced plus forced-save guarantees on chapter switch, navigation, and app lifecycle"
-    status: failed
-    reason: "Forced save is not guaranteed in dispose/lifecycle paths. _forceSaveSync invokes async forceSave without awaiting, and ChapterAutoSave.dispose uses unawaited(_flush()). Pending edits may be lost during route teardown or app close."
-    artifacts:
-      - path: "lib/features/manuscript/presentation/editor_with_sidebar.dart"
-        issue: "_forceSaveSync() calls _autoSave?.forceSave() without awaiting; dispose calls _forceSaveAndCleanup(), which cannot guarantee persistence before cleanup."
-      - path: "lib/features/manuscript/application/chapter_auto_save.dart"
-        issue: "dispose() cancels the timer then calls unawaited(_flush()), so the Hive write may not complete before teardown."
-    missing:
-      - "Ensure forced saves are awaited before chapter switch/back navigation/app lifecycle transitions where possible, and avoid relying on unawaited async flush in dispose for the must-have guarantee."
+verified: 2026-06-06T15:52:00Z
+status: human_needed
+score: 6/6 must-haves verified
+overrides_applied: 0
+re_verification:
+  previous_status: gaps_found
+  previous_score: 3/6
+  gaps_closed:
+    - "SC-2/SC-3: EditorWithSidebar now awaits ChapterNotifier.loadChapters(widget.manuscriptId) on entry and loads the first returned chapter."
+    - "SC-4: Chapter switch, back navigation, and manuscript settings navigation now await _forceSaveAsync() before changing chapter/route; lifecycle uses handled best-effort save; ChapterAutoSave.dispose no longer performs unawaited flush."
+  gaps_remaining: []
+  regressions: []
+human_verification:
+  - test: "Open a manuscript with existing chapters on a real Windows/Android build and verify sidebar/editor visual state."
+    expected: "Existing chapters appear immediately, the first chapter is active, and its content is visible without manual reload."
+    why_human: "Visual layout, focus behavior, and native input/editor rendering cannot be fully proven by static code checks."
+  - test: "Edit chapter content, switch chapters, open manuscript settings, return/back to library, then reopen the manuscript."
+    expected: "The latest edits persist across each route/chapter transition, including the settings AppBar path."
+    why_human: "End-to-end route timing and real editor persistence across actual app navigation need manual UAT despite automated focused tests passing."
+  - test: "Pause/inactivate the app shortly after editing on target platforms."
+    expected: "Best-effort lifecycle save does not crash or lose normally persisted content."
+    why_human: "Flutter lifecycle callbacks are platform/runtime driven and not awaitable by framework contract."
 ---
 
-# Phase 11: Manuscript Chapter Management Verification
+# Phase 11: Manuscript Chapter Management Verification Report
 
-## Summary
+**Phase Goal:** 将 MuseFlow 从单一编辑器升级为多文稿管理平台，支持文稿 CRUD、章节实体与导航、编辑器章节级切换、数据迁移和模板策略修订
+**Verified:** 2026-06-06T15:52:00Z
+**Status:** human_needed
+**Re-verification:** Yes — after gap closure commit `f66e916 fix(11): force-save before opening manuscript settings`
 
-Phase 11 is partially implemented but does not achieve the full roadmap goal yet.
+## Goal Achievement
 
-Verified codebase evidence shows substantive implementation for manuscript/chapter domain entities, Hive repositories, Riverpod notifiers, manuscript library routing, chapter-aware export, template chapter skeletons, AI chapter-context middleware, and startup purge. However, two core must-haves are not actually delivered in the running editor flow:
+### Observable Truths
 
-1. The chapter editor does not load existing manuscript chapters on entry, because `EditorWithSidebar` never calls `ChapterNotifier.loadChapters(widget.manuscriptId)`.
-2. The auto-save guarantee is not satisfied for teardown/lifecycle paths because async flushes are launched without being awaited.
+| # | Truth | Status | Evidence |
+|---|-------|--------|----------|
+| 1 | User can create, view, edit, soft-delete manuscripts from a library homepage with genre-colored cards | VERIFIED | `ManuscriptLibraryPage` renders library UI and routes cards to `/manuscript/{id}/editor`; library context menu routes to settings and calls `manuscriptNotifierProvider.notifier.softDelete(manuscript.id)`. `ManuscriptRepository.softDelete` sets deletion state and `getAll()` filters deleted manuscripts. |
+| 2 | User can create, rename, reorder, split, merge, duplicate, and delete chapters within a manuscript | VERIFIED | `ChapterNotifier` implements `add`, `save`, `delete`, `reorder`, `duplicateChapter`, `splitChapter`, and `mergeChapters`; `delete` refreshes by manuscript and recalculates sort order. `EditorWithSidebar` wires create/rename/context menu/delete/split/merge/duplicate actions to the notifier. |
+| 3 | Editor switches chapter documents when user selects a different chapter in the left sidebar | VERIFIED | Previous gap closed. `EditorWithSidebar._loadInitialChapter()` awaits `ref.read(chapterNotifierProvider.notifier).loadChapters(widget.manuscriptId)`, checks `mounted`, reads loaded chapters, and loads `chapters.first`. `ChapterSidebar.onChapterTap` is wired to `_switchChapter`; `_switchChapter` awaits `_forceSaveAsync()` before `_loadChapter(newChapter)`. |
+| 4 | Chapter content auto-saves with debounced + forced-save guarantees on chapter switch, navigation, and app lifecycle | VERIFIED | `ChapterAutoSave.forceSave()` cancels debounce and awaits `_flush()`, which awaits `ChapterRepository.updateDocumentContent`. `ChapterAutoSave.dispose()` only cancels the timer. `EditorWithSidebar._switchChapter`, `_navigateBack`, and `_openSettings` await `_forceSaveAsync()` before changing chapter/route; lifecycle pause/inactive calls `_forceSaveBestEffort()` with `catchError` because Flutter does not await lifecycle callbacks. |
+| 5 | Manuscript creation from template auto-creates WorldSetting + CharacterCards + chapter skeleton | VERIFIED | `TemplateInstantiationService` has `ChapterRepository` injection and creates `Chapter` skeletons from `draft.chapterTitles` when `draft.manuscriptId != null`. |
+| 6 | Export supports chapter-aware structure with per-chapter content, not only flat manuscriptText | VERIFIED | `ExportBundle` includes `List<ChapterExport> chapters`; `ExportService.buildMarkdown` emits chapter-aware Markdown; export pipeline retains legacy flat bundle compatibility. |
 
-These are observable implementation/wiring gaps in the source files.
+**Score:** 6/6 truths verified
 
-## Automated Checks
+### Required Artifacts
 
-| Check | Result | Evidence |
-| --- | --- | --- |
-| Orchestrator Flutter tests | Passed | Orchestrator reported full suite passed: 925 passed, 1 skipped. |
-| Schema drift | Passed | Orchestrator reported `drift_detected=false`. |
-| Codebase drift | Non-blocking skip | Orchestrator reported skipped `no-structure-md`. |
-| Code review | Issues found | `/home/re/code/MuseFlow/.planning/phases/11-manuscript-chapter-management/11-REVIEW.md` reports 3 critical, 6 warning, 5 info. CR-01 and CR-02 directly affect roadmap must-haves. |
+| Artifact | Expected | Status | Details |
+|---|---|---|---|
+| `lib/features/manuscript/presentation/editor_with_sidebar.dart` | Editor route chapter-loading data flow and awaited forced-save transitions | VERIFIED | Exists, substantive, wired. Contains awaited initial `loadChapters`, first-chapter load, `_switchChapter`, `_navigateBack`, and `_openSettings` awaited forced-save paths. |
+| `lib/features/manuscript/application/chapter_auto_save.dart` | Debounced and forced chapter persistence without unawaited dispose flush | VERIFIED | Exists, substantive, wired to `ChapterRepository.updateDocumentContent`; no `unawaited(_flush())` remains. |
+| `test/features/manuscript/presentation/editor_with_sidebar_test.dart` | Regression coverage for initial chapter loading and first chapter selection | VERIFIED | Focused test run passed. Tests cover load call, async empty-start first-chapter load, empty result state, and title rendering. |
+| `test/features/manuscript/application/chapter_auto_save_test.dart` | Regression coverage for forced-save/dispose semantics | VERIFIED | Focused test run passed. Tests cover immediate `forceSave`, dispose without flushing, awaitable persistence, and debounce behavior. |
 
-## Must-Haves Verification
+### Key Link Verification
 
-| # | Must-have | Status | Evidence |
-| --- | --- | --- | --- |
-| 1 | User can create, view, edit, soft-delete manuscripts from a library homepage with genre-colored cards | Verified | `lib/app.dart` routes Branch 1 `/editor` to `ManuscriptLibraryPage`; `ManuscriptLibraryPage` watches `manuscriptNotifierProvider`, renders empty state/grid/sort/FAB, and long-press delete calls `softDelete`; `ManuscriptRepository.getAll()` filters `deletedAt == null`. |
-| 2 | User can create, rename, reorder, split, merge, duplicate, and delete chapters within a manuscript | Failed | The operations exist in `ChapterNotifier` and UI handlers, but the editor route never loads chapters for the manuscript. `ChapterNotifier.build()` returns `[]`, and `EditorWithSidebar._loadInitialChapter()` only reads the current empty provider state. Existing chapters are therefore not available to manage on editor entry. |
-| 3 | Editor switches chapter documents when user selects a different chapter in the left sidebar | Failed | `_switchChapter()` can force-save and load a chapter if `chapterNotifierProvider` already contains chapters, but no code in `EditorWithSidebar` calls `loadChapters(widget.manuscriptId)`. The sidebar/editor starts from an empty list even when repository data exists. |
-| 4 | Chapter content auto-saves with debounced plus forced-save guarantees on chapter switch, navigation, and app lifecycle | Failed | `ChapterAutoSave` implements debounce and `forceSave`, but `EditorWithSidebar._forceSaveSync()` calls `forceSave()` without awaiting and `ChapterAutoSave.dispose()` uses `unawaited(_flush())`. This does not guarantee persistence during dispose/app close. |
-| 5 | Manuscript creation from template auto-creates WorldSetting + CharacterCards + chapter skeleton | Verified | `TemplateInstantiationService` injects `ChapterRepository`; `TemplateDraft` has `manuscriptId` and `chapterTitles`; `saveDraft()` creates `Chapter` skeletons when `draft.manuscriptId != null`. |
-| 6 | Export supports chapter-aware structure with per-chapter content, not only flat manuscriptText | Verified | `ExportBundle` has `List<ChapterExport> chapters`; `ExportService.buildMarkdown()` sorts chapters and emits `## {title}` headers; `buildTxt()` emits chapter-separated output; `ExportDialog` displays chapter count when chapters are present. |
+| From | To | Via | Status | Details |
+|---|---|---|---|---|
+| `EditorWithSidebar` | `ChapterNotifier.loadChapters` | Initialization post-frame callback | WIRED | Manual verification confirms `await ref.read(chapterNotifierProvider.notifier).loadChapters(widget.manuscriptId)` before reading state; SDK regex check missed because call spans lines. |
+| `EditorWithSidebar` | `ChapterAutoSave.forceSave` | `_forceSaveAsync()` on controllable transitions | WIRED | `_switchChapter`, `_navigateBack`, and `_openSettings` all await `_forceSaveAsync()`. AppBar settings button calls `_openSettings`. |
+| `ChapterAutoSave` | `ChapterRepository` | `_flush()` | WIRED | `_flush()` awaits `_repository.updateDocumentContent(chapterId, markdown)` and only clears dirty state after successful write when pending content still matches. |
+| `ChapterSidebar` | `EditorWithSidebar._switchChapter` | `onChapterTap: _switchChapter` | WIRED | Sidebar taps invoke the async switch path that saves current chapter before loading the selected chapter. |
+| `ManuscriptLibraryPage` | `EditorWithSidebar`/settings routes | `context.go('/manuscript/...')` | WIRED | Library cards route to editor; settings route exists in `app.dart`. Editor AppBar settings path now saves first. |
 
-**Score:** 3/6 roadmap must-haves verified.
+### Data-Flow Trace (Level 4)
 
-## Requirement Traceability
+| Artifact | Data Variable | Source | Produces Real Data | Status |
+|---|---|---|---|---|
+| `EditorWithSidebar` | `chapters` / `_currentChapterId` / `_editor` | `ChapterNotifier.loadChapters(widget.manuscriptId)` → `ChapterRepository.getByManuscriptId(manuscriptId)` → `state = AsyncData(chapters)` | Yes | FLOWING |
+| `ChapterSidebar` | rendered chapter rows | `ref.watch(chapterNotifierProvider)` after editor load | Yes | FLOWING |
+| `ChapterAutoSave` | `_pendingMarkdown` | `serializeDocumentToMarkdown(_editor!.document)` from editor listeners/forced-save paths | Yes | FLOWING |
+| `ExportService` | `bundle.chapters` | `ExportBundle.chapters` populated with `ChapterExport` objects | Yes | FLOWING |
+| `TemplateInstantiationService` | chapter skeletons | `TemplateDraft.chapterTitles` + `ChapterRepository.add` | Yes | FLOWING |
 
-Phase 11 is not mapped to numbered v1.1 requirements in `/home/re/code/MuseFlow/.planning/REQUIREMENTS.md`; Phase 11 belongs to v1.2 and is governed by the six roadmap success criteria in `/home/re/code/MuseFlow/.planning/ROADMAP.md`.
+### Behavioral Spot-Checks
 
-| Requirement / Success Criterion | Status | Evidence |
-| --- | --- | --- |
-| SC-1: Manuscript library CRUD | Verified | Domain/repository/notifier/UI/routing evidence listed above. |
-| SC-2: Chapter operations | Failed | Operations exist, but editor data-flow does not load existing chapters. |
-| SC-3: Editor chapter switching | Failed | Switching implementation exists but is disconnected from repository-loaded data on entry. |
-| SC-4: Auto-save guarantees | Failed | Async forced saves are not awaited in teardown/lifecycle paths. |
-| SC-5: Template creates chapter skeleton | Verified | `TemplateInstantiationService.saveDraft()` creates chapters for `draft.manuscriptId`. |
-| SC-6: Chapter-aware export | Verified | `ExportBundle.chapters` and `ExportService.buildMarkdown()` implemented. |
+| Behavior | Command | Result | Status |
+|---|---|---|---|
+| Focused gap-closure regression tests | `cd /home/re/code/MuseFlow && flutter test --no-pub test/features/manuscript/application/chapter_auto_save_test.dart test/features/manuscript/presentation/editor_with_sidebar_test.dart` | 14 tests passed | PASS |
+| Full Flutter suite | Not rerun by verifier; user/orchestrator supplied current evidence | User supplied current evidence: full `flutter test` passed after settings save fix with 930 passed, 1 skipped | PASS (external evidence) |
+| Initial test attempt from worktree with absolute test paths | `flutter test --no-pub /home/re/code/MuseFlow/test/...` | Flutter tool crash: `Bad state: No element`; rerun from project root passed | INFO |
 
-## Gaps
+### Probe Execution
 
-### Gap 1: Editor never loads existing chapters
+No phase probes were declared or found for Phase 11. Step 7c skipped.
 
-`EditorWithSidebar.initState()` calls `_loadAutoSave()` and `_loadInitialChapter()`. `_loadInitialChapter()` reads the current provider state and returns if it is empty. But `ChapterNotifier.build()` returns an empty list and requires an explicit `loadChapters(String manuscriptId)` call. No such call exists in `EditorWithSidebar`. As a result, users entering `/manuscript/:id/editor` see no existing chapters and cannot access existing chapter content.
+### Requirements Coverage
 
-### Gap 2: Forced-save guarantee is not met
+`/home/re/code/MuseFlow/.planning/REQUIREMENTS.md` is absent in this v1.2 milestone context; Phase 11 is governed by ROADMAP success criteria and plan `requirements: [SC-*]` fields.
 
-`ChapterAutoSave.forceSave()` is asynchronous, but `EditorWithSidebar._forceSaveSync()` calls it without awaiting. `ChapterAutoSave.dispose()` also uses `unawaited(_flush())`. This contradicts the must-have that forced saves are guaranteed on navigation/app lifecycle/teardown.
+| Requirement | Source Plan | Description | Status | Evidence |
+|---|---|---|---|---|
+| SC-1 | 11-03 | Manuscript library CRUD/card grid | SATISFIED | Library UI, card navigation, create dialog, settings page, soft delete path implemented. |
+| SC-2 | 11-02, 11-04, 11-06 | Chapter CRUD and management within manuscript | SATISFIED | `ChapterNotifier` operations plus sidebar/context-menu wiring; editor now loads manuscript chapters on entry. |
+| SC-3 | 11-04, 11-06 | Editor switches chapter documents via sidebar selection | SATISFIED | `ChapterSidebar.onChapterTap` → `_switchChapter` → awaited save → `_loadChapter(newChapter)` with `ValueKey(_currentChapterId)`. |
+| SC-4 | 11-02, 11-04, 11-06 | Debounced + forced-save guarantees | SATISFIED | `forceSave()` awaited on switch/back/settings; lifecycle best-effort with handled errors; dispose no longer unawaitedly flushes. |
+| SC-5 | 11-05 | Template creates world/characters/chapter skeleton | SATISFIED | Template instantiation creates chapter skeletons via `ChapterRepository`. |
+| SC-6 | 11-05 | Chapter-aware export | SATISFIED | `ExportBundle.chapters` and chapter-aware export service implemented. |
 
-## Human Verification
+### Anti-Patterns Found
 
-Human testing is recommended after the gaps are fixed:
+| File | Line | Pattern | Severity | Impact |
+|---|---:|---|---|---|
+| `lib/features/manuscript/application/chapter_notifier.dart` | 14 | `return []` | INFO | Deliberate two-phase provider loading; editor now explicitly calls `loadChapters`, so not a stub. |
+| `lib/features/manuscript/presentation/editor_with_sidebar.dart` | 480-482 | `return null` on non-text split selection | INFO | Intentional guard: split aborts and shows SnackBar for non-text positions. |
+| `lib/features/manuscript/presentation/editor_with_sidebar.dart` | 565-566 | Quick insert unavailable comment | INFO | Existing editor shortcut placeholder outside Phase 11 success criteria; no blocker for manuscript/chapter management. |
+| `test/features/manuscript/application/chapter_auto_save_test.dart` | 112-114 | Stale contradictory comment | WARNING | Comment says dispose flushes but current assertions elsewhere verify dispose does not flush. Test behavior still covers must-have; comment should be cleaned in a future maintenance pass. |
 
-1. Open a manuscript with existing chapters and confirm the sidebar loads them immediately.
-2. Edit chapter content, switch chapters, return to library, reopen the manuscript, and confirm edits persisted.
-3. Pause/close the app shortly after editing and confirm the latest content is not lost.
-4. Verify the visual layout of the manuscript card grid, chapter sidebar, active chapter highlight, and export dialog on Windows/Android form factors.
+No unreferenced `TBD`, `FIXME`, or `XXX` markers were found in the reverified phase files.
 
-These are not replacing the automated gaps above; they are post-fix UAT checks.
+### Human Verification Required
 
-## Verdict
+#### 1. Existing Chapter Visual Load UAT
 
-**Status: gaps_found**
+**Test:** Open a manuscript with existing chapters on a real Windows/Android build and inspect the sidebar/editor.
+**Expected:** Existing chapters appear immediately, first chapter is active, and its persisted content is visible without manual reload.
+**Why human:** Visual layout, active highlight, editor focus, and native rendering require manual UAT.
 
-Phase 11 should not be treated as goal-complete until the editor chapter-loading data flow and forced-save guarantee are fixed. The codebase contains substantial Phase 11 implementation, but the current editor route does not actually deliver existing chapter navigation/switching and does not meet the auto-save guarantee.
+#### 2. Route Transition Persistence UAT
+
+**Test:** Edit chapter content, switch chapters, press the AppBar settings button, navigate back to the library, then reopen.
+**Expected:** Latest edits persist across chapter switch, settings navigation, and library navigation.
+**Why human:** Static/code tests prove awaited calls exist; full user-route timing should still be validated manually on a running app.
+
+#### 3. Lifecycle Persistence UAT
+
+**Test:** Edit content, pause/inactivate the app shortly afterward on target platforms.
+**Expected:** Best-effort save path does not crash and normally persisted content is retained.
+**Why human:** Flutter lifecycle delivery is platform/runtime dependent and not awaitable.
+
+### Gaps Summary
+
+No automated blocker gaps remain. The prior two verification gaps are closed:
+
+1. `EditorWithSidebar` now loads chapters from `ChapterRepository` through `ChapterNotifier.loadChapters(widget.manuscriptId)` on editor entry and selects the first loaded chapter.
+2. Forced-save coverage now includes chapter switch, back navigation, and the AppBar settings route via awaited `_forceSaveAsync()`. `ChapterAutoSave.dispose()` no longer relies on unawaited async flushes.
+
+Because manual visual/platform UAT remains, final status is `human_needed` rather than `passed`.
 
 ---
 
-_Verified: 2026-06-06T02:18:25Z_
+_Verified: 2026-06-06T15:52:00Z_
 _Verifier: Claude (gsd-verifier)_
