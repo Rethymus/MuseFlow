@@ -1,3 +1,5 @@
+const _copyWithSentinel = Object();
+
 /// A manuscript container that owns multiple [Chapter] entities.
 ///
 /// Immutable entity -- use [copyWith] to create modified copies.
@@ -35,29 +37,35 @@ class Manuscript {
   Manuscript copyWith({
     String? id,
     String? title,
-    String? description,
+    Object? description = _copyWithSentinel,
     String? genre,
     int? targetWordCount,
     String? status,
-    String? worldSettingId,
+    Object? worldSettingId = _copyWithSentinel,
     List<String>? characterCardIds,
     DateTime? createdAt,
     DateTime? updatedAt,
-    DateTime? deletedAt,
+    Object? deletedAt = _copyWithSentinel,
     String? coverLetter,
   }) {
     return Manuscript(
       id: id ?? this.id,
       title: title ?? this.title,
-      description: description ?? this.description,
+      description: description == _copyWithSentinel
+          ? this.description
+          : description as String?,
       genre: genre ?? this.genre,
       targetWordCount: targetWordCount ?? this.targetWordCount,
       status: status ?? this.status,
-      worldSettingId: worldSettingId ?? this.worldSettingId,
+      worldSettingId: worldSettingId == _copyWithSentinel
+          ? this.worldSettingId
+          : worldSettingId as String?,
       characterCardIds: characterCardIds ?? this.characterCardIds,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
-      deletedAt: deletedAt ?? this.deletedAt,
+      deletedAt: deletedAt == _copyWithSentinel
+          ? this.deletedAt
+          : deletedAt as DateTime?,
       coverLetter: coverLetter ?? this.coverLetter,
     );
   }
@@ -74,7 +82,7 @@ class Manuscript {
       worldSettingId: json['worldSettingId'] as String?,
       characterCardIds:
           (json['characterCardIds'] as List<dynamic>?)?.cast<String>() ??
-              const [],
+          const [],
       createdAt: DateTime.parse(json['createdAt'] as String),
       updatedAt: DateTime.parse(json['updatedAt'] as String),
       deletedAt: json['deletedAt'] != null
@@ -122,19 +130,19 @@ class Manuscript {
 
   @override
   int get hashCode => Object.hash(
-        id,
-        title,
-        description,
-        genre,
-        targetWordCount,
-        status,
-        worldSettingId,
-        Object.hashAll(characterCardIds),
-        createdAt,
-        updatedAt,
-        deletedAt,
-        coverLetter,
-      );
+    id,
+    title,
+    description,
+    genre,
+    targetWordCount,
+    status,
+    worldSettingId,
+    Object.hashAll(characterCardIds),
+    createdAt,
+    updatedAt,
+    deletedAt,
+    coverLetter,
+  );
 
   @override
   String toString() =>
