@@ -17,3 +17,12 @@ Editor createDefaultEditor() {
     ),
   );
 }
+
+/// Creates an Editor pre-loaded with the given [document].
+///
+/// Used by EditorWithSidebar to create an Editor for a specific chapter's
+/// document content. Per RESEARCH.md Open Question 1 (RESOLVED): the Editor
+/// is tightly coupled to its Document, so a new Editor is created per chapter.
+Editor createEditorWithDocument(MutableDocument document) {
+  return createDefaultDocumentEditor(document: document);
+}

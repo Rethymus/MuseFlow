@@ -7,6 +7,7 @@ import 'package:museflow/features/ai/presentation/banned_phrase_settings.dart';
 import 'package:museflow/features/ai/presentation/provider_management_page.dart';
 import 'package:museflow/features/capture/presentation/capture_page.dart';
 import 'package:museflow/features/editor/presentation/editor_page.dart';
+import 'package:museflow/features/manuscript/presentation/editor_with_sidebar.dart';
 import 'package:museflow/features/manuscript/presentation/manuscript_library_page.dart';
 import 'package:museflow/features/manuscript/presentation/manuscript_settings_page.dart';
 import 'package:museflow/features/knowledge/presentation/character_card_form.dart';
@@ -60,12 +61,8 @@ class MuseFlowApp extends ConsumerWidget {
         GoRoute(
           path: AppConstants.manuscriptEditor,
           builder: (context, state) {
-            // Placeholder for Plan 04 -- EditorWithSidebar will replace this.
             final id = state.pathParameters['id'] ?? '';
-            return Scaffold(
-              appBar: AppBar(title: const Text('编辑器')),
-              body: Center(child: Text('Editor for manuscript: $id\n(Plan 04)')),
-            );
+            return EditorWithSidebar(manuscriptId: id);
           },
         ),
         GoRoute(
