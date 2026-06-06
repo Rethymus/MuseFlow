@@ -1,90 +1,91 @@
 ---
 gsd_state_version: 1.0
-milestone: v1.1
-milestone_name: 创作体验升级
+milestone: v1.2
+milestone_name: 多文稿架构
 status: milestone_complete
 stopped_at: Milestone complete (Phase 11 was final phase)
-last_updated: 2026-06-06T07:51:20.130Z
-last_activity: 2026-06-06 -- Phase 11 execution started
+last_updated: 2026-06-06T20:00:00.000Z
+last_activity: 2026-06-06 -- v1.2 milestone archived
 progress:
-  total_phases: 5
-  completed_phases: 4
-  total_plans: 23
+  total_phases: 12
+  completed_phases: 12
+  total_plans: 48
   completed_plans: 48
-  percent: 80
+  percent: 100
 ---
 
 # Project State
 
 ## Project Reference
 
-See: .planning/PROJECT.md (updated 2026-06-04)
+See: .planning/PROJECT.md (updated 2026-06-06)
 
 **Core value:** 让AI帮你写好故事，但让读者看不出AI的痕迹。
-**Current focus:** Milestone complete
+**Current focus:** Planning next milestone
 
 ## Current Position
 
-Phase: 11
-Plan: Not started
+Phase: 11 (complete)
+Plan: All complete
 Status: Milestone complete
 Last activity: 2026-06-06
 
-Progress: [█████████░] 86%
+Progress: [██████████] 100%
 
 ## Performance Metrics
 
 **Velocity:**
 
-- Total plans completed (v1.0): 32
-- Average duration: -
-- Total execution time: 0 hours
+- Total plans completed: 48 (v1.0: 25, v1.1: 17, v1.2: 6)
+- Total phases: 12 (0–11)
 
-**By Phase (v1.0):**
+**By Phase:**
 
-| Phase | Plans | Total | Avg/Plan |
-|-------|-------|-------|----------|
-| 00 | 3 | - | - |
-| 01 | 4 | - | - |
-| 02 | 3 | 40m | 13m |
-| 03 | 3 | - | - |
-| 04 | 5 | - | - |
-| 05 | 4 | - | - |
-| 06 | 3 | - | - |
-| 09 | 5 | - | - |
-| 10 | 4 | - | - |
-| 11 | 6 | - | - |
+| Phase | Plans | Notes |
+|-------|-------|-------|
+| 00 | 3 | Spike |
+| 01 | 4 | App shell |
+| 02 | 3 | AI provider |
+| 03 | 3 | AI toolbar |
+| 04 | 5 | Knowledge base |
+| 05 | 4 | Story structure |
+| 06 | 3 | Multi-provider |
+| 07 | 3 | Templates |
+| 08 | 5 | Onboarding |
+| 09 | 5 | Stats |
+| 10 | 4 | Visualization |
+| 11 | 6 | Manuscript/chapter |
 
 **Recent Trend:**
 
-- Last 5 plans: 06-01, 06-02, 06-03, 04-05, 04-04
+- Last 5 plans: 11-06, 11-05, 11-04, 11-03, 11-02
 - Trend: Stable
 
-*Updated after each plan completion*
+*Updated after v1.2 milestone close*
 
 ## Accumulated Context
 
 ### Decisions
 
 Decisions are logged in PROJECT.md Key Decisions table.
-Recent decisions affecting v1.1:
+Recent decisions from v1.2:
 
-- **Research**: graphview ^1.5.1 chosen over CustomPainter for story arc visualization — saves weeks of layout/interaction work
-- **Research**: fl_chart ^1.2.0 for analytics charts (LineChart, BarChart, PieChart)
-- **Research**: Onboarding uses built-in PageView (not introduction_screen package)
-- **Research**: Template data as bundled JSON in assets/templates/world_presets/
-- **Research**: Stats storage via Hive boxes (writingStats, dailyStats) with 30s debounced writes
-- **Research**: First-run detection via appSettings Hive box key
+- **D-27**: super_editor_markdown package discontinued — use super_editor built-in serialization
+- **D-28**: ChapterAutoSave instance cached in local field to avoid ref.read in dispose
+- **D-29**: _loadInitialChapter uses setState to trigger rebuild after editor creation in postFrameCallback
+- **D-loadChapters-init**: Synchronous fast-path for pre-populated state
+- **D-dispose-no-flush**: Persistence via explicit awaited forceSave
+- **D-lifecycle-best-effort**: Best-effort async save with catchError
 
 ### Pending Todos
 
-None yet.
+None.
 
 ### Blockers/Concerns
 
-- Graph rendering performance with 100+ PlotNodes — mitigate with virtual viewport and debounced layout (Phase 10)
-- Phase 7 bundled template prose still needs human literary review before release sign-off
-- Anti-AI-scent effectiveness still unproven — carried forward from v1.0
+- Physical device testing (IME, startup, lifecycle) still deferred
+- Template literary quality needs human review
+- Anti-AI-scent effectiveness still unproven
 
 ## Deferred Items
 
@@ -96,8 +97,15 @@ Items acknowledged and deferred at v1.0 milestone close on 2026-06-04:
 | verification_gap | Phase 00: 00-VERIFICATION.md — human_needed (requires physical Windows device) | human_needed |
 | verification_gap | Phase 01: 01-VERIFICATION.md — human_needed (requires physical Windows device) | human_needed |
 
+Items acknowledged and deferred at v1.2 milestone close on 2026-06-06:
+
+| Category | Item | Status |
+|----------|------|--------|
+| uat_gap | Phase 11: 3 manual UAT scenarios (platform-specific visual/lifecycle testing) | human_needed |
+| tech_debt | Phase 11: 4 non-critical items (INFO/WARNING level) | deferred |
+
 ## Session Continuity
 
-Last session: 2026-06-05T20:24:55Z
-Stopped at: Phase 11 Plan 02 complete
-Resume file: .planning/phases/11-manuscript-chapter-management/11-02-SUMMARY.md
+Last session: 2026-06-06
+Stopped at: v1.2 milestone complete
+Next step: /gsd:new-milestone
