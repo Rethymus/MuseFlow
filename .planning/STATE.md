@@ -2,10 +2,10 @@
 gsd_state_version: 1.0
 milestone: v1.3
 milestone_name: 用户视角全流程验证 — 百章修仙小说
-status: verifying
-stopped_at: Phase 12 UI-SPEC approved
-last_updated: "2026-06-06T16:47:50.640Z"
-last_activity: 2026-06-06
+status: executing
+stopped_at: Phase 12 complete
+last_updated: "2026-06-07T00:49:30.000Z"
+last_activity: 2026-06-07 -- Phase 12 execution complete
 progress:
   total_phases: 5
   completed_phases: 1
@@ -21,16 +21,16 @@ progress:
 See: .planning/PROJECT.md (updated 2026-06-06)
 
 **Core value:** 让AI帮你写好故事，但让读者看不出AI的痕迹。
-**Current focus:** Phase 12 — token-audit-infrastructure
+**Current focus:** Phase 13 — automation-test-harness
 
 ## Current Position
 
-Phase: 12 (token-audit-infrastructure) — EXECUTING
-Plan: 3 of 3
-Status: Phase complete — ready for verification
-Last activity: 2026-06-06
+Phase: 12 (token-audit-infrastructure) — COMPLETE ✅
+Plan: 3 of 3 complete
+Status: Phase 12 execution complete, ready for Phase 13
+Last activity: 2026-06-07 -- Phase 12 execution complete
 
-Progress: [██████████] 100%
+Progress: [██████████] 100% (Phase 12 complete)
 
 ## Performance Metrics
 
@@ -43,7 +43,7 @@ Progress: [██████████] 100%
 
 | Phase | Plans | Status |
 |-------|-------|--------|
-| 12. Token Audit | TBD | Not started |
+| 12. Token Audit | 3 | ✅ Complete (28 min, 49 tests, 13 files created) |
 | 13. Automation Test Harness | TBD | Not started |
 | 14. World-Building & 30 Chapters | TBD | Not started |
 | 15. Full Manuscript & Story Structure | TBD | Not started |
@@ -51,8 +51,8 @@ Progress: [██████████] 100%
 
 **Recent Trend:**
 
-- Last 5 plans: 11-06, 11-05, 11-04, 11-03, 11-02
-- Trend: Stable
+- Last 5 plans: 12-03, 12-02, 12-01, 11-06, 11-05
+- Trend: Stable, wave-based parallel execution working well
 
 *Updated after v1.3 roadmap creation*
 
@@ -61,11 +61,13 @@ Progress: [██████████] 100%
 ### Decisions
 
 Decisions are logged in PROJECT.md Key Decisions table.
-Recent decisions from v1.2:
+Recent decisions from Phase 12:
 
-- **D-27**: super_editor_markdown package discontinued — use super_editor built-in serialization
-- **D-dispose-no-flush**: Persistence via explicit awaited forceSave
-- **D-lifecycle-best-effort**: Best-effort async save with catchError
+- **D-12-01**: Debatched write pattern (30s timer) — prevents excessive Hive I/O
+- **D-12-02**: Auto-cleanup at 10,000 records — bounded storage growth
+- **D-12-03**: Optional onUsage callback — backward compatible AI integration
+- **D-12-04**: Enum-as-index storage — minimizes overhead, version-agnostic
+- **D-12-05**: Input text capture before pipeline — meaningful audit context
 
 ### Pending Todos
 
@@ -73,10 +75,15 @@ None.
 
 ### Blockers/Concerns
 
-- Token audit must be built before any AI calls — per-call data is irrecoverable retroactively
-- Hidden deviation detection calls double API costs — need visibility from first call
+Phase 12 blockers resolved:
+- ✅ Token audit infrastructure built and operational
+- ✅ All 6 AI call sites now recording usage data
+- ✅ Token consumption visibility achieved
+
+Remaining concerns:
 - GLM API key needed (user will provide at execution time)
 - Anti-AI-scent effectiveness unproven for xianxia prose — will be tested during creative validation
+- Manuscript/chapter context not fully wired to AI call sites (deferred to Phase 14-15)
 
 ## Deferred Items
 
@@ -94,8 +101,15 @@ Items acknowledged and deferred at v1.2 milestone close on 2026-06-06:
 | uat_gap | Phase 11: 3 manual UAT scenarios | human_needed |
 | tech_debt | Phase 11: 4 non-critical items (INFO/WARNING level) | deferred |
 
+Items acknowledged and deferred at Phase 12 execution on 2026-06-07:
+
+| Category | Item | Status |
+|----------|------|--------|
+| enhancement | Phase 12: Manuscript/chapter context wiring to AI call sites | deferred_to_phase_14 |
+| tech_debt | Phase 12: 24 pre-existing test failures (unrelated to Phase 12 work) | deferred |
+
 ## Session Continuity
 
-Last session: 2026-06-06T16:47:50.614Z
-Stopped at: Phase 12 UI-SPEC approved
-Next step: /gsd:plan-phase 12
+Last session: 2026-06-07T00:49:30.000Z
+Stopped at: Phase 12 complete
+Next step: /gsd:plan-phase 13 (automation-test-harness)
