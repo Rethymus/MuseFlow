@@ -18,7 +18,7 @@
 - [x] Phase 3: Editor AI Toolbar (3/3 plans) — completed 2026-06-02
 - [x] Phase 4: Knowledge Base + Skill System (5/5 plans) — completed 2026-06-04
 - [x] Phase 5: Story Structure + Format + Export (4/4 plans) — completed 2026-06-04
-- [x] Phase 6: Multi-Provider + Android Polish (3/3 plans) — completed 2026-06-04
+- [x] Phase 6: Multi Provider + Android Polish (3/3 plans) — completed 2026-06-04
 
 </details>
 
@@ -59,7 +59,12 @@
   1. 每次 AI API 调用（synthesis、editor rewrite、polish、free input、deviation detection）后，自动记录一条包含输入 token、输出 token、模型名称、操作类型、关联章节 ID、时间戳的审计记录
   2. Token 审计数据存储在独立 Hive box 中，Chapter 和 Manuscript 实体不受任何侵入
   3. 用户可以在写作统计页面查看 token 消耗总览：总成本、每章分布、按操作类型分布
-**Plans**: TBD
+**Plans**: 3 plans
+
+Plans:
+- [ ] 12-01-PLAN.md — Domain entities, Hive persistence, debatched write service, adapter onUsage callback, providers
+- [ ] 12-02-PLAN.md — Wire 6 AI call sites, embed token summary in WritingStatsPage, register route
+- [ ] 12-03-PLAN.md — TokenAuditPage with per-chapter bar chart, operation-type pie chart, trend line chart
 
 ### Phase 13: Automation Test Harness
 **Goal**: 自动化测试脚本可以在没有真实 API Key 的情况下完整验证核心创作流程
@@ -121,13 +126,13 @@ Phases execute in numeric order: 12 → 13 → 14 → 15 → 16
 | 3. Editor AI Toolbar | v1.0 | 3/3 | Complete | 2026-06-02 |
 | 4. Knowledge Base + Skills | v1.0 | 5/5 | Complete | 2026-06-04 |
 | 5. Story Structure + Export | v1.0 | 4/4 | Complete | 2026-06-04 |
-| 6. Multi-Provider + Android | v1.0 | 3/3 | Complete | 2026-06-04 |
+| 6. Multi Provider + Android | v1.0 | 3/3 | Complete | 2026-06-04 |
 | 7. 预设世界观模板库 | v1.1 | 3/3 | Complete | 2026-06-04 |
 | 8. 开篇引导 | v1.1 | 5/5 | Complete | 2026-06-04 |
 | 9. 写作数据统计 | v1.1 | 5/5 | Complete | 2026-06-05 |
 | 10. 故事弧可视化 | v1.1 | 4/4 | Complete | 2026-06-05 |
 | 11. 文稿库与章节管理 | v1.2 | 6/6 | Complete | 2026-06-06 |
-| 12. Token Audit Infrastructure | v1.3 | 0/? | Not started | - |
+| 12. Token Audit Infrastructure | v1.3 | 0/3 | Planning | - |
 | 13. Automation Test Harness | v1.3 | 0/? | Not started | - |
 | 14. World-Building & First 30 Chapters | v1.3 | 0/? | Not started | - |
 | 15. Full Manuscript & Story Structure | v1.3 | 0/? | Not started | - |
