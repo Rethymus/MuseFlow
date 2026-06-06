@@ -1,294 +1,249 @@
-# Technology Stack -- v1.1 Milestone Additions
+# Testing Stack Additions for v1.3 Validation
 
-**Project:** MuseFlow -- AI-assisted creative writing tool (Flutter Windows + Android)
-**Researched:** 2026-06-04
+**Project:** MuseFlow v1.3 -- User-perspective full-flow validation
+**Researched:** 2026-06-06
 **Flutter version (local):** 3.44.0 stable / Dart 3.12.0
-**Scope:** NEW packages only. Existing stack (super_editor, Riverpod, Hive CE, openai_dart/anthropic_sdk_dart/ollama_dart, go_router, window_manager) is validated and unchanged.
+**Scope:** ONLY new testing dependencies needed for Flutter integration tests and pure Dart automation scripts. Existing app stack (super_editor, Riverpod, Hive CE, AI SDKs) is validated and out of scope.
 
 ---
 
 ## Overview
 
-The v1.1 milestone adds 4 features to the shipped v1.0 MVP. This document covers ONLY the new technology additions needed. The existing stack in the v1.0 STACK.md remains the foundation.
+The v1.3 milestone validates the complete user flow by writing a 100-chapter xianxia novel through MuseFlow. This requires two new testing capabilities on top of the existing 930+ unit/widget tests:
 
-New capabilities required:
-1. **Interactive graph rendering** -- story arc visualization with draggable nodes, zoom/pan, connection lines
-2. **Data visualization charts** -- writing analytics with trend lines, bar charts, statistics dashboards
-3. **Template data loading** -- YAML/JSON world-building preset packs bundled as assets
-4. **Onboarding wizard UI** -- first-run experience and AI opening generator
+1. **Flutter integration tests** -- full user-journey tests that pump the real app and exercise multi-screen flows (manuscript creation -> AI generation -> export)
+2. **Pure Dart automation scripts** -- standalone scripts for token audit reporting, export verification, and batch test orchestration
 
-Every new addition is evaluated against the Windows <100MB install constraint.
+The existing test infrastructure (flutter_test, integration_test SDK, hand-rolled fakes) is solid. The scope of additions is intentionally minimal.
 
 ---
 
-## New Dependencies
+## Existing Testing Infrastructure (DO NOT add, already present)
 
-### Data Visualization (Writing Analytics)
-
-| Technology | Version | Purpose | Why |
-|------------|---------|---------|-----|
-| **fl_chart** | ^1.2.0 | LineChart, BarChart, PieChart for writing analytics | **The standard Flutter chart library.** 10K+ GitHub stars, actively maintained, zero native dependencies (pure Dart rendering via CustomPainter). LineChart for word count trends over time, BarChart for daily/weekly writing speed, PieChart for AI vs human text ratio. Built-in touch interactions, tooltips, animations, and `FlTransformationConfig` for pan/zoom on line charts. Min Flutter 3.27.4 -- compatible with our 3.44.0. |
-
-**Why fl_chart over alternatives:**
-
-| Criterion | fl_chart | Syncfusion Flutter Charts | Victory Flutter |
-|-----------|----------|--------------------------|-----------------|
-| License | MIT (free) | Community license has restrictions for commercial use | MIT |
-| Package size impact | ~200KB (pure Dart) | Heavy -- pulls in Syncfusion ecosystem | Moderate |
-| Native dependencies | None | None | None |
-| Customization | Very high -- every element configurable | Very high but verbose API | Moderate |
-| Animations | Built-in, implicit animations | Built-in | Limited |
-| Windows support | Full | Full | Full |
-| Maintenance | Active, frequent releases | Commercial backing | Less active |
-| Install budget | Fits <100MB | Risky for <100MB constraint | Fits |
-
-Syncfusion is overkill for the 3-4 chart types needed and risks the 100MB install budget. fl_chart is the proven lightweight choice.
-
-**Confidence:** HIGH -- verified via `flutter pub add --dry-run` (resolves 1.2.0), pub.dev page, Context7 docs, changelog confirming Flutter 3.27.4 min.
+| What | Status | Notes |
+|------|--------|-------|
+| `flutter_test` SDK | In dev_dependencies | 930+ passing unit/widget tests across 117 files |
+| `integration_test` SDK | In dev_dependencies | 5 basic smoke tests exist in `integration_test/app_test.dart` |
+| `build_runner` | In dev_dependencies | Runs freezed/riverpod code generation |
+| `hive_test_helper.dart` | In `test/helpers/` | Hive temp-dir setup/teardown for unit tests |
+| Manual `Fake` subclasses | In test files | `_FakeOpenAIAdapter`, `MockFragmentRepository` -- hand-rolled, no mocking library |
+| `mockito` (transitive) | In pubspec.lock via build_runner | NOT directly used by project tests |
+| `test` package (transitive) | In pubspec.lock | Available for pure Dart test scripts |
+| `args` package (transitive) | In pubspec.lock | Available for CLI arg parsing in automation scripts |
+| `path` package (transitive) | In pubspec.lock | Available for cross-platform path handling |
+| `IntegrationTestWidgetsFlutterBinding` | Already used in app_test.dart | Integration test entry point, confirmed working on Windows |
 
 ---
 
-### Interactive Graph Rendering (Story Arc Visualization)
+## Recommended New Additions
 
-| Technology | Version | Purpose | Why |
-|------------|---------|---------|-----|
-| **graphview** | ^1.5.1 | Interactive graph visualization for story arc nodes | **The only mature Flutter graph library.** Supports FruchtermanReingold (force-directed layout ideal for plot node networks), Sugiyama (layered/hierarchical), custom node widgets via builder pattern, node dragging via `setFocusedNode` + position update, InteractiveViewer integration for zoom/pan, edge painting with custom colors/styles per connection, animated transitions. 1.5.1 adds GraphViewController with jumpToNode, animateToNode, zoomToFit, and expand/collapse. |
+### 1. mocktail ^1.0.4 -- Mocking Library for Integration Test Provider Overrides
 
-**Why graphview over raw CustomPainter:**
+| Field | Value |
+|-------|-------|
+| Package | `mocktail` |
+| Version | ^1.0.4 |
+| Type | dev_dependency |
+| Publisher | felangel.dev (verified) |
+| License | MIT |
+| Downloads | 2.15M+ |
+| Confidence | HIGH -- verified on pub.dev + Context7 API docs |
 
-| Criterion | graphview | Custom CustomPainter |
-|-----------|-----------|---------------------|
-| Layout algorithms | Built-in: FruchtermanReingold, Sugiyama, BuchheimWalker, Circle, Balloon, Radial | Must implement from scratch -- force-directed layout is non-trivial |
-| Node rendering | Widget builder pattern -- any Flutter widget as a node | Must paint everything manually on canvas |
-| Interaction | Node tap, drag, focus, expand/collapse, animated transitions | All hit-testing and gesture handling must be custom |
-| Zoom/Pan | InteractiveViewer integration built-in | Must implement matrix transforms manually |
-| Edge rendering | Multiple renderers (TreeEdgeRenderer, ArrowEdgeRenderer) with per-edge color/style | Must implement Bezier/straight line rendering with arrow heads |
-| Development time | Days | Weeks |
-| Testability | High -- widget-based nodes testable in widget tests | Low -- canvas painting requires golden tests |
-| Maintenance burden | Library handles edge cases (overlapping, crossing reduction) | Every edge case is custom code to maintain |
+**Why this and not alternatives:**
 
-The story arc visualization maps directly to graphview's data model:
-- **PlotNode** -> `Node.Id(plotNodeId)` with a builder that renders node title, structural role badge, writing status color
-- **causeNodeIds/consequenceNodeIds** -> `graph.addEdge()` with directional arrows
-- **relatedNodeIds** -> `graph.addEdge()` with dashed line style
-- **linkedForeshadowingIds** -> Dotted edges with distinct color
+The project currently hand-rolls `Fake` subclasses (e.g., `_FakeOpenAIAdapter extends OpenAIAdapter`) for every test that needs mock AI providers. This pattern works for simple unit tests but has three specific limitations that matter for v1.3 integration tests:
 
-Force-directed layout (FruchtermanReingold) is ideal because plot nodes do not form a clean tree -- they have cause/consequence chains AND lateral relationships AND foreshadowing links. Tree layouts would force an artificial hierarchy.
+1. **Cannot verify call counts or arguments.** The token audit tests need to verify that the AI adapter received correct prompt messages with the right token budgets. `mocktail` provides `verify(() => adapter.createStream(captureAny())).called(n)` which hand-rolled fakes cannot do.
 
-**Confidence:** HIGH -- verified via `flutter pub add --dry-run` (resolves 1.5.1), pub.dev page with full API documentation, Context7 docs confirming builder pattern, node dragging, and InteractiveViewer integration.
+2. **Cannot stub different returns per invocation.** A 100-chapter flow test needs the AI adapter to return different chapter content on each call. With fakes, you manage a `List<String>` and pop elements. With `mocktail`, `when(() => adapter.createStream(any())).thenAnswer((_) => Stream.fromIterable(['chapter text']))` handles this cleanly.
 
----
+3. **Cannot share mock setup across test files.** Currently each test file defines its own fake class. Integration test flows spanning 5+ test files need a shared mock setup in `integration_test/helpers/ai_mocks.dart`.
 
-### Template Data Loading (World-Building Presets)
+**Why mocktail over mockito:** The project already has `mockito` as a transitive dependency (from build_runner), but mockito requires `@GenerateMocks` annotations and a `build_runner` step for every mock class. `mocktail` generates mocks at runtime with zero codegen. Since integration tests change frequently during validation (new flows, new assertions), avoiding a build_runner cycle per mock change saves significant iteration time.
 
-| Technology | Version | Purpose | Why |
-|------------|---------|---------|-----|
-| **yaml** (transitive) | 3.1.3 | Parse YAML template files | Already in dependency tree (transitive via build_runner, json_serializable, etc.). No new dependency needed. Dart's `yaml` package parses YAML into `YamlMap`/`YamlList`, convertible to standard Map/List. |
-| **json_serializable** (existing) | ^6.14.0 | Generate fromJson/toJson for template models | Already in dev_dependencies. Template data models will use the same pattern as existing domain entities. |
+**When to use:**
+- Integration tests exercising the AI pipeline with controlled responses
+- Tests that need `verify()` to assert on prompt message content or call frequency
+- Token audit tests that count how many AI calls happen per chapter
 
-**Template storage strategy:**
+**When NOT to use:**
+- Existing unit tests with working hand-rolled fakes -- do not migrate, leave them alone
+- Simple value objects -- use freezed classes directly
+- Tests that do not need call verification
 
-Templates are **bundled as assets** (not fetched from a server -- local-first, offline-ready, privacy-preserving).
+### 2. No Additional Packages for Integration Tests
 
-```
-assets/
-  templates/
-    world_presets/
-      xuanhuan.json      # Full preset pack
-      xianxia.json
-      wuxia.json
-      urban.json
-      scifi.json
-      ...
-```
+The `integration_test` SDK shipped with Flutter 3.44.0 provides everything needed for the v1.3 integration tests. The binding already supports:
 
-JSON (not YAML) is the better choice for template data because:
-1. **json_serializable** is already in the project -- template models get free serialization
-2. **Consistency** -- every domain entity (PlotNode, CharacterCard, SkillDocument) uses JSON
-3. **No parser needed** -- `dart:convert` is built-in, `yaml` requires an extra parse step
-4. **Editor tooling** -- JSON has better editor support for large structured data files
-5. **Validation** -- JSON schemas can validate template files at build time
+- `IntegrationTestWidgetsFlutterBinding.ensureInitialized()` -- test entry point
+- `tester.pumpWidget()` / `tester.pumpAndSettle()` -- widget lifecycle
+- `tester.tap()` / `tester.enterText()` -- user interaction simulation
+- `binding.traceAction()` -- performance timeline capture for slow operations
+- `flutter test integration_test/` -- runs on Windows desktop with device selection
 
-Template data is loaded via `rootBundle.loadString()` (for read-only bundled templates) and stored in Hive boxes after user customization (for user-modified copies).
+Here is the rationale for rejecting each candidate:
 
-**No new package needed.** Use existing `json_annotation` + `json_serializable` + `dart:convert` + Hive CE.
+| Candidate | Why NOT |
+|-----------|---------|
+| **patrol** | No Windows desktop support. Patrol targets Android/iOS/Web only. MuseFlow's primary platform is Windows desktop. Verified via Context7 Patrol docs and pub.dev -- platform support matrix lists Android, iOS, Web. Windows/Linux are absent. Adding patrol would provide zero benefit for the target platform. |
+| **flutter_driver** | Deprecated since Flutter 2.x. `integration_test` is the official replacement. The Flutter docs explicitly state to migrate away from flutter_driver. |
+| **appium_flutter** | Mobile-focused automation framework. Adds native binary dependencies (Node.js, Appium server). Overkill for a desktop-first app doing validation testing. |
+| **golden_toolkit / alchemist** | Screenshot/pixel comparison tools. Useful for visual regression, but v1.3 validation is about data correctness (export formats, token counts, story structure integrity), not pixel-perfect UI matching. |
+| **flutter_gherkin / bdd_widget_test** | BDD syntax wrappers around testWidgets. Adds an abstraction layer that provides no value for a 2-developer team writing direct integration tests. Descriptive test names serve the same documentation purpose. |
 
-**Confidence:** HIGH -- yaml 3.1.3 verified in `flutter pub deps`, json_serializable already in pubspec.yaml, rootBundle is Flutter standard API.
+### 3. Pure Dart Automation Scripts -- No New Dependencies Needed
 
----
+The v1.3 milestone requires standalone Dart scripts for:
+- Token consumption audit across the full 100-chapter flow
+- Export file validation (Markdown/TXT/JSON format correctness)
+- Batch test orchestration and report generation
 
-### Onboarding Wizard UI
+All necessary tools are already available without new packages:
 
-| Technology | Version | Purpose | Why |
-|------------|---------|---------|-----|
-| **Flutter Stepper** (built-in) | N/A | Multi-step wizard for first-run experience | Built-in Material widget, enhanced in Flutter 3.44 with customizable header/content padding. Sufficient for a linear wizard (select genre -> name project -> configure AI provider -> done). |
-| **Flutter PageView** (built-in) | N/A | Page-based navigation for wizard steps | More flexible than Stepper for custom layouts. PageController manages state, supports animated transitions. Used for non-linear wizard flows where steps may vary. |
+| Tool | Purpose | Already Available |
+|------|---------|-------------------|
+| `dart:io` Process.run() | Run `flutter test` from automation scripts | Yes (Dart SDK) |
+| `dart:io` File/Directory | Read/write test artifacts, export files, reports | Yes (Dart SDK) |
+| `dart:convert` JSON | Parse test output, validate export formats | Yes (Dart SDK) |
+| `package:test` | Test runner for pure Dart test scripts | Yes (transitive via flutter_test) |
+| `package:args` | CLI argument parsing for automation scripts | Yes (transitive) |
+| `package:hive_ce` | Direct database reads for token audit data | Yes (main dependency) |
+| `package:path` | Cross-platform path handling | Yes (transitive) |
+| `package:logger` | Structured logging in automation output | Yes (main dependency) |
 
-**Why no dedicated onboarding package:**
+**Why no `process_run`:** The `process_run` package (v1.2.4 on pub.dev) provides a shell abstraction (`Shell().run('echo hello')`), but for the 3-4 automation scripts in v1.3, `dart:io` `Process.run()` with direct argument lists is sufficient and avoids an extra dependency. `process_run` would be worth reconsidering if the automation suite grows to 10+ scripts with complex shell piping.
 
-Packages like `introduction_screen` or `flutter_onboarding_slider` add dependency weight for functionality easily built with PageView + a few custom widgets. The wizard has specific MuseFlow logic (genre selection triggers template load, AI provider test, opening generation) that generic packages cannot handle without heavy customization. Building with built-in widgets gives full control.
-
-**Onboarding state storage:** Use existing `appSettings` Hive box with a `onboardingCompleted` boolean key. No new storage needed.
-
-**Confidence:** HIGH -- Stepper and PageView are Flutter SDK built-ins, verified via Context7 Flutter docs confirming 3.44 Stepper enhancements.
+**Why no `shelf`/`http` mock server:** Mocking AI endpoints with a local HTTP server (e.g., `shelf`) would be architecturally clean for test isolation, but v1.3 validation intentionally uses real AI API calls -- that is the point of user-perspective validation. For tests that must avoid network calls, Riverpod provider overrides with mocktail mocks are the correct approach (and consistent with the existing test pattern).
 
 ---
 
 ## What NOT to Add
 
-| Technology | Why NOT | What to Use Instead |
-|------------|---------|-------------------|
-| **syncfusion_flutter_charts** | Commercial license restrictions. Heavy package that risks the 100MB Windows install constraint. Overkill for 3-4 chart types. | fl_chart |
-| **victory_flutter** | Less actively maintained than fl_chart. Smaller community. No clear advantage for our use case. | fl_chart |
-| **introduction_screen** | Generic onboarding carousel. Cannot handle MuseFlow-specific wizard logic (AI provider test, genre-triggered template load). Adds a dependency for trivial PageView wrapping. | Flutter PageView + Stepper |
-| **flutter_onboarding_slider** | Same as above -- too generic, adds unnecessary dependency. | Flutter PageView |
-| **graphview alternatives** (none exist) | There is no other mature Flutter graph visualization library. graphview is the only option with layout algorithms, custom nodes, and interaction support. | graphview |
-| **CustomPainter from scratch** | Implementing force-directed layout, node hit-testing, edge rendering, zoom/pan transforms, and animated transitions from scratch would take weeks and be a maintenance burden. graphview handles all of this. | graphview |
-| **shared_preferences** | Onboarding state is a single boolean flag. Goes in existing `appSettings` Hive box. Adding shared_preferences creates a second key-value store alongside Hive, which is confusing. | Hive CE `appSettings` box |
-| **yaml for template files** | YAML would add a non-standard data format alongside the JSON used everywhere else. JSON templates with json_serializable is consistent with existing patterns. | JSON with json_serializable |
-
----
-
-## New Storage Patterns
-
-### Writing Statistics (New Hive Box)
-
-```
-Boxes (new):
-  - writingStats      -> { statId: WritingSession }
-    Fields: date, projectId, wordCount, wordsAdded, wordsDeleted,
-            aiAssistedCount, sessionDurationMinutes, timestamp
-  - dailyStats        -> { dateKey: DailyAggregate }
-    Fields: date, totalWordsWritten, totalSessions, totalAiUsage,
-            averageSpeed (words/min), projectId -> wordCount map
-```
-
-Writing stats are append-only time series data. Each writing session creates a `WritingSession` record. Daily aggregates are computed from sessions and cached in `dailyStats` for fast dashboard rendering.
-
-Aggregate queries (total words across all projects, monthly trends) scan `dailyStats` which has one entry per day. This is efficient for the expected data volume (hundreds of entries, not millions).
-
-### Template Data (Asset Bundle + Hive Cache)
-
-```
-Boxes (new):
-  - worldPresets      -> { presetId: WorldPreset }
-    Populated on first load from asset bundle JSON files.
-    User-customized copies stored here with isModified flag.
-```
-
-Bundled templates are read-only. When a user customizes a template, a copy is created in the `worldPresets` Hive box with `isModified: true` and `sourcePresetId` pointing to the original. This preserves the original template for reference while allowing user modifications.
-
-### Onboarding State (Existing Box)
-
-```
-Boxes (existing):
-  - appSettings       -> add key: 'onboardingCompleted' (bool)
-                         add key: 'firstRunDate' (DateTime ISO string)
-```
-
-No new box needed. Onboarding state is two keys in the existing app settings box.
-
----
-
-## Integration Points with Existing Stack
-
-### Story Arc Visualization + PlotNode (Existing)
-
-The graphview integration maps directly to the existing `PlotNode` model:
-
-```dart
-// PlotNode already has:
-//   causeNodeIds, consequenceNodeIds, relatedNodeIds, linkedForeshadowingIds
-//   structuralRole (setup/development/turn/climax/resolution)
-//   writingStatus (notStarted/drafting/complete/needsRevision)
-
-// Mapping to graphview:
-final graph = Graph()..isTree = false;  // plot nodes are NOT a tree
-
-for (final node in plotNodes) {
-  graph.addNode(Node.Id(node.id));
-}
-for (final node in plotNodes) {
-  for (final causeId in node.causeNodeIds) {
-    graph.addEdge(
-      Node.Id(causeId), Node.Id(node.id),
-      paint: Paint()..color = Colors.blue,  // causal chain
-    );
-  }
-  for (final relatedId in node.relatedNodeIds) {
-    graph.addEdge(
-      Node.Id(node.id), Node.Id(relatedId),
-      paint: Paint()..color = Colors.grey..strokeWidth = 1,  // lateral
-    );
-  }
-}
-```
-
-The existing `PlotNodeRepository` (Hive-based) provides all CRUD operations. The graph visualization is a read-only view with drag-to-reposition. Node position persistence requires adding `positionX`/`positionY` fields to PlotNode (or a separate mapping box).
-
-### Writing Analytics + Editor (Existing)
-
-Word count tracking hooks into the existing editor pipeline:
-- `super_editor` provides `EditTransaction` events that can be counted for words added/deleted
-- AI-assisted text changes are already tracked via `DiffState` and `ProvenanceAttribution`
-- Session tracking starts when the editor page is mounted and ends on dispose
-
-### Template System + Skill System (Existing)
-
-World-building presets map directly to the existing `SkillDocument` and `WorldSetting` models:
-- A full preset pack is a bundle of pre-populated `SkillDocument` + `CharacterCard` + `WorldSetting` entities
-- When a user selects a preset, entities are created in their knowledge base via existing repositories
-- The existing `SkillSections` structure (powerHierarchy, factionRelations, rules, taboos, terminology) is populated by the preset
-
-### Onboarding + go_router (Existing)
-
-First-run detection uses `go_router` redirect guards:
-
-```dart
-GoRouter(
-  redirect: (context, state) {
-    final onboardingDone = /* read from appSettings box */;
-    if (!onboardingDone && state.matchedLocation != '/onboarding') {
-      return '/onboarding';
-    }
-    return null;
-  },
-)
-```
+| Package | Why NOT | What to Do Instead |
+|---------|---------|-------------------|
+| **patrol** | No Windows desktop support (Android/iOS/Web only). Verified via pub.dev and official docs. | Built-in `integration_test` SDK |
+| **mockito** | Requires `@GenerateMocks` + build_runner cycle per mock class. Slows iteration on frequently-changing integration tests. | mocktail (zero codegen, same API style) |
+| **process_run** | `dart:io` Process.run() sufficient for 3-4 scripts | `dart:io` Process.run() with argument lists |
+| **shelf / http** | Mock HTTP server unnecessary; v1.3 needs real AI API calls for validation. Test isolation via Riverpod overrides. | Riverpod provider overrides + mocktail |
+| **golden_toolkit / alchemist** | Visual regression testing not needed for flow/data validation | Text-based assertions on widget content |
+| **bloc_test** | Project uses Riverpod, not Bloc | Riverpod ProviderContainer for test scoping |
+| **flutter_gherkin / bdd_widget_test** | BDD abstraction adds no value for 2-developer team | Standard testWidgets with descriptive names |
+| **test_cov_console / coverage** | Coverage reporting is a future concern, not a v1.3 validation need | `flutter test --coverage` if needed later |
 
 ---
 
 ## Installation
 
 ```bash
-# NEW packages for v1.1 milestone
-flutter pub add fl_chart       # Writing analytics charts
-flutter pub add graphview      # Story arc interactive graph
-
-# No other new packages needed -- yaml is transitive, Stepper/PageView are built-in
-# json_serializable and hive_ce are already installed
+# Single new package
+dart pub add --dev mocktail:^1.0.4
 ```
 
-### Asset bundle configuration (pubspec.yaml addition)
-
-```yaml
-flutter:
-  assets:
-    - assets/templates/world_presets/
-```
+No other installations required. Everything else is already present via the Flutter SDK or existing transitive dependencies.
 
 ---
 
-## Install Budget Impact
+## Integration Test File Structure Recommendation
 
-| Package | Estimated Size Impact | Notes |
-|---------|----------------------|-------|
-| fl_chart | ~200KB | Pure Dart, no native code, no assets |
-| graphview | ~50KB | Pure Dart, no native code |
-| Template JSON assets | ~100KB total | ~10KB per genre preset, 8-10 genres |
-| **Total new impact** | **~350KB** | Well within 100MB constraint |
+```
+integration_test/
+  app_test.dart                      # EXISTING -- keep, basic smoke tests
+  helpers/
+    test_app.dart                    # Shared pumpApp + Hive init (extracted from app_test.dart)
+    ai_mocks.dart                    # mocktail-based AI adapter mocks for all providers
+    token_tracker.dart               # Token consumption tracker used by audit tests
+  flows/
+    manuscript_lifecycle_test.dart   # Create manuscript -> add chapters -> edit -> export
+    capture_synthesis_test.dart      # Fragment capture -> AI synthesis -> insert into editor
+    chapter_management_test.dart     # 100-chapter CRUD + reorder/split/merge stress test
+    story_structure_test.dart        # Foreshadowing setup -> track -> resolve -> logic loop check
+    export_validation_test.dart      # Markdown/TXT/JSON three-format correctness
+    ai_editor_tools_test.dart        # Floating toolbar: tone rewrite, paragraph polish, free edit
+    token_audit_test.dart            # Full-flow token consumption measurement and reporting
 
-Current Windows build estimated at ~60-70MB (Flutter engine + super_editor + existing deps). Adding 350KB leaves significant headroom under 100MB.
+tool/
+  token_audit_report.dart            # Standalone: run flows, aggregate token stats, output report
+  export_verifier.dart               # Standalone: validate exported files match expected format
+  run_validation.dart                # CLI runner: execute all validation + generate summary report
+```
+
+**Rationale for structure:**
+- `helpers/` centralizes the Hive initialization and adapter registration boilerplate currently duplicated in `app_test.dart` (lines 11-41). Every integration test needs this -- extract it once.
+- `helpers/ai_mocks.dart` provides `MockOpenAIAdapter`, `MockAnthropicAdapter`, `MockOllamaAdapter` as mocktail-based mocks that any flow test can import and configure.
+- `helpers/token_tracker.dart` wraps a simple `int totalTokens` counter that tests inject via Riverpod override to accumulate token usage across the full flow.
+- `flows/` groups tests by user journey, directly matching the v1.3 "user perspective" requirement. Each file is one complete user story.
+- `tool/` holds standalone scripts runnable via `dart run tool/<script>.dart`. These are NOT Flutter tests -- they are Dart CLI programs that orchestrate test runs, read results, and generate reports.
+- Existing `test/helpers/hive_test_helper.dart` stays for unit tests. Integration test helpers live in `integration_test/helpers/` to keep concerns separated.
+
+---
+
+## How Integration Tests Fit With Existing Patterns
+
+### Existing pattern (unit tests with ProviderContainer):
+
+```dart
+// Current pattern from synthesis_notifier_test.dart
+late ProviderContainer container;
+late _FakeOpenAIAdapter fakeAdapter;
+
+ProviderContainer createContainer({...}) {
+  fakeAdapter = _FakeOpenAIAdapter();
+  return ProviderContainer(overrides: [
+    openaiAdapterProvider.overrideWithValue(fakeAdapter),
+    ...
+  ]);
+}
+```
+
+### New pattern (integration tests with WidgetTester + mocktail):
+
+```dart
+// New pattern for integration flow tests
+Future<void> pumpAppWithMocks(WidgetTester tester, {
+  Stream<String>? aiStreamOutput,
+}) async {
+  final mockAdapter = MockOpenAIAdapter();
+  if (aiStreamOutput != null) {
+    when(() => mockAdapter.createStream(
+      apiKey: any(named: 'apiKey'),
+      baseUrl: any(named: 'baseUrl'),
+      model: any(named: 'model'),
+      messages: any(named: 'messages'),
+    )).thenAnswer((_) => aiStreamOutput);
+  }
+
+  await tester.pumpWidget(
+    ProviderScope(
+      overrides: [
+        openaiAdapterProvider.overrideWithValue(mockAdapter),
+      ],
+      child: const MuseFlowApp(),
+    ),
+  );
+  await tester.pumpAndSettle();
+}
+```
+
+The key difference: unit tests use `ProviderContainer` (no widget tree), integration tests use `tester.pumpWidget(ProviderScope(...))` (full widget tree). Both use Riverpod overrides, but the integration test exercises the real UI navigation and state propagation.
+
+### Token tracking pattern:
+
+```dart
+// TokenTracker injected via Riverpod override
+class TokenTracker {
+  int totalTokens = 0;
+  int callCount = 0;
+  void record(int tokens) { totalTokens += tokens; callCount++; }
+}
+
+// In test, wrap the mock adapter to track tokens
+when(() => mockAdapter.createStream(...)).thenAnswer((invocation) {
+  tracker.callCount++;
+  return Stream.fromIterable(['generated text']);
+});
+```
+
+This approach does not require any new package -- it is a plain Dart class that integration tests inject via Riverpod overrides alongside the mock adapters.
 
 ---
 
@@ -296,55 +251,11 @@ Current Windows build estimated at ~60-70MB (Flutter engine + super_editor + exi
 
 | Source | Confidence | What It Verified |
 |--------|------------|------------------|
-| `flutter pub add --dry-run` (live) | HIGH | fl_chart 1.2.0 and graphview 1.5.1 resolve cleanly with Flutter 3.44 |
-| pub.dev / fl_chart | HIGH | Version 1.2.0, MIT license, min Flutter 3.27.4, no native deps |
-| pub.dev / graphview | HIGH | Version 1.5.1, MIT license, GraphViewController API, layout algorithms |
-| Context7 / fl_chart docs | HIGH | LineChart, BarChart, PieChart API, FlTransformationConfig for pan/zoom |
-| Context7 / graphview docs | HIGH | Builder pattern, node dragging, FruchtermanReingoldAlgorithm, edge rendering |
-| Context7 / Flutter docs | HIGH | Stepper widget enhanced in 3.44, PageView API |
-| `flutter pub deps` (live) | HIGH | yaml 3.1.3 already transitive in dependency tree |
-| Existing codebase analysis | HIGH | PlotNode model fields, PlotNodeRepository pattern, SkillDocument structure |
-
----
-
-## Chinese Web Novel Genre Taxonomy (for Template Presets)
-
-**Confidence:** MEDIUM -- based on domain knowledge of Chinese web novel platforms. Should be validated by browsing 起点/番茄 category pages during implementation.
-
-The top genres on Qidian (起点中文网) and Fanqie (番茄小说) that map to world-building presets:
-
-| Genre | Chinese | Key World-Building Elements | Preset Complexity |
-|-------|---------|---------------------------|-------------------|
-| Xuanhuan (Eastern Fantasy) | 玄幻 | Cultivation levels, elemental systems, beast realms, tournament arcs | High -- full preset |
-| Xianxia (Immortal Cultivation) | 仙侠 | Dao/immortality system, heavenly tribulations, spiritual energy, pill refining | High -- full preset |
-| Wuxia (Martial Arts) | 武侠 | Martial arts schools, jianghu politics, weapon systems, chivalry codes | Medium |
-| Urban (Modern City) | 都市 | Company/power hierarchies, modern technology, social dynamics | Medium |
-| Sci-Fi (Science Fiction) | 科幻 | Tech trees, space colonization, AI/robot rules, physics constraints | High -- full preset |
-| Historical | 历史 | Dynasty systems, court politics, military ranks, cultural customs | Medium |
-| Fantasy (Western) | 奇幻 | Magic systems, racial hierarchies, guild structures, deity pantheons | High -- full preset |
-| E-sports / Gaming | 游戏 | Game class systems, skill trees, guild mechanics, tournament brackets | Medium |
-| Military | 军事 | Rank systems, unit structures, strategic doctrines, technology eras | Medium |
-| Suspense / Thriller | 悬疑 | Clue structures, psychological profiles, timeline management | Low -- lightweight template |
-
-Priority presets (most popular on both platforms): Xuanhuan, Xianxia, Urban, Sci-Fi, Wuxia.
-
-Each full preset contains: SkillSections (powerHierarchy, factionRelations, rules, taboos, terminology) + sample CharacterCard templates + WorldSetting template with geography and techLevel.
-
----
-
-## Chinese Novel Genre Data Sources
-
-**Confidence:** LOW -- web search API was unavailable during research. Must be verified during implementation.
-
-Recommended sources for genre category structures:
-
-| Source | URL | Use |
-|--------|-----|-----|
-| Qidian (起点中文网) | `www.qidian.com` | Category navigation -- browse all genre classifications |
-| Fanqie (番茄小说) | `fanqienovel.com` | Category pages -- cross-reference with Qidian for coverage |
-| Qidian ranking pages | `www.qidian.com/rank/` | Popularity data to prioritize which genres get full presets |
-
-The genre taxonomy above covers the top categories. During implementation, browse these sites to:
-1. Verify the genre list is complete and current
-2. Get sub-genre classifications (e.g., 玄幻 splits into 异世大陆, 东方玄幻, etc.)
-3. Identify trending genres that may warrant additional presets
+| pub.dev/mocktail (live) | HIGH | Version 1.0.4 current, 1.2k likes, 2.15M downloads, MIT license, zero codegen, verified publisher felangel.dev |
+| Context7 / Flutter integration_test docs | HIGH | `flutter test integration_test/` works on Windows desktop; `IntegrationTestWidgetsFlutterBinding.ensureInitialized()` is the entry point; `traceAction()` for performance profiling |
+| Context7 / Patrol docs | HIGH | Patrol supports Android/iOS/Web only; no Windows desktop support confirmed in platform matrix |
+| Context7 / mocktail docs | HIGH | `when()`/`verify()`/`any(named:)`/`registerFallbackValue` API confirmed; zero codegen usage pattern |
+| Flutter 3.44.0 installed locally | HIGH | `flutter test integration_test/` confirmed working for Windows target; Dart 3.12.0 stable |
+| pub.dev/process_run (live) | HIGH | v1.2.4, 337 likes, BSD-2-Clause -- viable but unnecessary for small script count |
+| Project codebase analysis (pubspec.yaml + lock) | HIGH | 117 test files, 930+ passing tests, hand-rolled fakes pattern, no direct mocking library, transitive deps available |
+| Flutter docs -- Windows integration test output | HIGH | `flutter test integration_test/app_test.dart` on Windows prompts device selection, builds exe, runs tests |
