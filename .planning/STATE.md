@@ -1,17 +1,16 @@
 ---
 gsd_state_version: 1.0
-milestone: v1.2
-milestone_name: 多文稿架构
-status: milestone_complete
-stopped_at: Milestone complete (Phase 11 was final phase)
-last_updated: 2026-06-06T20:00:00.000Z
-last_activity: 2026-06-06 -- v1.2 milestone archived
+milestone: v1.3
+milestone_name: 用户视角全流程验证 — 百章修仙小说
+status: planning
+last_updated: 2026-06-06T21:00:00.000Z
+last_activity: 2026-06-06 -- v1.3 milestone started
 progress:
-  total_phases: 12
-  completed_phases: 12
-  total_plans: 48
-  completed_plans: 48
-  percent: 100
+  total_phases: 0
+  completed_phases: 0
+  total_plans: 0
+  completed_plans: 0
+  percent: 0
 ---
 
 # Project State
@@ -21,16 +20,16 @@ progress:
 See: .planning/PROJECT.md (updated 2026-06-06)
 
 **Core value:** 让AI帮你写好故事，但让读者看不出AI的痕迹。
-**Current focus:** Planning next milestone
+**Current focus:** Planning v1.3 — 用户视角全流程验证
 
 ## Current Position
 
-Phase: 11 (complete)
-Plan: All complete
-Status: Milestone complete
-Last activity: 2026-06-06
+Phase: Not started (defining requirements)
+Plan: —
+Status: Defining requirements
+Last activity: 2026-06-06 — Milestone v1.3 started
 
-Progress: [██████████] 100%
+Progress: [░░░░░░░░░░] 0%
 
 ## Performance Metrics
 
@@ -61,7 +60,7 @@ Progress: [██████████] 100%
 - Last 5 plans: 11-06, 11-05, 11-04, 11-03, 11-02
 - Trend: Stable
 
-*Updated after v1.2 milestone close*
+*Updated after v1.3 milestone start*
 
 ## Accumulated Context
 
@@ -86,6 +85,7 @@ None.
 - Physical device testing (IME, startup, lifecycle) still deferred
 - Template literary quality needs human review
 - Anti-AI-scent effectiveness still unproven
+- GLM API key needed (not stored in codebase, user will provide)
 
 ## Deferred Items
 
@@ -107,5 +107,5 @@ Items acknowledged and deferred at v1.2 milestone close on 2026-06-06:
 ## Session Continuity
 
 Last session: 2026-06-06
-Stopped at: v1.2 milestone complete
-Next step: /gsd:new-milestone
+Stopped at: v1.3 milestone started — defining requirements
+Next step: /gsd:new-milestone → define requirements → create roadmap
