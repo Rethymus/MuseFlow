@@ -185,7 +185,7 @@ Plans:
 
 **Wave 4** *(editor + sidebar)*
 
-- [ ] 11-04: EditorWithSidebar, ChapterSidebar, chapter dialogs, document switching, auto-save integration (wave 4, depends on 11-02, 11-03)
+- [x] 11-04: EditorWithSidebar, ChapterSidebar, chapter dialogs, document switching, auto-save integration (wave 4, depends on 11-02, 11-03)
 
 **Wave 5** *(integration)*
 
@@ -210,4 +210,4 @@ Note: Phases 9 and 10 are independent of each other (both depend only on v1.0). 
 | 8. 开篇引导 | v1.1 | 5/5 | Complete | 2026-06-04 |
 | 9. 写作数据统计 | v1.1 | 5/5 | Complete   | 2026-06-05 |
 | 10. 故事弧可视化 | v1.1 | 4/4 | Complete    | 2026-06-05 |
-| 11. 文稿库与章节管理 | v1.2 | 3/5 | In Progress|  |
+| 11. 文稿库与章节管理 | v1.2 | 4/5 | In Progress|  |
