@@ -159,5 +159,67 @@ void main() {
       expect(updated.status, '草稿');
       expect(updated.documentContent, 'new content');
     });
+
+    test('fromJson throws domain FormatException for malformed required fields', () {
+      final valid = <String, dynamic>{
+        'id': 'ch-8',
+        'manuscriptId': 'ms-1',
+        'title': 'Safe Chapter',
+        'sortOrder': 0,
+        'createdAt': '2026-01-01T00:00:00.000',
+        'updatedAt': '2026-01-02T00:00:00.000',
+      };
+
+      final malformedCases = <Map<String, dynamic>>[
+        {...valid, 'id': 42},
+        {...valid, 'manuscriptId': null},
+        {...valid, 'title': <String>[]},
+        {...valid, 'sortOrder': '1'},
+        {...valid, 'createdAt': 'not-a-date'},
+        {...valid, 'updatedAt': 123},
+      ];
+
+      for (final json in malformedCases) {
+        expect(
+          () => Chapter.fromJson(json),
+          throwsA(
+            isA<FormatException>().having(
+              (e) => e.message,
+              'message',
+              contains('Invalid Chapter JSON'),
+            ),
+          ),
+        );
+      }
+    });
+
+    test('fromJson throws domain FormatException for malformed optional fields', () {
+      final valid = <String, dynamic>{
+        'id': 'ch-9',
+        'manuscriptId': 'ms-1',
+        'title': 'Safe Chapter',
+        'sortOrder': 0,
+        'createdAt': '2026-01-01T00:00:00.000',
+        'updatedAt': '2026-01-02T00:00:00.000',
+      };
+
+      final malformedCases = <Map<String, dynamic>>[
+        {...valid, 'status': false},
+        {...valid, 'documentContent': 9},
+      ];
+
+      for (final json in malformedCases) {
+        expect(
+          () => Chapter.fromJson(json),
+          throwsA(
+            isA<FormatException>().having(
+              (e) => e.message,
+              'message',
+              contains('Invalid Chapter JSON'),
+            ),
+          ),
+        );
+      }
+    });
   });
 }
