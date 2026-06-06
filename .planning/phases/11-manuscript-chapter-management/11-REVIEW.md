@@ -1,160 +1,133 @@
 ---
 phase: 11-manuscript-chapter-management
-reviewed: 2026-06-06T12:00:00Z
-depth: deep
-files_reviewed: 22
+reviewed: 2026-06-06T22:30:00Z
+depth: standard
+files_reviewed: 14
 files_reviewed_list:
-  - lib/features/manuscript/presentation/manuscript_library_page.dart
-  - lib/features/manuscript/presentation/manuscript_card.dart
-  - lib/features/manuscript/presentation/manuscript_create_dialog.dart
-  - lib/features/manuscript/presentation/manuscript_settings_page.dart
   - lib/features/manuscript/presentation/editor_with_sidebar.dart
+  - lib/features/manuscript/application/chapter_auto_save.dart
+  - lib/features/manuscript/domain/manuscript.dart
+  - lib/features/manuscript/domain/chapter.dart
+  - lib/features/manuscript/infrastructure/manuscript_repository.dart
+  - lib/features/manuscript/infrastructure/chapter_repository.dart
+  - lib/features/manuscript/application/manuscript_notifier.dart
+  - lib/features/manuscript/application/chapter_notifier.dart
+  - lib/features/manuscript/presentation/manuscript_library_page.dart
   - lib/features/manuscript/presentation/chapter_sidebar.dart
-  - lib/features/manuscript/presentation/chapter_sidebar_row.dart
-  - lib/features/manuscript/presentation/chapter_create_dialog.dart
-  - lib/features/manuscript/presentation/chapter_rename_dialog.dart
-  - lib/features/manuscript/presentation/chapter_context_menu.dart
-  - lib/features/editor/application/chapter_context_middleware.dart
-  - lib/features/story_structure/domain/export_bundle.dart
-  - lib/features/story_structure/application/export_service.dart
-  - lib/features/story_structure/presentation/export_dialog.dart
-  - lib/features/templates/application/template_instantiation_service.dart
-  - lib/features/templates/application/template_draft.dart
-  - lib/features/ai/application/prompt_pipeline.dart
-  - lib/features/editor/application/editor_prompt_pipeline.dart
+  - test/features/manuscript/presentation/editor_with_sidebar_test.dart
+  - test/features/manuscript/application/chapter_auto_save_test.dart
   - lib/core/presentation/providers.dart
-  - lib/main.dart
-  - lib/app.dart
-  - lib/shared/constants/app_constants.dart
 findings:
-  critical: 3
-  warning: 6
-  info: 5
-  total: 14
+  critical: 2
+  warning: 5
+  info: 4
+  total: 11
 status: issues_found
 ---
 
 # Phase 11: Code Review Report
 
-**Reviewed:** 2026-06-06
-**Depth:** deep
-**Files Reviewed:** 22
+**Reviewed:** 2026-06-06T22:30:00Z
+**Depth:** standard
+**Files Reviewed:** 14
 **Status:** issues_found
 
 ## Summary
 
-Reviewed all 22 source files created or modified across Phase 11 plans 03, 04, and 05 (manuscript-chapter-management). The implementation spans the manuscript library UI, editor with chapter sidebar, and integration wiring (export, templates, AI context, startup purge).
-
-Three critical issues were found: a chapter navigation race condition that can cause data loss, a missing `loadChapters` call that leaves the chapter list empty on editor entry, and a `Manuscript.copyWith` defect that prevents nullable fields from being cleared. Six warnings cover incorrect API usage, missing mounted guards, unmounted-ref risks, and architectural violations. Five info items cover dead code and minor quality concerns.
+Reviewed the full manuscript/chapter management feature including domain entities, repositories, notifiers, auto-save service, editor UI, and tests. The implementation is well-structured with clean architecture layering and proper Riverpod patterns. However, two critical bugs were found that risk data loss: a use-after-dispose pattern in auto-save initialization, and a state-wipe on chapter deletion due to the two-phase loading pattern. Several warnings address missing error propagation, sortOrder gaps, and edge cases in the editor lifecycle.
 
 ## Critical Issues
 
-### CR-01: ChapterAutoSave.dispose uses unawaited async flush -- data loss on app close
+### CR-01: Use-after-dispose in _loadAutoSave -- auto-save silently fails to initialize
 
-**File:** `lib/features/manuscript/infrastructure/chapter_repository.dart:94-106` (root cause in `lib/features/manuscript/application/chapter_auto_save.dart:63-67`)
-**Issue:** `ChapterAutoSave.dispose()` calls `unawaited(_flush())` which performs an async repository write (`_box.put()`). When the widget is being torn down (app close, route change), the Dart event loop may terminate before the async `_flush` completes. The `_isDirty` flag is set to `false` synchronously at line 53 of `chapter_auto_save.dart`, but the actual write at `chapter_repository.dart:102` (`await _box.put(chapterId, updated.toJson())`) may never execute.
+**File:** `lib/features/manuscript/presentation/editor_with_sidebar.dart:99-105`
+**Issue:** The `_loadAutoSave` method checks `mounted` before calling `ref.read(chapterAutoSaveProvider.future).then(...)`, but the `.then` callback has no `mounted` check. If the widget is disposed between the `ref.read` call and the future's completion (e.g., rapid navigation away), the `.then` callback fires on a disposed widget, assigning `_autoSave` on dead state. Worse, `_autoSave` may remain `null` if the future completes after dispose, meaning `_forceSaveAndCleanup()` in `dispose()` (line 79) silently does nothing because `_autoSave?.forceSave()` is a no-op on null. This creates a window where user edits are never persisted.
 
-Combined with `_forceSaveSync()` called from `_forceSaveAndCleanup()` in `editor_with_sidebar.dart:242`, which also relies on `_flush()` being async, this means user edits can be silently lost when closing the app or navigating away from the editor.
-**Impact:** User's last edits within the debounce window are silently discarded on app close or rapid navigation. No error is shown because the dirty flag was already cleared.
 **Fix:**
 ```dart
-// chapter_auto_save.dart - make dispose synchronous-and-blocking
-void dispose() {
-  _debounceTimer?.cancel();
-  _debounceTimer = null;
-  // Cannot await in dispose. Log warning if dirty.
-  if (_isDirty) {
-    debugPrint('ChapterAutoSave: WARNING - disposing with unsaved changes');
-  }
-  _isDirty = false;
-}
-```
-Additionally, `_forceSaveSync()` in `editor_with_sidebar.dart` should call `forceSave()` and the result should be awaited before dispose. The `dispose()` lifecycle cannot guarantee async completion -- the forced save must happen *before* `super.dispose()` is called, and it must be synchronous (Hive supports sync `put`). Consider using `_box.put()` (sync form) in a dedicated sync flush method.
-
-### CR-02: EditorWithSidebar never calls ChapterNotifier.loadChapters -- chapter list always empty on entry
-
-**File:** `lib/features/manuscript/presentation/editor_with_sidebar.dart:105-115`
-**Issue:** `_loadInitialChapter()` reads `ref.read(chapterNotifierProvider).asData?.value ?? []`. However, `ChapterNotifier.build()` returns `Future<List<Chapter>>` that resolves to an empty list (`return [];`). There is no call anywhere in `EditorWithSidebar` to `chapterNotifierProvider.notifier.loadChapters(manuscriptId)`. The notifier is never told which manuscript's chapters to load, so `asData?.value` always contains an empty list.
-
-The `ref.watch(chapterNotifierProvider)` at line 463 will produce an AsyncData with an empty list. The sidebar will show "no chapters" and the editor will show the "select or create a chapter" placeholder -- even when chapters exist in the repository.
-**Impact:** The entire chapter sidebar and editor are non-functional on every entry. Users see an empty chapter list and must manually create chapters even when they already exist. Existing chapter content is inaccessible.
-**Fix:**
-```dart
-// In _EditorWithSidebarState.initState or a dedicated init method:
-@override
-void initState() {
-  super.initState();
-  WidgetsBinding.instance.addObserver(this);
-  _loadAutoSave();
-  // Load chapters for this manuscript
+void _loadAutoSave() {
   WidgetsBinding.instance.addPostFrameCallback((_) {
     if (!mounted) return;
-    ref.read(chapterNotifierProvider.notifier)
-        .loadChapters(widget.manuscriptId)
-        .then((_) {
-          if (!mounted) return;
-          _loadInitialChapter();
-        });
+    ref.read(chapterAutoSaveProvider.future).then((autoSave) {
+      if (!mounted) return; // Guard against dispose during async gap
+      _autoSave = autoSave;
+    });
   });
 }
 ```
-And remove the separate `_loadInitialChapter()` call from `initState` since it should only run after `loadChapters` completes.
 
-### CR-03: Manuscript.copyWith cannot clear nullable fields (description, worldSettingId, deletedAt)
+### CR-02: ChapterNotifier.delete wipes chapter list to empty, causing UI to flash empty state and lose in-memory chapters
 
-**File:** `lib/features/manuscript/domain/manuscript.dart:35-62`
-**Issue:** The `copyWith` method uses `?? this.field` for all nullable fields (`description`, `worldSettingId`, `deletedAt`). This means a caller can never set these fields back to `null`. For `deletedAt`, this means the soft-delete recovery feature (setting `deletedAt` to null to "undelete") is broken. The `ManuscriptSettingsPage._handleSave` at line 243 calls `copyWith(description: ...)` which works for setting a value, but there is no way to clear the description.
-**Impact:** The soft-delete recovery is structurally impossible through `copyWith`. Any attempt to undelete a manuscript by setting `deletedAt: null` will silently keep the old value. Users cannot recover accidentally deleted manuscripts.
+**File:** `lib/features/manuscript/application/chapter_notifier.dart:45-49`
+**Issue:** The `delete` method calls `ref.invalidateSelf()` which re-runs `build()`, which returns `Future<List<Chapter>>.value([])` (an empty list). The two-phase loading pattern means the state resets to empty, and `loadChapters` is never re-called by the notifier itself. The UI in `editor_with_sidebar.dart` line 450-463 tries to handle this by reading `chapterNotifierProvider` in a postFrameCallback after delete, but there is a race: `invalidateSelf()` triggers an async rebuild, and the postFrameCallback may read the empty intermediate state before rebuild completes, or the rebuild itself returns empty. This means after deleting a chapter, the user sees an empty sidebar that never repopulates until they manually navigate away and back.
+
+Contrast with `add`, `save`, `reorder`, `duplicateChapter`, `splitChapter`, and `mergeChapters` -- all of which call `_refreshWith(repository, manuscriptId)` to properly reload from the repository. Only `delete` uses `invalidateSelf()`.
+
 **Fix:**
 ```dart
-Manuscript copyWith({
-  String? id,
-  String? title,
-  Object? description = _sentinel,
-  String? genre,
-  int? targetWordCount,
-  String? status,
-  Object? worldSettingId = _sentinel,
-  List<String>? characterCardIds,
-  DateTime? createdAt,
-  DateTime? updatedAt,
-  Object? deletedAt = _sentinel,
-  String? coverLetter,
-}) {
-  return Manuscript(
-    id: id ?? this.id,
-    title: title ?? this.title,
-    description: description == _sentinel ? this.description : description as String?,
-    genre: genre ?? this.genre,
-    targetWordCount: targetWordCount ?? this.targetWordCount,
-    status: status ?? this.status,
-    worldSettingId: worldSettingId == _sentinel ? this.worldSettingId : worldSettingId as String?,
-    characterCardIds: characterCardIds ?? this.characterCardIds,
-    createdAt: createdAt ?? this.createdAt,
-    updatedAt: updatedAt ?? this.updatedAt,
-    deletedAt: deletedAt == _sentinel ? this.deletedAt : deletedAt as DateTime?,
-    coverLetter: coverLetter ?? this.coverLetter,
-  );
+Future<void> delete(String id) async {
+  final repository =
+      await ref.read(chapterRepositoryProvider.future);
+  // Get manuscriptId before deleting so we can refresh
+  final chapter = repository.getById(id);
+  await repository.delete(id);
+  if (chapter != null) {
+    _refreshWith(repository, chapter.manuscriptId);
+  } else {
+    ref.invalidateSelf();
+  }
 }
-
-static const _sentinel = Object();
 ```
 
 ## Warnings
 
-### WR-01: AnimatedBuilder is not a valid Flutter widget class
+### WR-01: ChapterNotifier.delete does not recalculate sortOrder, leaving gaps
 
-**File:** `lib/features/manuscript/presentation/chapter_sidebar.dart:208`
-**Issue:** `AnimatedBuilder` is used as the widget class. The correct Flutter class is `AnimatedBuilder` -- however, in Flutter 3.x the class was renamed to `AnimatedBuilder` from the older `AnimatedWidget` pattern. Actually, the correct widget is `AnimatedBuilder`. Upon verification: Flutter's widget is named `AnimatedBuilder` and it does exist. However, the standard Flutter widget for this pattern is actually called `AnimatedBuilder` -- but looking at the Flutter API, the correct class is indeed `AnimatedBuilder`. This is correct for Flutter 3.44.0.
-**Reclassification:** After verifying Flutter 3.44.0 API, `AnimatedBuilder` exists and is valid. Withdrawing this finding.
-**Status:** Withdrawn upon API verification.
+**File:** `lib/features/manuscript/application/chapter_notifier.dart:45-49`
+**Issue:** After deleting a chapter, the remaining chapters retain their original `sortOrder` values, which may have gaps (e.g., 0, 2, 3 after deleting the chapter at sortOrder=1). While the current `getByManuscriptId` sorts by `sortOrder` so the display order is correct, gaps will compound over time and could cause issues with `splitChapter` (which inserts at `existing.sortOrder + 1`) and `reorder`. The `mergeChapters` method recalculates sequential sortOrders, but `delete` does not.
 
-### WR-01: _splitAtCursor uses base offset instead of extent for selection range -- data loss on range selection
+**Fix:** Add sortOrder recalculation after deletion, similar to `mergeChapters`:
+```dart
+// After repository.delete(id):
+final chapters = repository.getByManuscriptId(chapter.manuscriptId);
+for (var i = 0; i < chapters.length; i++) {
+  if (chapters[i].sortOrder != i) {
+    await repository.update(chapters[i].copyWith(sortOrder: i));
+  }
+}
+```
 
-**File:** `lib/features/manuscript/presentation/editor_with_sidebar.dart:355-357`
-**Issue:** `_splitAtCursor` extracts `selection.base` offset via `_getSelectionOffset` which casts `selection.base.nodePosition as TextNodePosition` and returns `baseOffset`. When the user has a *range* selection (not collapsed), the split point should be the start of the selection (base) or the extent, depending on direction. But more critically, `plainText.substring(0, offset)` splits at `base`, and `plainText.substring(offset)` takes the rest. If the user selected a range, the selected text is included in `after` but the split happens at the base -- this is the intended behavior per the split-at-cursor feature. However, `_getSelectionOffset` catches all exceptions and returns 0, meaning if the selection is not a `TextNodePosition` (e.g., the cursor is on an image or block node), the entire document goes into `before` and `after` is empty, effectively doing nothing. The silent 0-return masks a real error.
-**Impact:** Split silently fails for non-text node positions. No user feedback is given.
-**Fix:** Return early and show a user-facing message when the selection is not in a text node:
+### WR-02: splitChapter shifts sortOrder after update, but getAtById may return stale data
+
+**File:** `lib/features/manuscript/application/chapter_notifier.dart:119-161`
+**Issue:** In `splitChapter`, line 130 calls `repository.update(existing.copyWith(documentContent: beforeContent))` which also sets `updatedAt = DateTime.now()`. Then line 135 calls `repository.getByManuscriptId(...)` to get the fresh list. The `getByManuscriptId` reads from the Hive box, so the updated chapter should be present. However, the `originalIndex` lookup on line 136-137 uses `indexWhere((c) => c.id == chapterId)` which is correct. The potential issue is that the shift loop on lines 140-145 shifts all chapters after `originalIndex` by +1, but the newly created chapter on line 148-159 uses `existing.sortOrder + 1` -- which is the ORIGINAL chapter's sortOrder before any shift. If the original was at sortOrder=0 and there was a chapter at sortOrder=1, the shift moves 1->2, and the new chapter gets sortOrder=1. This is actually correct. However, if the `existing` object was fetched before the `update` call (line 126), its `sortOrder` field is the old value, which is fine since `update` does not change `sortOrder`. No bug here, but the code is fragile and depends on `update` not touching `sortOrder`.
+
+**Fix:** Document this invariant clearly, or explicitly use `existing.sortOrder` from the pre-update object to make intent obvious.
+
+### WR-03: Manuscript.copyWith cannot set nullable fields back to null
+
+**File:** `lib/features/manuscript/domain/manuscript.dart:35-63`
+**Issue:** The `copyWith` method uses `deletedAt ?? this.deletedAt` semantics. Once `deletedAt` is set to a non-null value, it is impossible to "un-delete" a manuscript by calling `copyWith(deletedAt: null)` because `null ?? this.deletedAt` evaluates to `this.deletedAt`. This is a well-known Dart pattern limitation. While the current codebase only uses `softDelete` (setting deletedAt) and `hardDelete` (removing entirely), not "recover", any future un-delete/restore feature will silently fail.
+
+**Fix:** Use a sentinel pattern for nullable fields that need to be clearable:
+```dart
+Manuscript copyWith({
+  // ...
+  Object? deletedAt = _sentinel,
+}) {
+  return Manuscript(
+    // ...
+    deletedAt: deletedAt == _sentinel ? this.deletedAt : deletedAt as DateTime?,
+  );
+}
+```
+
+### WR-04: _getSelectionOffset silently returns 0 on non-text selection -- split produces wrong content
+
+**File:** `lib/features/manuscript/presentation/editor_with_sidebar.dart:480-488`
+**Issue:** `_getSelectionOffset` catches any exception from casting `nodePosition` to `TextNodePosition` and returns 0. If the cursor is in a non-text node (e.g., an image block, horizontal rule), the split will use offset 0, meaning `_splitAtCursor` will split at the very beginning of the document. This silently produces a chapter with empty "before" content and the entire document as "after" content, which is likely not what the user intended.
+
+**Fix:** Return null or a special sentinel when the selection is not in a text node, and have `_splitAtCursor` show a user-facing error or abort the split:
 ```dart
 int? _getSelectionOffset(DocumentSelection selection) {
   try {
@@ -162,144 +135,66 @@ int? _getSelectionOffset(DocumentSelection selection) {
         (selection.base.nodePosition as TextNodePosition).offset;
     return baseOffset;
   } catch (_) {
-    return null; // Return null instead of 0 to signal failure
-  }
-}
-```
-And in `_splitAtCursor`:
-```dart
-final offset = _getSelectionOffset(selection);
-if (offset == null) return; // Can't split at non-text position
-```
-
-### WR-02: ManuscriptCard._showContextMenu is dead code -- empty no-op method
-
-**File:** `lib/features/manuscript/presentation/manuscript_card.dart:144-149`
-**Issue:** The `_showContextMenu()` method is declared as `void _showContextMenu() {}` with a comment saying the parent handles it. It is connected to `onLongPress: _showContextMenu` at line 47, which means a long-press on the card calls a no-op. However, the *parent* `_ManuscriptCardWrapper` in `manuscript_library_page.dart` wraps the card in a `GestureDetector` with its own `onLongPress`. Two competing `GestureDetector`s (the card's internal `InkWell.onLongPress` and the wrapper's `GestureDetector.onLongPress`) will conflict -- Flutter's gesture arena resolves this, but the behavior is platform-dependent and unreliable.
-**Impact:** Long-press context menu may not appear reliably. The card's `InkWell.onLongPress` (no-op) may win the gesture arena over the parent's `GestureDetector.onLongPress` (actual menu).
-**Fix:** Remove the dead `_showContextMenu` method and change the `InkWell` to not handle `onLongPress`:
-```dart
-child: InkWell(
-  onTap: onTap,
-  // Remove onLongPress -- parent GestureDetector handles it
-  child: Column(
-```
-
-### WR-03: ManuscriptSettingsPage._loadManuscript calls setState indirectly during build
-
-**File:** `lib/features/manuscript/presentation/manuscript_settings_page.dart:76-87`
-**Issue:** Inside the `build` method's `data:` callback, `_loadManuscript(manuscript)` is called which mutates `_titleController.text`, `_descriptionController.text`, `_targetWordCountController.text`, `_selectedGenre`, `_isCustomGenre`, `_customGenreController.text`, and `_isLoaded`. While this does not call `setState()` directly, it mutates controller text during build, which is an anti-pattern in Flutter. If the provider emits a new value (e.g., after save), this code re-enters and the `!_isLoaded` guard prevents re-loading. But the initial mutation during build can cause issues with Flutter's element tree lifecycle.
-**Impact:** Potential for "setState() or markNeedsBuild() called during build" errors if the controller mutation triggers listener callbacks that attempt rebuilds.
-**Fix:** Move the manuscript loading to `didChangeDependencies` or `initState` with a post-frame callback:
-```dart
-@override
-void didChangeDependencies() {
-  super.didChangeDependencies();
-  if (!_isLoaded) {
-    final manuscriptsAsync = ref.read(manuscriptNotifierProvider);
-    final manuscript = manuscriptsAsync.asData?.value
-        .where((m) => m.id == widget.manuscriptId)
-        .firstOrNull;
-    if (manuscript != null) {
-      _loadManuscript(manuscript);
-    }
+    return null;
   }
 }
 ```
 
-### WR-04: _confirmDeleteChapter accesses ref.read inside postFrameCallback without mounted check
+### WR-05: ChapterAutoSave._flush resets _isDirty before await -- concurrent onDocumentChanged during flush can lose data
 
-**File:** `lib/features/manuscript/presentation/editor_with_sidebar.dart:409-423`
-**Issue:** After `delete()` completes, a `postFrameCallback` is scheduled that calls `ref.read(chapterNotifierProvider)` and `_loadChapter`. There is a `mounted` check missing before the `ref.read` call at line 412. If the widget has been unmounted between the delete and the post-frame callback, `ref.read` will throw a `StateError`.
-**Impact:** StateError crash if the widget is disposed during the post-frame callback window (e.g., user presses back immediately after confirming delete).
-**Fix:**
+**File:** `lib/features/manuscript/application/chapter_auto_save.dart:49-58`
+**Issue:** In `_flush`, line 53 sets `_isDirty = false` before the `await` on line 54. If `onDocumentChanged` is called between lines 53 and 54 (i.e., while `_repository.updateDocumentContent` is in progress), the new dirty content will be written to `_pendingMarkdown` and `_isDirty` will be set back to `true`. The timer will also be started. This is actually safe in Dart's single-threaded model because `await` yields to the event loop and `onDocumentChanged` would be a separate event. The real concern is: if the timer is started during flush and the flush completes, the timer's `_flush` call will find `_isDirty = true` and write again -- this is correct behavior (coalescing). No data loss here, but the early `_isDirty = false` before the write completes means a crash during `updateDocumentContent` would lose the dirty flag, and the pending content would be lost forever.
+
+**Fix:** Move `_isDirty = false` after the await:
 ```dart
-WidgetsBinding.instance.addPostFrameCallback((_) {
-  if (!mounted) return; // Add mounted check FIRST
-  final remaining =
-      ref.read(chapterNotifierProvider).asData?.value ?? [];
-  // ...
-});
+Future<void> _flush() async {
+  if (!_isDirty || _currentChapterId == null || _pendingMarkdown == null) {
+    return;
+  }
+  final markdown = _pendingMarkdown!;
+  final chapterId = _currentChapterId!;
+  await _repository.updateDocumentContent(chapterId, markdown);
+  _isDirty = false;
+}
 ```
-
-### WR-05: ExportDialog._doExport ignores selectedPath -- always passes content to onExport but never writes to _selectedPath
-
-**File:** `lib/features/story_structure/presentation/export_dialog.dart:66-96`
-**Issue:** `_doExport()` calls `_exportService.buildContent(widget.bundle, _selectedFormat)` to build content, then calls `widget.onExport(_selectedFormat, content)`. The `_selectedPath` is validated as non-null at line 67 but is never passed to the export callback or used in the write. The `onExport` callback receives the format and content, but not the path. The `_PathInputDialog` collects a path from the user, and the UI shows "已导出至: $_selectedPath" on success, but the file is never actually written to `_selectedPath`.
-**Impact:** The export dialog appears to succeed but does not write to the user-selected path. The content is built but never persisted. The user sees a success message for an operation that did not happen.
-**Fix:** Pass the path to the export callback:
-```dart
-// Change the onExport signature or pass path through:
-await widget.onExport(_selectedFormat, content); // content goes nowhere
-
-// Should be:
-final exportService = ExportService(
-  fileWriter: (path, content) async {
-    final file = File(path);
-    await file.writeAsString(content);
-  },
-);
-await exportService.writeLocalFile(_selectedPath!, content);
-```
-Or update the `onExport` callback signature to include the path.
-
-### WR-06: Presentation layer directly instantiates infrastructure services in main.dart
-
-**File:** `lib/main.dart:82-94`
-**Issue:** `main()` directly instantiates `ManuscriptRepository(manuscriptsBox)` and `ChapterRepository(chaptersBox)` instead of using providers. While the summary notes this was intentional ("main.dart is not a ConsumerWidget"), it bypasses the provider system and creates a second, independent instance of these repositories. If the providers also open boxes with the same names (which they do -- `chapterRepositoryProvider` opens `'chapters'`), Hive's same-name box semantics return the same box, so the underlying data is shared. However, the repository *objects* are different instances, meaning any in-memory caching or state in the repository would diverge.
-**Impact:** If repositories add in-memory caching in the future, the purge service will operate on stale data. Current risk is low because repositories are stateless, but this is an architectural smell that will cause subtle bugs when caching is added.
-**Fix:** Consider creating a dedicated `purgeServiceProvider` that is initialized inside the `ProviderScope`, or perform the purge in a post-frame callback after `runApp`.
 
 ## Info
 
-### IN-01: ManuscriptCreateDialog uses id: '' convention -- relies on repository to generate UUID
+### IN-01: Test comment contradicts test behavior (line 113-114)
 
-**File:** `lib/features/manuscript/presentation/manuscript_create_dialog.dart:149`
-**Issue:** The manuscript is created with `id: ''`. The repository's `add` method checks for empty ID and generates a UUID. This convention works but is fragile -- if a caller passes a non-empty string that happens to collide, it would overwrite existing data.
-**Fix:** Consider using a sentinel value or explicit `generateId: true` flag for clarity.
+**File:** `test/features/manuscript/application/chapter_auto_save_test.dart:113-114`
+**Issue:** The comment says "Content should NOT have been persisted (dispose cancels timer, flushes)" but then says "Actually, dispose calls forceSave which flushes, so content IS persisted. The test verifies dispose doesn't crash and timer is cleaned up." The final assertion only checks `chapter, isNotNull` which is always true. This test does not actually verify any meaningful behavior.
 
-### IN-02: ChapterCreateDialog and ChapterRenameDialog share identical validation logic
+**Fix:** Clean up the contradictory comment. The test should assert a specific expected state rather than just `isNotNull`.
 
-**File:** `lib/features/manuscript/presentation/chapter_create_dialog.dart:36-39` and `lib/features/manuscript/presentation/chapter_rename_dialog.dart:36-39`
-**Issue:** Both dialogs have identical `_validate` methods with the same logic. This duplicated validation should be extracted to a shared utility.
-**Fix:** Extract to a shared function:
+### IN-02: _InMemoryTestBox uses shared static instance across test runs
+
+**File:** `test/features/manuscript/presentation/editor_with_sidebar_test.dart:171`
+**Issue:** `_NoOpChapterRepository` creates a `static final _inMemoryTestBox = _InMemoryTestBox()`. This means all test instances share the same box. While the current tests don't write meaningful data to it, this is a latent bug: if any test writes to the box, subsequent tests will see that data. The `late` keyword on `box` in `chapter_auto_save_test.dart` is correct (creates fresh boxes per test), but the editor widget tests share this static box.
+
+**Fix:** Make the box per-instance rather than static:
 ```dart
-String? validateChapterTitle(String value) {
-  if (value.trim().isEmpty) return '章节标题不能为空';
-  if (value.trim().length > 100) return '章节标题不能超过100个字符';
-  return null;
+class _NoOpChapterRepository extends ChapterRepository {
+  _NoOpChapterRepository() : super(_InMemoryTestBox());
 }
 ```
 
-### IN-03: EditorWithSidebar._getMenuPosition uses hardcoded pixel values for context menu positioning
+### IN-03: EditorWithSidebar exceeds 800-line project standard
 
-**File:** `lib/features/manuscript/presentation/editor_with_sidebar.dart:700-712`
-**Issue:** The context menu position is hardcoded with `left: 260, top: 200` pixels. This does not adapt to different screen sizes or the actual chapter row position. The `findRenderObject()` call gets the editor widget's render box, not the chapter row's, so the position calculation is disconnected from the actual chapter row location.
-**Fix:** Pass a `GlobalKey` to each chapter row and use its `RenderBox` for positioning.
+**File:** `lib/features/manuscript/presentation/editor_with_sidebar.dart`
+**Issue:** At 846 lines, this file exceeds the project's 800-line maximum stated in `.claude/rules/03-flutter-standards.md`. The recommended size is 200-400 lines. The file mixes editor management, chapter operations, keyboard shortcuts, and helper utilities in a single widget.
 
-### IN-04: ChapterNotifier._refreshWith uses firstOrNull fallback for manuscriptId
+**Fix:** Extract keyboard shortcut intents (lines 797-823) and `_SelectionLeadersLayerBuilder` (lines 829-845) into a separate file. Consider extracting chapter operations (_showCreateChapterDialog, _showRenameDialog, _handleContextMenuAction, etc.) into a separate mixin or controller class.
 
-**File:** `lib/features/manuscript/application/chapter_notifier.dart:199-208`
-**Issue:** When `manuscriptId` is not passed to `_refreshWith`, it falls back to the first chapter's `manuscriptId`. If the notifier manages chapters from multiple manuscripts, this could load the wrong manuscript's chapters.
-**Fix:** Always pass manuscriptId explicitly or validate the fallback matches the current context.
+### IN-04: Chapter.wordCount getter uses non-standard regex for Chinese word count
 
-### IN-05: TemplateInstantiationService.saveDraft uses dynamic type for createdCharacters
+**File:** `lib/features/manuscript/domain/chapter.dart:31-33`
+**Issue:** The `wordCount` getter counts all non-whitespace characters (`documentContent.replaceAll(RegExp(r'\s'), '').length`). For Chinese text this is reasonable (character count is the standard metric), but for mixed Chinese-English text it counts each English letter individually rather than counting English words. A 100-word English paragraph would count as ~500 "words". The comment says "counts characters excluding whitespace, which is the standard metric for Chinese text" which is accurate for pure Chinese, but the app may have mixed-language content.
 
-**File:** `lib/features/templates/application/template_instantiation_service.dart:56-64`
-**Issue:** `createdCharacters` is declared as `List<dynamic>` and populated with results from `characterCardRepository.add()`. It is then `.cast()` to the expected type. This loose typing hides potential type errors.
-**Fix:**
-```dart
-final createdCharacters = <CharacterCard>[];
-for (final character in draft.characters) {
-  if (!character.selected) continue;
-  createdCharacters.add(
-    await characterCardRepository.add(character.toCharacterCard()),
-  );
-}
-```
+**Fix:** Document this limitation clearly, or implement a mixed-mode counter that counts Chinese characters individually and English words by whitespace boundaries.
 
 ---
 
-_Reviewed: 2026-06-06_
+_Reviewed: 2026-06-06T22:30:00Z_
 _Reviewer: Claude (gsd-code-reviewer)_
-_Depth: deep_
+_Depth: standard_
