@@ -52,65 +52,85 @@
 ## Phase Details
 
 ### Phase 12: Token Audit Infrastructure
+
 **Goal**: 每次 AI 调用自动记录 token 用量数据，用户可以在统计页面查看消耗总览和分布
 **Depends on**: Phase 11 (v1.2 shipped)
 **Requirements**: AUDIT-01, AUDIT-02, AUDIT-03
 **Success Criteria** (what must be TRUE):
+
   1. 每次 AI API 调用（synthesis、editor rewrite、polish、free input、deviation detection）后，自动记录一条包含输入 token、输出 token、模型名称、操作类型、关联章节 ID、时间戳的审计记录
   2. Token 审计数据存储在独立 Hive box 中，Chapter 和 Manuscript 实体不受任何侵入
   3. 用户可以在写作统计页面查看 token 消耗总览：总成本、每章分布、按操作类型分布
+
 **Plans**: 3 plans
 
 Plans:
+**Wave 1**
+
 - [ ] 12-01-PLAN.md — Domain entities, Hive persistence, debatched write service, adapter onUsage callback, providers
+
+**Wave 2** *(blocked on Wave 1 completion)*
+
 - [ ] 12-02-PLAN.md — Wire 6 AI call sites, embed token summary in WritingStatsPage, register route
 - [ ] 12-03-PLAN.md — TokenAuditPage with per-chapter bar chart, operation-type pie chart, trend line chart
 
 ### Phase 13: Automation Test Harness
+
 **Goal**: 自动化测试脚本可以在没有真实 API Key 的情况下完整验证核心创作流程
 **Depends on**: Phase 12 (token audit infrastructure for test assertions)
 **Requirements**: TEST-01, TEST-02, TEST-03
 **Success Criteria** (what must be TRUE):
+
   1. Dart 自动化脚本可以无 UI 运行完整流程（创建文稿 → 创建100章 → 调用 AI 生成内容 → 导出），使用 FakeAdapter 无需真实 API
   2. Flutter 集成测试覆盖关键 UI 节点（文稿创建 → 章节管理 → AI 生成 → 编辑 → 导出）
   3. FakeAdapter 返回可复现的修仙题材文本，脚本可以断言章节内容、导出格式、token 审计记录
+
 **Plans**: TBD
 
 ### Phase 14: World-Building & First 30 Chapters
+
 **Goal**: 用户可以使用 MuseFlow 搭建完整修仙世界观并写出前30章，验证核心创作循环的可靠性
 **Depends on**: Phase 12, Phase 13
 **Requirements**: JOURNEY-01, JOURNEY-02, JOURNEY-03, JOURNEY-04, JOURNEY-05, JOURNEY-06
 **Success Criteria** (what must be TRUE):
+
   1. 用户可以用修仙模板创建完整世界观（角色卡、设定集、Skill 设定守护配置），知识库可供后续章节自动注入
   2. 用户可以输入灵感碎片（子弹笔记模式），AI 将碎片整理成逻辑通畅的故事段落
   3. 用户可以通过开篇引导生成第一章，并体验3种风格开篇（场景切入/人物切入/悬念切入）
   4. 用户可以创建并管理前30章（CRUD、排序、拆分、合并、复制、删除），多文稿架构稳定运行
   5. 用户可以逐章使用 AI 生成内容（每章~100字修仙内容），知识库自动注入和 Skill 设定守护连续工作
   6. 用户可以在编辑器中选中文本触发浮窗操作（语气改写、段落润色、自由输入编辑），验证反AI味效果
+
 **Plans**: TBD
 **UI hint**: yes
 
 ### Phase 15: Full Manuscript & Story Structure
+
 **Goal**: 用户可以完成100章修仙小说，验证故事结构管理、格式清洗和多格式导出在规模下的可靠性
 **Depends on**: Phase 14
 **Requirements**: JOURNEY-07, JOURNEY-08, JOURNEY-09, JOURNEY-10
 **Success Criteria** (what must be TRUE):
+
   1. 用户可以在100章尺度下验证故事结构（伏笔埋设 → 跨章跟踪 → 填坑解决），逻辑闭环检测和一致性守护有效
   2. 用户可以对完成的100章文稿执行格式清洗（标点修复、排版美化、Markdown 残留清理），输出干净可读
   3. 用户可以将100章文稿导出为三种格式（Markdown 带章节标题结构、TXT 纯文本、JSON 含完整元数据）
   4. 用户可以查看写作统计数据（字数统计、AI 使用率、写作速度），数据在100章规模下准确
+
 **Plans**: TBD
 **UI hint**: yes
 
 ### Phase 16: Analysis & Reports
+
 **Goal**: 用户和开发者可以查看全面的 token 成本分析、痛点报告、反AI味评估和知识库一致性分析
 **Depends on**: Phase 15
 **Requirements**: REPORT-01, REPORT-02, REPORT-03, REPORT-04
 **Success Criteria** (what must be TRUE):
+
   1. 生成 token 消耗分析报告：万字短篇实际成本 + 50万字长篇消耗推算 + 优化建议
   2. 生成用户痛点报告：功能缺陷列表 + 体验摩擦点 + 缺失需求建议，按严重程度分类
   3. 生成反AI味效果评估：盲读测试结果，人判断选取段落是否为 AI 生成
   4. 生成知识库一致性衰减分析：100章后角色卡和设定集与实际内容的一致性对比
+
 **Plans**: TBD
 
 ## Progress
