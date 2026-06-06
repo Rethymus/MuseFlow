@@ -34,6 +34,11 @@ class WritingStatsPage extends ConsumerWidget {
             icon: const Icon(Icons.article_outlined),
             label: const Text('当前作品'),
           ),
+          TextButton.icon(
+            onPressed: () => context.go(AppConstants.statsTokens),
+            icon: const Icon(Icons.token_outlined),
+            label: const Text('Token 消耗'),
+          ),
         ],
       ),
       body: statsAsync.when(
@@ -98,7 +103,93 @@ class _StatsContent extends StatelessWidget {
           ),
         ),
         AchievementBadgeSection(debugBadges: useDebugBadges ? const [] : null),
+        const SizedBox(height: 24),
+        const Divider(),
+        const SizedBox(height: 16),
+        const _TokenSummarySection(),
       ],
+    );
+  }
+}
+
+class _TokenSummarySection extends ConsumerWidget {
+  const _TokenSummarySection();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final tokenAuditAsync = ref.watch(tokenAuditNotifierProvider);
+
+    return tokenAuditAsync.when(
+      loading: () => const SizedBox.shrink(),
+      error: (_, __) => const SizedBox.shrink(),
+      data: (snapshot) {
+        if (snapshot.totalCalls == 0) {
+          return const Card(
+            child: Padding(
+              padding: EdgeInsets.all(20),
+              child: Text('开始使用 AI 功能后，这里会出现 Token 消耗统计。'),
+            ),
+          );
+        }
+
+        // Simple number formatting with commas
+        String formatNumber(int number) {
+          final str = number.toString();
+          final buffer = StringBuffer();
+          var count = 0;
+          for (var i = str.length - 1; i >= 0; i--) {
+            if (count == 3) {
+              buffer.write(',');
+              count = 0;
+            }
+            buffer.write(str[i]);
+            count++;
+          }
+          return buffer.toString().split('').reversed.join();
+        }
+
+        return InkWell(
+          onTap: () => context.go(AppConstants.statsTokens),
+          borderRadius: BorderRadius.circular(12),
+          child: LayoutBuilder(
+            builder: (context, constraints) {
+              final cardWidth = constraints.maxWidth < 720
+                  ? constraints.maxWidth
+                  : (constraints.maxWidth - 24) / 2;
+              return Wrap(
+                spacing: 12,
+                runSpacing: 12,
+                children: [
+                  SizedBox(
+                    width: cardWidth,
+                    child: StatsSummaryCard(
+                      icon: Icons.arrow_downward_outlined,
+                      title: '输入 Token',
+                      value: formatNumber(snapshot.totalInputTokens),
+                    ),
+                  ),
+                  SizedBox(
+                    width: cardWidth,
+                    child: StatsSummaryCard(
+                      icon: Icons.arrow_upward_outlined,
+                      title: '输出 Token',
+                      value: formatNumber(snapshot.totalOutputTokens),
+                    ),
+                  ),
+                  SizedBox(
+                    width: cardWidth,
+                    child: StatsSummaryCard(
+                      icon: Icons.swap_calls_outlined,
+                      title: 'API 调用次数',
+                      value: formatNumber(snapshot.totalCalls),
+                    ),
+                  ),
+                ],
+              );
+            },
+          ),
+        );
+      },
     );
   }
 }

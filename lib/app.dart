@@ -180,6 +180,12 @@ class MuseFlowApp extends ConsumerWidget {
                       path: 'project',
                       builder: (context, state) => const ProjectStatsPage(),
                     ),
+                    GoRoute(
+                      path: 'tokens',
+                      builder: (context, state) => const Scaffold(
+                        body: Center(child: Text('Token Audit Page - Coming in Plan 03')),
+                      ),
+                    ),
                   ],
                 ),
               ],

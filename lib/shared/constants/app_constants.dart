@@ -33,6 +33,7 @@ abstract class AppConstants {
   static const String storyStructure = '/story-structure';
   static const String stats = '/stats';
   static const String statsProject = '/stats/project';
+  static const String statsTokens = '/stats/tokens';
   static const String onboarding = '/onboarding';
 
   // --- Manuscript routes ---
