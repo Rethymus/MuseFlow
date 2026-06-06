@@ -73,7 +73,7 @@ class _EditorWithSidebarState extends ConsumerState<EditorWithSidebar>
   @override
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
-    _forceSaveAndCleanup();
+    _disposeEditorOnly();
     super.dispose();
   }
 
@@ -229,14 +229,6 @@ class _EditorWithSidebarState extends ConsumerState<EditorWithSidebar>
     _autoSave?.onDocumentChanged(_currentChapterId!, markdown);
   }
 
-  /// Forces a synchronous save of pending changes.
-  void _forceSaveSync() {
-    if (_editor == null || _currentChapterId == null) return;
-    final markdown = serializeDocumentToMarkdown(_editor!.document);
-    _autoSave?.onDocumentChanged(_currentChapterId!, markdown);
-    _autoSave?.forceSave();
-  }
-
   /// Forces an async save of pending changes.
   Future<void> _forceSaveAsync() async {
     if (_editor == null || _currentChapterId == null) return;
@@ -269,14 +261,12 @@ class _EditorWithSidebarState extends ConsumerState<EditorWithSidebar>
     }
   }
 
-  /// Combined force-save and cleanup for dispose.
+  /// Cleanup-only disposal path.
   ///
-  /// Per SC-4: Uses [_forceSaveSync] which calls [ChapterAutoSave.forceSave]
-  /// without awaiting. The persistence guarantee comes from explicit awaited
-  /// [forceSave] calls in [_switchChapter] and [_navigateBack], not from
-  /// dispose. [ChapterAutoSave.dispose] no longer performs unawaited flush.
-  void _forceSaveAndCleanup() {
-    _forceSaveSync();
+  /// Synchronous widget disposal cannot await [ChapterAutoSave.forceSave]. All
+  /// controllable exits (chapter switch, settings, and back navigation) call
+  /// [_forceSaveAsync] before cleanup; dispose only releases editor resources.
+  void _disposeEditorOnly() {
     if (_editListener != null && _editor != null) {
       _editor!.removeListener(_editListener!);
     }
@@ -334,25 +324,6 @@ class _EditorWithSidebarState extends ConsumerState<EditorWithSidebar>
               updatedAt: now,
             ),
           );
-    });
-  }
-
-  /// Shows the rename chapter dialog for the current chapter.
-  void _showRenameDialog() {
-    final chapters = ref.read(chapterNotifierProvider).asData?.value ?? [];
-    final currentChapter = chapters
-        .where((c) => c.id == _currentChapterId)
-        .firstOrNull;
-    if (currentChapter == null) return;
-
-    showDialog<String>(
-      context: context,
-      builder: (_) => ChapterRenameDialog(currentTitle: currentChapter.title),
-    ).then((newTitle) {
-      if (newTitle == null || newTitle.isEmpty) return;
-      ref
-          .read(chapterNotifierProvider.notifier)
-          .save(currentChapter.copyWith(title: newTitle));
     });
   }
 
@@ -563,7 +534,8 @@ class _EditorWithSidebarState extends ConsumerState<EditorWithSidebar>
           ),
           _QuickInsertIntent: CallbackAction<_QuickInsertIntent>(
             onInvoke: (_) {
-              // Quick insert not available in manuscript editor yet
+              // Quick insert not available in manuscript editor yet.
+              return null;
             },
           ),
         },
