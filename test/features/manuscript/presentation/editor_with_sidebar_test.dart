@@ -266,6 +266,12 @@ void main() {
 /// A no-op ChapterAutoSave for testing.
 class _NoOpAutoSave extends ChapterAutoSave {
   _NoOpAutoSave() : super(_NoOpChapterRepository());
+
+  @override
+  void onDocumentChanged(String chapterId, String markdown) {}
+
+  @override
+  Future<void> forceSave() async {}
 }
 
 class _RecordingAutoSave extends _NoOpAutoSave {

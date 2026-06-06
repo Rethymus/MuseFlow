@@ -101,15 +101,13 @@ void main() {
     await tester.pumpWidget(
       ProviderScope(
         overrides: [manuscriptNotifierProvider.overrideWith(() => notifier)],
-        child: const MaterialApp(home: ManuscriptCreateDialog()),
+        child: const MaterialApp(
+          home: ManuscriptCreateDialog(initialCustomGenre: true),
+        ),
       ),
     );
 
     await tester.enterText(find.byType(TextField).first, '有效标题');
-    await tester.tap(find.byType(DropdownButtonFormField<String>));
-    await tester.pumpAndSettle();
-    await tester.tap(find.text('自定义').last);
-    await tester.pumpAndSettle();
 
     await tester.tap(find.widgetWithText(FilledButton, '创建'));
     await tester.pump();
@@ -141,7 +139,7 @@ void main() {
     await tester.tap(find.widgetWithText(FilledButton, '保存'));
     await tester.pump();
 
-    expect(find.text('标题不能为空'), findsOneWidget);
+    expect(find.text('标题不能为空'), findsWidgets);
     expect(notifier.saved, isEmpty);
 
     await tester.enterText(find.byType(TextField).first, '长' * 101);
@@ -153,7 +151,10 @@ void main() {
   });
 
   testWidgets('settings page bounds custom genre input', (tester) async {
-    final notifier = _RecordingManuscriptNotifier(populated: true);
+    final notifier = _RecordingManuscriptNotifier(
+      populated: true,
+      customGenre: true,
+    );
 
     await tester.pumpWidget(
       ProviderScope(
@@ -165,16 +166,13 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    await tester.tap(find.byType(DropdownButtonFormField<String>));
-    await tester.pumpAndSettle();
-    await tester.tap(find.text('自定义').last);
-    await tester.pumpAndSettle();
-
+    await tester.enterText(find.byType(TextField).at(1), '');
     await tester.tap(find.widgetWithText(FilledButton, '保存'));
     await tester.pump();
-    expect(find.text('请输入自定义类型'), findsOneWidget);
+    expect(find.text('请输入自定义类型'), findsWidgets);
 
     await tester.enterText(find.byType(TextField).at(1), '类' * 21);
+    await tester.ensureVisible(find.widgetWithText(FilledButton, '保存'));
     await tester.tap(find.widgetWithText(FilledButton, '保存'));
     await tester.pump();
 
@@ -185,9 +183,10 @@ void main() {
 
 class _RecordingManuscriptNotifier extends AsyncNotifier<List<Manuscript>>
     implements ManuscriptNotifier {
-  _RecordingManuscriptNotifier({this.populated = false});
+  _RecordingManuscriptNotifier({this.populated = false, this.customGenre = false});
 
   final bool populated;
+  final bool customGenre;
   final List<Manuscript> created = [];
   final List<Manuscript> saved = [];
 
@@ -199,7 +198,7 @@ class _RecordingManuscriptNotifier extends AsyncNotifier<List<Manuscript>>
       Manuscript(
         id: 'm1',
         title: '测试小说',
-        genre: '玄幻',
+        genre: customGenre ? '自定义类型' : '玄幻',
         status: '写作中',
         targetWordCount: 50000,
         coverLetter: '测',

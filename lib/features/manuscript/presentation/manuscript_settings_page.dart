@@ -112,17 +112,14 @@ class _ManuscriptSettingsPageState
                       counterText: '',
                     ),
                     maxLength: _manuscriptTitleMaxLength,
-                    inputFormatters: [
-                      LengthLimitingTextInputFormatter(
-                        _manuscriptTitleMaxLength,
-                      ),
-                    ],
+                    maxLengthEnforcement: MaxLengthEnforcement.none,
                     onChanged: (_) => _clearTitleError(),
                   ),
                   const SizedBox(height: 20),
 
                   // Genre
                   DropdownButtonFormField<String>(
+                    key: const Key('manuscript-settings-genre-dropdown'),
                     initialValue: _isCustomGenre ? '自定义' : _selectedGenre,
                     decoration: const InputDecoration(
                       labelText: '类型',
@@ -157,9 +154,7 @@ class _ManuscriptSettingsPageState
                         counterText: '',
                       ),
                       maxLength: _customGenreMaxLength,
-                      inputFormatters: [
-                        LengthLimitingTextInputFormatter(_customGenreMaxLength),
-                      ],
+                      maxLengthEnforcement: MaxLengthEnforcement.none,
                       onChanged: (_) => _clearGenreError(),
                     ),
                   ],

@@ -15,7 +15,12 @@ const _customGenreMaxLength = 20;
 /// dropdown populated from [ManuscriptGenre.presets]. On confirm,
 /// creates the manuscript via [ManuscriptNotifier.create] and dismisses.
 class ManuscriptCreateDialog extends ConsumerStatefulWidget {
-  const ManuscriptCreateDialog({super.key});
+  const ManuscriptCreateDialog({
+    super.key,
+    this.initialCustomGenre = false,
+  });
+
+  final bool initialCustomGenre;
 
   @override
   ConsumerState<ManuscriptCreateDialog> createState() =>
@@ -31,6 +36,15 @@ class _ManuscriptCreateDialogState
   bool _isCreating = false;
   String? _titleError;
   String? _genreError;
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.initialCustomGenre) {
+      _isCustomGenre = true;
+      _selectedGenre = '自定义';
+    }
+  }
 
   @override
   void dispose() {
@@ -58,15 +72,14 @@ class _ManuscriptCreateDialogState
                 counterText: '',
               ),
               maxLength: _manuscriptTitleMaxLength,
-              inputFormatters: [
-                LengthLimitingTextInputFormatter(_manuscriptTitleMaxLength),
-              ],
+              maxLengthEnforcement: MaxLengthEnforcement.none,
               autofocus: true,
               onChanged: (_) => _clearTitleError(),
               onSubmitted: (_) => _handleCreate(),
             ),
             const SizedBox(height: 16),
             DropdownButtonFormField<String>(
+              key: const Key('manuscript-create-genre-dropdown'),
               initialValue: _selectedGenre,
               decoration: const InputDecoration(labelText: '类型'),
               items: [
@@ -100,9 +113,7 @@ class _ManuscriptCreateDialogState
                   counterText: '',
                 ),
                 maxLength: _customGenreMaxLength,
-                inputFormatters: [
-                  LengthLimitingTextInputFormatter(_customGenreMaxLength),
-                ],
+                maxLengthEnforcement: MaxLengthEnforcement.none,
                 onChanged: (_) => _clearGenreError(),
               ),
             ],
