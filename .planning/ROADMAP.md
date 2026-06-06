@@ -4,7 +4,7 @@
 
 - ✅ **v1.0 MVP** — Phases 0–6 (shipped 2026-06-04)
 - ✅ **v1.1 创作体验升级** — Phases 7–10 (shipped 2026-06-05)
-- 📋 **v1.2 多文稿架构** — Phase 11 (planning)
+- 🚧 **v1.2 多文稿架构** — Phase 11 (in progress)
 
 ## Phases
 
