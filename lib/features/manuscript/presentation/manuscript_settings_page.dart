@@ -1,10 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:museflow/core/presentation/providers.dart';
 import 'package:museflow/features/manuscript/application/manuscript_notifier.dart';
 import 'package:museflow/features/manuscript/domain/manuscript.dart';
 import 'package:museflow/features/manuscript/domain/manuscript_genre.dart';
+
+const _manuscriptTitleMaxLength = 100;
+const _customGenreMaxLength = 20;
 
 /// Manuscript metadata editing page.
 ///
@@ -33,6 +37,8 @@ class _ManuscriptSettingsPageState
   bool _isLoaded = false;
   bool _isSaving = false;
   Manuscript? _loadedManuscript;
+  String? _titleError;
+  String? _genreError;
 
   @override
   void dispose() {
@@ -65,8 +71,7 @@ class _ManuscriptSettingsPageState
               Text('加载失败: $error'),
               const SizedBox(height: 8),
               ElevatedButton(
-                onPressed: () =>
-                    ref.invalidate(manuscriptNotifierProvider),
+                onPressed: () => ref.invalidate(manuscriptNotifierProvider),
                 child: const Text('重试'),
               ),
             ],
@@ -74,9 +79,9 @@ class _ManuscriptSettingsPageState
         ),
         data: (manuscripts) {
           if (!_isLoaded) {
-            final manuscript = manuscripts.where(
-              (m) => m.id == widget.manuscriptId,
-            ).firstOrNull;
+            final manuscript = manuscripts
+                .where((m) => m.id == widget.manuscriptId)
+                .firstOrNull;
 
             if (manuscript != null) {
               _loadManuscript(manuscript);
@@ -100,31 +105,35 @@ class _ManuscriptSettingsPageState
                   // Title
                   TextField(
                     controller: _titleController,
-                    decoration: const InputDecoration(
+                    decoration: InputDecoration(
                       labelText: '标题',
-                      border: OutlineInputBorder(),
+                      border: const OutlineInputBorder(),
+                      errorText: _titleError,
+                      counterText: '',
                     ),
+                    maxLength: _manuscriptTitleMaxLength,
+                    inputFormatters: [
+                      LengthLimitingTextInputFormatter(
+                        _manuscriptTitleMaxLength,
+                      ),
+                    ],
+                    onChanged: (_) => _clearTitleError(),
                   ),
                   const SizedBox(height: 20),
 
                   // Genre
                   DropdownButtonFormField<String>(
-                    value: _isCustomGenre ? '自定义' : _selectedGenre,
+                    initialValue: _isCustomGenre ? '自定义' : _selectedGenre,
                     decoration: const InputDecoration(
                       labelText: '类型',
                       border: OutlineInputBorder(),
                     ),
                     items: [
                       ...ManuscriptGenre.presets.map(
-                        (genre) => DropdownMenuItem(
-                          value: genre,
-                          child: Text(genre),
-                        ),
+                        (genre) =>
+                            DropdownMenuItem(value: genre, child: Text(genre)),
                       ),
-                      const DropdownMenuItem(
-                        value: '自定义',
-                        child: Text('自定义'),
-                      ),
+                      const DropdownMenuItem(value: '自定义', child: Text('自定义')),
                     ],
                     onChanged: (value) {
                       if (value == '自定义') {
@@ -141,10 +150,17 @@ class _ManuscriptSettingsPageState
                     const SizedBox(height: 12),
                     TextField(
                       controller: _customGenreController,
-                      decoration: const InputDecoration(
+                      decoration: InputDecoration(
                         labelText: '自定义类型',
-                        border: OutlineInputBorder(),
+                        border: const OutlineInputBorder(),
+                        errorText: _genreError,
+                        counterText: '',
                       ),
+                      maxLength: _customGenreMaxLength,
+                      inputFormatters: [
+                        LengthLimitingTextInputFormatter(_customGenreMaxLength),
+                      ],
+                      onChanged: (_) => _clearGenreError(),
                     ),
                   ],
                   const SizedBox(height: 20),
@@ -183,9 +199,7 @@ class _ManuscriptSettingsPageState
                           ? const SizedBox(
                               width: 16,
                               height: 16,
-                              child: CircularProgressIndicator(
-                                strokeWidth: 2,
-                              ),
+                              child: CircularProgressIndicator(strokeWidth: 2),
                             )
                           : const Text('保存'),
                     ),
@@ -217,25 +231,57 @@ class _ManuscriptSettingsPageState
     _isLoaded = true;
   }
 
+  void _clearTitleError() {
+    if (_titleError != null) {
+      setState(() => _titleError = null);
+    }
+  }
+
+  void _clearGenreError() {
+    if (_genreError != null) {
+      setState(() => _genreError = null);
+    }
+  }
+
   Future<void> _handleSave() async {
     if (_loadedManuscript == null) return;
 
     final title = _titleController.text.trim();
     if (title.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('标题不能为空')),
-      );
+      setState(() => _titleError = '标题不能为空');
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('标题不能为空')));
+      return;
+    }
+    if (title.length > _manuscriptTitleMaxLength) {
+      setState(() => _titleError = '标题不能超过100个字符');
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('标题不能超过100个字符')));
       return;
     }
 
     final genre = _isCustomGenre
         ? _customGenreController.text.trim()
         : _selectedGenre;
-    if (genre.isEmpty) return;
+    if (genre.isEmpty) {
+      setState(() => _genreError = '请输入自定义类型');
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('请输入自定义类型')));
+      return;
+    }
+    if (_isCustomGenre && genre.length > _customGenreMaxLength) {
+      setState(() => _genreError = '类型不能超过20个字符');
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('类型不能超过20个字符')));
+      return;
+    }
 
-    final targetWordCount = int.tryParse(
-          _targetWordCountController.text.trim(),
-        ) ??
+    final targetWordCount =
+        int.tryParse(_targetWordCountController.text.trim()) ??
         _loadedManuscript!.targetWordCount;
 
     setState(() => _isSaving = true);
@@ -252,17 +298,17 @@ class _ManuscriptSettingsPageState
       await ref.read(manuscriptNotifierProvider.notifier).save(updated);
 
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('保存成功')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text('保存成功')));
         setState(() => _isSaving = false);
       }
     } catch (e) {
       if (mounted) {
         setState(() => _isSaving = false);
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('保存失败: $e')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('保存失败: $e')));
       }
     }
   }

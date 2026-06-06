@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:museflow/core/presentation/providers.dart';
 import 'package:museflow/features/manuscript/application/manuscript_notifier.dart';
 import 'package:museflow/features/manuscript/domain/manuscript.dart';
 import 'package:museflow/features/manuscript/domain/manuscript_genre.dart';
+
+const _manuscriptTitleMaxLength = 100;
+const _customGenreMaxLength = 20;
 
 /// Quick-create dialog for a new manuscript.
 ///
@@ -26,6 +30,7 @@ class _ManuscriptCreateDialogState
   bool _isCustomGenre = false;
   bool _isCreating = false;
   String? _titleError;
+  String? _genreError;
 
   @override
   void dispose() {
@@ -50,28 +55,25 @@ class _ManuscriptCreateDialogState
                 labelText: '标题',
                 hintText: '输入文稿标题',
                 errorText: _titleError,
+                counterText: '',
               ),
+              maxLength: _manuscriptTitleMaxLength,
+              inputFormatters: [
+                LengthLimitingTextInputFormatter(_manuscriptTitleMaxLength),
+              ],
               autofocus: true,
               onChanged: (_) => _clearTitleError(),
               onSubmitted: (_) => _handleCreate(),
             ),
             const SizedBox(height: 16),
             DropdownButtonFormField<String>(
-              value: _selectedGenre,
-              decoration: const InputDecoration(
-                labelText: '类型',
-              ),
+              initialValue: _selectedGenre,
+              decoration: const InputDecoration(labelText: '类型'),
               items: [
                 ...ManuscriptGenre.presets.map(
-                  (genre) => DropdownMenuItem(
-                    value: genre,
-                    child: Text(genre),
-                  ),
+                  (genre) => DropdownMenuItem(value: genre, child: Text(genre)),
                 ),
-                const DropdownMenuItem(
-                  value: '自定义',
-                  child: Text('自定义'),
-                ),
+                const DropdownMenuItem(value: '自定义', child: Text('自定义')),
               ],
               onChanged: (value) {
                 if (value == '自定义') {
@@ -91,10 +93,17 @@ class _ManuscriptCreateDialogState
               const SizedBox(height: 12),
               TextField(
                 controller: _customGenreController,
-                decoration: const InputDecoration(
+                decoration: InputDecoration(
                   labelText: '自定义类型',
                   hintText: '输入自定义类型名称',
+                  errorText: _genreError,
+                  counterText: '',
                 ),
+                maxLength: _customGenreMaxLength,
+                inputFormatters: [
+                  LengthLimitingTextInputFormatter(_customGenreMaxLength),
+                ],
+                onChanged: (_) => _clearGenreError(),
               ),
             ],
           ],
@@ -125,11 +134,21 @@ class _ManuscriptCreateDialogState
     }
   }
 
+  void _clearGenreError() {
+    if (_genreError != null) {
+      setState(() => _genreError = null);
+    }
+  }
+
   Future<void> _handleCreate() async {
     final title = _titleController.text.trim();
 
     if (title.isEmpty) {
       setState(() => _titleError = '请输入标题');
+      return;
+    }
+    if (title.length > _manuscriptTitleMaxLength) {
+      setState(() => _titleError = '标题不能超过100个字符');
       return;
     }
 
@@ -138,6 +157,11 @@ class _ManuscriptCreateDialogState
         : _selectedGenre;
 
     if (genre.isEmpty) {
+      setState(() => _genreError = '请输入自定义类型');
+      return;
+    }
+    if (_isCustomGenre && genre.length > _customGenreMaxLength) {
+      setState(() => _genreError = '类型不能超过20个字符');
       return;
     }
 
@@ -166,9 +190,9 @@ class _ManuscriptCreateDialogState
     } catch (e) {
       if (mounted) {
         setState(() => _isCreating = false);
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('创建失败: $e')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('创建失败: $e')));
       }
     }
   }
