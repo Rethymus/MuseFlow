@@ -66,32 +66,32 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| AUDIT-01 | — | Pending |
-| AUDIT-02 | — | Pending |
-| AUDIT-03 | — | Pending |
-| TEST-01 | — | Pending |
-| TEST-02 | — | Pending |
-| TEST-03 | — | Pending |
-| JOURNEY-01 | — | Pending |
-| JOURNEY-02 | — | Pending |
-| JOURNEY-03 | — | Pending |
-| JOURNEY-04 | — | Pending |
-| JOURNEY-05 | — | Pending |
-| JOURNEY-06 | — | Pending |
-| JOURNEY-07 | — | Pending |
-| JOURNEY-08 | — | Pending |
-| JOURNEY-09 | — | Pending |
-| JOURNEY-10 | — | Pending |
-| REPORT-01 | — | Pending |
-| REPORT-02 | — | Pending |
-| REPORT-03 | — | Pending |
-| REPORT-04 | — | Pending |
+| AUDIT-01 | Phase 12 | Pending |
+| AUDIT-02 | Phase 12 | Pending |
+| AUDIT-03 | Phase 12 | Pending |
+| TEST-01 | Phase 13 | Pending |
+| TEST-02 | Phase 13 | Pending |
+| TEST-03 | Phase 13 | Pending |
+| JOURNEY-01 | Phase 14 | Pending |
+| JOURNEY-02 | Phase 14 | Pending |
+| JOURNEY-03 | Phase 14 | Pending |
+| JOURNEY-04 | Phase 14 | Pending |
+| JOURNEY-05 | Phase 14 | Pending |
+| JOURNEY-06 | Phase 14 | Pending |
+| JOURNEY-07 | Phase 15 | Pending |
+| JOURNEY-08 | Phase 15 | Pending |
+| JOURNEY-09 | Phase 15 | Pending |
+| JOURNEY-10 | Phase 15 | Pending |
+| REPORT-01 | Phase 16 | Pending |
+| REPORT-02 | Phase 16 | Pending |
+| REPORT-03 | Phase 16 | Pending |
+| REPORT-04 | Phase 16 | Pending |
 
 **Coverage:**
 - v1.3 requirements: 20 total
-- Mapped to phases: 0
-- Unmapped: 20 ⚠️
+- Mapped to phases: 20
+- Unmapped: 0
 
 ---
 *Requirements defined: 2026-06-06*
-*Last updated: 2026-06-06 after initial definition*
+*Last updated: 2026-06-06 after roadmap creation*
