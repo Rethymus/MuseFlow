@@ -11,7 +11,7 @@ Requirements for 用户视角全流程验证 — 百章修仙小说 milestone. E
 
 - [x] **AUDIT-01**: 每次 AI API 调用记录 token 用量（输入 token、输出 token、模型名称、操作类型、关联章节ID、时间戳）
 - [x] **AUDIT-02**: Token 审计数据持久化到独立 Hive box（TokenAuditRecord 实体），不侵入现有 Chapter/Manuscript domain 层
-- [ ] **AUDIT-03**: 可查看 token 消耗总览页面（总成本、每章分布、按操作类型分布）
+- [x] **AUDIT-03**: 可查看 token 消耗总览页面（总成本、每章分布、按操作类型分布）
 
 ### 自动化测试
 
@@ -68,7 +68,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 |-------------|-------|--------|
 | AUDIT-01 | Phase 12 | Complete |
 | AUDIT-02 | Phase 12 | Complete |
-| AUDIT-03 | Phase 12 | Pending |
+| AUDIT-03 | Phase 12 | Complete |
 | TEST-01 | Phase 13 | Pending |
 | TEST-02 | Phase 13 | Pending |
 | TEST-03 | Phase 13 | Pending |

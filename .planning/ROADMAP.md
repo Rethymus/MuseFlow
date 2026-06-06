@@ -72,7 +72,7 @@ Plans:
 **Wave 2** *(blocked on Wave 1 completion)*
 
 - [ ] 12-02-PLAN.md — Wire 6 AI call sites, embed token summary in WritingStatsPage, register route
-- [ ] 12-03-PLAN.md — TokenAuditPage with per-chapter bar chart, operation-type pie chart, trend line chart
+- [x] 12-03-PLAN.md — TokenAuditPage with per-chapter bar chart, operation-type pie chart, trend line chart
 
 ### Phase 13: Automation Test Harness
 
@@ -152,7 +152,7 @@ Phases execute in numeric order: 12 → 13 → 14 → 15 → 16
 | 9. 写作数据统计 | v1.1 | 5/5 | Complete | 2026-06-05 |
 | 10. 故事弧可视化 | v1.1 | 4/4 | Complete | 2026-06-05 |
 | 11. 文稿库与章节管理 | v1.2 | 6/6 | Complete | 2026-06-06 |
-| 12. Token Audit Infrastructure | v1.3 | 1/3 | In Progress|  |
+| 12. Token Audit Infrastructure | v1.3 | 2/3 | In Progress|  |
 | 13. Automation Test Harness | v1.3 | 0/? | Not started | - |
 | 14. World-Building & First 30 Chapters | v1.3 | 0/? | Not started | - |
 | 15. Full Manuscript & Story Structure | v1.3 | 0/? | Not started | - |
