@@ -137,6 +137,11 @@ class ChapterNotifier extends AsyncNotifier<List<Chapter>> {
     final existing = repository.getById(chapterId);
     if (existing == null) return;
 
+    // Preserve the original sortOrder while updating content. The subsequent
+    // shift uses that pre-update position so the new chapter can be inserted
+    // immediately after the original without depending on update side effects.
+    final originalSortOrder = existing.sortOrder;
+
     // Update original with beforeContent
     await repository.update(
       existing.copyWith(documentContent: beforeContent),
@@ -162,7 +167,7 @@ class ChapterNotifier extends AsyncNotifier<List<Chapter>> {
         id: '',
         manuscriptId: existing.manuscriptId,
         title: '${existing.title} (续)',
-        sortOrder: existing.sortOrder + 1,
+        sortOrder: originalSortOrder + 1,
         documentContent: afterContent,
         createdAt: now,
         updatedAt: now,
