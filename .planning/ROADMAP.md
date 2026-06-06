@@ -210,4 +210,4 @@ Note: Phases 9 and 10 are independent of each other (both depend only on v1.0). 
 | 8. 开篇引导 | v1.1 | 5/5 | Complete | 2026-06-04 |
 | 9. 写作数据统计 | v1.1 | 5/5 | Complete   | 2026-06-05 |
 | 10. 故事弧可视化 | v1.1 | 4/4 | Complete    | 2026-06-05 |
-| 11. 文稿库与章节管理 | v1.2 | 5/5 | Complete   | 2026-06-06 |
+| 11. 文稿库与章节管理 | v1.2 | 6/6 | Complete   | 2026-06-06 |
