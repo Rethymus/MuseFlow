@@ -59,10 +59,12 @@ class ChapterAutoSave {
 
   /// Disposes the auto-save service.
   ///
-  /// Cancels the debounce timer and flushes any pending changes.
+  /// Per SC-4: Cancels the debounce timer and releases resources only.
+  /// Does NOT perform an unawaited async flush -- persistence guarantee
+  /// comes from explicit awaited [forceSave] calls before transitions
+  /// (chapter switch, back navigation, etc.), not from dispose.
   void dispose() {
     _debounceTimer?.cancel();
     _debounceTimer = null;
-    unawaited(_flush());
   }
 }

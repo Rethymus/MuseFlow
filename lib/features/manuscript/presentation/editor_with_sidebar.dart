@@ -82,10 +82,13 @@ class _EditorWithSidebarState extends ConsumerState<EditorWithSidebar>
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
-    // Force save on app pause or inactive (e.g. window unfocus)
+    // Per SC-4: Force save on app pause or inactive (e.g. window unfocus).
+    // Flutter does not await lifecycle callbacks, so this is a best-effort
+    // async save. Errors are caught and logged rather than causing an
+    // unhandled async exception.
     if (state == AppLifecycleState.paused ||
         state == AppLifecycleState.inactive) {
-      _forceSaveSync();
+      _forceSaveBestEffort();
     }
   }
 
@@ -250,7 +253,31 @@ class _EditorWithSidebarState extends ConsumerState<EditorWithSidebar>
     }
   }
 
+  /// Best-effort async save for lifecycle transitions.
+  ///
+  /// Per SC-4: Flutter does not await [didChangeAppLifecycleState] callbacks,
+  /// so persistence cannot be guaranteed here. This fires the save and catches
+  /// errors to prevent unhandled async exceptions.
+  void _forceSaveBestEffort() {
+    if (_editor == null || _currentChapterId == null) return;
+    final markdown = serializeDocumentToMarkdown(_editor!.document);
+    final autoSave = _autoSave;
+    if (autoSave != null) {
+      autoSave.onDocumentChanged(_currentChapterId!, markdown);
+      // ignore: avoid_catching_errors
+      autoSave.forceSave().catchError((_) {
+        // Best-effort: log but don't crash on lifecycle save failure
+        debugPrint('Warning: best-effort save failed during lifecycle transition');
+      });
+    }
+  }
+
   /// Combined force-save and cleanup for dispose.
+  ///
+  /// Per SC-4: Uses [_forceSaveSync] which calls [ChapterAutoSave.forceSave]
+  /// without awaiting. The persistence guarantee comes from explicit awaited
+  /// [forceSave] calls in [_switchChapter] and [_navigateBack], not from
+  /// dispose. [ChapterAutoSave.dispose] no longer performs unawaited flush.
   void _forceSaveAndCleanup() {
     _forceSaveSync();
     if (_editListener != null && _editor != null) {

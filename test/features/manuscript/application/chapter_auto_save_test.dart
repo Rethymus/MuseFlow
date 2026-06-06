@@ -130,11 +130,22 @@ void main() {
     // Verify content was persisted through the explicit forceSave
     expect(repository.getById('ch-1')!.documentContent, equals('dirty content'));
 
-    // Now mark dirty again and dispose -- this content should NOT be
-    // expected to persist because dispose cannot guarantee async completion
+    // Now dispose. After dispose, any pending dirty data should NOT
+    // be expected to persist because dispose only cancels timers.
     autoSave.onDocumentChanged('ch-1', 'post-save dirty');
+    autoSave.dispose();
 
-    // Replace autoSave to avoid double-dispose in tearDown
+    // Wait to verify no unawaited flush occurred
+    await Future<void>.delayed(const Duration(milliseconds: 200));
+
+    // Content should still be 'dirty content' (not 'post-save dirty')
+    // because dispose cancelled the debounce timer without flushing
+    expect(
+      repository.getById('ch-1')!.documentContent,
+      equals('dirty content'),
+    );
+
+    // Set to null so tearDown doesn't double-dispose
     autoSave = ChapterAutoSave(
       repository,
       debounceDuration: const Duration(milliseconds: 100),
