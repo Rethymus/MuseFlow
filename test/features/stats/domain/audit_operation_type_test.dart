@@ -7,6 +7,22 @@ void main() {
       expect(AuditOperationType.values.length, 8);
     });
 
+    test('should contain all expected operation types', () {
+      expect(
+        AuditOperationType.values.map((e) => e.name),
+        containsAll([
+          'synthesis',
+          'rewrite',
+          'polish',
+          'freeInput',
+          'skillGen',
+          'opening',
+          'deviationDetect',
+          'templateComplete',
+        ]),
+      );
+    });
+
     test('should have synthesis operation with organize group', () {
       expect(AuditOperationType.synthesis.label, '碎片整理');
       expect(AuditOperationType.synthesis.group, 'organize');
@@ -51,6 +67,18 @@ void main() {
       final groups = AuditOperationType.values.map((e) => e.group).toSet();
       expect(groups.length, 4);
       expect(groups, containsAll(['organize', 'edit', 'worldview', 'template']));
+    });
+
+    test('should map rewrite, polish, freeInput to edit group', () {
+      expect(AuditOperationType.rewrite.group, 'edit');
+      expect(AuditOperationType.polish.group, 'edit');
+      expect(AuditOperationType.freeInput.group, 'edit');
+    });
+
+    test('should map skillGen, opening, deviationDetect to worldview group', () {
+      expect(AuditOperationType.skillGen.group, 'worldview');
+      expect(AuditOperationType.opening.group, 'worldview');
+      expect(AuditOperationType.deviationDetect.group, 'worldview');
     });
 
     test('should have non-empty label for each operation type', () {
