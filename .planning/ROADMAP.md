@@ -43,7 +43,7 @@
 
 **Milestone Goal:** 代入核心用户视角，用 MuseFlow 真实写一篇100章修仙超短篇小说，在创作过程中走完所有功能、验证可靠性、发掘痛点。
 
-- [ ] **Phase 12: Token Audit Infrastructure** — 每次 AI 调用自动记录 token 用量，可查看消耗总览
+- [x] **Phase 12: Token Audit Infrastructure** — 每次 AI 调用自动记录 token 用量，可查看消耗总览 (completed 2026-06-06)
 - [ ] **Phase 13: Automation Test Harness** — FakeAdapter + 测试脚本，无需真实 API 即可验证核心流程
 - [ ] **Phase 14: World-Building & First 30 Chapters** — 修仙世界观搭建 + 碎片捕捉 + 开篇引导 + 前30章创作验证
 - [ ] **Phase 15: Full Manuscript & Story Structure** — 31-100章创作 + 故事结构验证 + 格式清洗 + 导出验证
@@ -71,7 +71,7 @@ Plans:
 
 **Wave 2** *(blocked on Wave 1 completion)*
 
-- [ ] 12-02-PLAN.md — Wire 6 AI call sites, embed token summary in WritingStatsPage, register route
+- [x] 12-02-PLAN.md — Wire 6 AI call sites, embed token summary in WritingStatsPage, register route
 - [x] 12-03-PLAN.md — TokenAuditPage with per-chapter bar chart, operation-type pie chart, trend line chart
 
 ### Phase 13: Automation Test Harness
@@ -152,7 +152,7 @@ Phases execute in numeric order: 12 → 13 → 14 → 15 → 16
 | 9. 写作数据统计 | v1.1 | 5/5 | Complete | 2026-06-05 |
 | 10. 故事弧可视化 | v1.1 | 4/4 | Complete | 2026-06-05 |
 | 11. 文稿库与章节管理 | v1.2 | 6/6 | Complete | 2026-06-06 |
-| 12. Token Audit Infrastructure | v1.3 | 2/3 | In Progress|  |
+| 12. Token Audit Infrastructure | v1.3 | 3/3 | Complete   | 2026-06-06 |
 | 13. Automation Test Harness | v1.3 | 0/? | Not started | - |
 | 14. World-Building & First 30 Chapters | v1.3 | 0/? | Not started | - |
 | 15. Full Manuscript & Story Structure | v1.3 | 0/? | Not started | - |
