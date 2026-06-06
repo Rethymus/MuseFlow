@@ -59,14 +59,14 @@ class Chapter {
   /// Creates a Chapter from a JSON map.
   factory Chapter.fromJson(Map<String, dynamic> json) {
     return Chapter(
-      id: json['id'] as String,
-      manuscriptId: json['manuscriptId'] as String,
-      title: json['title'] as String,
-      sortOrder: json['sortOrder'] as int,
-      status: json['status'] as String? ?? '草稿',
-      documentContent: json['documentContent'] as String? ?? '',
-      createdAt: DateTime.parse(json['createdAt'] as String),
-      updatedAt: DateTime.parse(json['updatedAt'] as String),
+      id: _requiredString(json, 'id'),
+      manuscriptId: _requiredString(json, 'manuscriptId'),
+      title: _requiredString(json, 'title'),
+      sortOrder: _requiredInt(json, 'sortOrder'),
+      status: _optionalString(json, 'status') ?? '草稿',
+      documentContent: _optionalString(json, 'documentContent') ?? '',
+      createdAt: _requiredDateTime(json, 'createdAt'),
+      updatedAt: _requiredDateTime(json, 'updatedAt'),
     );
   }
 
@@ -100,17 +100,45 @@ class Chapter {
 
   @override
   int get hashCode => Object.hash(
-        id,
-        manuscriptId,
-        title,
-        sortOrder,
-        status,
-        documentContent,
-        createdAt,
-        updatedAt,
-      );
+    id,
+    manuscriptId,
+    title,
+    sortOrder,
+    status,
+    documentContent,
+    createdAt,
+    updatedAt,
+  );
 
   @override
   String toString() =>
       'Chapter(id: $id, manuscriptId: $manuscriptId, title: $title, sortOrder: $sortOrder, status: $status)';
+}
+
+String _requiredString(Map<String, dynamic> json, String field) {
+  final value = json[field];
+  if (value is String) return value;
+  throw FormatException('Invalid Chapter JSON: "$field" must be a string');
+}
+
+String? _optionalString(Map<String, dynamic> json, String field) {
+  final value = json[field];
+  if (value == null) return null;
+  if (value is String) return value;
+  throw FormatException('Invalid Chapter JSON: "$field" must be a string');
+}
+
+int _requiredInt(Map<String, dynamic> json, String field) {
+  final value = json[field];
+  if (value is int) return value;
+  throw FormatException('Invalid Chapter JSON: "$field" must be an int');
+}
+
+DateTime _requiredDateTime(Map<String, dynamic> json, String field) {
+  final value = _requiredString(json, field);
+  final parsed = DateTime.tryParse(value);
+  if (parsed != null) return parsed;
+  throw FormatException(
+    'Invalid Chapter JSON: "$field" must be an ISO-8601 date',
+  );
 }

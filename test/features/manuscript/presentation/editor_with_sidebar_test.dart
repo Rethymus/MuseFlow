@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:go_router/go_router.dart';
 import 'package:hive_ce/hive.dart';
 import 'package:museflow/core/presentation/providers.dart';
-import 'package:museflow/features/editor/presentation/status_bar.dart';
 import 'package:museflow/features/manuscript/application/chapter_auto_save.dart';
 import 'package:museflow/features/manuscript/application/chapter_notifier.dart';
 import 'package:museflow/features/manuscript/application/manuscript_notifier.dart';
@@ -14,75 +14,69 @@ import 'package:museflow/features/manuscript/presentation/editor_with_sidebar.da
 
 void main() {
   group('EditorWithSidebar chapter loading (SC-2/SC-3)', () {
-    testWidgets(
-      'should call loadChapters(manuscriptId) during initialization',
-      (tester) async {
-        final fakeNotifier = _RecordingChapterNotifier();
+    testWidgets('should call loadChapters(manuscriptId) during initialization', (
+      tester,
+    ) async {
+      final fakeNotifier = _RecordingChapterNotifier();
 
-        await tester.pumpWidget(
-          ProviderScope(
-            overrides: [
-              manuscriptNotifierProvider.overrideWith(
-                () => _TestManuscriptNotifier(),
-              ),
-              chapterNotifierProvider.overrideWith(
-                () => fakeNotifier,
-              ),
-              chapterAutoSaveProvider
-                  .overrideWith((ref) async => _NoOpAutoSave()),
-            ],
-            child: const MaterialApp(
-              home: EditorWithSidebar(manuscriptId: 'm1'),
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            manuscriptNotifierProvider.overrideWith(
+              () => _TestManuscriptNotifier(),
             ),
-          ),
-        );
-
-        await tester.pump();
-        await tester.pump();
-        await tester.pump(const Duration(milliseconds: 100));
-
-        expect(
-          fakeNotifier.loadChaptersCalls,
-          contains('m1'),
-          reason:
-              'EditorWithSidebar should call loadChapters(widget.manuscriptId) during initialization',
-        );
-      },
-    );
-
-    testWidgets(
-      'should load first chapter into editor when chapters exist',
-      (tester) async {
-        // Uses a notifier that returns populated chapters from build().
-        // The synchronous fast-path in _loadInitialChapter reads chapters
-        // from the provider state and loads the first chapter.
-        await tester.pumpWidget(
-          ProviderScope(
-            overrides: [
-              manuscriptNotifierProvider.overrideWith(
-                () => _TestManuscriptNotifier(),
-              ),
-              chapterNotifierProvider.overrideWith(
-                () => _PreloadedChapterNotifier(),
-              ),
-              chapterAutoSaveProvider
-                  .overrideWith((ref) async => _NoOpAutoSave()),
-            ],
-            child: const MaterialApp(
-              home: EditorWithSidebar(manuscriptId: 'm1'),
+            chapterNotifierProvider.overrideWith(() => fakeNotifier),
+            chapterAutoSaveProvider.overrideWith(
+              (ref) async => _NoOpAutoSave(),
             ),
-          ),
-        );
+          ],
+          child: const MaterialApp(home: EditorWithSidebar(manuscriptId: 'm1')),
+        ),
+      );
 
-        await tester.pump();
-        await tester.pump();
-        await tester.pump(const Duration(milliseconds: 100));
+      await tester.pump();
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 100));
 
-        // Sidebar should show chapters from the notifier
-        expect(find.text('第一章'), findsOneWidget);
-        expect(find.text('第二章'), findsOneWidget);
-      },
-    );
+      expect(
+        fakeNotifier.loadChaptersCalls,
+        contains('m1'),
+        reason:
+            'EditorWithSidebar should call loadChapters(widget.manuscriptId) during initialization',
+      );
+    });
+
+    testWidgets('should load first chapter into editor when chapters exist', (
+      tester,
+    ) async {
+      // Uses a notifier that returns populated chapters from build().
+      // The synchronous fast-path in _loadInitialChapter reads chapters
+      // from the provider state and loads the first chapter.
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            manuscriptNotifierProvider.overrideWith(
+              () => _TestManuscriptNotifier(),
+            ),
+            chapterNotifierProvider.overrideWith(
+              () => _PreloadedChapterNotifier(),
+            ),
+            chapterAutoSaveProvider.overrideWith(
+              (ref) async => _NoOpAutoSave(),
+            ),
+          ],
+          child: const MaterialApp(home: EditorWithSidebar(manuscriptId: 'm1')),
+        ),
+      );
+
+      await tester.pump();
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 100));
+
+      // Sidebar should show chapters from the notifier
+      expect(find.text('第一章'), findsOneWidget);
+      expect(find.text('第二章'), findsOneWidget);
+    });
 
     testWidgets(
       'should await loadChapters and load first chapter when build starts empty',
@@ -95,11 +89,10 @@ void main() {
               manuscriptNotifierProvider.overrideWith(
                 () => _TestManuscriptNotifier(),
               ),
-              chapterNotifierProvider.overrideWith(
-                () => fakeNotifier,
+              chapterNotifierProvider.overrideWith(() => fakeNotifier),
+              chapterAutoSaveProvider.overrideWith(
+                (ref) async => _NoOpAutoSave(),
               ),
-              chapterAutoSaveProvider
-                  .overrideWith((ref) async => _NoOpAutoSave()),
             ],
             child: const MaterialApp(
               home: EditorWithSidebar(manuscriptId: 'm1'),
@@ -128,11 +121,10 @@ void main() {
               manuscriptNotifierProvider.overrideWith(
                 () => _TestManuscriptNotifier(),
               ),
-              chapterNotifierProvider.overrideWith(
-                () => fakeNotifier,
+              chapterNotifierProvider.overrideWith(() => fakeNotifier),
+              chapterAutoSaveProvider.overrideWith(
+                (ref) async => _NoOpAutoSave(),
               ),
-              chapterAutoSaveProvider
-                  .overrideWith((ref) async => _NoOpAutoSave()),
             ],
             child: const MaterialApp(
               home: EditorWithSidebar(manuscriptId: 'm1'),
@@ -147,17 +139,47 @@ void main() {
         expect(
           fakeNotifier.loadChaptersCalls,
           contains('m1'),
-          reason:
-              'loadChapters should be called even when no chapters exist',
+          reason: 'loadChapters should be called even when no chapters exist',
         );
 
         expect(find.text('选择或创建一个章节开始写作'), findsOneWidget);
       },
     );
 
+    testWidgets('should render manuscript title in AppBar', (tester) async {
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            manuscriptNotifierProvider.overrideWith(
+              () => _TestManuscriptNotifier(),
+            ),
+            chapterNotifierProvider.overrideWith(
+              () => _RecordingChapterNotifier(),
+            ),
+            chapterAutoSaveProvider.overrideWith(
+              (ref) async => _NoOpAutoSave(),
+            ),
+          ],
+          child: const MaterialApp(home: EditorWithSidebar(manuscriptId: 'm1')),
+        ),
+      );
+      await tester.pump();
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 100));
+
+      final appBarTitle = find.descendant(
+        of: find.byType(AppBar),
+        matching: find.text('测试小说'),
+      );
+      expect(appBarTitle, findsOneWidget);
+      expect(find.byIcon(Icons.arrow_back), findsOneWidget);
+    });
+
     testWidgets(
-      'should render manuscript title in AppBar',
+      'disposing EditorWithSidebar should not call forceSave from synchronous cleanup',
       (tester) async {
+        final autoSave = _RecordingAutoSave();
+
         await tester.pumpWidget(
           ProviderScope(
             overrides: [
@@ -165,28 +187,77 @@ void main() {
                 () => _TestManuscriptNotifier(),
               ),
               chapterNotifierProvider.overrideWith(
-                () => _RecordingChapterNotifier(),
+                () => _AsyncLoadingChapterNotifier(),
               ),
-              chapterAutoSaveProvider
-                  .overrideWith((ref) async => _NoOpAutoSave()),
+              chapterAutoSaveProvider.overrideWith((ref) async => autoSave),
             ],
             child: const MaterialApp(
               home: EditorWithSidebar(manuscriptId: 'm1'),
             ),
           ),
         );
+
         await tester.pump();
         await tester.pump();
         await tester.pump(const Duration(milliseconds: 100));
 
-        final appBarTitle = find.descendant(
-          of: find.byType(AppBar),
-          matching: find.text('测试小说'),
+        await tester.pumpWidget(const SizedBox.shrink());
+        await tester.pump();
+
+        expect(
+          autoSave.forceSaveCalls,
+          0,
+          reason:
+              'dispose must be cleanup-only; controllable exits already await forceSave',
         );
-        expect(appBarTitle, findsOneWidget);
-        expect(find.byIcon(Icons.arrow_back), findsOneWidget);
       },
     );
+
+    testWidgets('settings navigation keeps awaited force-save path intact', (
+      tester,
+    ) async {
+      final autoSave = _RecordingAutoSave();
+
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            manuscriptNotifierProvider.overrideWith(
+              () => _TestManuscriptNotifier(),
+            ),
+            chapterNotifierProvider.overrideWith(
+              () => _AsyncLoadingChapterNotifier(),
+            ),
+            chapterAutoSaveProvider.overrideWith((ref) async => autoSave),
+          ],
+          child: MaterialApp.router(
+            routerConfig: GoRouter(
+              routes: [
+                GoRoute(
+                  path: '/',
+                  builder: (context, state) =>
+                      const EditorWithSidebar(manuscriptId: 'm1'),
+                ),
+                GoRoute(
+                  path: '/manuscript/:id/settings',
+                  builder: (context, state) =>
+                      const SizedBox(key: Key('settings')),
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+
+      await tester.pump();
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 100));
+
+      await tester.tap(find.byIcon(Icons.settings_outlined));
+      await tester.pump();
+      await tester.pump();
+
+      expect(autoSave.forceSaveCalls, 1);
+    });
   });
 }
 
@@ -195,6 +266,22 @@ void main() {
 /// A no-op ChapterAutoSave for testing.
 class _NoOpAutoSave extends ChapterAutoSave {
   _NoOpAutoSave() : super(_NoOpChapterRepository());
+
+  @override
+  void onDocumentChanged(String chapterId, String markdown) {}
+
+  @override
+  Future<void> forceSave() async {}
+}
+
+class _RecordingAutoSave extends _NoOpAutoSave {
+  int forceSaveCalls = 0;
+
+  @override
+  Future<void> forceSave() async {
+    forceSaveCalls += 1;
+    await super.forceSave();
+  }
 }
 
 /// A no-op chapter repository that discards all operations.
@@ -305,8 +392,7 @@ class _PreloadedChapterNotifier extends AsyncNotifier<List<Chapter>>
   Future<void> delete(String id) async {}
 
   @override
-  Future<void> reorder(
-      String manuscriptId, int oldIndex, int newIndex) async {}
+  Future<void> reorder(String manuscriptId, int oldIndex, int newIndex) async {}
 
   @override
   Future<void> duplicateChapter(String chapterId) async {}
@@ -345,8 +431,7 @@ class _RecordingChapterNotifier extends AsyncNotifier<List<Chapter>>
   Future<void> delete(String id) async {}
 
   @override
-  Future<void> reorder(
-      String manuscriptId, int oldIndex, int newIndex) async {}
+  Future<void> reorder(String manuscriptId, int oldIndex, int newIndex) async {}
 
   @override
   Future<void> duplicateChapter(String chapterId) async {}

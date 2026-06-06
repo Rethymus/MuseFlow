@@ -73,22 +73,18 @@ class Manuscript {
   /// Creates a Manuscript from a JSON map.
   factory Manuscript.fromJson(Map<String, dynamic> json) {
     return Manuscript(
-      id: json['id'] as String,
-      title: json['title'] as String,
-      description: json['description'] as String?,
-      genre: json['genre'] as String,
-      targetWordCount: json['targetWordCount'] as int? ?? 0,
-      status: json['status'] as String? ?? '构思中',
-      worldSettingId: json['worldSettingId'] as String?,
-      characterCardIds:
-          (json['characterCardIds'] as List<dynamic>?)?.cast<String>() ??
-          const [],
-      createdAt: DateTime.parse(json['createdAt'] as String),
-      updatedAt: DateTime.parse(json['updatedAt'] as String),
-      deletedAt: json['deletedAt'] != null
-          ? DateTime.parse(json['deletedAt'] as String)
-          : null,
-      coverLetter: json['coverLetter'] as String? ?? '',
+      id: _requiredString(json, 'id'),
+      title: _requiredString(json, 'title'),
+      description: _optionalString(json, 'description'),
+      genre: _requiredString(json, 'genre'),
+      targetWordCount: _optionalInt(json, 'targetWordCount', 0),
+      status: _optionalString(json, 'status') ?? '构思中',
+      worldSettingId: _optionalString(json, 'worldSettingId'),
+      characterCardIds: _optionalStringList(json, 'characterCardIds'),
+      createdAt: _requiredDateTime(json, 'createdAt'),
+      updatedAt: _requiredDateTime(json, 'updatedAt'),
+      deletedAt: _optionalDateTime(json, 'deletedAt'),
+      coverLetter: _optionalString(json, 'coverLetter') ?? '',
     );
   }
 
@@ -155,4 +151,66 @@ class Manuscript {
     }
     return true;
   }
+}
+
+String _requiredString(Map<String, dynamic> json, String field) {
+  final value = json[field];
+  if (value is String) return value;
+  throw FormatException('Invalid Manuscript JSON: "$field" must be a string');
+}
+
+String? _optionalString(Map<String, dynamic> json, String field) {
+  final value = json[field];
+  if (value == null) return null;
+  if (value is String) return value;
+  throw FormatException('Invalid Manuscript JSON: "$field" must be a string');
+}
+
+int _optionalInt(Map<String, dynamic> json, String field, int defaultValue) {
+  final value = json[field];
+  if (value == null) return defaultValue;
+  if (value is int) return value;
+  throw FormatException('Invalid Manuscript JSON: "$field" must be an int');
+}
+
+List<String> _optionalStringList(Map<String, dynamic> json, String field) {
+  final value = json[field];
+  if (value == null) return const [];
+  if (value is! List) {
+    throw FormatException('Invalid Manuscript JSON: "$field" must be a list');
+  }
+  final result = <String>[];
+  for (final item in value) {
+    if (item is! String) {
+      throw FormatException(
+        'Invalid Manuscript JSON: "$field" must contain only strings',
+      );
+    }
+    result.add(item);
+  }
+  return List.unmodifiable(result);
+}
+
+DateTime _requiredDateTime(Map<String, dynamic> json, String field) {
+  final value = _requiredString(json, field);
+  final parsed = DateTime.tryParse(value);
+  if (parsed != null) return parsed;
+  throw FormatException(
+    'Invalid Manuscript JSON: "$field" must be an ISO-8601 date',
+  );
+}
+
+DateTime? _optionalDateTime(Map<String, dynamic> json, String field) {
+  final value = json[field];
+  if (value == null) return null;
+  if (value is! String) {
+    throw FormatException(
+      'Invalid Manuscript JSON: "$field" must be an ISO-8601 date string',
+    );
+  }
+  final parsed = DateTime.tryParse(value);
+  if (parsed != null) return parsed;
+  throw FormatException(
+    'Invalid Manuscript JSON: "$field" must be an ISO-8601 date',
+  );
 }
