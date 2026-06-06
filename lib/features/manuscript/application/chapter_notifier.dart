@@ -48,6 +48,12 @@ class ChapterNotifier extends AsyncNotifier<List<Chapter>> {
     final chapter = repository.getById(id);
     await repository.delete(id);
     if (chapter != null) {
+      final chapters = repository.getByManuscriptId(chapter.manuscriptId);
+      for (var i = 0; i < chapters.length; i++) {
+        if (chapters[i].sortOrder != i) {
+          await repository.update(chapters[i].copyWith(sortOrder: i));
+        }
+      }
       _refreshWith(repository, chapter.manuscriptId);
     } else {
       ref.invalidateSelf();
