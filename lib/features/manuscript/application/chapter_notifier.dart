@@ -45,8 +45,13 @@ class ChapterNotifier extends AsyncNotifier<List<Chapter>> {
   Future<void> delete(String id) async {
     final repository =
         await ref.read(chapterRepositoryProvider.future);
+    final chapter = repository.getById(id);
     await repository.delete(id);
-    ref.invalidateSelf();
+    if (chapter != null) {
+      _refreshWith(repository, chapter.manuscriptId);
+    } else {
+      ref.invalidateSelf();
+    }
   }
 
   /// Reorders chapters by moving the item at [oldIndex] to [newIndex].
