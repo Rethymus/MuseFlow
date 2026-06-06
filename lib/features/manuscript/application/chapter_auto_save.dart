@@ -50,11 +50,12 @@ class ChapterAutoSave {
     if (!_isDirty || _currentChapterId == null || _pendingMarkdown == null) {
       return;
     }
-    _isDirty = false;
-    await _repository.updateDocumentContent(
-      _currentChapterId!,
-      _pendingMarkdown!,
-    );
+    final chapterId = _currentChapterId!;
+    final markdown = _pendingMarkdown!;
+    await _repository.updateDocumentContent(chapterId, markdown);
+    if (_currentChapterId == chapterId && _pendingMarkdown == markdown) {
+      _isDirty = false;
+    }
   }
 
   /// Disposes the auto-save service.
