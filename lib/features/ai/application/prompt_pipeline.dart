@@ -62,6 +62,15 @@ class PromptContext {
   /// User's custom instruction for free-input operations.
   final String? userInstruction;
 
+  /// Truncated summary of the previous chapter for AI context injection.
+  ///
+  /// Per D-24: Injected by ChapterContextMiddleware into the system message
+  /// so the AI understands surrounding narrative context.
+  final String? previousChapterSummary;
+
+  /// Truncated summary of the next chapter for AI context injection.
+  final String? nextChapterSummary;
+
   const PromptContext({
     required this.fragments,
     this.additionalInstruction,
@@ -72,6 +81,8 @@ class PromptContext {
     this.anchors,
     this.selectedOperation,
     this.userInstruction,
+    this.previousChapterSummary,
+    this.nextChapterSummary,
   });
 
   /// Creates a copy with an additional message appended.
@@ -86,6 +97,8 @@ class PromptContext {
       anchors: anchors,
       selectedOperation: selectedOperation,
       userInstruction: userInstruction,
+      previousChapterSummary: previousChapterSummary,
+      nextChapterSummary: nextChapterSummary,
     );
   }
 
@@ -101,6 +114,8 @@ class PromptContext {
       anchors: anchors,
       selectedOperation: selectedOperation,
       userInstruction: userInstruction,
+      previousChapterSummary: previousChapterSummary,
+      nextChapterSummary: nextChapterSummary,
     );
   }
 
@@ -118,6 +133,8 @@ class PromptContext {
       anchors: anchors,
       selectedOperation: selectedOperation,
       userInstruction: userInstruction,
+      previousChapterSummary: previousChapterSummary,
+      nextChapterSummary: nextChapterSummary,
     );
   }
 }

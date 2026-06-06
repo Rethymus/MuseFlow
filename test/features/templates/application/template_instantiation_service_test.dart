@@ -4,6 +4,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:hive_ce/hive.dart';
 import 'package:museflow/features/knowledge/infrastructure/character_card_repository.dart';
 import 'package:museflow/features/knowledge/infrastructure/world_setting_repository.dart';
+import 'package:museflow/features/manuscript/infrastructure/chapter_repository.dart';
 import 'package:museflow/features/templates/application/template_draft.dart';
 import 'package:museflow/features/templates/application/template_instantiation_service.dart';
 import 'package:museflow/features/templates/domain/world_template.dart';
@@ -22,9 +23,11 @@ void main() {
       Hive.init(tempDir.path);
       worldBox = await Hive.openBox<dynamic>('world_settings_test');
       characterBox = await Hive.openBox<dynamic>('character_cards_test');
+      final chaptersBox = await Hive.openBox<dynamic>('chapters_test');
       service = TemplateInstantiationService(
         worldSettingRepository: WorldSettingRepository(worldBox),
         characterCardRepository: CharacterCardRepository(characterBox),
+        chapterRepository: ChapterRepository(chaptersBox),
       );
     });
 
