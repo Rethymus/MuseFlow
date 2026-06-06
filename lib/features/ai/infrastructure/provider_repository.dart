@@ -20,7 +20,9 @@ class ProviderRepository {
   /// Returns all saved providers.
   List<AIProvider> getAll() {
     return _box.values
-        .map((dynamic json) => AIProvider.fromJson(json as Map<String, dynamic>))
+        .map((dynamic json) => AIProvider.fromJson(
+              Map<String, dynamic>.from(json as Map),
+            ))
         .toList();
   }
 
@@ -36,6 +38,6 @@ class ProviderRepository {
   AIProvider? getById(String id) {
     final json = _box.get(id);
     if (json == null) return null;
-    return AIProvider.fromJson(json as Map<String, dynamic>);
+    return AIProvider.fromJson(Map<String, dynamic>.from(json as Map));
   }
 }

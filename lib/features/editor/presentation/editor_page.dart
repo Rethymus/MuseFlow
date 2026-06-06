@@ -14,31 +14,6 @@ import 'package:museflow/features/knowledge/presentation/quick_insert_dialog.dar
 import 'package:museflow/features/knowledge/presentation/deviation_warning_widget.dart';
 import 'package:super_editor/super_editor.dart';
 
-/// Stylesheet that extends the default with AI-provenance background styling.
-///
-/// EDIT-05: Text accepted from AI suggestions gets a blue background
-/// (10% opacity) via the [aiProvenanceAttribution] that is already present
-/// in the document model from `InsertTextRequest` attributions.
-final _provenanceStylesheet = defaultStylesheet.copyWith(
-  inlineTextStyler: _provenanceInlineTextStyler,
-);
-
-/// Inline text styler that adds provenance background on top of default styles.
-TextStyle _provenanceInlineTextStyler(
-  Set<Attribution> attributions,
-  TextStyle existingStyle,
-) {
-  // Apply default styles first (bold, italic, underline, etc.)
-  var style = defaultInlineTextStyler(attributions, existingStyle);
-
-  // If the text has AI provenance, apply a subtle blue background
-  if (attributions.contains(aiProvenanceAttribution)) {
-    style = style.copyWith(backgroundColor: provenanceColor);
-  }
-
-  return style;
-}
-
 /// Notifier exposing the current Editor instance.
 ///
 /// Set by EditorPage in initState, cleared in dispose.
@@ -202,17 +177,20 @@ class _EditorPageState extends ConsumerState<EditorPage> {
                 Divider(height: 1, thickness: 1, color: colorScheme.outline),
                 // Editor area with centered layout
                 Expanded(
-                  child: SingleChildScrollView(
-                    padding: const EdgeInsets.all(24.0),
-                    child: Center(
-                      child: ConstrainedBox(
-                        constraints: const BoxConstraints(
-                          maxWidth: AppConstants.editorMaxWidth,
-                        ),
+                  child: Center(
+                    child: ConstrainedBox(
+                      constraints: const BoxConstraints(
+                        maxWidth: AppConstants.editorMaxWidth,
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.all(24.0),
                         child: SuperEditor(
                           editor: _editor,
                           autofocus: true,
-                          stylesheet: _provenanceStylesheet,
+                          stylesheet: _buildThemedStylesheet(context),
+                          selectionStyle: SelectionStyles(
+                            selectionColor: colorScheme.primary.withValues(alpha: 0.3),
+                          ),
                           selectionLayerLinks: _selectionLinks,
                           documentOverlayBuilders: [
                             // Selection leaders layer (positions leader widgets
@@ -248,8 +226,13 @@ class _EditorPageState extends ConsumerState<EditorPage> {
                                 ),
                               );
                             }),
-                            // Default caret overlay
-                            const DefaultCaretOverlayBuilder(),
+                            // Default caret overlay with theme-aware color
+                            DefaultCaretOverlayBuilder(
+                              caretStyle: CaretStyle(
+                                width: 2,
+                                color: colorScheme.onSurface,
+                              ),
+                            ),
                           ],
                         ),
                       ),
@@ -317,6 +300,27 @@ class _EditorPageState extends ConsumerState<EditorPage> {
         Navigator.of(context).pop();
       }
     });
+  }
+
+  /// Builds a stylesheet that adapts text color to the current theme.
+  ///
+  /// EDIT-05: Text accepted from AI suggestions gets a blue background
+  /// via the [aiProvenanceAttribution].
+  static Stylesheet _buildThemedStylesheet(BuildContext context) {
+    final textColor = Theme.of(context).colorScheme.onSurface;
+
+    return defaultStylesheet.copyWith(
+      inlineTextStyler: (attributions, existingStyle) {
+        var style = defaultInlineTextStyler(attributions, existingStyle);
+        // Ensure text color follows the theme (dark mode fix).
+        style = style.copyWith(color: textColor);
+        // AI provenance background overlay.
+        if (attributions.contains(aiProvenanceAttribution)) {
+          style = style.copyWith(backgroundColor: provenanceColor);
+        }
+        return style;
+      },
+    );
   }
 }
 
