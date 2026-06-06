@@ -45,10 +45,7 @@ TextStyle _manuscriptProvenanceInlineTextStyler(
 /// - Keyboard shortcuts: Ctrl+Up/Down for chapter nav, Ctrl+Shift+N for new
 /// - PopScope and WidgetsBindingObserver for forced save on exit/pause
 class EditorWithSidebar extends ConsumerStatefulWidget {
-  const EditorWithSidebar({
-    super.key,
-    required this.manuscriptId,
-  });
+  const EditorWithSidebar({super.key, required this.manuscriptId});
 
   /// The manuscript ID whose chapters are being edited.
   final String manuscriptId;
@@ -122,8 +119,7 @@ class _EditorWithSidebarState extends ConsumerState<EditorWithSidebar>
           .loadChapters(widget.manuscriptId);
 
       // Read current chapter state and load first chapter if available.
-      final chapters =
-          ref.read(chapterNotifierProvider).asData?.value ?? [];
+      final chapters = ref.read(chapterNotifierProvider).asData?.value ?? [];
       if (chapters.isEmpty) return;
       setState(() {
         _loadChapter(chapters.first);
@@ -140,17 +136,12 @@ class _EditorWithSidebarState extends ConsumerState<EditorWithSidebar>
     if (chapter.documentContent.isEmpty) {
       document = MutableDocument(
         nodes: [
-          ParagraphNode(
-            id: Editor.createNodeId(),
-            text: AttributedText(''),
-          ),
+          ParagraphNode(id: Editor.createNodeId(), text: AttributedText('')),
         ],
       );
     } else {
       try {
-        document = deserializeMarkdownToDocument(
-          chapter.documentContent,
-        );
+        document = deserializeMarkdownToDocument(chapter.documentContent);
       } catch (_) {
         // Fallback: create document with content as plain text
         document = MutableDocument(
@@ -187,8 +178,7 @@ class _EditorWithSidebarState extends ConsumerState<EditorWithSidebar>
     await _forceSaveAsync();
 
     // Find the new chapter
-    final chapters =
-        ref.read(chapterNotifierProvider).asData?.value ?? [];
+    final chapters = ref.read(chapterNotifierProvider).asData?.value ?? [];
     final newChapter = chapters.where((c) => c.id == newChapterId).firstOrNull;
     if (newChapter == null) return;
 
@@ -199,12 +189,10 @@ class _EditorWithSidebarState extends ConsumerState<EditorWithSidebar>
 
   /// Navigates to the previous chapter in the list.
   void _goToPreviousChapter() {
-    final chapters =
-        ref.read(chapterNotifierProvider).asData?.value ?? [];
+    final chapters = ref.read(chapterNotifierProvider).asData?.value ?? [];
     if (chapters.isEmpty || _currentChapterId == null) return;
 
-    final currentIndex =
-        chapters.indexWhere((c) => c.id == _currentChapterId);
+    final currentIndex = chapters.indexWhere((c) => c.id == _currentChapterId);
     if (currentIndex > 0) {
       _switchChapter(chapters[currentIndex - 1].id);
     }
@@ -212,12 +200,10 @@ class _EditorWithSidebarState extends ConsumerState<EditorWithSidebar>
 
   /// Navigates to the next chapter in the list.
   void _goToNextChapter() {
-    final chapters =
-        ref.read(chapterNotifierProvider).asData?.value ?? [];
+    final chapters = ref.read(chapterNotifierProvider).asData?.value ?? [];
     if (chapters.isEmpty || _currentChapterId == null) return;
 
-    final currentIndex =
-        chapters.indexWhere((c) => c.id == _currentChapterId);
+    final currentIndex = chapters.indexWhere((c) => c.id == _currentChapterId);
     if (currentIndex < chapters.length - 1) {
       _switchChapter(chapters[currentIndex + 1].id);
     }
@@ -268,7 +254,9 @@ class _EditorWithSidebarState extends ConsumerState<EditorWithSidebar>
       // ignore: avoid_catching_errors
       autoSave.forceSave().catchError((_) {
         // Best-effort: log but don't crash on lifecycle save failure
-        debugPrint('Warning: best-effort save failed during lifecycle transition');
+        debugPrint(
+          'Warning: best-effort save failed during lifecycle transition',
+        );
       });
     }
   }
@@ -310,15 +298,14 @@ class _EditorWithSidebarState extends ConsumerState<EditorWithSidebar>
 
   /// Shows the create chapter dialog and creates the chapter on confirm.
   void _showCreateChapterDialog() {
-    final chapters =
-        ref.read(chapterNotifierProvider).asData?.value ?? [];
+    final chapters = ref.read(chapterNotifierProvider).asData?.value ?? [];
     final currentSortOrder = chapters.isEmpty
         ? 0
         : chapters
-                .where((c) => c.id == _currentChapterId)
-                .firstOrNull
-                ?.sortOrder ??
-            chapters.last.sortOrder;
+                  .where((c) => c.id == _currentChapterId)
+                  .firstOrNull
+                  ?.sortOrder ??
+              chapters.last.sortOrder;
 
     showDialog<String>(
       context: context,
@@ -326,7 +313,9 @@ class _EditorWithSidebarState extends ConsumerState<EditorWithSidebar>
     ).then((title) {
       if (title == null || title.isEmpty) return;
       final now = DateTime.now();
-      ref.read(chapterNotifierProvider.notifier).add(
+      ref
+          .read(chapterNotifierProvider.notifier)
+          .add(
             Chapter(
               id: '',
               manuscriptId: widget.manuscriptId,
@@ -342,8 +331,7 @@ class _EditorWithSidebarState extends ConsumerState<EditorWithSidebar>
 
   /// Shows the rename chapter dialog for the current chapter.
   void _showRenameDialog() {
-    final chapters =
-        ref.read(chapterNotifierProvider).asData?.value ?? [];
+    final chapters = ref.read(chapterNotifierProvider).asData?.value ?? [];
     final currentChapter = chapters
         .where((c) => c.id == _currentChapterId)
         .firstOrNull;
@@ -351,13 +339,12 @@ class _EditorWithSidebarState extends ConsumerState<EditorWithSidebar>
 
     showDialog<String>(
       context: context,
-      builder: (_) =>
-          ChapterRenameDialog(currentTitle: currentChapter.title),
+      builder: (_) => ChapterRenameDialog(currentTitle: currentChapter.title),
     ).then((newTitle) {
       if (newTitle == null || newTitle.isEmpty) return;
-      ref.read(chapterNotifierProvider.notifier).save(
-            currentChapter.copyWith(title: newTitle),
-          );
+      ref
+          .read(chapterNotifierProvider.notifier)
+          .save(currentChapter.copyWith(title: newTitle));
     });
   }
 
@@ -368,8 +355,7 @@ class _EditorWithSidebarState extends ConsumerState<EditorWithSidebar>
       case ChapterAction.rename:
         showDialog<String>(
           context: context,
-          builder: (_) =>
-              ChapterRenameDialog(currentTitle: chapter.title),
+          builder: (_) => ChapterRenameDialog(currentTitle: chapter.title),
         ).then((newTitle) {
           if (newTitle == null || newTitle.isEmpty) return;
           notifier.save(chapter.copyWith(title: newTitle));
@@ -395,30 +381,31 @@ class _EditorWithSidebarState extends ConsumerState<EditorWithSidebar>
     // Get plain text before and after cursor
     final plainText = _getDocumentPlainText(_editor!.document);
     final offset = _getSelectionOffset(selection);
+    if (offset == null) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('只能在文本位置拆分章节')));
+      return;
+    }
     final before = plainText.substring(0, offset);
     final after = plainText.substring(offset);
 
     if (before.isEmpty && after.isEmpty) return;
 
-    ref.read(chapterNotifierProvider.notifier).splitChapter(
-          chapter.id,
-          before,
-          after,
-        );
+    ref
+        .read(chapterNotifierProvider.notifier)
+        .splitChapter(chapter.id, before, after);
   }
 
   /// Merges the given chapter with the next one in the list.
   void _mergeWithNext(Chapter chapter) {
-    final chapters =
-        ref.read(chapterNotifierProvider).asData?.value ?? [];
-    final currentIndex =
-        chapters.indexWhere((c) => c.id == chapter.id);
+    final chapters = ref.read(chapterNotifierProvider).asData?.value ?? [];
+    final currentIndex = chapters.indexWhere((c) => c.id == chapter.id);
     if (currentIndex < 0 || currentIndex >= chapters.length - 1) return;
 
-    ref.read(chapterNotifierProvider.notifier).mergeChapters(
-          chapter.id,
-          chapters[currentIndex + 1].id,
-        );
+    ref
+        .read(chapterNotifierProvider.notifier)
+        .mergeChapters(chapter.id, chapters[currentIndex + 1].id);
   }
 
   /// Shows a confirmation dialog before deleting a chapter.
@@ -478,13 +465,13 @@ class _EditorWithSidebarState extends ConsumerState<EditorWithSidebar>
     return buffer.toString();
   }
 
-  int _getSelectionOffset(DocumentSelection selection) {
+  int? _getSelectionOffset(DocumentSelection selection) {
     try {
       final baseOffset =
           (selection.base.nodePosition as TextNodePosition).offset;
       return baseOffset;
     } catch (_) {
-      return 0;
+      return null;
     }
   }
 
@@ -505,8 +492,10 @@ class _EditorWithSidebarState extends ConsumerState<EditorWithSidebar>
     final chapters = chaptersAsync.asData?.value ?? [];
 
     // Compute manuscript word count for status bar
-    final currentWordCount =
-        chapters.fold<int>(0, (sum, c) => sum + c.wordCount);
+    final currentWordCount = chapters.fold<int>(
+      0,
+      (sum, c) => sum + c.wordCount,
+    );
 
     // Get manuscript for title and target word count
     final manuscriptsAsync = ref.watch(manuscriptNotifierProvider);
@@ -516,18 +505,16 @@ class _EditorWithSidebarState extends ConsumerState<EditorWithSidebar>
     final manuscriptTitle = manuscript?.title ?? '文稿';
     final targetWordCount = manuscript?.targetWordCount ?? 0;
 
-    final isLastChapter = chapters.isEmpty ||
-        chapters.last.id == _currentChapterId;
+    final isLastChapter =
+        chapters.isEmpty || chapters.last.id == _currentChapterId;
     final hasSelection = _editor?.composer.selection != null;
 
     return Shortcuts(
       shortcuts: <LogicalKeySet, Intent>{
         LogicalKeySet(LogicalKeyboardKey.control, LogicalKeyboardKey.arrowUp):
             const _PreviousChapterIntent(),
-        LogicalKeySet(
-          LogicalKeyboardKey.control,
-          LogicalKeyboardKey.arrowDown,
-        ): const _NextChapterIntent(),
+        LogicalKeySet(LogicalKeyboardKey.control, LogicalKeyboardKey.arrowDown):
+            const _NextChapterIntent(),
         LogicalKeySet(
           LogicalKeyboardKey.control,
           LogicalKeyboardKey.shift,
@@ -548,8 +535,7 @@ class _EditorWithSidebarState extends ConsumerState<EditorWithSidebar>
       },
       child: Actions(
         actions: <Type, Action<Intent>>{
-          _PreviousChapterIntent:
-              CallbackAction<_PreviousChapterIntent>(
+          _PreviousChapterIntent: CallbackAction<_PreviousChapterIntent>(
             onInvoke: (_) => _goToPreviousChapter(),
           ),
           _NextChapterIntent: CallbackAction<_NextChapterIntent>(
@@ -591,9 +577,8 @@ class _EditorWithSidebarState extends ConsumerState<EditorWithSidebar>
                 IconButton(
                   tooltip: '文稿设置',
                   icon: const Icon(Icons.settings_outlined),
-                  onPressed: () => context.go(
-                    '/manuscript/${widget.manuscriptId}/settings',
-                  ),
+                  onPressed: () =>
+                      context.go('/manuscript/${widget.manuscriptId}/settings'),
                 ),
               ],
             ),
@@ -612,15 +597,13 @@ class _EditorWithSidebarState extends ConsumerState<EditorWithSidebar>
                         .reorder(manuscriptId, oldIndex, newIndex);
                   },
                   onChapterContextMenu: (chapter) {
-                    final isCurrent =
-                        chapter.id == _currentChapterId;
+                    final isCurrent = chapter.id == _currentChapterId;
                     showChapterContextMenu(
                       context: context,
                       position: _getMenuPosition(chapter),
                       isSplitEnabled: isCurrent && hasSelection,
-                      isMergeEnabled: !isLastChapter ||
-                          chapter.id !=
-                              chapters.last.id,
+                      isMergeEnabled:
+                          !isLastChapter || chapter.id != chapters.last.id,
                       onAction: (action) =>
                           _handleContextMenuAction(chapter, action),
                     );
@@ -672,11 +655,7 @@ class _EditorWithSidebarState extends ConsumerState<EditorWithSidebar>
         // Editor toolbar
         EditorToolbar(editor: _editor!),
         const DeviationWarningWidget(),
-        Divider(
-          height: 1,
-          thickness: 1,
-          color: colorScheme.outline,
-        ),
+        Divider(height: 1, thickness: 1, color: colorScheme.outline),
         // Editor content
         Expanded(
           child: SingleChildScrollView(
@@ -694,15 +673,10 @@ class _EditorWithSidebarState extends ConsumerState<EditorWithSidebar>
                   stylesheet: _manuscriptProvenanceStylesheet,
                   selectionLayerLinks: _selectionLinks,
                   documentOverlayBuilders: [
-                    _SelectionLeadersLayerBuilder(
-                      links: _selectionLinks!,
-                    ),
+                    _SelectionLeadersLayerBuilder(links: _selectionLinks!),
                     const ContextAnchorOverlayBuilder(),
                     const DiffOverlayBuilder(),
-                    FunctionalSuperEditorLayerBuilder((
-                      context,
-                      editContext,
-                    ) {
+                    FunctionalSuperEditorLayerBuilder((context, editContext) {
                       return ContentLayerProxyWidget(
                         child: FloatingToolbar(
                           editor: _editor!,
@@ -710,10 +684,7 @@ class _EditorWithSidebarState extends ConsumerState<EditorWithSidebar>
                         ),
                       );
                     }),
-                    FunctionalSuperEditorLayerBuilder((
-                      context,
-                      editContext,
-                    ) {
+                    FunctionalSuperEditorLayerBuilder((context, editContext) {
                       return ContentLayerProxyWidget(
                         child: AcceptRejectBar(
                           editor: _editor!,
@@ -744,12 +715,7 @@ class _EditorWithSidebarState extends ConsumerState<EditorWithSidebar>
       return const RelativeRect.fromLTRB(32, 200, 0, 0);
     }
     final size = renderBox.size;
-    return RelativeRect.fromLTRB(
-      260,
-      200,
-      size.width - 260,
-      0,
-    );
+    return RelativeRect.fromLTRB(260, 200, size.width - 260, 0);
   }
 
   // --- Editor Shortcuts ---
