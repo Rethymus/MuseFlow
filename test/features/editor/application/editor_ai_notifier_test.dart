@@ -374,6 +374,7 @@ class _FakeOpenAIAdapter extends OpenAIAdapter {
     double? temperature,
     double? topP,
     int? maxTokens,
+    void Function(Usage?)? onUsage,
   }) {
     return streamOutput ?? Stream.fromIterable(['默认文本']);
   }

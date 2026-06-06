@@ -10,6 +10,8 @@
 /// (OpenAI, DeepSeek, Ollama, etc.).
 library;
 
+import 'dart:async';
+
 import 'package:museflow/features/ai/domain/ai_exception.dart';
 import 'package:openai_dart/openai_dart.dart';
 
@@ -34,6 +36,7 @@ class OpenAIAdapter {
   /// - [temperature]: Sampling temperature (0.0-2.0). Null = model default.
   /// - [topP]: Nucleus sampling threshold (0.0-1.0). Null = model default.
   /// - [maxTokens]: Maximum tokens in response (1-128000). Null = model default.
+  /// - [onUsage]: Optional callback invoked with usage data after stream completes.
   ///
   /// Returns a [Stream<String>] of text delta tokens.
   /// On error, the stream emits an [AIException] subclass.
@@ -45,6 +48,7 @@ class OpenAIAdapter {
     double? temperature,
     double? topP,
     int? maxTokens,
+    void Function(Usage?)? onUsage,
   }) {
     // Validate baseUrl per T-02-08
     _validateBaseUrl(baseUrl);
@@ -62,13 +66,29 @@ class OpenAIAdapter {
       maxTokens: maxTokens,
     );
 
+    // Create accumulator to capture usage data
+    final accumulator = ChatStreamAccumulator();
+
     // Map the raw stream to text deltas with error classification
-    return client.chat.completions.createStream(request).map((event) {
-      final delta = event.textDelta;
-      return delta ?? '';
-    }).where((delta) => delta.isNotEmpty).handleError((error) {
-      throw classifyException(error);
-    });
+    return client.chat.completions
+        .createStream(request)
+        .map((event) {
+          accumulator.add(event);
+          final delta = event.textDelta;
+          return delta ?? '';
+        })
+        .where((delta) => delta.isNotEmpty)
+        .handleError((error) {
+          throw classifyException(error);
+        })
+        .transform(
+          StreamTransformer<String, String>.fromHandlers(
+            handleDone: (sink) {
+              onUsage?.call(accumulator.usage);
+              sink.close();
+            },
+          ),
+        );
   }
 
   /// Classifies an openai_dart exception into the appropriate [AIException].

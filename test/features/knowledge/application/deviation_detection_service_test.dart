@@ -85,6 +85,7 @@ class _FakeOpenAIAdapter extends OpenAIAdapter {
     double? temperature,
     double? topP,
     int? maxTokens,
+    void Function(Usage?)? onUsage,
   }) {
     this.messages = messages;
     return Stream.fromIterable(chunks);

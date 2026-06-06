@@ -40,9 +40,12 @@ import 'package:museflow/features/stats/application/writing_stats_collector.dart
 import 'package:museflow/features/stats/application/writing_stats_notifier.dart';
 import 'package:museflow/features/stats/application/achievement_notifier.dart';
 import 'package:museflow/features/stats/application/achievement_service.dart';
+import 'package:museflow/features/stats/application/token_audit_notifier.dart';
+import 'package:museflow/features/stats/application/token_audit_service.dart';
 import 'package:museflow/features/stats/domain/achievement_badge.dart';
 import 'package:museflow/features/stats/domain/stats_snapshot.dart';
 import 'package:museflow/features/stats/infrastructure/writing_stats_repository.dart';
+import 'package:museflow/features/stats/infrastructure/token_audit_repository.dart';
 import 'package:museflow/features/manuscript/application/chapter_auto_save.dart';
 import 'package:museflow/features/manuscript/application/chapter_notifier.dart';
 import 'package:museflow/features/manuscript/application/manuscript_notifier.dart';
@@ -469,6 +472,29 @@ final writingStatsCollectorProvider = FutureProvider<WritingStatsCollector>((
 final writingStatsNotifierProvider =
     AsyncNotifierProvider<WritingStatsNotifier, StatsSnapshot>(
       WritingStatsNotifier.new,
+    );
+
+// Token Audit Providers
+final tokenAuditRepositoryProvider = FutureProvider<TokenAuditRepository>((
+  ref,
+) async {
+  final box = await Hive.openBox<dynamic>('token_audit');
+  return TokenAuditRepository(box);
+});
+
+final tokenAuditServiceProvider = FutureProvider<TokenAuditService>((
+  ref,
+) async {
+  final repository = await ref.watch(tokenAuditRepositoryProvider.future);
+  final calculator = TokenBudgetCalculator();
+  final service = TokenAuditService(repository, calculator);
+  ref.onDispose(service.dispose);
+  return service;
+});
+
+final tokenAuditNotifierProvider =
+    AsyncNotifierProvider<TokenAuditNotifier, TokenAuditSnapshot>(
+      TokenAuditNotifier.new,
     );
 
 final achievementServiceProvider = Provider<AchievementService>((ref) {
