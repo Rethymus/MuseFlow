@@ -15,9 +15,9 @@ Requirements for 用户视角全流程验证 — 百章修仙小说 milestone. E
 
 ### 自动化测试
 
-- [ ] **TEST-01**: Dart 自动化脚本走完核心流程（创建文稿→创建100章→调用AI生成内容→导出），不依赖 UI
-- [ ] **TEST-02**: Flutter 集成测试覆盖关键 UI 节点（文稿创建→章节管理→AI生成→编辑→导出）
-- [ ] **TEST-03**: 测试脚本使用 FakeAdapter 支持可复现验证，无需真实 API 即可跑通
+- [x] **TEST-01**: Dart 自动化脚本走完核心流程（创建文稿→创建100章→调用AI生成内容→导出），不依赖 UI
+- [x] **TEST-02**: Flutter 集成测试覆盖关键 UI 节点（文稿创建→章节管理→AI生成→编辑→导出）
+- [x] **TEST-03**: 测试脚本使用 FakeAdapter 支持可复现验证，无需真实 API 即可跑通
 
 ### 创作准备验证
 
@@ -69,9 +69,9 @@ Which phases cover which requirements. Updated during roadmap creation.
 | AUDIT-01 | Phase 12 | Complete |
 | AUDIT-02 | Phase 12 | Complete |
 | AUDIT-03 | Phase 12 | Complete |
-| TEST-01 | Phase 13 | Pending |
-| TEST-02 | Phase 13 | Pending |
-| TEST-03 | Phase 13 | Pending |
+| TEST-01 | Phase 13 | Complete |
+| TEST-02 | Phase 13 | Complete |
+| TEST-03 | Phase 13 | Complete |
 | JOURNEY-01 | Phase 14 | Pending |
 | JOURNEY-02 | Phase 14 | Pending |
 | JOURNEY-03 | Phase 14 | Pending |
