@@ -64,6 +64,7 @@ class _ManuscriptCreateDialogState
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             TextField(
+              key: const Key('manuscript_title'),
               controller: _titleController,
               decoration: InputDecoration(
                 labelText: '标题',
@@ -105,6 +106,7 @@ class _ManuscriptCreateDialogState
             if (_isCustomGenre) ...[
               const SizedBox(height: 12),
               TextField(
+                key: const Key('manuscript_genre'),
                 controller: _customGenreController,
                 decoration: InputDecoration(
                   labelText: '自定义类型',

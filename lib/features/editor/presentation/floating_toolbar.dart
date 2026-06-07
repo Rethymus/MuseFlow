@@ -319,6 +319,7 @@ class _ToolbarContent extends StatelessWidget {
               mainAxisSize: MainAxisSize.min,
               children: [
                 _ActionButton(
+                  key: const Key('ai_synthesis_button'),
                   icon: Icons.auto_fix_high,
                   label: '语气改写',
                   onTap: () =>
@@ -367,6 +368,7 @@ class _ToolbarContent extends StatelessWidget {
 /// A compact AI action button.
 class _ActionButton extends StatelessWidget {
   const _ActionButton({
+    super.key,
     required this.icon,
     required this.label,
     required this.onTap,
