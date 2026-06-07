@@ -1,7 +1,7 @@
 ---
 phase: 14
 slug: world-building-first-30-chapters
-status: draft
+status: approved
 shadcn_initialized: false
 preset: none
 created: 2026-06-07
