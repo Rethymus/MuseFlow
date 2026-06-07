@@ -1,6 +1,5 @@
 import 'package:museflow/features/knowledge/domain/character_card.dart';
 import 'package:museflow/features/knowledge/domain/skill_document.dart';
-import 'package:museflow/features/knowledge/domain/world_setting.dart';
 import 'package:uuid/uuid.dart';
 
 /// Xianxia domain fixtures for journey integration tests.
@@ -11,6 +10,15 @@ import 'package:uuid/uuid.dart';
 class XianxiaFixtures {
   static final DateTime _fixedDate = DateTime(2026, 6, 7);
   static const Uuid _uuid = Uuid();
+
+  static List<CharacterCard> characters() {
+    return [
+      protagonist(),
+      master(),
+      senior(),
+      rival(),
+    ];
+  }
 
   /// Protagonist: mortal youth turned cultivator.
   ///
@@ -64,23 +72,7 @@ class XianxiaFixtures {
     );
   }
 
-  /// Qingyun Sect cultivation world.
-  ///
-  /// Features the six-tier realm system: mortal -> Qi Refining -> Foundation
-  /// Establishment -> Golden Core -> Nascent Soul -> Deity Transformation.
-  static WorldSetting sectWorld() {
-    return WorldSetting(
-      id: _uuid.v4(),
-      name: '青云宗修仙界',
-      description: '青云宗坐落的修仙世界，修行体系为凡人→练气→筑基→金丹→元婴→化神。'
-          '凡人通过灵根测试方可入门修仙，练气期分九层，筑基后方可御剑飞行。',
-      geography: '青云山脉，主峰青云峰',
-      factions: '青云宗',
-      rules: '修仙者须遵守天道法则，不可滥杀凡人；门规森严，等级分明',
-      techLevel: '古代仙侠',
-      createdAt: _fixedDate,
-    );
-  }
+  static List<SkillDocument> skills() => skillRules();
 
   /// Four Skill guardian rules covering realm constraints, sect hierarchy,
   /// world taboos, and ability limits.
