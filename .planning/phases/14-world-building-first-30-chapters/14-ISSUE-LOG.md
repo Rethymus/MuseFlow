@@ -2,29 +2,32 @@
 
 **Phase:** 14-world-building-first-30-chapters  
 **Created:** YYYY-MM-DD  
-**Updated:** 2026-06-07  
+**Updated:** 2026-06-08
 
-This log captures execution findings for JOURNEY-05/JOURNEY-06: bugs, UX friction, missing needs, GLM compatibility findings, automated UI evidence, and final human-review-only notes.
+This log captures execution findings for JOURNEY-05/JOURNEY-06: bugs, UX friction, missing needs, GLM compatibility findings, automated UI evidence, final human-review-only notes, and platform UI observations.
 
 ## Summary Statistics
 
 | Metric | Count |
 |--------|-------|
-| Total issues | 3 |
+| Total issues | 6 |
 | High severity | 1 |
-| Medium severity | 2 |
-| Low severity | 0 |
-| 功能缺陷 | 2 |
-| 体验摩擦 | 0 |
-| 缺失需求 | 1 |
+| Medium severity | 3 |
+| Low severity | 2 |
+| 功能缺陷 | 3 |
+| 体验摩擦 | 1 |
+| 缺失需求 | 2 |
 
 ## Issues
 
 | ID | Category (功能缺陷/体验摩擦/缺失需求) | Severity (高/中/低) | Requirement | Title | Reproduction Steps | Expected Behavior | Actual Behavior | Evidence |
 |----|--------------------------------------|--------------------|-------------|-------|--------------------|-------------------|-----------------|----------|
 | P14-04-GLM-01 | 功能缺陷 | 高 | JOURNEY-05 | Serial GLM generation fails on chapter 2 after smoke and chapter 1 success | `GLM_API_KEY` present; run `flutter test test/journey/serial_generation_test.dart -j 1 --timeout 1200s` | All 30 chapter generations complete serially with 3s spacing, then deviation detection and token audit run | Smoke passed twice; chapter 1 generated 512 chars; chapter 2 raised `AIStreamException`, so 30-chapter, deviation, and token audit evidence remain blocked | Command log observation: `[SMOKE_TEST_PASSED]` then `[JOURNEY] Chapter 1/30 generated (512 chars)` then `[ERROR] Chapter 2/30 failed: AIStreamException: ...`; reruns now log exception class plus sanitized message only; no secrets printed |
-| P14-04-AUTO-01 | 缺失需求 | 中 | JOURNEY-06 | IME composition and pixel-level toolbar flip cannot be fully proven headlessly | Run `flutter test test/journey/automated_ui_evidence_test.dart --timeout 180s` in headless test environment | Automated suite should prove all previously manual toolbar checks | Operation triggerability is proven, but real system IME composition and pixel-perfect desktop toolbar flip require platform rendering / OS IME event evidence outside headless Dart tests | Automated limitation recorded; final human review should inspect IME and visual flip on target Windows/Android devices |
+| P14-04-AUTO-01 | 缺失需求 | 中 | JOURNEY-06 | IME composition and pixel-level toolbar flip cannot be fully proven headlessly | Run `flutter test test/journey/automated_ui_evidence_test.dart --timeout 180s` in headless test environment | Automated suite should prove all previously manual toolbar checks | Partially resolved: FloatingToolbar bottom-viewport flip confirmed by human observation (2026-06-08). IME composition remains human_needed (WSL limitation, P14-07-HUMAN-01). DeviationWarningWidget visual remains human_needed (deferred, P14-07-HUMAN-02). | Human observation for FloatingToolbar flip passed; IME and DeviationWidget blocked. Automated limitation recorded; final human review on native Windows/Android still needed for remaining items. |
 | P14-04-AI-01 | 功能缺陷 | 中 | JOURNEY-06 | Anti-AI-scent processor did not remove all verifier-listed phrases | Run automated anti-AI-scent evidence test with text containing all three phrases | All obvious AI-scent phrases listed by verifier are removed or flagged | Closed by P14-05: `值得注意的是`, `总而言之`, and `需要指出的是` are removed and recorded as banned-word highlights | `flutter test test/journey/automated_ui_evidence_test.dart --plain-name "should remove obvious AI-scent phrases from editor output" --timeout 180s`; source gate asserts `isNot(contains('总而言之'))` and `isNot(contains('需要指出的是'))` |
+| P14-07-UI-01 | 体验摩擦 | 低 | JOURNEY-06 | Editor dark background with dark text — insufficient contrast | Launch app on Linux desktop; observe editor text rendering against dark background | Text color should be white/light when background is dark (theme-aware contrast) | Observed: editor background is dark but text color remains dark/black, making content nearly unreadable. Affects entire editor and potentially other views. | Human observation on Linux desktop (WSL2, 2026-06-08): dark background with dark text clearly visible. Needs project-wide investigation of theme/text color handling. |
+| P14-07-HUMAN-01 | 缺失需求 | 中 | JOURNEY-06 | Chinese IME composition cannot be tested in WSL Linux environment | Run Flutter app in WSL2 Linux and attempt Chinese input via Windows IME | System IME composition events should reach the Flutter editor | WSL2 Linux GUI apps cannot receive Windows IME input events; only copy-paste works. This is a platform limitation, not an app bug. Requires native Windows or Android device for proper testing. | Human observation (2026-06-08): Arch Linux in WSL2, `flutter run -d linux`, Chinese IME input does not reach editor. |
+| P14-07-HUMAN-02 | 缺失需求 | 中 | JOURNEY-06 | DeviationWarningWidget visual rendering not yet verified | Display DeviationWarningWidget in running app and verify readability of severity/rule/description/fix | All four fields (severity, rule name, description, suggested fix) should be readable | Deferred: triggering deviation warnings requires AI content generation which needs IME or pre-generated content. Cannot verify without either real device IME or test fixture with pre-loaded deviation state. | Human observation (2026-06-08): deferred due to IME limitation preventing content generation flow. |
 
 - [x] CR-01/P14-05-HIVE: journey Hive cleanup now owns a per-container `Directory.systemTemp.createTempSync('journey_test_')` directory, calls `Hive.close()`, and deletes only that `tempDir` recursively; no helper-level global `Hive.deleteFromDisk()` cleanup remains.
 - [x] P14-05-AI-01: anti-AI-scent processing now removes `值得注意的是`, `总而言之`, and `需要指出的是`; automated evidence asserts absence and highlight reporting for all three verifier-listed phrases.
@@ -71,6 +74,34 @@ Executed by test scripts and checkable via test output:
 - [x] Fragment synthesis produces non-empty output > 50 chars (fragment_synthesis_test group 3)
 - [x] Chapter operations: reorder/split/merge/copy/delete/final order (automated_ui_evidence_test)
 
+### Human Platform Observations (2026-06-08)
+
+Platform: Linux desktop (Arch Linux in WSL2), `flutter run -d linux`
+
+#### FloatingToolbar Bottom-Viewport Flip — ✓ PASSED
+
+- [x] Selected text in middle of editor viewport → FloatingToolbar appeared below selection as expected.
+- [x] Selected text in bottom 40% of editor viewport → FloatingToolbar flipped above the selection.
+- **Observation:** Toolbar correctly detects proximity to viewport bottom edge and repositions above the selection anchor. No visual clipping or overflow observed.
+
+**Evidence:** Human observation on Linux desktop (WSL2, 2026-06-08). FloatingToolbar bottom flip confirmed working.
+
+#### Chinese IME Composition — ⚠ human_needed
+
+- [ ] Cannot test in WSL2 — Windows IME events do not reach Linux GUI apps. See P14-07-HUMAN-01.
+
+#### DeviationWarningWidget Visual Rendering — ⚠ human_needed
+
+- [ ] Deferred — requires AI-generated content with deviation warnings. Cannot trigger without IME or pre-loaded deviation state. See P14-07-HUMAN-02.
+
+#### Additional Finding: Dark Theme Text Contrast — ✗ FAILED
+
+- [x] Editor background renders as dark theme.
+- [ ] Text color remains dark/black against dark background — content nearly unreadable.
+- **Impact:** Affects entire editor. Needs project-wide theme/text-color investigation. See P14-07-UI-01.
+
+**Evidence:** Human observation (2026-06-08): dark background with dark text clearly visible in running app.
+
 ### Blocked GLM Serial Verifications
 
 Remain blocked by P14-04-GLM-01; not marked complete:
@@ -91,7 +122,7 @@ Former manual-only checks converted to repeatable automated checks where possibl
 - [x] `自由输入` operation triggerability proven via `EditorAIOperation.freeInput` with instruction `让这段更悬疑`.
 - [x] Output check proves `值得注意的是`, `总而言之`, and `需要指出的是` removal.
 - [x] All three removed phrases are recorded as banned-word highlights for UI reporting.
-- [ ] Pixel-level toolbar positioning/flip and real IME composition are not fully provable in headless tests; see P14-04-AUTO-01.
+- [x] Pixel-level toolbar positioning/flip: **bottom-viewport flip confirmed by human observation (2026-06-08)**; real IME composition remains untested (P14-07-HUMAN-01).
 
 **Evidence:** `flutter test test/journey/automated_ui_evidence_test.dart --plain-name "should remove obvious AI-scent phrases from editor output" --timeout 180s` passed. Logs: `[AUTO_UI] editor operations passed: rewrite/polish/freeInput`; `[AUTO_UI] anti-AI-scent removal passed; verifier-listed phrases removed`.
 
@@ -101,7 +132,7 @@ Former manual-only checks converted to repeatable automated checks where possibl
 - [x] Four active Skill rules exist (`境界体系约束`, `门派等级森严`, `世界观禁忌`, `能力限制`).
 - [x] `KnowledgeInjectionMiddleware` provider resolves against refreshed NameIndex.
 - [ ] Generated 30-chapter content cannot be checked for all-chapter Skill consistency because serial GLM generation remains blocked by P14-04-GLM-01.
-- [ ] `DeviationWarningWidget` visual rendering remains final-review-only/platform UI evidence; see P14-04-AUTO-01.
+- [ ] `DeviationWarningWidget` visual rendering deferred — human_needed (P14-07-HUMAN-02), cannot trigger without IME or pre-loaded deviation state.
 
 **Evidence:** `automated_ui_evidence_test.dart` passed with `[AUTO_UI] knowledge/Skill evidence passed: matches=3, skills=4`.
 
