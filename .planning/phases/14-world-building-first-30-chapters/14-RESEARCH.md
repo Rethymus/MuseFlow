@@ -543,10 +543,10 @@ final result = await deviationService.detectDeviations(
 
 if (result.hasWarnings) {
   for (final warning in result.warnings) {
-    print('[偏离] ${warning.severity}: ${warning.description}');
-    print('  规则: ${warning.skillName}');
+    debugPrint('[偏离] ${warning.severity}: ${warning.description}');
+    debugPrint('  规则: ${warning.skillName}');
     if (warning.suggestedFix != null) {
-      print('  建议: ${warning.suggestedFix}');
+      debugPrint('  建议: ${warning.suggestedFix}');
     }
   }
 }
@@ -577,20 +577,19 @@ if (result.hasWarnings) {
 
 ## Open Questions
 
-1. **GLM API Streaming Compatibility**
-   - What we know: GLM exposes an OpenAI-compatible endpoint. `openai_dart` supports custom baseUrl.
-   - What's unclear: Whether GLM's streaming format is fully compatible with `openai_dart`'s SSE parsing. Some OpenAI-compatible APIs have subtle differences in stream event format.
-   - Recommendation: Test a single streaming call first before running the full 30-chapter loop. Add error classification logging to catch format mismatches early.
+All previously open research questions are resolved into explicit pre-execution plan tasks/checkpoints in `14-01-PLAN.md` and `14-03-PLAN.md`.
 
-2. **Provider Graph Depth with Real API Credentials**
-   - What we know: Many providers (openingGeneratorServiceProvider, deviationDetectionServiceProvider, etc.) require activeProvider + activeApiKey to be non-null.
-   - What's unclear: Whether overriding activeProviderProvider + activeApiKeyProvider is sufficient to satisfy the entire provider graph, or if intermediate providers like providerServiceProvider also need overrides.
-   - Recommendation: Override the minimal set first, then add more overrides if StateError "未配置可用的 AI 模型" appears.
+1. **GLM API Streaming Compatibility — RESOLVED FOR EXECUTION**
+   - Decision: `serial_generation_test.dart` must run a single real GLM streaming smoke test before the 30-chapter loop.
+   - Evidence path: The test logs `[SMOKE_TEST_PASSED]` on success or `[SMOKE_TEST_FAILED]` and rethrows on failure. This satisfies D-04 stop-on-error before sustained generation begins.
 
-3. **Manual Spot-Check Scope Definition**
-   - What we know: D-05 says "full manual spot-check" of 4 areas. CONTEXT.md lists editor toolbar, knowledge injection + Skill guardian, opening guide, chapter operations.
-   - What's unclear: Whether "knowledge injection effectiveness" can be partially verified programmatically (e.g., checking that the system message contains entity context) vs. requiring full manual UI interaction.
-   - Recommendation: Automate what can be automated (verify prompt content contains entity names). Manual checks focus on UI interaction quality.
+2. **Provider Graph Depth with Real API Credentials — RESOLVED FOR EXECUTION**
+   - Decision: `journey_container.dart` must override `activeProviderProvider`, `activeApiKeyProvider`, and `openaiAdapterProvider` directly. The Plan 14-01 checkpoint explicitly checks for absence of `StateError: 未配置可用的 AI 模型`, `MissingPluginException`, and `PlatformException`.
+   - Evidence path: `opening_guide_test.dart`, `serial_generation_test.dart`, and `full_journey_test.dart` all fail fast if provider graph overrides are insufficient.
+
+3. **Manual Spot-Check Scope Definition — RESOLVED FOR EXECUTION**
+   - Decision: Automated tests verify prompt/content/audit assertions; the Plan 14-03 blocking human checkpoint requires actual app interaction for editor toolbar rewrite, polish, free-input, anti-AI-scent review, knowledge/Skill UI checks, opening guide style review, and chapter operations.
+   - Evidence path: `14-ISSUE-LOG.md` must record evidence for each manual-only subsection before approval.
 
 ## Environment Availability
 
@@ -618,7 +617,7 @@ if (result.hasWarnings) {
 | Framework | flutter_test (Dart test framework) |
 | Config file | none -- tests run via `flutter test test/journey/` |
 | Quick run command | `flutter test test/journey/world_building_test.dart` |
-| Full suite command | `flutter test test/journey/ --timeout 600s` |
+| Full suite command | `flutter test test/journey/ -j 1 --timeout 900s` |
 
 ### Phase Requirements -> Test Map
 | Req ID | Behavior | Test Type | Automated Command | File Exists? |
@@ -627,12 +626,12 @@ if (result.hasWarnings) {
 | JOURNEY-02 | Fragment capture -> AI synthesis | Integration | `flutter test test/journey/fragment_synthesis_test.dart` | Wave 0 |
 | JOURNEY-03 | Opening guide 3 styles | Integration | `flutter test test/journey/opening_guide_test.dart` | Wave 0 |
 | JOURNEY-04 | 30 chapter CRUD + reorder/split/merge | Integration | `flutter test test/journey/chapter_management_test.dart` | Wave 0 |
-| JOURNEY-05 | 30-chapter serial AI generation | Integration | `flutter test test/journey/serial_generation_test.dart -j 1 --timeout 600s` | Wave 0 |
+| JOURNEY-05 | 30-chapter serial AI generation | Integration | `flutter test test/journey/serial_generation_test.dart -j 1 --timeout 900s` | Wave 0 |
 | JOURNEY-06 | Editor floating toolbar + anti-AI-scent | Manual-only | Human interaction with running app | N/A |
 
 ### Sampling Rate
 - **Per task commit:** `flutter test test/journey/<specific_test>.dart`
-- **Per wave merge:** `flutter test test/journey/ --timeout 600s`
+- **Per wave merge:** `flutter test test/journey/ -j 1 --timeout 900s`
 - **Phase gate:** Full journey suite green + manual spot-check checklist complete
 
 ### Wave 0 Gaps
