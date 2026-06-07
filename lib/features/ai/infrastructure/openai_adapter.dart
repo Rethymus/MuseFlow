@@ -99,39 +99,62 @@ class OpenAIAdapter implements AIAdapter {
   static AIException classifyException(Object error) {
     if (error is AIException) return error;
 
+    final diagnostic = _safeDiagnostic(error);
+
     // openai_dart typed exceptions
     if (error is AuthenticationException) {
-      return const AIAuthException();
+      return AIAuthException(diagnostic);
     }
     if (error is PermissionDeniedException) {
-      return const AIAuthException();
+      return AIAuthException(diagnostic);
     }
     if (error is RateLimitException) {
-      return const AIRateLimitException();
+      return AIRateLimitException(diagnostic);
     }
     if (error is ConnectionException) {
-      return const AINetworkException();
+      return AINetworkException(diagnostic);
     }
     if (error is RequestTimeoutException) {
-      return const AINetworkException();
+      return AINetworkException(diagnostic);
     }
 
     // ApiException with specific status codes
     if (error is ApiException) {
       return switch (error.statusCode) {
-        401 || 403 => const AIAuthException(),
-        429 => const AIRateLimitException(),
-        _ => const AIStreamException(),
+        401 || 403 => AIAuthException(diagnostic),
+        429 => AIRateLimitException(diagnostic),
+        _ => AIStreamException(diagnostic),
       };
     }
 
     // openai_dart StreamException
     if (error is OpenAIException) {
-      return const AIStreamException();
+      return AIStreamException(diagnostic);
     }
 
     // Unknown errors
-    return const AIStreamException();
+    return AIStreamException(diagnostic);
+  }
+
+  static String _safeDiagnostic(Object error) {
+    final message = error.toString();
+    final sanitized = message
+        .replaceAll(
+          RegExp(
+            r'authorization\s*[:=]\s*bearer\s+[^\s,}]+',
+            caseSensitive: false,
+          ),
+          'Auth header [REDACTED]',
+        )
+        .replaceAll(
+          RegExp(r'bearer\s+[^\s,}]+', caseSensitive: false),
+          'Auth token [REDACTED]',
+        )
+        .replaceAll(
+          RegExp(r'(api[_-]?key\s*[:=]\s*)[^\s,}]+', caseSensitive: false),
+          r'$1[REDACTED]',
+        );
+    return '${error.runtimeType}: $sanitized';
   }
 
   /// Whether the adapter has an active client.

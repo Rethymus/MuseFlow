@@ -117,6 +117,8 @@ void main() {
 
         final classified = OpenAIAdapter.classifyException(exception);
         expect(classified, isA<AIRateLimitException>());
+        expect(classified.message, contains('RateLimitException'));
+        expect(classified.message, contains('Rate limited'));
       });
 
       test('should classify ConnectionException as AINetworkException', () {
@@ -126,6 +128,8 @@ void main() {
 
         final classified = OpenAIAdapter.classifyException(exception);
         expect(classified, isA<AINetworkException>());
+        expect(classified.message, contains('ConnectionException'));
+        expect(classified.message, contains('Connection refused'));
       });
 
       test('should classify RequestTimeoutException as AINetworkException', () {
@@ -176,6 +180,21 @@ void main() {
 
         final classified = OpenAIAdapter.classifyException(exception);
         expect(classified, isA<AIStreamException>());
+        expect(classified.message, contains('ApiException'));
+        expect(classified.message, contains('Server error'));
+      });
+
+      test('should sanitize secret-looking diagnostic text', () {
+        final exception = Exception(
+          'Authorization: Bearer sk-live-secret api_key=glm-secret',
+        );
+
+        final classified = OpenAIAdapter.classifyException(exception);
+        expect(classified, isA<AIStreamException>());
+        expect(classified.message, contains('Exception'));
+        expect(classified.message, isNot(contains('sk-live-secret')));
+        expect(classified.message, isNot(contains('glm-secret')));
+        expect(classified.message, contains('Auth header [REDACTED]'));
       });
 
       test('should classify unknown exceptions as AIStreamException', () {
