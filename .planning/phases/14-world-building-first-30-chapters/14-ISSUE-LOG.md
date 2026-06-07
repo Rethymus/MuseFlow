@@ -26,6 +26,8 @@ This log captures execution findings for JOURNEY-05/JOURNEY-06: bugs, UX frictio
 | P14-04-AUTO-01 | 缺失需求 | 中 | JOURNEY-06 | IME composition and pixel-level toolbar flip cannot be fully proven headlessly | Run `flutter test test/journey/automated_ui_evidence_test.dart --timeout 180s` in headless test environment | Automated suite should prove all previously manual toolbar checks | Operation triggerability is proven, but real system IME composition and pixel-perfect desktop toolbar flip require platform rendering / OS IME event evidence outside headless Dart tests | Automated limitation recorded; final human review should inspect IME and visual flip on target Windows/Android devices |
 | P14-04-AI-01 | 功能缺陷 | 中 | JOURNEY-06 | Anti-AI-scent processor removes `值得注意的是` but not `总而言之` / `需要指出的是` | Run automated anti-AI-scent evidence test with text containing all three phrases | All obvious AI-scent phrases listed by verifier are removed or flagged | `值得注意的是` is removed; `总而言之` and `需要指出的是` remain detectable and are not falsely marked as passed | `automated_ui_evidence_test.dart` asserts the limitation explicitly and logs `[AUTO_UI] anti-AI-scent detection passed; uncovered phrases remain documented` |
 
+- [x] CR-01/P14-05-HIVE: journey Hive cleanup now owns a per-container `Directory.systemTemp.createTempSync('journey_test_')` directory, calls `Hive.close()`, and deletes only that `tempDir` recursively; no helper-level global `Hive.deleteFromDisk()` cleanup remains.
+
 ## RESEARCH.md Open Questions -- Execution Findings
 
 ### OQ-01: GLM API Streaming Compatibility
