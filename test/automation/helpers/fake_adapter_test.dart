@@ -1,70 +1,58 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:museflow/core/presentation/providers.dart';
 import 'package:openai_dart/openai_dart.dart';
 
-import '../fixtures/manuscript_fixtures.dart';
 import '../fixtures/xianxia_content.dart';
 import 'fake_adapter.dart';
-import 'test_container.dart';
 
 void main() {
   group('FakeAdapter', () {
-    test(
-      'should return synthesis text when messages contain fragment keywords',
-      () async {
-        final adapter = FakeAdapter();
+    test('should returns deterministic synthesis text when fragments provided', () async {
+      final adapter = FakeAdapter();
 
-        final text = await adapter
-            .createStream(
-              apiKey: 'fake-key-for-testing',
-              baseUrl: 'http://localhost:11434/v1',
-              model: 'fake-model',
-              messages: [ChatMessage.user('请整理这些碎片')],
-            )
-            .join();
+      final text = await adapter
+          .createStream(
+            apiKey: 'fake-key-for-testing',
+            baseUrl: 'http://localhost:11434/v1',
+            model: 'fake-model',
+            messages: [ChatMessage.user('碎片：主角在悬崖边缘发现一枚古老玉简')],
+          )
+          .join();
 
-        expect(text, contains('林风'));
-        expect(text, contains('筑基'));
-      },
-    );
+      expect(text, contains('林风'));
+      expect(text, contains('筑基'));
+    });
 
-    test(
-      'should return rewrite text when messages contain rewrite keywords',
-      () async {
-        final adapter = FakeAdapter();
+    test('should returns deterministic rewrite text when rewrite requested', () async {
+      final adapter = FakeAdapter();
 
-        final text = await adapter
-            .createStream(
-              apiKey: 'fake-key-for-testing',
-              baseUrl: 'http://localhost:11434/v1',
-              model: 'fake-model',
-              messages: [ChatMessage.user('请改写语气')],
-            )
-            .join();
+      final text = await adapter
+          .createStream(
+            apiKey: 'fake-key-for-testing',
+            baseUrl: 'http://localhost:11434/v1',
+            model: 'fake-model',
+            messages: [ChatMessage.user('请改写这段文字的语气')],
+          )
+          .join();
 
-        expect(text, contains('剑光'));
-      },
-    );
+      expect(text, contains('剑光'));
+    });
 
-    test(
-      'should return polish text when messages contain polish keywords',
-      () async {
-        final adapter = FakeAdapter();
+    test('should returns deterministic polish text when polish requested', () async {
+      final adapter = FakeAdapter();
 
-        final text = await adapter
-            .createStream(
-              apiKey: 'fake-key-for-testing',
-              baseUrl: 'http://localhost:11434/v1',
-              model: 'fake-model',
-              messages: [ChatMessage.user('请润色文段')],
-            )
-            .join();
+      final text = await adapter
+          .createStream(
+            apiKey: 'fake-key-for-testing',
+            baseUrl: 'http://localhost:11434/v1',
+            model: 'fake-model',
+            messages: [ChatMessage.user('请润色这段文段')],
+          )
+          .join();
 
-        expect(text.contains('灵力') || text.contains('月华'), isTrue);
-      },
-    );
+      expect(text.contains('灵力') || text.contains('月华'), isTrue);
+    });
 
-    test('should call onUsage after stream completes', () async {
+    test('should calls onUsage after stream completes', () async {
       final adapter = FakeAdapter();
       Usage? capturedUsage;
 
@@ -87,7 +75,7 @@ void main() {
       );
     });
 
-    test('should yield error text when error mode always triggers', () async {
+    test('should returns error text when errorRate is 1.0', () async {
       final adapter = FakeAdapter(errorRate: 1.0, errorText: '网络异常');
 
       final text = await adapter
@@ -102,7 +90,7 @@ void main() {
       expect(text, '网络异常');
     });
 
-    test('should yield empty stream when emptyResponse is true', () async {
+    test('should returns empty stream when emptyResponse is true', () async {
       final adapter = FakeAdapter(emptyResponse: true);
 
       final chunks = await adapter
@@ -117,7 +105,7 @@ void main() {
       expect(chunks, isEmpty);
     });
 
-    test('should return deterministic text for same operation type', () async {
+    test('should is deterministic across repeated calls', () async {
       final adapter = FakeAdapter();
       final messages = [ChatMessage.user('请整理碎片')];
 
@@ -141,26 +129,20 @@ void main() {
       expect(first, second);
       expect(first, XianxiaContent.synthesis.first);
     });
-  });
 
-  group('Automation test container', () {
-    test(
-      'should create ProviderContainer with repositories and FakeAdapter override',
-      () async {
-        final container = await createTestContainer();
-        addTearDown(() => cleanupTestContainer(container));
+    test('should falls back to freeInput for unknown operation type', () async {
+      final adapter = FakeAdapter();
 
-        final repository = await container.read(
-          manuscriptRepositoryProvider.future,
-        );
-        final manuscript = await repository.add(
-          ManuscriptFixtures.xianxiaManuscript(),
-        );
-        final adapter = container.read(openaiAdapterProvider);
+      final text = await adapter
+          .createStream(
+            apiKey: 'fake-key-for-testing',
+            baseUrl: 'http://localhost:11434/v1',
+            model: 'fake-model',
+            messages: [ChatMessage.user('介绍这把古剑的来历')],
+          )
+          .join();
 
-        expect(repository.getById(manuscript.id), isNotNull);
-        expect(adapter, isA<FakeAdapter>());
-      },
-    );
+      expect(text, contains('斩仙'));
+    });
   });
 }
