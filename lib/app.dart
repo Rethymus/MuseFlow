@@ -41,6 +41,8 @@ class MuseFlowApp extends ConsumerWidget {
       title: 'MuseFlow 灵韵',
       debugShowCheckedModeBanner: false,
       theme: appTheme(),
+      darkTheme: appTheme(),
+      themeMode: ThemeMode.dark,
       routerConfig: router,
     );
   }

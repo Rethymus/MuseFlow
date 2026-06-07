@@ -20,20 +20,24 @@ import 'package:museflow/features/manuscript/presentation/chapter_sidebar.dart';
 import 'package:museflow/shared/constants/app_constants.dart';
 import 'package:super_editor/super_editor.dart';
 
-/// Provenance stylesheet reused from EditorPage for consistent AI-text styling.
-final _manuscriptProvenanceStylesheet = defaultStylesheet.copyWith(
-  inlineTextStyler: _manuscriptProvenanceInlineTextStyler,
-);
+/// Builds a theme-aware provenance stylesheet for the manuscript editor.
+///
+/// Converts the former top-level variable to a function so text color
+/// follows the current theme's onSurface color (dark mode fix, P14-07-UI-01).
+Stylesheet _buildManuscriptStylesheet(BuildContext context) {
+  final textColor = Theme.of(context).colorScheme.onSurface;
 
-TextStyle _manuscriptProvenanceInlineTextStyler(
-  Set<Attribution> attributions,
-  TextStyle existingStyle,
-) {
-  var style = defaultInlineTextStyler(attributions, existingStyle);
-  if (attributions.contains(aiProvenanceAttribution)) {
-    style = style.copyWith(backgroundColor: provenanceColor);
-  }
-  return style;
+  return defaultStylesheet.copyWith(
+    inlineTextStyler: (attributions, existingStyle) {
+      var style = defaultInlineTextStyler(attributions, existingStyle);
+      // Ensure text color follows the theme (dark mode fix).
+      style = style.copyWith(color: textColor);
+      if (attributions.contains(aiProvenanceAttribution)) {
+        style = style.copyWith(backgroundColor: provenanceColor);
+      }
+      return style;
+    },
+  );
 }
 
 /// Full-screen editor with a chapter navigation sidebar.
@@ -649,7 +653,7 @@ class _EditorWithSidebarState extends ConsumerState<EditorWithSidebar>
                   key: ValueKey(_currentChapterId),
                   editor: _editor!,
                   autofocus: true,
-                  stylesheet: _manuscriptProvenanceStylesheet,
+                  stylesheet: _buildManuscriptStylesheet(context),
                   selectionLayerLinks: _selectionLinks,
                   documentOverlayBuilders: [
                     _SelectionLeadersLayerBuilder(links: _selectionLinks!),
