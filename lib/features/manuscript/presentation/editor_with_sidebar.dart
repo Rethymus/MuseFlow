@@ -660,6 +660,8 @@ class _EditorWithSidebarState extends ConsumerState<EditorWithSidebar>
                         child: FloatingToolbar(
                           editor: _editor!,
                           selectionLayerLinks: _selectionLinks!,
+                          manuscriptId: widget.manuscriptId,
+                          chapterId: _currentChapterId,
                         ),
                       );
                     }),

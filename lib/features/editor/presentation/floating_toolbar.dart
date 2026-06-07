@@ -31,6 +31,8 @@ class FloatingToolbar extends ConsumerStatefulWidget {
     super.key,
     required this.editor,
     required this.selectionLayerLinks,
+    this.manuscriptId,
+    this.chapterId,
   });
 
   /// The editor instance for reading selection and document state.
@@ -38,6 +40,12 @@ class FloatingToolbar extends ConsumerStatefulWidget {
 
   /// Links for positioning relative to the editor selection.
   final SelectionLayerLinks selectionLayerLinks;
+
+  /// Optional manuscript context for token-audit attribution.
+  final String? manuscriptId;
+
+  /// Optional chapter context for token-audit attribution.
+  final String? chapterId;
 
   @override
   ConsumerState<FloatingToolbar> createState() => _FloatingToolbarState();
@@ -241,8 +249,8 @@ class _FloatingToolbarState extends ConsumerState<FloatingToolbar> {
           startOffset,
           endOffset,
           userInstruction: userInstruction,
-          manuscriptId: null, // TODO: pass actual manuscript ID when context available
-          chapterId: null, // TODO: pass actual chapter ID when context available
+          manuscriptId: widget.manuscriptId,
+          chapterId: widget.chapterId,
         );
 
     // Reset free-input state after starting
