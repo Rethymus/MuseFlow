@@ -111,7 +111,7 @@ Plans:
   5. 用户可以逐章使用 AI 生成内容（每章~100字修仙内容），知识库自动注入和 Skill 设定守护连续工作
   6. 用户可以在编辑器中选中文本触发浮窗操作（语气改写、段落润色、自由输入编辑），验证反AI味效果
 
-**Plans**: 3 plans
+**Plans**: 10 plans
 
 Plans:
 **Wave 1**
@@ -122,6 +122,17 @@ Plans:
 
 - [x] 14-02-PLAN.md — Fragment synthesis, opening guide, chapter management tests (JOURNEY-02, JOURNEY-03, JOURNEY-04)
 - [x] 14-03-PLAN.md — 30-chapter serial generation, E2E full-journey, issue log template (JOURNEY-05, JOURNEY-06)
+
+**Gap Closure:**
+
+- [x] 14-04-PLAN.md — Verification pass with RESEARCH.md open questions investigation (JOURNEY-05, JOURNEY-06)
+- [x] 14-05-PLAN.md — Anti-AI-scent phrase removal + chapter management validation fixes (JOURNEY-06, P14-04-AI-01, P14-05-CHAPTER-01)
+- [x] 14-06-PLAN.md — Live GLM serial generation debug (JOURNEY-05, P14-04-GLM-01)
+- [x] 14-07-PLAN.md — Human observation checkpoint + dark theme fix (JOURNEY-06, P14-04-AUTO-01, P14-07-UI-01)
+- [x] 14-08-PLAN.md — D-11 bounds post-processing for GLM output + live rerun (JOURNEY-05, P14-04-GLM-01)
+- [x] 14-09-PLAN.md — Security fixes CR-01/CR-02 + DeviationWarningWidget widget test (JOURNEY-06, CR-01, CR-02, P14-07-HUMAN-02)
+- [x] 14-10-PLAN.md — IME deferral documentation + final status update (JOURNEY-06, P14-07-HUMAN-01)
+
 **UI hint**: yes
 
 ### Phase 15: Full Manuscript & Story Structure
@@ -174,6 +185,6 @@ Phases execute in numeric order: 12 → 13 → 14 → 15 → 16
 | 11. 文稿库与章节管理 | v1.2 | 6/6 | Complete | 2026-06-06 |
 | 12. Token Audit Infrastructure | v1.3 | 3/3 | Complete   | 2026-06-06 |
 | 13. Automation Test Harness | v1.3 | 4/4 | Complete    | 2026-06-07 |
-| 14. World-Building & First 30 Chapters | v1.3 | 7/7 | Complete   | 2026-06-07 |
+| 14. World-Building & First 30 Chapters | v1.3 | 10/10 | Complete (with 1 deferred)   | 2026-06-08 |
 | 15. Full Manuscript & Story Structure | v1.3 | 0/? | Not started | - |
 | 16. Analysis & Reports | v1.3 | 0/? | Not started | - |
