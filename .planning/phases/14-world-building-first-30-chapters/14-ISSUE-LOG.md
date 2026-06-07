@@ -29,6 +29,9 @@ This log captures execution findings for JOURNEY-05/JOURNEY-06: bugs, UX frictio
 - [x] CR-01/P14-05-HIVE: journey Hive cleanup now owns a per-container `Directory.systemTemp.createTempSync('journey_test_')` directory, calls `Hive.close()`, and deletes only that `tempDir` recursively; no helper-level global `Hive.deleteFromDisk()` cleanup remains.
 - [x] P14-05-AI-01: anti-AI-scent processing now removes `值得注意的是`, `总而言之`, and `需要指出的是`; automated evidence asserts absence and highlight reporting for all three verifier-listed phrases.
 
+- [x] Deterministic supplemental JOURNEY-05 path: no-credential serial journey uses `journey-local-test-key` + deterministic adapter, generated 30/30 local chapters in D-11 range, sampled character-name checks passed, all-30 deviation detection invoked, and token audit flushed with `totalCalls >= 30`. This is local orchestration evidence only and does not close `P14-04-GLM-01`.
+- [x] Deterministic supplemental full journey path: no-credential world-building → fragment synthesis/opening surrogate → 30 chapter generation → persistence → token audit path runs with deterministic adapter and D-11 checks. This supplements, but does not replace, required real GLM D-02/D-11 evidence.
+
 ## RESEARCH.md Open Questions -- Execution Findings
 
 ### OQ-01: GLM API Streaming Compatibility
