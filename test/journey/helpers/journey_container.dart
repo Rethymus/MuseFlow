@@ -3,9 +3,11 @@ import 'dart:io';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:hive_ce/hive.dart';
+import 'package:museflow/core/infrastructure/hive_adapters.dart';
 import 'package:museflow/core/presentation/providers.dart';
 import 'package:museflow/features/ai/domain/ai_provider.dart';
 import 'package:museflow/features/ai/infrastructure/openai_adapter.dart';
+import 'package:museflow/features/templates/infrastructure/world_template_repository.dart';
 
 /// Creates a [ProviderContainer] configured for journey integration tests.
 ///
@@ -24,17 +26,21 @@ Future<ProviderContainer> createJourneyContainer({
   String baseUrl = 'https://open.bigmodel.cn/api/paas/v4',
   String model = 'glm-4-flash',
 }) async {
-  TestWidgetsFlutterBinding.ensureInitialized();
+  if (apiKey == 'journey-local-test-key') {
+    TestWidgetsFlutterBinding.ensureInitialized();
+  }
+
   final tempDir = Directory.systemTemp.createTempSync('journey_test_');
   Hive.init(tempDir.path);
+  _registerHiveAdapters();
 
-  // Open 15 Hive boxes required by knowledge/stats/story features.
-  // Per D-01: all boxes needed for full feature operation.
+  // Open Hive boxes required by knowledge/stats/story features.
+  // The typed 'fragments' box is intentionally opened by fragmentRepositoryProvider
+  // to avoid Hive type conflicts in journey tests.
   await Hive.openBox<dynamic>('manuscripts');
   await Hive.openBox<dynamic>('chapters');
   await Hive.openBox<dynamic>('token_audit');
   await Hive.openBox<dynamic>('ai_providers');
-  await Hive.openBox<dynamic>('fragments');
   await Hive.openBox<dynamic>('character_cards');
   await Hive.openBox<dynamic>('world_settings');
   await Hive.openBox<dynamic>('skill_documents');
@@ -62,6 +68,9 @@ Future<ProviderContainer> createJourneyContainer({
   return ProviderContainer(
     overrides: [
       openaiAdapterProvider.overrideWithValue(OpenAIAdapter()),
+      worldTemplateRepositoryProvider.overrideWithValue(
+        WorldTemplateRepository(assetLoader: (_) => File(_templateAssetPath).readAsString()),
+      ),
       activeProviderProvider.overrideWithValue(glmProvider),
       activeApiKeyProvider.overrideWithValue(apiKey),
     ],
@@ -74,4 +83,42 @@ Future<ProviderContainer> createJourneyContainer({
 Future<void> cleanupJourneyContainer(ProviderContainer container) async {
   container.dispose();
   await Hive.deleteFromDisk();
+}
+
+const _templateAssetPath = 'assets/templates/world_presets/templates_zh.json';
+
+void _registerHiveAdapters() {
+  if (!Hive.isAdapterRegistered(HiveTypeIds.fragment)) {
+    Hive.registerAdapter(FragmentAdapter());
+  }
+  if (!Hive.isAdapterRegistered(HiveTypeIds.appSettings)) {
+    Hive.registerAdapter(AppSettingsAdapter());
+  }
+  if (!Hive.isAdapterRegistered(HiveTypeIds.characterCard)) {
+    Hive.registerAdapter(CharacterCardAdapter());
+  }
+  if (!Hive.isAdapterRegistered(HiveTypeIds.worldSetting)) {
+    Hive.registerAdapter(WorldSettingAdapter());
+  }
+  if (!Hive.isAdapterRegistered(HiveTypeIds.skillDocument)) {
+    Hive.registerAdapter(SkillDocumentAdapter());
+  }
+  if (!Hive.isAdapterRegistered(HiveTypeIds.foreshadowingEntry)) {
+    Hive.registerAdapter(ForeshadowingEntryAdapter());
+  }
+  if (!Hive.isAdapterRegistered(HiveTypeIds.plotNode)) {
+    Hive.registerAdapter(PlotNodeAdapter());
+  }
+  if (!Hive.isAdapterRegistered(HiveTypeIds.guardianAnnotation)) {
+    Hive.registerAdapter(GuardianAnnotationAdapter());
+  }
+  if (!Hive.isAdapterRegistered(HiveTypeIds.manuscript)) {
+    Hive.registerAdapter(ManuscriptAdapter());
+  }
+  if (!Hive.isAdapterRegistered(HiveTypeIds.chapter)) {
+    Hive.registerAdapter(ChapterAdapter());
+  }
+  if (!Hive.isAdapterRegistered(HiveTypeIds.tokenAuditRecord)) {
+    Hive.registerAdapter(TokenAuditRecordAdapter());
+  }
 }

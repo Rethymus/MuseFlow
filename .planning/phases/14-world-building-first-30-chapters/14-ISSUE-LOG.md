@@ -2,7 +2,7 @@
 
 **Phase:** 14-world-building-first-30-chapters  
 **Created:** YYYY-MM-DD  
-**Updated:** YYYY-MM-DD  
+**Updated:** 2026-06-07  
 
 This log captures execution findings for JOURNEY-05/JOURNEY-06: bugs, UX friction, missing needs, GLM compatibility findings, and manual spot-check evidence.
 
@@ -10,11 +10,11 @@ This log captures execution findings for JOURNEY-05/JOURNEY-06: bugs, UX frictio
 
 | Metric | Count |
 |--------|-------|
-| Total issues | 0 |
-| High severity | 0 |
+| Total issues | 1 |
+| High severity | 1 |
 | Medium severity | 0 |
 | Low severity | 0 |
-| 功能缺陷 | 0 |
+| 功能缺陷 | 1 |
 | 体验摩擦 | 0 |
 | 缺失需求 | 0 |
 
@@ -22,23 +22,23 @@ This log captures execution findings for JOURNEY-05/JOURNEY-06: bugs, UX frictio
 
 | ID | Category (功能缺陷/体验摩擦/缺失需求) | Severity (高/中/低) | Requirement | Title | Reproduction Steps | Expected Behavior | Actual Behavior | Evidence |
 |----|--------------------------------------|--------------------|-------------|-------|--------------------|-------------------|-----------------|----------|
-| | | | | | | | | |
+| P14-04-GLM-01 | 功能缺陷 | 高 | JOURNEY-05 | Serial GLM generation fails on chapter 2 after smoke and chapter 1 success | `GLM_API_KEY` present; run `flutter test test/journey/serial_generation_test.dart -j 1 --timeout 1200s` | All 30 chapter generations complete serially with 3s spacing, then deviation detection and token audit run | Smoke passed twice; chapter 1 generated 512 chars; chapter 2 raised `AIStreamException`, so 30-chapter, deviation, and token audit evidence remain blocked | Command log observation: `[SMOKE_TEST_PASSED]` then `[JOURNEY] Chapter 1/30 generated (512 chars)` then `[ERROR] Chapter 2/30 failed: Instance of 'AIStreamException'`; no secrets printed |
 
 ## RESEARCH.md Open Questions -- Execution Findings
 
 ### OQ-01: GLM API Streaming Compatibility
 
-- **Status:** unresolved
-- **Findings:** Pending execution of `flutter test test/journey/serial_generation_test.dart -j 1 --plain-name "should pass GLM streaming smoke test" --timeout 120s` with `GLM_API_KEY`.
-- **Impact:** If blocked, 30-chapter serial generation cannot validate real provider behavior.
-- **Evidence:** Add test output excerpt here. Do not paste API keys.
+- **Status:** verified
+- **Findings:** GLM streaming compatibility was proven for short calls. The smoke command `flutter test test/journey/serial_generation_test.dart -j 1 --plain-name "should pass GLM streaming smoke test" --timeout 120s` passed with a 230-character streamed response. The full serial command also passed its initial smoke (191 chars) and the pre-loop smoke (482 chars) before failing later in sustained generation.
+- **Impact:** Basic streaming compatibility is verified; sustained 30-chapter validation is blocked by P14-04-GLM-01 after chapter 1.
+- **Evidence:** Safe output excerpts: `[SMOKE_TEST_PASSED] GLM API streaming compatible (230 chars)`, `[SMOKE_TEST_PASSED] GLM API streaming compatible (191 chars)`, `[SMOKE_TEST_PASSED] GLM API streaming compatible (482 chars)`. No API key or bearer token was printed.
 
 ### OQ-02: Provider Graph Depth with Real API Credentials
 
-- **Status:** unresolved
-- **Findings:** Pending execution of serial and full-journey tests. Expected overrides are `openaiAdapterProvider`, `activeProviderProvider`, and `activeApiKeyProvider` from `createJourneyContainer()`.
-- **Impact:** Provider resolution failure blocks PromptPipeline, OpeningGeneratorService, DeviationDetectionService, and token audit verification.
-- **Evidence:** Add provider resolution notes and any additional overrides required.
+- **Status:** verified
+- **Findings:** Provider graph overrides resolved for real GLM credentials after two test-harness fixes: (1) `createJourneyContainer()` no longer initializes `TestWidgetsFlutterBinding` for real network keys, avoiding Flutter test HTTP interception; (2) the journey container registers Hive adapters and uses a filesystem asset loader for `WorldTemplateRepository`, avoiding typed Hive and asset-bundle failures in non-widget GLM tests. Fragment synthesis and opening guide suites passed with real `GLM_API_KEY`.
+- **Impact:** PromptPipeline, OpeningGeneratorService, template instantiation, real adapter, and token audit provider graph can resolve. Long-run serial generation is now blocked by the API stream failure recorded in P14-04-GLM-01, not by missing provider overrides.
+- **Evidence:** `fragment_synthesis_test.dart` passed 4/4 with synthesis length 445 chars and character names `[林风, 清虚真人, 苏雪晴, 赵天磊]`; `opening_guide_test.dart` passed 3/3 with 3 non-identical styles `[场景切入, 人物切入, 悬念切入]`; `world_building_test.dart` passed 1/1 after template repository/service wiring.
 
 ### OQ-03: Manual Spot-Check Scope Definition
 
@@ -57,8 +57,8 @@ Executed by test scripts and checkable via test output:
 - [ ] Deviation detection warnings logged (serial_generation_test group 5)
 - [ ] Token audit accuracy: totalCalls >= 30 (serial_generation_test group 6)
 - [ ] 30 chapters each 300-500 characters (serial_generation_test group 3, per D-11)
-- [ ] Opening guide 3 non-identical variants (opening_guide_test group 3)
-- [ ] Fragment synthesis produces non-empty output > 50 chars (fragment_synthesis_test group 3)
+- [x] Opening guide 3 non-identical variants (opening_guide_test group 3)
+- [x] Fragment synthesis produces non-empty output > 50 chars (fragment_synthesis_test group 3)
 
 ### Manual-Only Verifications
 
