@@ -128,7 +128,8 @@ void main() {
             '[JOURNEY] Chapter ${i + 1}/30 generated (${output.length} chars)',
           );
         } catch (e) {
-          debugPrint('[ERROR] Chapter ${i + 1}/30 failed: $e');
+          final diagnostic = _safeExceptionDiagnostic(e);
+          debugPrint('[ERROR] Chapter ${i + 1}/30 failed: $diagnostic');
           rethrow;
         }
 
@@ -221,9 +222,30 @@ Future<void> _runGlmSmokeTest(ProviderContainer container) async {
       '[SMOKE_TEST_PASSED] GLM API streaming compatible (${output.length} chars)',
     );
   } catch (e) {
-    debugPrint('[SMOKE_TEST_FAILED] $e');
+    debugPrint('[SMOKE_TEST_FAILED] ${_safeExceptionDiagnostic(e)}');
     rethrow;
   }
+}
+
+String _safeExceptionDiagnostic(Object error) {
+  final sanitized = error
+      .toString()
+      .replaceAll(
+        RegExp(
+          r'authorization\s*[:=]\s*bearer\s+[^\s,}]+',
+          caseSensitive: false,
+        ),
+        'Auth header [REDACTED]',
+      )
+      .replaceAll(
+        RegExp(r'bearer\s+[^\s,}]+', caseSensitive: false),
+        'Auth token [REDACTED]',
+      )
+      .replaceAll(
+        RegExp(r'(api[_-]?key\s*[:=]\s*)[^\s,}]+', caseSensitive: false),
+        r'$1[REDACTED]',
+      );
+  return '${error.runtimeType}: $sanitized';
 }
 
 Future<void> _setupWorldBuilding(ProviderContainer container) async {
