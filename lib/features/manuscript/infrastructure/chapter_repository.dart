@@ -42,7 +42,7 @@ class ChapterRepository {
   List<Chapter> getAll() {
     try {
       return _box.values
-          .map((json) => Chapter.fromJson(json as Map<String, dynamic>))
+          .map((json) => Chapter.fromJson(Map<String, dynamic>.from(json as Map)))
           .toList();
     } catch (e) {
       throw StateError('Failed to read chapters: $e');
@@ -54,7 +54,7 @@ class ChapterRepository {
     try {
       final json = _box.get(id);
       if (json == null) return null;
-      return Chapter.fromJson(json as Map<String, dynamic>);
+      return Chapter.fromJson(Map<String, dynamic>.from(json as Map));
     } catch (e) {
       throw StateError('Failed to read chapter $id: $e');
     }
@@ -66,7 +66,7 @@ class ChapterRepository {
   List<Chapter> getByManuscriptId(String manuscriptId) {
     try {
       return _box.values
-          .map((json) => Chapter.fromJson(json as Map<String, dynamic>))
+          .map((json) => Chapter.fromJson(Map<String, dynamic>.from(json as Map)))
           .where((chapter) => chapter.manuscriptId == manuscriptId)
           .toList()
         ..sort((a, b) => a.sortOrder.compareTo(b.sortOrder));
