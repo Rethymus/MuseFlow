@@ -7,7 +7,7 @@ library;
 
 import 'dart:convert';
 
-import 'package:museflow/features/ai/infrastructure/openai_adapter.dart';
+import 'package:museflow/features/ai/domain/ai_adapter.dart';
 import 'package:museflow/features/onboarding/domain/opening_variant.dart';
 import 'package:museflow/features/stats/application/token_audit_service.dart';
 import 'package:museflow/features/stats/domain/audit_operation_type.dart';
@@ -16,7 +16,7 @@ import 'package:openai_dart/openai_dart.dart';
 /// Typedef for test-only stream override.
 ///
 /// In production, this is null and [OpeningGeneratorService] uses
-/// [OpenAIAdapter.createStream]. In tests, provide a mock stream.
+/// [AIAdapter.createStream]. In tests, provide a mock stream.
 typedef OpeningStream = Stream<String> Function(List<ChatMessage> messages);
 
 /// Maximum character length for [storyConcept] input (T-08-07).
@@ -51,7 +51,7 @@ class OpeningGeneratorService {
     this.auditService,
   });
 
-  final OpenAIAdapter? openAIAdapter;
+  final AIAdapter? openAIAdapter;
   final String? apiKey;
   final String? baseUrl;
   final String? model;
@@ -88,7 +88,8 @@ class OpeningGeneratorService {
       );
 
       // Capture input for audit (use descriptions)
-      final inputText = 'Genre: $genreName\nWorld: $worldDescription\nCharacter: $characterDescription';
+      final inputText =
+          'Genre: $genreName\nWorld: $worldDescription\nCharacter: $characterDescription';
 
       final buffer = StringBuffer();
 
@@ -131,12 +132,14 @@ class OpeningGeneratorService {
 
       return openingsList
           .whereType<Map<String, dynamic>>()
-          .map((item) => OpeningVariant.fromJson(item).copyWith(
-                text: _truncateText(
-                  item['text'] as String? ?? '',
-                  _maxOpeningTextLength,
-                ),
-              ))
+          .map(
+            (item) => OpeningVariant.fromJson(item).copyWith(
+              text: _truncateText(
+                item['text'] as String? ?? '',
+                _maxOpeningTextLength,
+              ),
+            ),
+          )
           .toList();
     } catch (error) {
       // T-08-08: Graceful fallback to empty list on any error.
@@ -152,7 +155,8 @@ class OpeningGeneratorService {
     String? storyConcept,
   }) {
     // T-08-07: Truncate story concept to max length.
-    final safeConcept = storyConcept != null && storyConcept.length > _maxStoryConceptLength
+    final safeConcept =
+        storyConcept != null && storyConcept.length > _maxStoryConceptLength
         ? storyConcept.substring(0, _maxStoryConceptLength)
         : storyConcept;
 
@@ -170,7 +174,8 @@ class OpeningGeneratorService {
           'genre': genreName,
           'world': worldDescription,
           'character': characterDescription,
-          if (safeConcept != null && safeConcept.isNotEmpty) 'concept': safeConcept,
+          if (safeConcept != null && safeConcept.isNotEmpty)
+            'concept': safeConcept,
         }),
       ),
     ];

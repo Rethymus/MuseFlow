@@ -12,6 +12,7 @@ library;
 
 import 'dart:async';
 
+import 'package:museflow/features/ai/domain/ai_adapter.dart';
 import 'package:museflow/features/ai/domain/ai_exception.dart';
 import 'package:openai_dart/openai_dart.dart';
 
@@ -20,7 +21,7 @@ import 'package:openai_dart/openai_dart.dart';
 /// Creates and caches [OpenAIClient] instances. When the provider config
 /// (apiKey + baseUrl) changes, the old client is disposed and a new one
 /// is created. This prevents TCP connection leaks per Pitfall 4 in RESEARCH.md.
-class OpenAIAdapter {
+class OpenAIAdapter implements AIAdapter {
   OpenAIClient? _client;
   String? _cachedApiKey;
   String? _cachedBaseUrl;
@@ -40,6 +41,7 @@ class OpenAIAdapter {
   ///
   /// Returns a [Stream<String>] of text delta tokens.
   /// On error, the stream emits an [AIException] subclass.
+  @override
   Stream<String> createStream({
     required String apiKey,
     required String baseUrl,
@@ -148,13 +150,10 @@ class OpenAIAdapter {
   }) async {
     if (apiKey.isEmpty) return [];
     try {
-      final client = OpenAIClient.withApiKey(
-        apiKey,
-        baseUrl: baseUrl,
-      );
+      final client = OpenAIClient.withApiKey(apiKey, baseUrl: baseUrl);
       final modelList = await client.models.list().timeout(
-            const Duration(seconds: 5),
-          );
+        const Duration(seconds: 5),
+      );
       client.close();
       return modelList.data.map((m) => m.id).toList();
     } catch (_) {
@@ -195,10 +194,7 @@ class OpenAIAdapter {
 
     // Per Pitfall 2: Ollama works because it accepts any API key.
     // The adapter just passes whatever apiKey it receives.
-    final client = OpenAIClient.withApiKey(
-      apiKey,
-      baseUrl: baseUrl,
-    );
+    final client = OpenAIClient.withApiKey(apiKey, baseUrl: baseUrl);
 
     _client = client;
     _cachedApiKey = apiKey;
@@ -212,7 +208,8 @@ class OpenAIAdapter {
   /// Per T-02-08: Enforces HTTPS to prevent API key leakage.
   /// Localhost is allowed for Ollama and local development.
   void _validateBaseUrl(String baseUrl) {
-    final isLocalhost = baseUrl.startsWith('http://localhost') ||
+    final isLocalhost =
+        baseUrl.startsWith('http://localhost') ||
         baseUrl.startsWith('http://127.0.0.1') ||
         baseUrl.startsWith('http://0.0.0.0') ||
         baseUrl.startsWith('http://[::1]');

@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:museflow/features/ai/infrastructure/openai_adapter.dart';
+import 'package:museflow/features/ai/domain/ai_adapter.dart';
 import 'package:museflow/features/knowledge/domain/skill_document.dart';
 import 'package:museflow/features/stats/application/token_audit_service.dart';
 import 'package:museflow/features/stats/domain/audit_operation_type.dart';
@@ -48,7 +48,7 @@ class DeviationResult {
 }
 
 class DeviationDetectionService {
-  final OpenAIAdapter openAIAdapter;
+  final AIAdapter openAIAdapter;
   final String apiKey;
   final String baseUrl;
   final String model;
@@ -112,7 +112,9 @@ class DeviationDetectionService {
   String _buildPrompt(String text, List<SkillDocument> activeSkills) {
     final buffer = StringBuffer();
     buffer.writeln('检查下面文本是否违背激活的世界观设定。');
-    buffer.writeln('只返回 JSON 数组，每项包含 description、severity(low|medium|clear)、skillName、suggestedFix。');
+    buffer.writeln(
+      '只返回 JSON 数组，每项包含 description、severity(low|medium|clear)、skillName、suggestedFix。',
+    );
     buffer.writeln('只报告 medium 或 clear 级别的问题；低置信度不要报告。');
     buffer.writeln('\n【待检查文本】\n$text');
     buffer.writeln('\n【激活设定】');
@@ -125,12 +127,18 @@ class DeviationDetectionService {
 
   DeviationResult _parseResult(String raw) {
     try {
-      final cleaned = raw.trim().replaceAll('```json', '').replaceAll('```', '');
+      final cleaned = raw
+          .trim()
+          .replaceAll('```json', '')
+          .replaceAll('```', '');
       final decoded = jsonDecode(cleaned);
       if (decoded is! List) return const DeviationResult(warnings: []);
       final warnings = decoded
           .whereType<Map>()
-          .map((item) => DeviationWarning.fromJson(Map<String, dynamic>.from(item)))
+          .map(
+            (item) =>
+                DeviationWarning.fromJson(Map<String, dynamic>.from(item)),
+          )
           .where((warning) => warning.severity != DeviationSeverity.low)
           .toList();
       return DeviationResult(warnings: warnings);
