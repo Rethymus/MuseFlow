@@ -89,6 +89,9 @@ void main() {
         await cleanupJourneyContainer(localContainer);
       }
     },
+    skip: apiKey != null
+        ? 'Deterministic no-credential path runs only without GLM_API_KEY'
+        : null,
     timeout: const Timeout(Duration(minutes: 5)),
   );
 

@@ -31,6 +31,7 @@ This log captures execution findings for JOURNEY-05/JOURNEY-06: bugs, UX frictio
 
 - [x] Deterministic supplemental JOURNEY-05 path: no-credential serial journey uses `journey-local-test-key` + deterministic adapter, generated 30/30 local chapters in D-11 range, sampled character-name checks passed, all-30 deviation detection invoked, and token audit flushed with `totalCalls >= 30`. This is local orchestration evidence only and does not close `P14-04-GLM-01`.
 - [x] Deterministic supplemental full journey path: no-credential world-building → fragment synthesis/opening surrogate → 30 chapter generation → persistence → token audit path runs with deterministic adapter and D-11 checks. This supplements, but does not replace, required real GLM D-02/D-11 evidence.
+- [ ] P14-04-GLM-01 live rerun evidence (2026-06-08): real GLM smoke passed and serial generation produced 30/30 chapters with 3s spacing, but D-11 validation failed because chapter 5 was 504 chars and later chapters also exceeded 500 chars before validation stopped. Last successful D-11 chapter count: 4/30. Deviation detection did not run and token audit did not flush because D-04/D-11 stopped the run. `P14-04-GLM-01` remains open; route to debug/replan for product/test harness enforcement of 300-500 character bounds. No secrets printed.
 
 ## RESEARCH.md Open Questions -- Execution Findings
 
