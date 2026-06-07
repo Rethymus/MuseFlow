@@ -86,12 +86,13 @@ void main() {
         bannedPhrases: const [],
       );
       expect(result.processedText, isNot(contains('值得注意的是')));
+      expect(result.processedText, isNot(contains('总而言之')));
+      expect(result.processedText, isNot(contains('需要指出的是')));
       expect(
-        result.processedText,
-        anyOf(contains('总而言之'), contains('需要指出的是')),
-        reason: 'Automated evidence should expose phrases not yet covered by processor rules',
+        result.highlights.map((highlight) => highlight.originalText),
+        containsAll(['值得注意的是', '总而言之', '需要指出的是']),
       );
-      debugPrint('[AUTO_UI] anti-AI-scent detection passed; uncovered phrases remain documented');
+      debugPrint('[AUTO_UI] anti-AI-scent removal passed; verifier-listed phrases removed');
     });
 
     test('should prove knowledge and Skill evidence without GLM serial output', () async {

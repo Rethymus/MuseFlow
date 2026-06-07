@@ -24,9 +24,10 @@ This log captures execution findings for JOURNEY-05/JOURNEY-06: bugs, UX frictio
 |----|--------------------------------------|--------------------|-------------|-------|--------------------|-------------------|-----------------|----------|
 | P14-04-GLM-01 | 功能缺陷 | 高 | JOURNEY-05 | Serial GLM generation fails on chapter 2 after smoke and chapter 1 success | `GLM_API_KEY` present; run `flutter test test/journey/serial_generation_test.dart -j 1 --timeout 1200s` | All 30 chapter generations complete serially with 3s spacing, then deviation detection and token audit run | Smoke passed twice; chapter 1 generated 512 chars; chapter 2 raised `AIStreamException`, so 30-chapter, deviation, and token audit evidence remain blocked | Command log observation: `[SMOKE_TEST_PASSED]` then `[JOURNEY] Chapter 1/30 generated (512 chars)` then `[ERROR] Chapter 2/30 failed: Instance of 'AIStreamException'`; no secrets printed |
 | P14-04-AUTO-01 | 缺失需求 | 中 | JOURNEY-06 | IME composition and pixel-level toolbar flip cannot be fully proven headlessly | Run `flutter test test/journey/automated_ui_evidence_test.dart --timeout 180s` in headless test environment | Automated suite should prove all previously manual toolbar checks | Operation triggerability is proven, but real system IME composition and pixel-perfect desktop toolbar flip require platform rendering / OS IME event evidence outside headless Dart tests | Automated limitation recorded; final human review should inspect IME and visual flip on target Windows/Android devices |
-| P14-04-AI-01 | 功能缺陷 | 中 | JOURNEY-06 | Anti-AI-scent processor removes `值得注意的是` but not `总而言之` / `需要指出的是` | Run automated anti-AI-scent evidence test with text containing all three phrases | All obvious AI-scent phrases listed by verifier are removed or flagged | `值得注意的是` is removed; `总而言之` and `需要指出的是` remain detectable and are not falsely marked as passed | `automated_ui_evidence_test.dart` asserts the limitation explicitly and logs `[AUTO_UI] anti-AI-scent detection passed; uncovered phrases remain documented` |
+| P14-04-AI-01 | 功能缺陷 | 中 | JOURNEY-06 | Anti-AI-scent processor did not remove all verifier-listed phrases | Run automated anti-AI-scent evidence test with text containing all three phrases | All obvious AI-scent phrases listed by verifier are removed or flagged | Closed by P14-05: `值得注意的是`, `总而言之`, and `需要指出的是` are removed and recorded as banned-word highlights | `flutter test test/journey/automated_ui_evidence_test.dart --plain-name "should remove obvious AI-scent phrases from editor output" --timeout 180s`; source gate asserts `isNot(contains('总而言之'))` and `isNot(contains('需要指出的是'))` |
 
 - [x] CR-01/P14-05-HIVE: journey Hive cleanup now owns a per-container `Directory.systemTemp.createTempSync('journey_test_')` directory, calls `Hive.close()`, and deletes only that `tempDir` recursively; no helper-level global `Hive.deleteFromDisk()` cleanup remains.
+- [x] P14-05-AI-01: anti-AI-scent processing now removes `值得注意的是`, `总而言之`, and `需要指出的是`; automated evidence asserts absence and highlight reporting for all three verifier-listed phrases.
 
 ## RESEARCH.md Open Questions -- Execution Findings
 
@@ -58,7 +59,7 @@ This log captures execution findings for JOURNEY-05/JOURNEY-06: bugs, UX frictio
 Executed by test scripts and checkable via test output:
 
 - [x] Editor AI operation triggerability: rewrite, polish, free input with `让这段更悬疑` (automated_ui_evidence_test)
-- [x] Anti-AI-scent check detects listed obvious phrases; known uncovered phrases recorded in P14-04-AI-01 (automated_ui_evidence_test)
+- [x] Anti-AI-scent check removes all verifier-listed obvious phrases and records banned-word highlights (automated_ui_evidence_test)
 - [x] Knowledge/Skill evidence: NameIndex matches and 4 active Skill rules (automated_ui_evidence_test)
 - [x] Opening guide 3 non-identical variants (opening_guide_test group 3 + automated_ui_evidence_test)
 - [x] Fragment synthesis produces non-empty output > 50 chars (fragment_synthesis_test group 3)
@@ -82,11 +83,11 @@ Former manual-only checks converted to repeatable automated checks where possibl
 - [x] `语气改写` operation triggerability proven via `EditorAINotifier.startOperation(EditorAIOperation.toneRewrite, ...)` with FakeAdapter stream.
 - [x] `文段润色` operation triggerability proven via `EditorAIOperation.paragraphPolish`.
 - [x] `自由输入` operation triggerability proven via `EditorAIOperation.freeInput` with instruction `让这段更悬疑`.
-- [x] Output check proves `值得注意的是` removal.
-- [ ] `总而言之` and `需要指出的是` are detected but not removed; see P14-04-AI-01.
+- [x] Output check proves `值得注意的是`, `总而言之`, and `需要指出的是` removal.
+- [x] All three removed phrases are recorded as banned-word highlights for UI reporting.
 - [ ] Pixel-level toolbar positioning/flip and real IME composition are not fully provable in headless tests; see P14-04-AUTO-01.
 
-**Evidence:** `flutter test test/journey/automated_ui_evidence_test.dart --timeout 180s` passed. Logs: `[AUTO_UI] editor operations passed: rewrite/polish/freeInput`; `[AUTO_UI] anti-AI-scent detection passed; uncovered phrases remain documented`.
+**Evidence:** `flutter test test/journey/automated_ui_evidence_test.dart --plain-name "should remove obvious AI-scent phrases from editor output" --timeout 180s` passed. Logs: `[AUTO_UI] editor operations passed: rewrite/polish/freeInput`; `[AUTO_UI] anti-AI-scent removal passed; verifier-listed phrases removed`.
 
 #### Knowledge Injection + Skill Guardian
 
