@@ -54,6 +54,7 @@ class _ChapterCreateDialogState extends State<ChapterCreateDialog> {
     return AlertDialog(
       title: const Text('新建章节'),
       content: TextField(
+        key: const Key('chapter_title_field'),
         controller: _titleController,
         autofocus: true,
         maxLength: 100,

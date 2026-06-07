@@ -134,6 +134,7 @@ class ChapterSidebar extends ConsumerWidget {
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
             child: OutlinedButton.icon(
+              key: const Key('add_chapter_button'),
               onPressed: onNewChapter,
               icon: const Icon(Icons.add, size: 18),
               label: const Text('新建章节'),

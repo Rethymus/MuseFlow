@@ -284,6 +284,7 @@ class _ExportDialogState extends ConsumerState<ExportDialog> {
           child: const Text('关闭'),
         ),
         ElevatedButton(
+          key: const Key('export_button'),
           onPressed:
               _selectedPath != null && !_isExporting ? _doExport : null,
           child: const Text('导出'),
