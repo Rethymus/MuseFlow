@@ -10,6 +10,19 @@ import 'package:museflow/features/ai/domain/ai_provider.dart';
 import 'package:museflow/features/ai/infrastructure/openai_adapter.dart';
 import 'package:museflow/features/templates/infrastructure/world_template_repository.dart';
 
+/// Owns a journey test provider container and its Hive temp directory.
+class JourneyTestContainer {
+  final ProviderContainer container;
+  final Directory tempDir;
+
+  const JourneyTestContainer({
+    required this.container,
+    required this.tempDir,
+  });
+}
+
+final _ownedTempDirs = Expando<Directory>('journeyTestTempDir');
+
 /// Creates a [ProviderContainer] configured for journey integration tests.
 ///
 /// Opens 15 Hive boxes required by knowledge/stats/story features and
@@ -22,7 +35,7 @@ import 'package:museflow/features/templates/infrastructure/world_template_reposi
 /// - [apiKey] GLM API key (required)
 /// - [baseUrl] API base URL (defaults to GLM endpoint)
 /// - [model] Model name (defaults to glm-4-flash)
-Future<ProviderContainer> createJourneyContainer({
+Future<JourneyTestContainer> createJourneyTestContainer({
   required String apiKey,
   String baseUrl = 'https://open.bigmodel.cn/api/paas/v4',
   String model = 'glm-4-flash',
@@ -67,7 +80,7 @@ Future<ProviderContainer> createJourneyContainer({
     topP: 0.9,
   );
 
-  return ProviderContainer(
+  final container = ProviderContainer(
     overrides: [
       openaiAdapterProvider.overrideWithValue(aiAdapter ?? OpenAIAdapter()),
       worldTemplateRepositoryProvider.overrideWithValue(
@@ -77,15 +90,43 @@ Future<ProviderContainer> createJourneyContainer({
       activeApiKeyProvider.overrideWithValue(apiKey),
     ],
   );
+  _ownedTempDirs[container] = tempDir;
+  return JourneyTestContainer(container: container, tempDir: tempDir);
+}
+
+/// Backwards-compatible helper for tests that only need the provider container.
+Future<ProviderContainer> createJourneyContainer({
+  required String apiKey,
+  String baseUrl = 'https://open.bigmodel.cn/api/paas/v4',
+  String model = 'glm-4-flash',
+  AIAdapter? aiAdapter,
+}) async {
+  final owner = await createJourneyTestContainer(
+    apiKey: apiKey,
+    baseUrl: baseUrl,
+    model: model,
+    aiAdapter: aiAdapter,
+  );
+  return owner.container;
 }
 
 /// Cleans up a journey test container.
 ///
-/// Disposes the container and deletes all Hive boxes from disk.
-Future<void> cleanupJourneyContainer(ProviderContainer container) async {
+/// Disposes the container, closes Hive, and deletes only its owned temp dir.
+Future<void> cleanupJourneyContainer(Object owner) async {
+  final container = owner is JourneyTestContainer
+      ? owner.container
+      : owner as ProviderContainer;
+  final tempDir = owner is JourneyTestContainer
+      ? owner.tempDir
+      : _ownedTempDirs[container];
+
   container.dispose();
   await Future<void>.delayed(const Duration(milliseconds: 100));
-  await Hive.deleteFromDisk();
+  await Hive.close();
+  if (tempDir != null && await tempDir.exists()) {
+    await tempDir.delete(recursive: true);
+  }
 }
 
 const _templateAssetPath = 'assets/templates/world_presets/templates_zh.json';
