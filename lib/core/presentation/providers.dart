@@ -179,7 +179,9 @@ final activeApiKeyProvider = Provider<String?>((ref) {
 
 /// Provides a singleton [AIAdapter] for streaming AI completions.
 ///
-/// Per D-01: Typed as [AIAdapter] so tests can override with FakeAdapter.
+/// Per AI-01: Supports any OpenAI-compatible API via configurable baseUrl.
+/// Client caching prevents memory leaks. Typed as [AIAdapter] so tests can
+/// override with FakeAdapter.
 final openaiAdapterProvider = Provider<AIAdapter>((ref) {
   return OpenAIAdapter();
 });
