@@ -85,7 +85,17 @@ Plans:
   2. Flutter 集成测试覆盖关键 UI 节点（文稿创建 → 章节管理 → AI 生成 → 编辑 → 导出）
   3. FakeAdapter 返回可复现的修仙题材文本，脚本可以断言章节内容、导出格式、token 审计记录
 
-**Plans**: TBD
+**Plans**: 3 plans
+
+Plans:
+**Wave 1**
+
+- [ ] 13-01-PLAN.md — Extract AIAdapter interface, FakeAdapter, test container factory, fixtures
+
+**Wave 2** *(blocked on Wave 1 completion)*
+
+- [ ] 13-02-PLAN.md — Dart automation script TEST-01 (8 segments + E2E) and FakeAdapter tests TEST-03
+- [ ] 13-03-PLAN.md — Flutter integration tests TEST-02 (UI flow + error scenarios) and widget key additions
 
 ### Phase 14: World-Building & First 30 Chapters
 
@@ -153,7 +163,7 @@ Phases execute in numeric order: 12 → 13 → 14 → 15 → 16
 | 10. 故事弧可视化 | v1.1 | 4/4 | Complete | 2026-06-05 |
 | 11. 文稿库与章节管理 | v1.2 | 6/6 | Complete | 2026-06-06 |
 | 12. Token Audit Infrastructure | v1.3 | 3/3 | Complete   | 2026-06-06 |
-| 13. Automation Test Harness | v1.3 | 0/? | Not started | - |
+| 13. Automation Test Harness | v1.3 | 0/3 | Not started | - |
 | 14. World-Building & First 30 Chapters | v1.3 | 0/? | Not started | - |
 | 15. Full Manuscript & Story Structure | v1.3 | 0/? | Not started | - |
 | 16. Analysis & Reports | v1.3 | 0/? | Not started | - |
