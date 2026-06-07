@@ -5,6 +5,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:hive_ce/hive.dart';
 import 'package:museflow/core/infrastructure/hive_adapters.dart';
 import 'package:museflow/core/presentation/providers.dart';
+import 'package:museflow/features/ai/domain/ai_adapter.dart';
 import 'package:museflow/features/ai/domain/ai_provider.dart';
 import 'package:museflow/features/ai/infrastructure/openai_adapter.dart';
 import 'package:museflow/features/templates/infrastructure/world_template_repository.dart';
@@ -25,6 +26,7 @@ Future<ProviderContainer> createJourneyContainer({
   required String apiKey,
   String baseUrl = 'https://open.bigmodel.cn/api/paas/v4',
   String model = 'glm-4-flash',
+  AIAdapter? aiAdapter,
 }) async {
   if (apiKey == 'journey-local-test-key') {
     TestWidgetsFlutterBinding.ensureInitialized();
@@ -67,7 +69,7 @@ Future<ProviderContainer> createJourneyContainer({
 
   return ProviderContainer(
     overrides: [
-      openaiAdapterProvider.overrideWithValue(OpenAIAdapter()),
+      openaiAdapterProvider.overrideWithValue(aiAdapter ?? OpenAIAdapter()),
       worldTemplateRepositoryProvider.overrideWithValue(
         WorldTemplateRepository(assetLoader: (_) => File(_templateAssetPath).readAsString()),
       ),
@@ -82,6 +84,7 @@ Future<ProviderContainer> createJourneyContainer({
 /// Disposes the container and deletes all Hive boxes from disk.
 Future<void> cleanupJourneyContainer(ProviderContainer container) async {
   container.dispose();
+  await Future<void>.delayed(const Duration(milliseconds: 100));
   await Hive.deleteFromDisk();
 }
 
