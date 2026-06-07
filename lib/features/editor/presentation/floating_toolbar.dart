@@ -128,9 +128,7 @@ class _FloatingToolbarState extends ConsumerState<FloatingToolbar> {
   Widget _buildFollower({required Widget child}) {
     return Follower.withAligner(
       link: widget.selectionLayerLinks.expandedSelectionBoundsLink,
-      aligner: FunctionalAligner(
-        delegate: _flipAlign,
-      ),
+      aligner: FunctionalAligner(delegate: _flipAlign),
       boundary: const ScreenFollowerBoundary(),
       child: child,
     );
@@ -183,8 +181,7 @@ class _FloatingToolbarState extends ConsumerState<FloatingToolbar> {
     if (selectedText.isEmpty) return;
 
     final nodeId = selection.base.nodeId;
-    final baseOffset =
-        (selection.base.nodePosition as TextNodePosition).offset;
+    final baseOffset = (selection.base.nodePosition as TextNodePosition).offset;
     final extentOffset =
         (selection.extent.nodePosition as TextNodePosition).offset;
     final startOffset = baseOffset < extentOffset ? baseOffset : extentOffset;
@@ -235,14 +232,15 @@ class _FloatingToolbarState extends ConsumerState<FloatingToolbar> {
 
     // Get selection range info
     final nodeId = selection.base.nodeId;
-    final baseOffset =
-        (selection.base.nodePosition as TextNodePosition).offset;
+    final baseOffset = (selection.base.nodePosition as TextNodePosition).offset;
     final extentOffset =
         (selection.extent.nodePosition as TextNodePosition).offset;
     final startOffset = baseOffset < extentOffset ? baseOffset : extentOffset;
     final endOffset = baseOffset < extentOffset ? extentOffset : baseOffset;
 
-    ref.read(editorAINotifierProvider.notifier).startOperation(
+    ref
+        .read(editorAINotifierProvider.notifier)
+        .startOperation(
           operation,
           selectedText,
           nodeId,
@@ -267,8 +265,7 @@ class _FloatingToolbarState extends ConsumerState<FloatingToolbar> {
     final node = document.getNodeById(nodeId);
     if (node is! TextNode) return '';
 
-    final baseOffset =
-        (selection.base.nodePosition as TextNodePosition).offset;
+    final baseOffset = (selection.base.nodePosition as TextNodePosition).offset;
     final extentOffset =
         (selection.extent.nodePosition as TextNodePosition).offset;
     final start = baseOffset < extentOffset ? baseOffset : extentOffset;
@@ -298,7 +295,7 @@ class _ToolbarContent extends StatelessWidget {
   final TextEditingController freeInputController;
   final VoidCallback onToggleFreeInput;
   final void Function(EditorAIOperation operation, {String? userInstruction})
-      onStartOperation;
+  onStartOperation;
   final void Function(AnchorType type) onSetAnchor;
 
   @override
@@ -330,8 +327,7 @@ class _ToolbarContent extends StatelessWidget {
                   key: const Key('ai_synthesis_button'),
                   icon: Icons.auto_fix_high,
                   label: '语气改写',
-                  onTap: () =>
-                      onStartOperation(EditorAIOperation.toneRewrite),
+                  onTap: () => onStartOperation(EditorAIOperation.toneRewrite),
                 ),
                 const SizedBox(width: 2),
                 _ActionButton(
@@ -530,11 +526,7 @@ class _AnchorButton extends StatelessWidget {
       ],
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
-        child: Icon(
-          Icons.push_pin,
-          size: 16,
-          color: colorScheme.onSurface,
-        ),
+        child: Icon(Icons.push_pin, size: 16, color: colorScheme.onSurface),
       ),
     );
   }
@@ -545,10 +537,7 @@ class _AnchorButton extends StatelessWidget {
 /// Per D-07: Shows an indeterminate progress bar with a cancel button.
 /// Displays accumulated text as a subtle subtitle.
 class _StreamingProgress extends StatelessWidget {
-  const _StreamingProgress({
-    required this.state,
-    required this.onCancel,
-  });
+  const _StreamingProgress({required this.state, required this.onCancel});
 
   final EditorAIState state;
   final VoidCallback onCancel;
@@ -581,10 +570,7 @@ class _StreamingProgress extends StatelessWidget {
               Expanded(
                 child: Text(
                   '${state.operation?.label ?? "AI 处理"}中...',
-                  style: TextStyle(
-                    fontSize: 13,
-                    color: colorScheme.onSurface,
-                  ),
+                  style: TextStyle(fontSize: 13, color: colorScheme.onSurface),
                 ),
               ),
               TextButton(
@@ -596,10 +582,7 @@ class _StreamingProgress extends StatelessWidget {
                 ),
                 child: Text(
                   '取消',
-                  style: TextStyle(
-                    fontSize: 13,
-                    color: colorScheme.error,
-                  ),
+                  style: TextStyle(fontSize: 13, color: colorScheme.error),
                 ),
               ),
             ],
@@ -616,10 +599,7 @@ class _StreamingProgress extends StatelessWidget {
             const SizedBox(height: 4),
             Text(
               state.error!,
-              style: TextStyle(
-                fontSize: 12,
-                color: colorScheme.error,
-              ),
+              style: TextStyle(fontSize: 12, color: colorScheme.error),
             ),
           ],
         ],
