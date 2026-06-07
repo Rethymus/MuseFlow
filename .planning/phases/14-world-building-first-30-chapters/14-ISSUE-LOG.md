@@ -22,7 +22,7 @@ This log captures execution findings for JOURNEY-05/JOURNEY-06: bugs, UX frictio
 
 | ID | Category (功能缺陷/体验摩擦/缺失需求) | Severity (高/中/低) | Requirement | Title | Reproduction Steps | Expected Behavior | Actual Behavior | Evidence |
 |----|--------------------------------------|--------------------|-------------|-------|--------------------|-------------------|-----------------|----------|
-| P14-04-GLM-01 | 功能缺陷 | 高 | JOURNEY-05 | Serial GLM generation fails on chapter 2 after smoke and chapter 1 success | `GLM_API_KEY` present; run `flutter test test/journey/serial_generation_test.dart -j 1 --timeout 1200s` | All 30 chapter generations complete serially with 3s spacing, then deviation detection and token audit run | Smoke passed twice; chapter 1 generated 512 chars; chapter 2 raised `AIStreamException`, so 30-chapter, deviation, and token audit evidence remain blocked | Command log observation: `[SMOKE_TEST_PASSED]` then `[JOURNEY] Chapter 1/30 generated (512 chars)` then `[ERROR] Chapter 2/30 failed: AIStreamException: ...`; reruns now log exception class plus sanitized message only; no secrets printed |
+| P14-04-GLM-01 | 功能缺陷 ~~高~~ 已关闭 | JOURNEY-05 | ~~Serial GLM generation fails on chapter 2 after smoke and chapter 1 success~~ Closed: 30/30 chapters with D-11 compliance via enforceD11Bounds post-processing | `GLM_API_KEY` present; run `flutter test test/journey/serial_generation_test.dart -j 1 --timeout 1500s` | All 30 chapter generations complete serially with 3s spacing, D-11 bounds enforced, deviation detection and token audit run | 30/30 chapters generated; enforceD11Bounds truncates overflow to sentence boundary; min 453 / max 499 / avg 479 chars; 87 deviation warnings across 30 chapters; token audit: 30 calls, input 11868, output 11274 | Closed 2026-06-08 by Plan 14-08. `enforceD11Bounds` post-processing ensures D-11 compliance regardless of GLM output variance. No secrets printed. |
 | P14-04-AUTO-01 | 缺失需求 | 中 | JOURNEY-06 | IME composition and pixel-level toolbar flip cannot be fully proven headlessly | Run `flutter test test/journey/automated_ui_evidence_test.dart --timeout 180s` in headless test environment | Automated suite should prove all previously manual toolbar checks | Partially resolved: FloatingToolbar bottom-viewport flip confirmed by human observation (2026-06-08). IME composition remains human_needed (WSL limitation, P14-07-HUMAN-01). DeviationWarningWidget visual remains human_needed (deferred, P14-07-HUMAN-02). | Human observation for FloatingToolbar flip passed; IME and DeviationWidget blocked. Automated limitation recorded; final human review on native Windows/Android still needed for remaining items. |
 | P14-04-AI-01 | 功能缺陷 | 中 | JOURNEY-06 | Anti-AI-scent processor did not remove all verifier-listed phrases | Run automated anti-AI-scent evidence test with text containing all three phrases | All obvious AI-scent phrases listed by verifier are removed or flagged | Closed by P14-05: `值得注意的是`, `总而言之`, and `需要指出的是` are removed and recorded as banned-word highlights | `flutter test test/journey/automated_ui_evidence_test.dart --plain-name "should remove obvious AI-scent phrases from editor output" --timeout 180s`; source gate asserts `isNot(contains('总而言之'))` and `isNot(contains('需要指出的是'))` |
 | P14-07-UI-01 | 体验摩擦 | 低 | JOURNEY-06 | Editor dark background with dark text — insufficient contrast | Launch app on Linux desktop; observe editor text rendering against dark background | Text color should be white/light when background is dark (theme-aware contrast) | Observed: editor background is dark but text color remains dark/black, making content nearly unreadable. Affects entire editor and potentially other views. | Human observation on Linux desktop (WSL2, 2026-06-08): dark background with dark text clearly visible. Needs project-wide investigation of theme/text color handling. |
@@ -34,7 +34,7 @@ This log captures execution findings for JOURNEY-05/JOURNEY-06: bugs, UX frictio
 
 - [x] Deterministic supplemental JOURNEY-05 path: no-credential serial journey uses `journey-local-test-key` + deterministic adapter, generated 30/30 local chapters in D-11 range, sampled character-name checks passed, all-30 deviation detection invoked, and token audit flushed with `totalCalls >= 30`. This is local orchestration evidence only and does not close `P14-04-GLM-01`.
 - [x] Deterministic supplemental full journey path: no-credential world-building → fragment synthesis/opening surrogate → 30 chapter generation → persistence → token audit path runs with deterministic adapter and D-11 checks. This supplements, but does not replace, required real GLM D-02/D-11 evidence.
-- [ ] P14-04-GLM-01 live rerun evidence (2026-06-08): real GLM smoke passed and serial generation produced 30/30 chapters with 3s spacing, but D-11 validation failed because chapter 5 was 504 chars and later chapters also exceeded 500 chars before validation stopped. Last successful D-11 chapter count: 4/30. Deviation detection did not run and token audit did not flush because D-04/D-11 stopped the run. `P14-04-GLM-01` remains open; route to debug/replan for product/test harness enforcement of 300-500 character bounds. No secrets printed.
+- [x] P14-04-GLM-01 live rerun evidence (2026-06-08): **CLOSED by Plan 14-08.** Real GLM smoke passed and serial generation produced 30/30 chapters with 3s spacing. enforceD11Bounds post-processing truncated overflow (e.g., 739->497, 668->499, 635->483 chars) to sentence boundaries, ensuring all 30 chapters are within D-11 300-500 char bounds. Min 453 / max 499 / avg 479 chars. Deviation detection ran for all 30 chapters (87 warnings). Token audit: 30 calls, input 11868 tokens, output 11274 tokens. Knowledge injection verified: character names found in chapters 1, 8, 15, 22, 29. No secrets printed.
 
 ## RESEARCH.md Open Questions -- Execution Findings
 
@@ -94,22 +94,22 @@ Platform: Linux desktop (Arch Linux in WSL2), `flutter run -d linux`
 
 - [ ] Deferred — requires AI-generated content with deviation warnings. Cannot trigger without IME or pre-loaded deviation state. See P14-07-HUMAN-02.
 
-#### Additional Finding: Dark Theme Text Contrast — ✗ FAILED
+#### Additional Finding: Dark Theme Text Contrast — ✅ FIXED
 
 - [x] Editor background renders as dark theme.
-- [ ] Text color remains dark/black against dark background — content nearly unreadable.
-- **Impact:** Affects entire editor. Needs project-wide theme/text-color investigation. See P14-07-UI-01.
+- [x] Text color now correctly uses `colorScheme.onSurface` (light/white) when dark background is active.
+- **Fix:** (1) `app.dart` — added `darkTheme: appTheme()` and `themeMode: ThemeMode.dark` to force proper dark theme. (2) `editor_with_sidebar.dart` — converted top-level stylesheet to theme-aware function that reads `colorScheme.onSurface`.
+- **Side fix:** `manuscript_repository.dart` and `chapter_repository.dart` — fixed `Map<dynamic,dynamic>` → `Map<String,dynamic>` Hive cast errors.
+- **Evidence:** Human observation (2026-06-08): confirmed text is readable on dark background after fix. See commit `74bcd80`.
 
-**Evidence:** Human observation (2026-06-08): dark background with dark text clearly visible in running app.
+### GLM Serial Verifications (Closed by Plan 14-08)
 
-### Blocked GLM Serial Verifications
+Resolved by enforceD11Bounds post-processing + 20-minute timeout:
 
-Remain blocked by P14-04-GLM-01; not marked complete:
-
-- [ ] Character name presence in generated 30-chapter content (serial_generation_test group 4)
-- [ ] Deviation detection warnings logged for 30 chapters (serial_generation_test group 5)
-- [ ] Token audit accuracy: totalCalls >= 30 (serial_generation_test group 6)
-- [ ] 30 chapters each 300-500 characters (serial_generation_test group 3, per D-11)
+- [x] Character name presence in generated 30-chapter content (serial_generation_test: chapters 1, 8, 15, 22, 29 contain character names)
+- [x] Deviation detection warnings logged for 30 chapters (87 warnings across 30 chapters)
+- [x] Token audit accuracy: totalCalls >= 30 (30 calls, input 11868, output 11274)
+- [x] 30 chapters each 300-500 characters (min 453, max 499, avg 479 -- enforced by post-processing)
 
 ### Automated-First Evidence Details
 
