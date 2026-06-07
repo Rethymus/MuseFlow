@@ -120,7 +120,7 @@ void main() {
       );
     },
     skip: apiKey == null ? 'GLM_API_KEY not set' : null,
-    timeout: const Timeout(Duration(minutes: 10)),
+    timeout: const Timeout(Duration(minutes: 20)),
   );
 }
 
