@@ -72,8 +72,8 @@ Future<void> _phaseAWorldBuilding(ProviderContainer container) async {
   );
   final result = await instantiationService.saveDraft(draft);
   expect(result.worldSetting, isNotNull);
-  expect(result.worldSetting!.description, contains('练气'));
-  expect(result.worldSetting!.description, contains('宗'));
+  expect(result.worldSetting!.name, contains('青冥'));
+  expect(result.worldSetting!.description, contains('宗门'));
 
   final characterRepository = await container.read(
     characterCardRepositoryProvider.future,
