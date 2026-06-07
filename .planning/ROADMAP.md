@@ -111,7 +111,17 @@ Plans:
   5. 用户可以逐章使用 AI 生成内容（每章~100字修仙内容），知识库自动注入和 Skill 设定守护连续工作
   6. 用户可以在编辑器中选中文本触发浮窗操作（语气改写、段落润色、自由输入编辑），验证反AI味效果
 
-**Plans**: TBD
+**Plans**: 3 plans
+
+Plans:
+**Wave 1**
+
+- [ ] 14-01-PLAN.md — Journey container factory, xianxia fixtures, story outline, world-building test (JOURNEY-01)
+
+**Wave 2** *(depends on Wave 1)*
+
+- [ ] 14-02-PLAN.md — Fragment synthesis, opening guide, chapter management tests (JOURNEY-02, JOURNEY-03, JOURNEY-04)
+- [ ] 14-03-PLAN.md — 30-chapter serial generation, E2E full-journey, issue log template (JOURNEY-05, JOURNEY-06)
 **UI hint**: yes
 
 ### Phase 15: Full Manuscript & Story Structure
