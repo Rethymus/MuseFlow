@@ -13,6 +13,7 @@ import 'package:museflow/features/ai/application/anti_ai_scent_processor.dart';
 import 'package:museflow/features/ai/application/prompt_pipeline.dart';
 import 'package:museflow/features/ai/application/provider_service.dart';
 import 'package:museflow/features/ai/application/token_budget_calculator.dart';
+import 'package:museflow/features/ai/domain/ai_adapter.dart';
 import 'package:museflow/features/ai/domain/ai_provider.dart';
 import 'package:museflow/features/ai/infrastructure/openai_adapter.dart';
 import 'package:museflow/features/ai/infrastructure/provider_repository.dart';
@@ -176,11 +177,10 @@ final activeApiKeyProvider = Provider<String?>((ref) {
   return apiKeyAsync.asData?.value;
 });
 
-/// Provides a singleton [OpenAIAdapter] for streaming AI completions.
+/// Provides a singleton [AIAdapter] for streaming AI completions.
 ///
-/// Per AI-01: Supports any OpenAI-compatible API via configurable baseUrl.
-/// Client caching prevents memory leaks.
-final openaiAdapterProvider = Provider<OpenAIAdapter>((ref) {
+/// Per D-01: Typed as [AIAdapter] so tests can override with FakeAdapter.
+final openaiAdapterProvider = Provider<AIAdapter>((ref) {
   return OpenAIAdapter();
 });
 
@@ -410,9 +410,7 @@ final templateInstantiationServiceProvider =
       final characterRepository = await ref.watch(
         characterCardRepositoryProvider.future,
       );
-      final chapterRepo = await ref.watch(
-        chapterRepositoryProvider.future,
-      );
+      final chapterRepo = await ref.watch(chapterRepositoryProvider.future);
       return TemplateInstantiationService(
         worldSettingRepository: worldRepository,
         characterCardRepository: characterRepository,
@@ -649,20 +647,20 @@ Future<void> _dartIoFileWriter(String path, String content) async {
 // ============================================================================
 
 /// Provides a [ManuscriptRepository] backed by a Hive 'manuscripts' box.
-final manuscriptRepositoryProvider = FutureProvider<ManuscriptRepository>(
-  (ref) async {
-    final box = await Hive.openBox<dynamic>('manuscripts');
-    return ManuscriptRepository(box);
-  },
-);
+final manuscriptRepositoryProvider = FutureProvider<ManuscriptRepository>((
+  ref,
+) async {
+  final box = await Hive.openBox<dynamic>('manuscripts');
+  return ManuscriptRepository(box);
+});
 
 /// Provides a [ChapterRepository] backed by a Hive 'chapters' box.
-final chapterRepositoryProvider = FutureProvider<ChapterRepository>(
-  (ref) async {
-    final box = await Hive.openBox<dynamic>('chapters');
-    return ChapterRepository(box);
-  },
-);
+final chapterRepositoryProvider = FutureProvider<ChapterRepository>((
+  ref,
+) async {
+  final box = await Hive.openBox<dynamic>('chapters');
+  return ChapterRepository(box);
+});
 
 /// Provides a [ManuscriptNotifier] for manuscript CRUD operations.
 final manuscriptNotifierProvider =
@@ -672,9 +670,7 @@ final manuscriptNotifierProvider =
 
 /// Provides a [ChapterNotifier] for chapter CRUD operations.
 final chapterNotifierProvider =
-    AsyncNotifierProvider<ChapterNotifier, List<Chapter>>(
-      ChapterNotifier.new,
-    );
+    AsyncNotifierProvider<ChapterNotifier, List<Chapter>>(ChapterNotifier.new);
 
 /// Provides a [ChapterAutoSave] service for debounced document persistence.
 ///
@@ -691,14 +687,13 @@ final chapterAutoSaveProvider = FutureProvider<ChapterAutoSave>((ref) async {
 ///
 /// Injects both [ManuscriptRepository] and [ChapterRepository] for
 /// cascade deletion (chapters before manuscripts).
-final manuscriptPurgeServiceProvider = FutureProvider<ManuscriptPurgeService>(
-  (ref) async {
-    final manuscriptRepo =
-        await ref.watch(manuscriptRepositoryProvider.future);
-    final chapterRepo = await ref.watch(chapterRepositoryProvider.future);
-    return ManuscriptPurgeService(
-      manuscriptRepository: manuscriptRepo,
-      chapterRepository: chapterRepo,
-    );
-  },
-);
+final manuscriptPurgeServiceProvider = FutureProvider<ManuscriptPurgeService>((
+  ref,
+) async {
+  final manuscriptRepo = await ref.watch(manuscriptRepositoryProvider.future);
+  final chapterRepo = await ref.watch(chapterRepositoryProvider.future);
+  return ManuscriptPurgeService(
+    manuscriptRepository: manuscriptRepo,
+    chapterRepository: chapterRepo,
+  );
+});

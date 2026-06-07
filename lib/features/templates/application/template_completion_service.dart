@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:museflow/features/ai/infrastructure/openai_adapter.dart';
+import 'package:museflow/features/ai/domain/ai_adapter.dart';
 import 'package:museflow/features/templates/application/template_draft.dart';
 import 'package:museflow/features/stats/application/token_audit_service.dart';
 import 'package:museflow/features/stats/domain/audit_operation_type.dart';
@@ -31,7 +31,7 @@ class TemplateCompletionService {
     this.auditService,
   });
 
-  final OpenAIAdapter? openAIAdapter;
+  final AIAdapter? openAIAdapter;
   final String? apiKey;
   final String? baseUrl;
   final String? model;

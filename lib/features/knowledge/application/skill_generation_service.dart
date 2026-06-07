@@ -1,14 +1,14 @@
 import 'dart:async';
 import 'dart:convert';
 
-import 'package:museflow/features/ai/infrastructure/openai_adapter.dart';
+import 'package:museflow/features/ai/domain/ai_adapter.dart';
 import 'package:museflow/features/knowledge/domain/skill_document.dart';
 import 'package:museflow/features/stats/application/token_audit_service.dart';
 import 'package:museflow/features/stats/domain/audit_operation_type.dart';
 import 'package:openai_dart/openai_dart.dart';
 
 class SkillGenerationService {
-  final OpenAIAdapter openAIAdapter;
+  final AIAdapter openAIAdapter;
   final String apiKey;
   final String baseUrl;
   final String model;
@@ -22,7 +22,10 @@ class SkillGenerationService {
     this.auditService,
   });
 
-  Stream<String> generateSkillStream(String conceptDescription, {String? manuscriptId}) async* {
+  Stream<String> generateSkillStream(
+    String conceptDescription, {
+    String? manuscriptId,
+  }) async* {
     final messages = [
       ChatMessage.system(
         '你是小说世界观设定顾问。请根据作者的概念生成结构化中文设定文档，必须包含以下 Markdown 二级标题：## 力量等级体系、## 门派/势力关系、## 世界规则、## 禁忌/限制、## 专用术语。内容要可执行、具体、避免空泛。',
