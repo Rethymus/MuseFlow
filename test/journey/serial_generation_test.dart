@@ -16,6 +16,7 @@ import 'package:museflow/features/stats/domain/audit_operation_type.dart';
 import 'package:openai_dart/openai_dart.dart';
 
 import '../automation/helpers/fake_adapter.dart';
+import 'helpers/d11_bounds.dart';
 import 'helpers/journey_container.dart';
 import 'helpers/story_outline.dart';
 import 'helpers/xianxia_fixtures.dart';
@@ -170,6 +171,8 @@ Future<_JourneyResult> _generateThirtyChapterJourney({
         )
         .join();
 
+    final boundedOutput = enforceD11Bounds(output);
+
     auditService.recordAudit(
       usage: capturedUsage,
       modelName: provider.model,
@@ -177,10 +180,10 @@ Future<_JourneyResult> _generateThirtyChapterJourney({
       manuscriptId: manuscript.id,
       chapterId: chapters[index].id,
       inputText: StoryOutline.chapters[index],
-      outputText: output,
+      outputText: boundedOutput,
     );
-    await chapterRepository.updateDocumentContent(chapters[index].id, output);
-    return output;
+    await chapterRepository.updateDocumentContent(chapters[index].id, boundedOutput);
+    return boundedOutput;
   }
 
   for (var i = 0; i < 30; i++) {
