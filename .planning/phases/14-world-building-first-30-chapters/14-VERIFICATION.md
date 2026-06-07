@@ -1,182 +1,186 @@
 ---
 phase: 14-world-building-first-30-chapters
-verified: 2026-06-07T00:00:00Z
+verified: 2026-06-08T02:30:00Z
 status: gaps_found
 score: 4/6 must-haves verified
 overrides_applied: 0
+re_verification:
+  previous_status: gaps_found
+  previous_score: 4/6
+  gaps_closed:
+    - "Anti-AI-scent phrase removal: P14-04-AI-01 closed by P14-05; all three verifier-listed phrases (值得注意的是, 总而言之, 需要指出的是) now removed with source-gate assertions"
+    - "FloatingToolbar bottom-viewport flip: human observation passed (2026-06-08), P14-04-AUTO-01 partially resolved"
+  gaps_remaining:
+    - "P14-04-GLM-01: Real GLM D-11 validation fails at chapter 5 (504 chars exceeds 500 char bound). 30/30 generation succeeds but character bounds, deviation detection, and token audit remain unproven for live path"
+    - "P14-07-HUMAN-01: Chinese IME composition cannot be tested in WSL2; requires native Windows/Android"
+    - "P14-07-HUMAN-02: DeviationWarningWidget visual rendering deferred; requires IME or pre-loaded deviation state"
+  regressions: []
 gaps:
-  - id: JOURNEY-05
+  - truth: "User can generate 30 chapters with AI content (each ~100 chars xianxia), with knowledge injection and Skill guardian working continuously via real GLM API"
     status: failed
-    severity: blocker
-    reason: "Real GLM sustained 30-chapter generation failed on chapter 2 with AIStreamException; 30/30 chapter generation, all-chapter deviation detection, and token audit totalCalls >= 30 remain unproven."
-  - id: JOURNEY-06
-    status: failed
-    severity: blocker
-    reason: "Anti-AI-scent validation is incomplete: automated evidence intentionally documents remaining phrases 总而言之 / 需要指出的是 instead of proving removal."
-  - id: JOURNEY-06-platform-ui
-    status: human_needed
-    severity: warning
-    reason: "OS-level IME composition, pixel-level toolbar flip, and DeviationWarningWidget visual behavior cannot be fully proven in headless automated tests."
+    reason: "Real GLM serial generation produces 30/30 chapters but D-11 validation fails at chapter 5 (504 chars exceeds 500-char upper bound). Deterministic adapter path passes 30/30 with D-11 compliance, but live GLM evidence is blocked. P14-04-GLM-01 remains open."
+    artifacts:
+      - path: "test/journey/serial_generation_test.dart"
+        issue: "Live serial path generates chapters but D-11 bounds check fails at chapter 5; deviation detection and token audit do not execute for live evidence"
+      - path: "test/journey/full_journey_test.dart"
+        issue: "Deterministic full journey passes 30/30 but is supplemental only; cannot close P14-04-GLM-01"
+    missing:
+      - "Real GLM 30/30 generation with all chapters in 300-500 char range"
+      - "All-30 deviation detection evidence from live GLM run"
+      - "Token audit totalCalls >= 30 from live GLM run"
+  - truth: "User can select text in editor and trigger floating toolbar operations (tone rewrite, paragraph polish, free input), verifying anti-AI-scent effect with full platform UI evidence"
+    status: partial
+    reason: "Automated evidence passes 5/5 (editor AI operations, anti-AI-scent removal, knowledge/Skill, opening styles, chapter ops). FloatingToolbar bottom flip human-verified. But IME composition and DeviationWarningWidget visual remain human_needed due to WSL2 platform limitations."
+    artifacts:
+      - path: "test/journey/automated_ui_evidence_test.dart"
+        issue: "All automated checks pass but cannot verify platform-specific IME composition or visual widget rendering"
+      - path: "lib/features/knowledge/presentation/deviation_warning_widget.dart"
+        issue: "Widget exists and is wired (renders severity, skillName, description, suggestedFix) but visual rendering unverified on real device"
+    missing:
+      - "Human evidence for Chinese IME composition on native Windows or Android (P14-07-HUMAN-01)"
+      - "Human evidence for DeviationWarningWidget visual readability (P14-07-HUMAN-02)"
+human_verification:
+  - test: "Type Chinese text using system IME (e.g., wubi or sogou) in the editor on native Windows or Android device"
+    expected: "IME composition candidates appear and complete correctly; no toolbar interference during composition"
+    why_human: "WSL2 Linux GUI apps cannot receive Windows IME input events; requires native platform (P14-07-HUMAN-01)"
+  - test: "Trigger a deviation warning in the running app and inspect the DeviationWarningWidget"
+    expected: "All four fields (severity icon/color, skill name, description, suggested fix) are readable and properly laid out"
+    why_human: "Triggering deviation warnings requires AI content generation which needs IME or pre-loaded test fixtures not yet available (P14-07-HUMAN-02)"
+  - test: "Observe editor dark theme text contrast on a native display"
+    expected: "Text should be readable against dark background; current issue P14-07-UI-01 shows dark text on dark background"
+    why_human: "Visual contrast is a subjective rendering property that cannot be verified by headless tests"
 ---
 
 # Phase 14: World-Building & First 30 Chapters Verification Report
 
-**Phase Goal:** 用户可以使用 MuseFlow 搭建完整修仙世界观并写出前30章，验证核心创作循环的可靠性  
-**Verified:** 2026-06-07  
-**Status:** gaps_found  
-**Score:** 4/6 must-haves verified
+**Phase Goal:** 用户可以使用 MuseFlow 搭建完整修仙世界观并写出前30章，验证核心创作循环的可靠性
+**Verified:** 2026-06-08T02:30:00Z
+**Status:** gaps_found
+**Re-verification:** Yes -- after gap closure attempts via Plans 14-05, 14-06, 14-07
 
 ## Goal Achievement
 
-Phase 14 has substantially improved journey validation evidence, but it does **not** yet fully satisfy the ROADMAP goal because one core real-API journey blocker remains open and one anti-AI-scent blocker remains unresolved.
+### Observable Truths (from ROADMAP Success Criteria)
 
-### Requirement Traceability
+| # | Truth (Success Criterion) | Status | Evidence |
+|---|---------------------------|--------|----------|
+| 1 | User can create complete xianxia world using template (character cards, settings, Skill guardian config), knowledge base available for subsequent chapter injection | VERIFIED | `flutter test test/journey/world_building_test.dart --timeout 120s` passed 1/1. Uses `worldTemplateRepositoryProvider`, `getById('male-xianxia-sect')`, `templateInstantiationServiceProvider`, `createDraft`, `saveDraft`. |
+| 2 | User can input inspiration fragments (bullet-note mode), AI synthesizes into coherent story paragraphs | VERIFIED | `flutter test test/journey/fragment_synthesis_test.dart -j 1 --timeout 180s` passed 4/4. Real GLM synthesis: 443 chars output, character names `[林风, 清虚真人, 苏雪晴]` found. |
+| 3 | User can generate first chapter via opening guide with 3 styles (scene/character/suspense) | VERIFIED | `flutter test test/journey/opening_guide_test.dart -j 1 --timeout 180s` passed 3/3. Three non-identical styles: `[场景切入, 人物切入, 悬念切入]`. |
+| 4 | User can create and manage 30 chapters (CRUD, reorder, split, merge, copy, delete), multi-manuscript architecture stable | VERIFIED | `flutter test test/journey/chapter_management_test.dart -j 1 --timeout 180s` passed 7/7. Production `chapterNotifierProvider.notifier` used for all operations. |
+| 5 | User can generate AI content chapter by chapter (~100 chars xianxia each), knowledge injection and Skill guardian work continuously | PARTIAL | Deterministic path: `flutter test test/journey/full_journey_test.dart -j 1 --plain-name "deterministic" --timeout 300s` passed 30/30. Real GLM: smoke passed (204 chars), serial generates 30/30 but D-11 fails at chapter 5 (504 chars > 500 bound). P14-04-GLM-01 open. |
+| 6 | User can select text and trigger floating toolbar (tone rewrite, paragraph polish, free input), anti-AI-scent effect verified | PARTIAL | Automated: `flutter test test/journey/automated_ui_evidence_test.dart -j 1 --timeout 180s` passed 5/5. All three phrases removed. FloatingToolbar flip: human-verified. IME composition: human_needed (P14-07-HUMAN-01). DeviationWarningWidget visual: human_needed (P14-07-HUMAN-02). |
 
-| Requirement | Status | Evidence | Notes |
-|---|---|---|---|
-| JOURNEY-01 | VERIFIED | `test/journey/world_building_test.dart`; `14-04-SUMMARY.md` | The world-building validation now uses Phase 7 template instantiation via `worldTemplateRepositoryProvider`, `getById('male-xianxia-sect')`, `templateInstantiationServiceProvider`, `createDraft`, and `saveDraft`; `sectWorld()` was removed from the validation path. |
-| JOURNEY-02 | VERIFIED | `14-ISSUE-LOG.md` OQ-02; `fragment_synthesis_test.dart` | Real GLM fragment synthesis evidence was recorded: synthesis output > 50 chars and character names present. |
-| JOURNEY-03 | VERIFIED | `14-ISSUE-LOG.md` OQ-02; `opening_guide_test.dart`; `automated_ui_evidence_test.dart` | Real GLM opening guide returned three non-identical styles; automated evidence confirms distinct scene/character/suspense variants. |
-| JOURNEY-04 | VERIFIED WITH WARNINGS | `chapter_management_test.dart`; `automated_ui_evidence_test.dart`; `14-REVIEW.md` | Chapter operation evidence exists for reorder/split/merge/copy/delete/final order. Code review flags quality risks in stale copy assertions and tests that duplicate business logic. |
-| JOURNEY-05 | GAP / BLOCKER | `14-ISSUE-LOG.md` P14-04-GLM-01; `14-04-SUMMARY.md` | Real GLM smoke and chapter 1 succeeded, but chapter 2 raised `AIStreamException`. Missing: 30/30 chapters, all-30 deviation detection, generated-content character-name checks, token audit `totalCalls >= 30`. |
-| JOURNEY-06 | GAP / BLOCKER + HUMAN NEEDED | `automated_ui_evidence_test.dart`; `14-ISSUE-LOG.md`; `14-REVIEW.md` | Automated-first evidence covers operation triggerability and some rules, but anti-AI-scent still leaves obvious phrases and platform UI behavior still requires final human review. |
+**Score:** 4/6 truths fully verified
 
-## Verified Evidence
+### Required Artifacts
 
-### JOURNEY-01 — Template World-Building
+| Artifact | Expected | Status | Details |
+|----------|----------|--------|---------|
+| `test/journey/world_building_test.dart` | JOURNEY-01 test | VERIFIED | 1/1 passed, uses Phase 7 template |
+| `test/journey/fragment_synthesis_test.dart` | JOURNEY-02 test | VERIFIED | 4/4 passed with real GLM |
+| `test/journey/opening_guide_test.dart` | JOURNEY-03 test | VERIFIED | 3/3 passed, 3 distinct styles |
+| `test/journey/chapter_management_test.dart` | JOURNEY-04 test | VERIFIED | 7/7 passed, production notifier |
+| `test/journey/serial_generation_test.dart` | JOURNEY-05 serial test | PARTIAL | Deterministic passes; live GLM D-11 fails |
+| `test/journey/full_journey_test.dart` | JOURNEY-05 full journey | PARTIAL | Deterministic passes 30/30; live blocked |
+| `test/journey/automated_ui_evidence_test.dart` | JOURNEY-06 automated evidence | VERIFIED | 5/5 passed |
+| `test/journey/helpers/journey_container.dart` | Test infrastructure | VERIFIED | No `Hive.deleteFromDisk()`, per-container temp dirs |
+| `lib/features/ai/application/anti_ai_scent_processor.dart` | Anti-AI-scent processor | VERIFIED | Removes all 3 verifier-listed phrases, 16-entry synonym map, boundary-aware matching |
+| `lib/features/knowledge/presentation/deviation_warning_widget.dart` | Deviation warning UI | VERIFIED (exists, wired) | Renders severity/skillName/description/fix; visual unverified |
+| `lib/features/editor/presentation/floating_toolbar.dart` | Floating toolbar with D-08 flip | VERIFIED (exists, wired, human-confirmed flip) | Bottom 40% viewport flip logic implemented; human observation passed |
+| `lib/features/ai/infrastructure/openai_adapter.dart` | GLM adapter | VERIFIED | Sanitized diagnostics, smoke passes |
 
-Verified. The gap closure replaced the manual fixture path with the Phase 7 xianxia template path:
+### Key Link Verification
 
-- `worldTemplateRepositoryProvider`
-- `getById('male-xianxia-sect')`
-- `templateInstantiationServiceProvider`
-- `createDraft(...)`
-- `saveDraft(...)`
-- `nameIndexServiceProvider.notifier.refresh()`
+| From | To | Via | Status | Details |
+|------|----|-----|--------|---------|
+| world_building_test | WorldTemplateRepository | `worldTemplateRepositoryProvider` | WIRED | Template ID `male-xianxia-sect` resolves |
+| fragment_synthesis_test | Real GLM API | `PromptPipeline` + `OpenAIAdapter` | WIRED | 443 chars real output |
+| opening_guide_test | OpeningGeneratorService | `openingGeneratorServiceProvider` | WIRED | 3 distinct styles via real GLM |
+| chapter_management_test | ChapterNotifier | `chapterNotifierProvider.notifier` | WIRED | 5 production method calls |
+| serial_generation_test | Real GLM API | `OpenAIAdapter.createStream` | PARTIAL | Smoke passes, D-11 bounds fail |
+| EditorAI notifier | AntiAIScentProcessor | `antiAIScentProcessorProvider` | WIRED | Process called in editor AI flow |
+| DeviationWarningWidget | DeviationNotifier | `deviationNotifierProvider` | WIRED | Watches and renders warnings |
+| FloatingToolbar | Editor selection | `Follower.withOffset` + `_flipAlign` | WIRED | D-08 bottom 40% flip confirmed |
 
-Post-merge gate also passed:
+### Data-Flow Trace (Level 4)
 
-```bash
-flutter analyze test/journey/
-flutter test test/journey/world_building_test.dart test/journey/automated_ui_evidence_test.dart --timeout 240s
-```
+| Artifact | Data Variable | Source | Produces Real Data | Status |
+|----------|---------------|--------|--------------------|--------|
+| `fragment_synthesis_test` | synthesis output | Real GLM streaming API | Yes (443 chars, character names) | FLOWING |
+| `opening_guide_test` | style variants | Real GLM via OpeningGeneratorService | Yes (3 non-identical styles) | FLOWING |
+| `chapter_management_test` | chapter state | ChapterNotifier + Hive | Yes (CRUD operations persist) | FLOWING |
+| `automated_ui_evidence_test` | processed text | AntiAIScentProcessor | Yes (banned phrases removed) | FLOWING |
+| `serial_generation_test` (live) | chapter content | Real GLM streaming | Partial (chapters generated but D-11 fails) | PARTIAL |
+| `full_journey_test` (deterministic) | 30 chapters | Deterministic adapter | Yes (30/30, 306-326 chars each, token audit 31 calls) | FLOWING |
 
-Result: analyze clean; 6/6 selected journey tests passed.
+### Behavioral Spot-Checks
 
-### JOURNEY-02 — Fragment Capture → AI Synthesis
+| Behavior | Command | Result | Status |
+|----------|---------|--------|--------|
+| JOURNEY-01 world building | `flutter test test/journey/world_building_test.dart --timeout 120s` | 1/1 passed | PASS |
+| JOURNEY-02 fragment synthesis | `flutter test test/journey/fragment_synthesis_test.dart -j 1 --timeout 180s` | 4/4 passed, 443 chars | PASS |
+| JOURNEY-03 opening guide | `flutter test test/journey/opening_guide_test.dart -j 1 --timeout 180s` | 3/3 passed | PASS |
+| JOURNEY-04 chapter management | `flutter test test/journey/chapter_management_test.dart -j 1 --timeout 180s` | 7/7 passed | PASS |
+| JOURNEY-06 automated evidence | `flutter test test/journey/automated_ui_evidence_test.dart -j 1 --timeout 180s` | 5/5 passed | PASS |
+| JOURNEY-05 deterministic full journey | `flutter test test/journey/full_journey_test.dart -j 1 --plain-name "deterministic" --timeout 300s` | 1/1 passed, 30/30 chapters, audit 31 calls | PASS (supplemental) |
+| JOURNEY-05 GLM smoke | `flutter test test/journey/serial_generation_test.dart -j 1 --plain-name "should pass GLM streaming smoke test" --timeout 120s` | 1/1 passed, 204 chars | PASS |
+| Regression suite (selected) | `flutter test test/journey/world_building_test.dart test/journey/chapter_management_test.dart test/journey/automated_ui_evidence_test.dart -j 1 --timeout 180s` | 13/13 passed | PASS |
 
-Verified with real GLM evidence recorded in `14-ISSUE-LOG.md`:
+### Requirements Coverage
 
-- `fragment_synthesis_test.dart` passed 4/4.
-- Synthesis output length recorded as 445 chars.
-- Character names recorded: `林风`, `清虚真人`, `苏雪晴`, `赵天磊`.
-- No API key or bearer token was written to the issue log.
+| Requirement | Source Plan | Description | Status | Evidence |
+|-------------|------------|-------------|--------|----------|
+| JOURNEY-01 | 14-01 | Template world-building with character cards, settings, Skill config | SATISFIED | `world_building_test.dart` 1/1 passed |
+| JOURNEY-02 | 14-02 | Fragment capture to AI synthesis | SATISFIED | `fragment_synthesis_test.dart` 4/4 passed with real GLM |
+| JOURNEY-03 | 14-02 | Opening guide with 3 styles | SATISFIED | `opening_guide_test.dart` 3/3 passed |
+| JOURNEY-04 | 14-02, 14-05 | 30-chapter CRUD management | SATISFIED | `chapter_management_test.dart` 7/7 passed |
+| JOURNEY-05 | 14-03, 14-06 | Serial AI content generation with knowledge injection and Skill guardian | BLOCKED | Deterministic passes; real GLM D-11 fails at chapter 5. P14-04-GLM-01 open |
+| JOURNEY-06 | 14-03, 14-05, 14-07 | Editor floating toolbar operations, anti-AI-scent, platform UI | PARTIAL | Automated 5/5; FloatingToolbar flip human-verified; IME and DeviationWidget human_needed |
 
-### JOURNEY-03 — Opening Guide Three Styles
+No orphaned requirements found. All Phase 14 JOURNEY requirements mapped to plans.
 
-Verified with real GLM and automated evidence:
+### Anti-Patterns Found
 
-- `opening_guide_test.dart` passed 3/3.
-- Three styles recorded: `场景切入`, `人物切入`, `悬念切入`.
-- `automated_ui_evidence_test.dart` confirms distinct `scene`, `character`, and `suspense` variants.
+| File | Line | Pattern | Severity | Impact |
+|------|------|---------|----------|--------|
+| `lib/features/ai/infrastructure/openai_adapter.dart` | 170-186 | CR-01: `fetchModelList` bypasses HTTPS validation | CRITICAL (security) | API key could leak over plaintext HTTP. Not a stub but a security defect found in review. |
+| `lib/features/ai/infrastructure/openai_adapter.dart` | 175-185 | CR-02: `fetchModelList` leaks `OpenAIClient` on exception | WARNING (resource leak) | Repeated network errors accumulate leaked TCP connections. |
+| `lib/features/ai/application/anti_ai_scent_processor.dart` | 127-144 | WR-01: Highlight positions stale after multi-phase mutations | WARNING | Positions in `ProcessingResult.highlights` become incorrect; no runtime impact yet as no production code reads start/end. |
 
-### JOURNEY-04 — Chapter Operations
+No debt markers (TBD/FIXME/XXX) found in journey test files or key implementation files.
 
-Verified with warnings:
+### Human Verification Required
 
-- Automated evidence covers reorder, split, merge, copy, delete, and final sequential sort order.
-- Code review warns that parts of `chapter_management_test.dart` duplicate repository/business logic and the copy test uses a stale local `Chapter` object, so the evidence is useful but should be strengthened.
+### 1. Chinese IME Composition on Native Platform
 
-## Gaps Found
+**Test:** Type Chinese text using a system IME (e.g., wubi, sogou, or Microsoft Pinyin) in the editor on a native Windows or Android device
+**Expected:** IME composition candidates appear and complete correctly; the FloatingToolbar does not interfere during composition (per Pitfall 4 implementation)
+**Why human:** WSL2 Linux GUI apps cannot receive Windows IME input events. This is a platform limitation, not an app bug. The suppression logic during IME composition is implemented in `floating_toolbar.dart` line 72 but cannot be triggered in WSL2.
 
-### GAP-01 — JOURNEY-05: Real GLM 30-Chapter Serial Generation Failed
+### 2. DeviationWarningWidget Visual Rendering
 
-**Severity:** BLOCKER  
-**Evidence:** `.planning/phases/14-world-building-first-30-chapters/14-ISSUE-LOG.md`, issue `P14-04-GLM-01`
+**Test:** Trigger a deviation warning in the running app (generate content that violates a Skill rule) and inspect the DeviationWarningWidget
+**Expected:** All four fields (severity icon with correct color, skill name, description, suggested fix) are readable and properly laid out in a Card/ListTile structure
+**Why human:** Triggering deviation warnings requires AI content generation via IME input or pre-loaded deviation test fixtures. Current test environment cannot produce this state. The widget code renders all four fields (`warning.severity`, `warning.skillName`, `warning.description`, `warning.suggestedFix`) but visual correctness requires human observation.
 
-Real GLM compatibility was proven for short calls and initial generation, but sustained serial generation failed:
+### 3. Editor Dark Theme Text Contrast
 
-- Smoke passed.
-- Chapter 1 generated successfully (`512 chars`).
-- Chapter 2 failed with `AIStreamException`.
+**Test:** Open the editor on a device with dark theme and verify text readability
+**Expected:** Text should be clearly readable (light text on dark background)
+**Why human:** P14-07-UI-01 reports dark text on dark background making content nearly unreadable. Visual contrast is subjective and platform-dependent.
 
-Therefore these must-haves remain unproven:
+### Gaps Summary
 
-- 30/30 chapter generation.
-- Every chapter in required bounds.
-- All-30 deviation detection.
-- Generated-content character-name checks across the full run.
-- Token audit `totalCalls >= 30` and aggregate token totals.
+Phase 14 has strong automated evidence for JOURNEY-01 through JOURNEY-04 (all passing with real GLM API where applicable). The phase goal is partially achieved but blocked by two persistent gaps:
 
-**Required next action:** debug the GLM stream failure, add deterministic/fake-adapter coverage for local orchestration if needed, then rerun the real GLM serial/full journey commands and update `14-ISSUE-LOG.md`.
+**Gap 1: Real GLM D-11 Validation (JOURNEY-05).** The live GLM API generates 30/30 chapters with 3-second spacing, but chapter 5 exceeds the 500-character upper bound (504 chars). This fails the D-11 character-range gate, preventing all-30 deviation detection and token audit from executing. The deterministic adapter path proves the orchestration works correctly (30/30, D-11 compliant, deviation detection invoked, audit flushed with 31 calls), but this is supplemental evidence only. P14-04-GLM-01 remains open since Plan 14-04. Required: either constrain GLM output to 300-500 chars, or relax D-11 bounds for live validation.
 
-### GAP-02 — JOURNEY-06: Anti-AI-Scent Validation Is Incomplete
+**Gap 2: Platform UI Human Evidence (JOURNEY-06).** Two of three required human verification items remain blocked by WSL2 environment limitations: Chinese IME composition (P14-07-HUMAN-01) and DeviationWarningWidget visual rendering (P14-07-HUMAN-02). The FloatingToolbar bottom-viewport flip was successfully human-verified on 2026-06-08. All automated UI evidence passes 5/5. The anti-AI-scent processor now removes all three verifier-listed phrases with source-gate assertions.
 
-**Severity:** BLOCKER  
-**Evidence:** `test/journey/automated_ui_evidence_test.dart`; `.planning/phases/14-world-building-first-30-chapters/14-REVIEW.md`
+**Additional quality concern:** Code review (14-REVIEW.md) found 2 critical issues in `openai_adapter.dart`: HTTPS validation bypass in `fetchModelList` (CR-01) and resource leak on exception (CR-02). These are not blockers for the phase goal but represent security and reliability debt.
 
-The automated anti-AI-scent test documents a limitation rather than proving full success:
+---
 
-- `值得注意的是` is removed.
-- `总而言之` and/or `需要指出的是` remain documented as uncovered phrases.
-
-This means the phase has not fully verified the core value: “让AI帮你写好故事，但让读者看不出AI的痕迹。”
-
-**Required next action:** either fix `AntiAIScentProcessor` to remove all listed obvious AI-scent phrases, or explicitly change acceptance criteria to accept the limitation. If fixed, update the test so all obvious phrases are rejected rather than encoded as a passing limitation.
-
-### GAP-03 — JOURNEY-06: Platform UI Behaviors Need Final Human Review
-
-**Severity:** WARNING / HUMAN_NEEDED after blockers are fixed  
-**Evidence:** `14-ISSUE-LOG.md` automated limitation rows
-
-The user changed Task 3 from manual item-by-item evidence to automated-first validation with final human review. That controlled deviation is valid, but headless tests cannot fully prove:
-
-- OS-level Chinese IME composition behavior.
-- Pixel-level FloatingToolbar flip above bottom-viewport selections.
-- Visual `DeviationWarningWidget` behavior in the real app.
-
-**Required next action:** after blockers are resolved, perform a short final manual review of these platform/UI items or add UI automation capable of observing them on target platforms.
-
-## Code Review Findings Considered
-
-`14-REVIEW.md` reports `issues_found`:
-
-- Critical: 1
-- Warning: 4
-- Total: 5
-
-The critical issue is test reliability: journey tests share global Hive state and fixed box names, with cleanup using global `Hive.deleteFromDisk()`. This creates a risk of cross-test deletion/pollution under default concurrent Dart test execution. This does not by itself invalidate the selected `-j 1`/bounded evidence already run, but it is a serious quality risk for future journey-suite reliability and should be fixed during gap closure.
-
-## Regression Gate Result
-
-Prior-phase regression gate was run and failed:
-
-- 749 passed
-- 14 failed
-
-Observed failure families included `synthesis_notifier_test.dart` Hive initialization/state expectations and stats presentation tests. The user chose to continue verification. These failures should be treated as release risk until classified as pre-existing or fixed.
-
-## Verdict
-
-**Status:** `gaps_found`
-
-Phase 14 should not be marked complete yet. It has strong evidence for JOURNEY-01 through JOURNEY-04, but JOURNEY-05 and JOURNEY-06 contain blockers that directly affect the phase goal:
-
-1. The app has not yet proven real GLM generation through all first 30 chapters.
-2. Anti-AI-scent validation still admits obvious AI-scent phrases.
-3. Platform UI behavior remains final-review-only.
-
-## Recommended Next Step
-
-Run gap planning for Phase 14:
-
-```bash
-/gsd:plan-phase 14 --gaps
-```
-
-The gap plan should focus on:
-
-1. Debugging/resolving `P14-04-GLM-01` and rerunning real GLM serial/full journey validation.
-2. Fixing anti-AI-scent phrase coverage or explicitly revising acceptance criteria.
-3. Hardening journey test Hive isolation from the code review critical finding.
-4. Capturing final platform UI review evidence or adding suitable UI automation.
+_Verified: 2026-06-08T02:30:00Z_
+_Verifier: Claude (gsd-verifier)_
