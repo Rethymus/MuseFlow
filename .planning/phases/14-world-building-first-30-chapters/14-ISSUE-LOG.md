@@ -30,6 +30,9 @@ This log captures execution findings for JOURNEY-05/JOURNEY-06: bugs, UX frictio
 | P14-07-HUMAN-02 | 缺失需求 | 中 | JOURNEY-06 | DeviationWarningWidget visual rendering not yet verified | Display DeviationWarningWidget in running app and verify readability of severity/rule/description/fix | All four fields (severity, rule name, description, suggested fix) should be readable | Deferred: triggering deviation warnings requires AI content generation which needs IME or pre-generated content. Cannot verify without either real device IME or test fixture with pre-loaded deviation state. | Human observation (2026-06-08): deferred due to IME limitation preventing content generation flow. |
 
 - [x] CR-01/P14-05-HIVE: journey Hive cleanup now owns a per-container `Directory.systemTemp.createTempSync('journey_test_')` directory, calls `Hive.close()`, and deletes only that `tempDir` recursively; no helper-level global `Hive.deleteFromDisk()` cleanup remains.
+- [x] CR-01 (code review): fetchModelList now calls `_validateBaseUrl(baseUrl)` before creating `OpenAIClient`, preventing API key leakage over plaintext HTTP. Closed 2026-06-08 by Plan 14-09.
+- [x] CR-02 (code review): fetchModelList now uses `try/finally` with `client.close()` in the `finally` block, preventing TCP connection leaks on exception. Closed 2026-06-08 by Plan 14-09.
+
 - [x] P14-05-AI-01: anti-AI-scent processing now removes `值得注意的是`, `总而言之`, and `需要指出的是`; automated evidence asserts absence and highlight reporting for all three verifier-listed phrases.
 
 - [x] Deterministic supplemental JOURNEY-05 path: no-credential serial journey uses `journey-local-test-key` + deterministic adapter, generated 30/30 local chapters in D-11 range, sampled character-name checks passed, all-30 deviation detection invoked, and token audit flushed with `totalCalls >= 30`. This is local orchestration evidence only and does not close `P14-04-GLM-01`.

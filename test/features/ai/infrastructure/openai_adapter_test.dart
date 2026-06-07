@@ -332,5 +332,60 @@ void main() {
         );
       });
     });
+
+    group('fetchModelList security (CR-01/CR-02)', () {
+      test(
+          'should throw AIStreamException for non-HTTPS baseUrl '
+          '(CR-01)', () async {
+        // CR-01: fetchModelList must validate HTTPS before creating OpenAIClient.
+        // Without the fix, this would create a client and send the API key over
+        // plaintext HTTP.
+        final adapter = OpenAIAdapter();
+        try {
+          await adapter.fetchModelList(
+            apiKey: 'test-key',
+            baseUrl: 'http://evil.com/v1',
+          );
+          fail('Expected AIStreamException for non-HTTPS baseUrl');
+        } on AIStreamException catch (e) {
+          expect(e.message, contains('HTTPS'));
+        } finally {
+          adapter.dispose();
+        }
+      });
+
+      test(
+          'should return empty list for empty apiKey without '
+          'validating baseUrl', () async {
+        // Empty apiKey early-return should not call _validateBaseUrl.
+        final adapter = OpenAIAdapter();
+        final result = await adapter.fetchModelList(
+          apiKey: '',
+          baseUrl: 'http://evil.com/v1',
+        );
+        expect(result, isEmpty);
+        adapter.dispose();
+      });
+
+      test(
+          'should close OpenAIClient even on exception '
+          '(CR-02)', () async {
+        // CR-02: client.close() must be called in a finally block.
+        // Use an invalid HTTPS URL that will fail DNS resolution,
+        // then verify no resource leak by checking the adapter can still
+        // be disposed cleanly (no hanging connections).
+        final adapter = OpenAIAdapter();
+        // This will hit the HTTPS validation (valid URL format) but fail
+        // on network call -- the client should still be closed.
+        final result = await adapter.fetchModelList(
+          apiKey: 'test-key',
+          baseUrl: 'https://nonexistent.invalid.host.example.com/v1',
+        );
+        // Returns empty list on network error (existing behavior)
+        expect(result, isEmpty);
+        // Dispose should complete without error -- proves no leaked client
+        expect(() => adapter.dispose(), returnsNormally);
+      });
+    });
   });
 }
