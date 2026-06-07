@@ -52,6 +52,8 @@ This log captures execution findings for JOURNEY-05/JOURNEY-06: bugs, UX frictio
 - **Impact:** Phase 14 now records repeatable automated evidence for most former manual-only checks. Platform-specific visual/IME checks remain as explicit limitations in P14-04-AUTO-01 and require final human review rather than executor-side manual data entry.
 - **Evidence:** `dart analyze test/journey/automated_ui_evidence_test.dart test/journey/helpers/journey_container.dart` passed; `flutter test test/journey/automated_ui_evidence_test.dart --timeout 180s` passed 5/5 with `[AUTO_UI]` evidence logs.
 
+- [x] P14-05-CHAPTER-01: chapter management validation now calls production `chapterNotifierProvider.notifier` operations for reorder, split, merge, duplicate, and delete; duplicate re-reads updated content before copying and does not claim platform UI proof.
+
 ## Automated UI Evidence + Final Human Review (JOURNEY-06)
 
 ### Automated Verifications
