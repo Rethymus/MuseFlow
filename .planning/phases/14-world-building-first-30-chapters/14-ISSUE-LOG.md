@@ -26,7 +26,32 @@ This log captures execution findings for JOURNEY-05/JOURNEY-06: bugs, UX frictio
 | P14-04-AUTO-01 | 缺失需求 | 中 | JOURNEY-06 | IME composition and pixel-level toolbar flip cannot be fully proven headlessly | Run `flutter test test/journey/automated_ui_evidence_test.dart --timeout 180s` in headless test environment | Automated suite should prove all previously manual toolbar checks | Partially resolved: FloatingToolbar bottom-viewport flip confirmed by human observation (2026-06-08). IME composition remains human_needed (WSL limitation, P14-07-HUMAN-01). DeviationWarningWidget visual remains human_needed (deferred, P14-07-HUMAN-02). | Human observation for FloatingToolbar flip passed; IME and DeviationWidget blocked. Automated limitation recorded; final human review on native Windows/Android still needed for remaining items. |
 | P14-04-AI-01 | 功能缺陷 | 中 | JOURNEY-06 | Anti-AI-scent processor did not remove all verifier-listed phrases | Run automated anti-AI-scent evidence test with text containing all three phrases | All obvious AI-scent phrases listed by verifier are removed or flagged | Closed by P14-05: `值得注意的是`, `总而言之`, and `需要指出的是` are removed and recorded as banned-word highlights | `flutter test test/journey/automated_ui_evidence_test.dart --plain-name "should remove obvious AI-scent phrases from editor output" --timeout 180s`; source gate asserts `isNot(contains('总而言之'))` and `isNot(contains('需要指出的是'))` |
 | P14-07-UI-01 | 体验摩擦 | 低 | JOURNEY-06 | Editor dark background with dark text — insufficient contrast | Launch app on Linux desktop; observe editor text rendering against dark background | Text color should be white/light when background is dark (theme-aware contrast) | Observed: editor background is dark but text color remains dark/black, making content nearly unreadable. Affects entire editor and potentially other views. | Human observation on Linux desktop (WSL2, 2026-06-08): dark background with dark text clearly visible. Needs project-wide investigation of theme/text color handling. |
-| P14-07-HUMAN-01 | 缺失需求 | 中 | JOURNEY-06 | Chinese IME composition cannot be tested in WSL Linux environment | Run Flutter app in WSL2 Linux and attempt Chinese input via Windows IME | System IME composition events should reach the Flutter editor | WSL2 Linux GUI apps cannot receive Windows IME input events; only copy-paste works. This is a platform limitation, not an app bug. Requires native Windows or Android device for proper testing. | Human observation (2026-06-08): Arch Linux in WSL2, `flutter run -d linux`, Chinese IME input does not reach editor. |
+| P14-07-HUMAN-01 | 缺失需求 | 中 | JOURNEY-06 | Chinese IME composition cannot be tested in WSL Linux environment — **deferred to native device verification** | See Deferred Verification subsection below | System IME composition events should reach the Flutter editor | WSL2 Linux GUI apps cannot receive Windows IME input events; only copy-paste works. This is a platform limitation, not an app bug. Requires native Windows or Android device for proper testing. | Human observation (2026-06-08): Arch Linux in WSL2, `flutter run -d linux`, Chinese IME input does not reach editor. |
+
+**P14-07-HUMAN-01 Deferred Verification:**
+
+**Status:** deferred (platform limitation, not app bug)
+
+**Target platforms:** Native Windows (10/11) and Android (API 24+)
+
+**Prerequisites:**
+- MuseFlow built and running on native Windows or Android device
+- Chinese IME installed and active (Microsoft Pinyin, Sogou, Wubi, or system default)
+- A manuscript with at least one chapter of content open in the editor
+
+**Verification procedure:**
+1. Open a chapter in the MuseFlow editor
+2. Tap/click into the editor text area to activate the input cursor
+3. Start typing Chinese characters using the system IME
+4. Observe that IME composition candidates appear correctly (underlined composing text, candidate window)
+5. Complete a character selection and verify the character appears in the editor
+6. Select a range of text to trigger the FloatingToolbar
+7. During IME composition, verify the FloatingToolbar does not appear or interfere with the composition
+8. Verify the IME suppression logic in `floating_toolbar.dart` (line 72) prevents toolbar from appearing mid-composition
+
+**Expected result:** IME composition works correctly; toolbar does not interfere during composition.
+
+**Why deferred:** WSL2 Linux GUI apps cannot receive Windows IME input events. The IME suppression logic is implemented but cannot be triggered in the current test environment.
 | P14-07-HUMAN-02 | 缺失需求 ~~中~~ 已关闭 | JOURNEY-06 | ~~DeviationWarningWidget visual rendering not yet verified~~ Closed: Automated widget test proves all four fields render correctly (severity icon, skillName, description, suggestedFix). See `test/journey/deviation_warning_widget_test.dart` 5/5 passing. | Display DeviationWarningWidget in running app and verify readability of severity/rule/description/fix | All four fields (severity, rule name, description, suggested fix) should be readable | Deferred: triggering deviation warnings requires AI content generation which needs IME or pre-generated content. Cannot verify without either real device IME or test fixture with pre-loaded deviation state. | Closed 2026-06-08 by Plan 14-09. Widget test with pre-loaded `DeviationResult` overrides proves: (1) both warning tiles render skillName + description, (2) suggestedFix appears when non-null, (3) clear-severity icon is colored, (4) empty state renders SizedBox.shrink, (5) clearAll button fires notifier method. No AI generation or IME required. |
 
 - [x] CR-01/P14-05-HIVE: journey Hive cleanup now owns a per-container `Directory.systemTemp.createTempSync('journey_test_')` directory, calls `Hive.close()`, and deletes only that `tempDir` recursively; no helper-level global `Hive.deleteFromDisk()` cleanup remains.
@@ -78,6 +103,8 @@ Executed by test scripts and checkable via test output:
 - [x] Chapter operations: reorder/split/merge/copy/delete/final order (automated_ui_evidence_test)
 
 ### Human Platform Observations (2026-06-08)
+
+> **Note:** P14-07-HUMAN-01 deferred to native device verification. See Deferred Verification subsection in the Issues table above for instructions.
 
 Platform: Linux desktop (Arch Linux in WSL2), `flutter run -d linux`
 
