@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>MuseFlow v1.3 用户旅程成果站</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <main class="page">
+    <section class="hero">
+      <div class="eyebrow">MuseFlow 灵韵 · v1.3 Evidence Site</div>
+      <h1>百章修仙小说用户旅程验证</h1>
+      <p class="lead">这是一组面向评审者的可浏览成果：用“有故事但拙于表达”的用户视角，验证 MuseFlow 从世界观搭建、碎片整理、开篇引导、章节生成、故事结构、格式清洗到分析报告的完整创作链路。</p>
+      <nav class="nav" aria-label="成果链接">
+        <a class="button primary" href="xianxia-100-chapter-sample.html">阅读百章样例</a>
+        <a class="button" href="validation-report.html">查看验证报告</a>
+        <a class="button" href="../../README.md">返回项目 README</a>
+      </nav>
+      <div class="kpis" aria-label="关键指标">
+        <div class="kpi"><span>章节规模</span><strong>100</strong></div>
+        <div class="kpi"><span>验证阶段</span><strong>12–16</strong></div>
+        <div class="kpi"><span>自动化测试</span><strong>1169+</strong></div>
+        <div class="kpi"><span>当前状态</span><strong>已通过</strong></div>
+      </div>
+    </section>
+
+    <h2>核心成果</h2>
+    <section class="grid">
+      <article class="card">
+        <h3>百章修仙样例</h3>
+        <p><strong>《剑道苍穹》</strong>展示从凡人入门、筑基、金丹、元婴到飞升的 100 章确定性验证样例。</p>
+      </article>
+      <article class="card">
+        <h3>完整用户旅程</h3>
+        <p>覆盖世界观搭建、角色卡、Skill 守护、碎片捕捉、开篇三风格、章节生成与导出。</p>
+      </article>
+      <article class="card">
+        <h3>质量与报告</h3>
+        <p>验证 token 审计、痛点报告、反 AI 味盲读入口、知识库一致性分析等 Phase 16 成果。</p>
+      </article>
+      <article class="card">
+        <h3>诚实边界</h3>
+        <p>样例用于验证链路和效果参考，不等同于最终出版稿；真实文学质量仍需人工审读。</p>
+      </article>
+    </section>
+
+    <h2>验证链路</h2>
+    <section class="timeline">
+      <div class="step"><strong>世界观搭建</strong>：使用修仙模板，创建角色卡与 Skill 设定守护规则。</div>
+      <div class="step"><strong>碎片捕捉与整理</strong>：输入灵感碎片，经过 PromptPipeline 生成连贯段落。</div>
+      <div class="step"><strong>开篇引导</strong>：生成场景切入、人物切入、悬念切入三种开篇。</div>
+      <div class="step"><strong>百章章节流</strong>：创建 100 章，逐章生成并验证 300–500 字输出边界。</div>
+      <div class="step"><strong>故事结构与导出</strong>：验证伏笔生命周期、格式清洗、Markdown/TXT/JSON 三格式导出。</div>
+      <div class="step"><strong>分析报告</strong>：呈现 token 成本、痛点、反 AI 味、知识库一致性四类报告。</div>
+    </section>
+
+    <h2>如何解读这个成果站</h2>
+    <section class="report-section">
+      <p>本成果站把自动化测试中隐藏在代码和日志里的验证结果，整理为人可以直接阅读的参考材料。章节内容来自 <code>test/journey/helpers/story_outline.dart</code> 的确定性 100 章大纲；验证结论来自已通过的 <code>flutter analyze</code> 与 <code>flutter test</code>。</p>
+      <p>如果要看产品真实运行截图或真实模型输出，需要在后续人工 UAT 中补充 Windows/Android 设备验证、IME 体验、真实 GLM 长流程和读者盲测。</p>
+    </section>
+
+    <footer class="footer">MuseFlow 灵韵 · 想象力为骨，AI 为翼。</footer>
+  </main>
+</body>
+</html>
