@@ -196,7 +196,7 @@ Plans:
 Plans:
 **Wave 1**
 
-- [ ] 16-01-PLAN.md — Domain models, export service, ReportsHubPage, routing
+- [x] 16-01-PLAN.md — Domain models, export service, ReportsHubPage, routing
 
 **Wave 2** *(depends on Wave 1)*
 
@@ -230,4 +230,4 @@ Phases execute in numeric order: 12 → 13 → 14 → 15 → 16
 | 13. Automation Test Harness | v1.3 | 4/4 | Complete    | 2026-06-07 |
 | 14. World-Building & First 30 Chapters | v1.3 | 10/10 | Complete (with 1 deferred)   | 2026-06-08 |
 | 15. Full Manuscript & Story Structure | v1.3 | 7/7 | Complete   | 2026-06-08 |
-| 16. Analysis & Reports | v1.3 | 0/3 | Planning complete | - |
+| 16. Analysis & Reports | v1.3 | 1/3 | In Progress|  |
