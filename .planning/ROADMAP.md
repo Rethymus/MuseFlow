@@ -120,7 +120,7 @@ Plans:
 
 **Wave 2** *(depends on Wave 1)*
 
-- [ ] 16-02-PLAN.md — REPORT-01 Token cost analysis + REPORT-02 Pain point report
+- [x] 16-02-PLAN.md — REPORT-01 Token cost analysis + REPORT-02 Pain point report
 
 **Wave 3** *(depends on Wave 2)*
 
@@ -230,4 +230,4 @@ Phases execute in numeric order: 12 → 13 → 14 → 15 → 16
 | 13. Automation Test Harness | v1.3 | 4/4 | Complete    | 2026-06-07 |
 | 14. World-Building & First 30 Chapters | v1.3 | 10/10 | Complete (with 1 deferred)   | 2026-06-08 |
 | 15. Full Manuscript & Story Structure | v1.3 | 7/7 | Complete   | 2026-06-08 |
-| 16. Analysis & Reports | v1.3 | 1/3 | In Progress|  |
+| 16. Analysis & Reports | v1.3 | 2/3 | In Progress|  |
