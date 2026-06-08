@@ -1,35 +1,23 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
+import 'package:museflow/features/stats/domain/audit_operation_type.dart';
 import 'package:museflow/features/stats/domain/token_audit_record.dart';
 
 class OperationTypePieChart extends StatelessWidget {
-  const OperationTypePieChart({super.key, required this.records});
+  const OperationTypePieChart({super.key, this.records, this.costByType});
 
-  final List<TokenAuditRecord> records;
+  final List<TokenAuditRecord>? records;
+  final Map<AuditOperationType, int>? costByType;
 
   @override
   Widget build(BuildContext context) {
-    if (records.isEmpty) {
+    final groupTotals = _buildGroupTotals();
+    if (groupTotals.isEmpty) {
       return const SizedBox(
         height: 220,
         child: Center(child: Text('还没有 Token 使用记录')),
       );
     }
-
-    // Aggregate by group
-    final groupTotals = <String, int>{};
-    for (final record in records) {
-      final group = record.operationType.group;
-      groupTotals[group] = (groupTotals[group] ?? 0) + record.totalTokens;
-    }
-
-    // Map group keys to Chinese labels
-    const groupLabels = {
-      'organize': '整理类',
-      'edit': '编辑类',
-      'worldview': '世界观类',
-      'template': '模板类',
-    };
 
     final colorScheme = Theme.of(context).colorScheme;
     final colors = [
@@ -53,7 +41,6 @@ class OperationTypePieChart extends StatelessWidget {
       );
       colorIndex++;
     }
-
     return SizedBox(
       height: 220,
       child: PieChart(
@@ -65,4 +52,29 @@ class OperationTypePieChart extends StatelessWidget {
       ),
     );
   }
+
+  Map<String, int> _buildGroupTotals() {
+    final totals = <String, int>{};
+    final explicitCosts = costByType;
+    if (explicitCosts != null) {
+      for (final entry in explicitCosts.entries) {
+        final group = entry.key.group;
+        totals[group] = (totals[group] ?? 0) + entry.value;
+      }
+      return totals;
+    }
+
+    for (final record in records ?? const <TokenAuditRecord>[]) {
+      final group = record.operationType.group;
+      totals[group] = (totals[group] ?? 0) + record.totalTokens;
+    }
+    return totals;
+  }
 }
+
+const groupLabels = {
+  'organize': '整理类',
+  'edit': '编辑类',
+  'worldview': '世界观类',
+  'template': '模板类',
+};
