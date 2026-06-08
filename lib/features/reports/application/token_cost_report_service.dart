@@ -7,16 +7,15 @@ import 'package:museflow/features/stats/infrastructure/token_audit_repository.da
 
 class TokenCostReportService {
   const TokenCostReportService({
-    required TokenAuditRepository auditRepository,
-    required ChapterRepository chapterRepository,
-  }) : _auditRepository = auditRepository,
-       _chapterRepository = chapterRepository;
+    required this.auditRepository,
+    required this.chapterRepository,
+  });
 
-  final TokenAuditRepository _auditRepository;
-  final ChapterRepository _chapterRepository;
+  final TokenAuditRepository auditRepository;
+  final ChapterRepository chapterRepository;
 
   Future<TokenCostReport> generate() async {
-    final snapshot = await _auditRepository.buildSnapshot();
+    final snapshot = await auditRepository.buildSnapshot();
     final costByType = <AuditOperationType, int>{};
     final costByChapter = <String, int>{};
 
@@ -37,7 +36,7 @@ class TokenCostReportService {
       }
     }
 
-    final actualWordCount = _chapterRepository
+    final actualWordCount = chapterRepository
         .getAll()
         .fold<int>(
           0,
