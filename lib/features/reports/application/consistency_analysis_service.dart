@@ -1,3 +1,5 @@
+// ignore_for_file: prefer_initializing_formals
+
 import 'dart:math';
 
 import 'package:museflow/features/knowledge/application/deviation_detection_service.dart';

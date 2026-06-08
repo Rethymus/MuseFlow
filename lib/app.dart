@@ -19,6 +19,8 @@ import 'package:museflow/features/settings/presentation/settings_page.dart';
 import 'package:museflow/features/stats/presentation/project_stats_page.dart';
 import 'package:museflow/features/stats/presentation/token_audit_page.dart';
 import 'package:museflow/features/stats/presentation/writing_stats_page.dart';
+import 'package:museflow/features/reports/presentation/blind_read_page.dart';
+import 'package:museflow/features/reports/presentation/consistency_report_page.dart';
 import 'package:museflow/features/reports/presentation/pain_point_report_page.dart';
 import 'package:museflow/features/reports/presentation/reports_hub_page.dart';
 import 'package:museflow/features/reports/presentation/token_cost_report_page.dart';
@@ -205,11 +207,11 @@ class MuseFlowApp extends ConsumerWidget {
                         ),
                         GoRoute(
                           path: 'anti-ai-scent',
-                          builder: (context, state) => const SizedBox.shrink(),
+                          builder: (context, state) => const BlindReadPage(),
                         ),
                         GoRoute(
                           path: 'consistency',
-                          builder: (context, state) => const SizedBox.shrink(),
+                          builder: (context, state) => const ConsistencyReportPage(),
                         ),
                       ],
                     ),
