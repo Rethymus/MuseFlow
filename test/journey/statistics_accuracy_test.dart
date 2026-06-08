@@ -49,6 +49,9 @@ void main() {
           expect(writingSpeed, greaterThan(0));
           expect(result.statsSnapshot.totalUnits, greaterThan(0));
           expect(result.statsSnapshot.aiAssistRatio, inInclusiveRange(0.95, 1.0));
+          expect(result.tokenAuditSnapshot.totalCalls, greaterThanOrEqualTo(100));
+          expect(result.tokenAuditSnapshot.totalInputTokens, greaterThan(0));
+          expect(result.tokenAuditSnapshot.totalOutputTokens, greaterThan(0));
 
           debugPrint(
             '[STATS] total=${result.totalCharacters}, '
@@ -131,6 +134,9 @@ Future<_StatsJourneyResult> _generateHundredChapterStatsJourney({
 
   await auditService.flush();
   await statsCollector.flush();
+  final auditRepository = await container.read(tokenAuditRepositoryProvider.future);
+  final tokenAuditSnapshot = await auditRepository.buildSnapshot();
+  _expectCompleteTokenAudit(tokenAuditSnapshot, expectedRecords: 100);
   container.invalidate(writingStatsNotifierProvider);
   final statsSnapshot = await container.read(writingStatsNotifierProvider.future);
 
@@ -154,12 +160,46 @@ Future<_StatsJourneyResult> _generateHundredChapterStatsJourney({
   return _StatsJourneyResult(
     chapters: generatedChapters,
     statsSnapshot: statsSnapshot,
-    tokenAuditSnapshot: const TokenAuditSnapshot(),
+    tokenAuditSnapshot: tokenAuditSnapshot,
     totalCharacters: totalCharacters,
     minLength: minLength,
     maxLength: maxLength,
     averageLength: totalCharacters ~/ generatedChapters.length,
     aiUsageRate: aiUsageRate,
+  );
+}
+
+void _expectCompleteTokenAudit(
+  TokenAuditSnapshot snapshot, {
+  required int expectedRecords,
+}) {
+  expect(snapshot.totalCalls, greaterThanOrEqualTo(expectedRecords));
+  expect(snapshot.totalInputTokens, greaterThan(0));
+  expect(snapshot.totalOutputTokens, greaterThan(0));
+  expect(snapshot.records, hasLength(greaterThanOrEqualTo(expectedRecords)));
+
+  for (final record in snapshot.records) {
+    expect(
+      record.inputTokens,
+      greaterThan(0),
+      reason: 'Record ${record.id} has zero input tokens',
+    );
+    expect(
+      record.outputTokens,
+      greaterThan(0),
+      reason: 'Record ${record.id} has zero output tokens',
+    );
+    expect(
+      record.operationType.name,
+      isNotEmpty,
+      reason: 'Record ${record.id} has empty operation type',
+    );
+    expect(record.timestamp, isNotNull);
+  }
+
+  debugPrint(
+    '[AUDIT] calls=${snapshot.totalCalls}, '
+    'input=${snapshot.totalInputTokens}, output=${snapshot.totalOutputTokens}',
   );
 }
 
