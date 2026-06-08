@@ -388,20 +388,19 @@ void main() {
 
     group('fetchModelList security (CR-01/CR-02)', () {
       test(
-          'should throw AIStreamException for non-HTTPS baseUrl '
+          'should return empty list for non-HTTPS baseUrl '
           '(CR-01)', () async {
         // CR-01: fetchModelList must validate HTTPS before creating OpenAIClient.
-        // Without the fix, this would create a client and send the API key over
-        // plaintext HTTP.
+        // Per D-08 model-list discovery stays silent on any provider/config error
+        // so the user can manually type a model ID, but validation still happens
+        // before any client can send the API key over plaintext HTTP.
         final adapter = OpenAIAdapter();
         try {
-          await adapter.fetchModelList(
+          final result = await adapter.fetchModelList(
             apiKey: 'test-key',
             baseUrl: 'http://evil.com/v1',
           );
-          fail('Expected AIStreamException for non-HTTPS baseUrl');
-        } on AIStreamException catch (e) {
-          expect(e.message, contains('HTTPS'));
+          expect(result, isEmpty);
         } finally {
           adapter.dispose();
         }

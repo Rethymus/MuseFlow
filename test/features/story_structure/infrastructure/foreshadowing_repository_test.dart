@@ -19,7 +19,7 @@ void main() {
     await tearDownHiveTest();
   });
 
-  ForeshadowingEntry _makeEntry({
+  ForeshadowingEntry makeEntry({
     required String id,
     String title = 'Test Foreshadowing',
     ForeshadowingStatus status = ForeshadowingStatus.planted,
@@ -37,7 +37,7 @@ void main() {
 
   group('ForeshadowingRepository', () {
     test('add should persist entry and return with id', () async {
-      final entry = _makeEntry(id: 'e1');
+      final entry = makeEntry(id: 'e1');
       final saved = await repository.add(entry);
 
       expect(saved.id, 'e1');
@@ -45,8 +45,8 @@ void main() {
     });
 
     test('getAll should return all persisted entries', () async {
-      await repository.add(_makeEntry(id: 'e1'));
-      await repository.add(_makeEntry(id: 'e2'));
+      await repository.add(makeEntry(id: 'e1'));
+      await repository.add(makeEntry(id: 'e2'));
 
       final all = repository.getAll();
       expect(all, hasLength(2));
@@ -54,7 +54,7 @@ void main() {
     });
 
     test('getById should return entry when exists', () async {
-      await repository.add(_makeEntry(id: 'e1'));
+      await repository.add(makeEntry(id: 'e1'));
 
       final found = repository.getById('e1');
       expect(found, isNotNull);
@@ -67,9 +67,9 @@ void main() {
     });
 
     test('update should modify existing entry', () async {
-      await repository.add(_makeEntry(id: 'e1', title: 'Original'));
+      await repository.add(makeEntry(id: 'e1', title: 'Original'));
 
-      final updated = _makeEntry(id: 'e1', title: 'Updated');
+      final updated = makeEntry(id: 'e1', title: 'Updated');
       await repository.update(updated);
 
       final found = repository.getById('e1');
@@ -78,7 +78,7 @@ void main() {
     });
 
     test('delete should remove entry', () async {
-      await repository.add(_makeEntry(id: 'e1'));
+      await repository.add(makeEntry(id: 'e1'));
       await repository.delete('e1');
 
       final found = repository.getById('e1');

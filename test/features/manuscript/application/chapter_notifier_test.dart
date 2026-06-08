@@ -5,7 +5,6 @@ import 'package:museflow/core/presentation/providers.dart';
 import 'package:museflow/features/manuscript/domain/chapter.dart';
 import 'package:museflow/features/manuscript/infrastructure/chapter_repository.dart';
 import 'package:museflow/features/manuscript/infrastructure/manuscript_repository.dart';
-import 'package:museflow/features/manuscript/application/chapter_notifier.dart';
 
 import '../../../helpers/hive_test_helper.dart';
 
@@ -36,7 +35,7 @@ void main() {
     await tearDownHiveTest();
   });
 
-  Chapter _createChapter({
+  Chapter createChapter({
     required String id,
     String manuscriptId = 'ms-1',
     String title = 'Test Chapter',
@@ -62,9 +61,9 @@ void main() {
   });
 
   test('loadChapters loads chapters for a manuscriptId ordered by sortOrder', () async {
-    await chapterBox.put('ch-1', _createChapter(id: 'ch-1', sortOrder: 2, title: 'Second').toJson());
-    await chapterBox.put('ch-2', _createChapter(id: 'ch-2', sortOrder: 0, title: 'First').toJson());
-    await chapterBox.put('ch-3', _createChapter(id: 'ch-3', sortOrder: 1, title: 'Middle').toJson());
+    await chapterBox.put('ch-1', createChapter(id: 'ch-1', sortOrder: 2, title: 'Second').toJson());
+    await chapterBox.put('ch-2', createChapter(id: 'ch-2', sortOrder: 0, title: 'First').toJson());
+    await chapterBox.put('ch-3', createChapter(id: 'ch-3', sortOrder: 1, title: 'Middle').toJson());
 
     final notifier = container.read(chapterNotifierProvider.notifier);
     await notifier.loadChapters('ms-1');
@@ -80,7 +79,7 @@ void main() {
     final notifier = container.read(chapterNotifierProvider.notifier);
     await notifier.loadChapters('ms-1');
 
-    await notifier.add(_createChapter(id: 'ch-new', title: 'New Chapter'));
+    await notifier.add(createChapter(id: 'ch-new', title: 'New Chapter'));
 
     final chapters = await notifier.future;
     expect(chapters.length, equals(1));
@@ -88,19 +87,19 @@ void main() {
   });
 
   test('save updates chapter and refreshes list', () async {
-    await chapterBox.put('ch-1', _createChapter(id: 'ch-1', title: 'Original').toJson());
+    await chapterBox.put('ch-1', createChapter(id: 'ch-1', title: 'Original').toJson());
 
     final notifier = container.read(chapterNotifierProvider.notifier);
     await notifier.loadChapters('ms-1');
 
-    await notifier.save(_createChapter(id: 'ch-1', title: 'Updated'));
+    await notifier.save(createChapter(id: 'ch-1', title: 'Updated'));
 
     final chapters = await notifier.future;
     expect(chapters.first.title, equals('Updated'));
   });
 
   test('delete removes chapter and refreshes list', () async {
-    await chapterBox.put('ch-1', _createChapter(id: 'ch-1').toJson());
+    await chapterBox.put('ch-1', createChapter(id: 'ch-1').toJson());
 
     final notifier = container.read(chapterNotifierProvider.notifier);
     await notifier.loadChapters('ms-1');
@@ -112,9 +111,9 @@ void main() {
   });
 
   test('reorder recalculates sortOrder to sequential 0,1,2,... after reordering', () async {
-    await chapterBox.put('ch-1', _createChapter(id: 'ch-1', sortOrder: 0, title: 'A').toJson());
-    await chapterBox.put('ch-2', _createChapter(id: 'ch-2', sortOrder: 1, title: 'B').toJson());
-    await chapterBox.put('ch-3', _createChapter(id: 'ch-3', sortOrder: 2, title: 'C').toJson());
+    await chapterBox.put('ch-1', createChapter(id: 'ch-1', sortOrder: 0, title: 'A').toJson());
+    await chapterBox.put('ch-2', createChapter(id: 'ch-2', sortOrder: 1, title: 'B').toJson());
+    await chapterBox.put('ch-3', createChapter(id: 'ch-3', sortOrder: 2, title: 'C').toJson());
 
     final notifier = container.read(chapterNotifierProvider.notifier);
     await notifier.loadChapters('ms-1');
@@ -134,8 +133,8 @@ void main() {
   });
 
   test('duplicateChapter creates copy with title suffix "(副本)" and next sortOrder', () async {
-    await chapterBox.put('ch-1', _createChapter(id: 'ch-1', sortOrder: 0, title: '第一章', documentContent: 'Some content').toJson());
-    await chapterBox.put('ch-2', _createChapter(id: 'ch-2', sortOrder: 1, title: '第二章').toJson());
+    await chapterBox.put('ch-1', createChapter(id: 'ch-1', sortOrder: 0, title: '第一章', documentContent: 'Some content').toJson());
+    await chapterBox.put('ch-2', createChapter(id: 'ch-2', sortOrder: 1, title: '第二章').toJson());
 
     final notifier = container.read(chapterNotifierProvider.notifier);
     await notifier.loadChapters('ms-1');
@@ -152,8 +151,8 @@ void main() {
   });
 
   test('splitChapter updates current chapter with beforeContent and creates new chapter with afterContent', () async {
-    await chapterBox.put('ch-1', _createChapter(id: 'ch-1', sortOrder: 0, title: 'Long Chapter', documentContent: 'Part One Content').toJson());
-    await chapterBox.put('ch-2', _createChapter(id: 'ch-2', sortOrder: 1, title: 'Next Chapter').toJson());
+    await chapterBox.put('ch-1', createChapter(id: 'ch-1', sortOrder: 0, title: 'Long Chapter', documentContent: 'Part One Content').toJson());
+    await chapterBox.put('ch-2', createChapter(id: 'ch-2', sortOrder: 1, title: 'Next Chapter').toJson());
 
     final notifier = container.read(chapterNotifierProvider.notifier);
     await notifier.loadChapters('ms-1');
@@ -178,9 +177,9 @@ void main() {
   });
 
   test('mergeChapters combines content and deletes second chapter', () async {
-    await chapterBox.put('ch-1', _createChapter(id: 'ch-1', sortOrder: 0, title: 'First', documentContent: 'Hello').toJson());
-    await chapterBox.put('ch-2', _createChapter(id: 'ch-2', sortOrder: 1, title: 'Second', documentContent: 'World').toJson());
-    await chapterBox.put('ch-3', _createChapter(id: 'ch-3', sortOrder: 2, title: 'Third').toJson());
+    await chapterBox.put('ch-1', createChapter(id: 'ch-1', sortOrder: 0, title: 'First', documentContent: 'Hello').toJson());
+    await chapterBox.put('ch-2', createChapter(id: 'ch-2', sortOrder: 1, title: 'Second', documentContent: 'World').toJson());
+    await chapterBox.put('ch-3', createChapter(id: 'ch-3', sortOrder: 2, title: 'Third').toJson());
 
     final notifier = container.read(chapterNotifierProvider.notifier);
     await notifier.loadChapters('ms-1');

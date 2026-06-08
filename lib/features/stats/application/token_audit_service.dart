@@ -17,8 +17,8 @@ class TokenAuditService {
     this._repository,
     this._tokenBudgetCalculator, {
     this.debounceDuration = const Duration(seconds: 30),
-    int maxRecords = 10000,
-  }) : _maxRecords = maxRecords;
+    this._maxRecords = 10000,
+  });
 
   final TokenAuditRepository _repository;
   final TokenBudgetCalculator _tokenBudgetCalculator;

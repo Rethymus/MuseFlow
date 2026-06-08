@@ -1,4 +1,3 @@
-import 'dart:async';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:hive_ce/hive.dart';
@@ -28,7 +27,7 @@ void main() {
     await tearDownHiveTest();
   });
 
-  Chapter _createChapter({
+  Chapter createChapter({
     String id = 'ch-1',
     String manuscriptId = 'ms-1',
     String documentContent = 'initial content',
@@ -46,7 +45,7 @@ void main() {
   }
 
   test('onDocumentChanged sets dirty and starts debounce timer', () async {
-    await box.put('ch-1', _createChapter().toJson());
+    await box.put('ch-1', createChapter().toJson());
 
     autoSave.onDocumentChanged('ch-1', 'new content');
 
@@ -62,7 +61,7 @@ void main() {
   });
 
   test('forceSave cancels timer and flushes immediately', () async {
-    await box.put('ch-1', _createChapter().toJson());
+    await box.put('ch-1', createChapter().toJson());
 
     autoSave.onDocumentChanged('ch-1', 'pending content');
 
@@ -74,7 +73,7 @@ void main() {
   });
 
   test('forceSave does not flush when not dirty', () async {
-    await box.put('ch-1', _createChapter(documentContent: 'original').toJson());
+    await box.put('ch-1', createChapter(documentContent: 'original').toJson());
 
     // Force save without any prior onDocumentChanged
     await autoSave.forceSave();
@@ -84,7 +83,7 @@ void main() {
   });
 
   test('multiple rapid changes only flush once after debounce', () async {
-    await box.put('ch-1', _createChapter().toJson());
+    await box.put('ch-1', createChapter().toJson());
 
     // Rapid-fire changes
     autoSave.onDocumentChanged('ch-1', 'change 1');
@@ -102,7 +101,7 @@ void main() {
   });
 
   test('dispose cancels timer', () async {
-    await box.put('ch-1', _createChapter().toJson());
+    await box.put('ch-1', createChapter().toJson());
 
     autoSave.onDocumentChanged('ch-1', 'should not persist');
     autoSave.dispose();
@@ -120,7 +119,7 @@ void main() {
     // Per SC-4: dispose must only cancel the debounce timer and release
     // resources. Persistence guarantee comes from explicit awaited
     // forceSave() calls before transitions, not from unawaited dispose flush.
-    await box.put('ch-1', _createChapter().toJson());
+    await box.put('ch-1', createChapter().toJson());
 
     autoSave.onDocumentChanged('ch-1', 'dirty content');
 
@@ -155,7 +154,7 @@ void main() {
   test('dispose cancels debounce timer without flushing', () async {
     // Verify that dispose only cancels the timer and does not attempt
     // an unawaited async flush. The debounce timer callback should never fire.
-    await box.put('ch-1', _createChapter(documentContent: 'original').toJson());
+    await box.put('ch-1', createChapter(documentContent: 'original').toJson());
 
     autoSave.onDocumentChanged('ch-1', 'timer-pending content');
 
@@ -178,7 +177,7 @@ void main() {
   });
 
   test('forceSave is awaitable and returns after persistence completes', () async {
-    await box.put('ch-1', _createChapter().toJson());
+    await box.put('ch-1', createChapter().toJson());
 
     autoSave.onDocumentChanged('ch-1', 'awaitable content');
 
@@ -190,8 +189,8 @@ void main() {
   });
 
   test('switching chapters saves pending changes for previous chapter', () async {
-    await box.put('ch-1', _createChapter(id: 'ch-1', documentContent: 'content 1').toJson());
-    await box.put('ch-2', _createChapter(id: 'ch-2', documentContent: 'content 2').toJson());
+    await box.put('ch-1', createChapter(id: 'ch-1', documentContent: 'content 1').toJson());
+    await box.put('ch-2', createChapter(id: 'ch-2', documentContent: 'content 2').toJson());
 
     autoSave.onDocumentChanged('ch-1', 'updated content 1');
 

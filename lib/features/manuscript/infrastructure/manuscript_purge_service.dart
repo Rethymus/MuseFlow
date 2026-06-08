@@ -28,10 +28,9 @@ class ManuscriptPurgeService {
   final ChapterRepository _chapterRepository;
 
   const ManuscriptPurgeService({
-    required ManuscriptRepository manuscriptRepository,
-    required ChapterRepository chapterRepository,
-  })  : _manuscriptRepository = manuscriptRepository,
-        _chapterRepository = chapterRepository;
+    required this._manuscriptRepository,
+    required this._chapterRepository,
+  });
 
   /// Permanently deletes manuscripts with [deletedAt] older than [retention].
   ///

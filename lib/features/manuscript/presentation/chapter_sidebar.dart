@@ -105,11 +105,8 @@ class ChapterSidebar extends ConsumerWidget {
                   padding: const EdgeInsets.symmetric(horizontal: 8),
                   buildDefaultDragHandles: false,
                   proxyDecorator: (child, index, animation) =>
-                      _DragProxy(child: child, animation: animation),
-                  onReorder: (oldIndex, newIndex) {
-                    // ReorderableListView uses (old, new) where new is the
-                    // target index after removing old. Adjust for our API.
-                    if (oldIndex < newIndex) newIndex -= 1;
+                      _DragProxy(animation: animation, child: child),
+                  onReorderItem: (oldIndex, newIndex) {
                     onReorder?.call(manuscriptId, oldIndex, newIndex);
                   },
                   itemCount: chapters.length,

@@ -4,7 +4,6 @@
 /// sentence-level inline diffs between original and AI-modified text.
 library;
 
-import 'package:super_editor/super_editor.dart';
 
 /// Status of a single sentence diff after AI modification.
 enum DiffStatus {

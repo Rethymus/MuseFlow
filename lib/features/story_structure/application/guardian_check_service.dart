@@ -51,14 +51,11 @@ class GuardianCheckService {
   final _uuid = const Uuid();
 
   GuardianCheckService({
-    required CharacterSource characterSource,
-    required String apiKey,
-    required String baseUrl,
-    required String model,
-  })  : _characterSource = characterSource,
-        _apiKey = apiKey,
-        _baseUrl = baseUrl,
-        _model = model;
+    required this._characterSource,
+    required this._apiKey,
+    required this._baseUrl,
+    required this._model,
+  });
 
   /// Convenience constructor that wraps a [CharacterCardRepository].
   GuardianCheckService.fromRepository({

@@ -5,7 +5,6 @@ import 'package:hive_ce/hive.dart';
 import 'package:museflow/core/infrastructure/secure_storage_service.dart';
 import 'package:museflow/core/presentation/providers.dart';
 import 'package:museflow/features/ai/application/provider_service.dart';
-import 'package:museflow/features/ai/domain/ai_provider.dart';
 import 'package:museflow/features/ai/infrastructure/provider_repository.dart';
 import 'package:museflow/features/ai/presentation/provider_management_page.dart';
 

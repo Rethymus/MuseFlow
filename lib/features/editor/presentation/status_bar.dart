@@ -77,7 +77,7 @@ class StatusBar extends ConsumerWidget {
               Padding(
                 padding: const EdgeInsets.only(left: 16),
                 child: Text(
-                  '${diffResult!.pendingCount} 处AI修改待确认',
+                  '${diffResult.pendingCount} 处AI修改待确认',
                   style: TextStyle(
                     fontSize: 12,
                     fontWeight: FontWeight.w500,
@@ -87,7 +87,7 @@ class StatusBar extends ConsumerWidget {
               ),
           ] else if (hasPendingDiffs) ...[
             Text(
-              '当前文档有 ${diffResult!.pendingCount} 处AI修改待确认',
+              '当前文档有 ${diffResult.pendingCount} 处AI修改待确认',
               style: TextStyle(
                 fontSize: 13,
                 color: colorScheme.onSurfaceVariant,

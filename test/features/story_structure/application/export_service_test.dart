@@ -21,7 +21,7 @@ void main() {
       );
     });
 
-    ExportBundle _createTestBundle({String manuscriptText = '第一段。\n\n第二段。'}) {
+    ExportBundle createTestBundle({String manuscriptText = '第一段。\n\n第二段。'}) {
       return ExportBundle(
         schemaVersion: '1.0',
         exportedAt: DateTime(2026, 6, 4),
@@ -72,7 +72,7 @@ void main() {
 
     group('TXT builder', () {
       test('should return readable manuscript text with LF line endings', () {
-        final bundle = _createTestBundle();
+        final bundle = createTestBundle();
         final txt = service.buildTxt(bundle);
 
         expect(txt, contains('第一段。'));
@@ -82,7 +82,7 @@ void main() {
       });
 
       test('should produce stable output for the same input', () {
-        final bundle = _createTestBundle();
+        final bundle = createTestBundle();
         final txt1 = service.buildTxt(bundle);
         final txt2 = service.buildTxt(bundle);
         expect(txt1, txt2);
@@ -93,7 +93,7 @@ void main() {
 
     group('Markdown builder', () {
       test('should return paragraph-separated manuscript text', () {
-        final bundle = _createTestBundle();
+        final bundle = createTestBundle();
         final md = service.buildMarkdown(bundle);
 
         expect(md, contains('第一段。'));
@@ -101,7 +101,7 @@ void main() {
       });
 
       test('should preserve blank line between paragraphs', () {
-        final bundle = _createTestBundle();
+        final bundle = createTestBundle();
         final md = service.buildMarkdown(bundle);
 
         expect(md, contains('\n\n'));
@@ -112,7 +112,7 @@ void main() {
 
     group('JSON builder', () {
       test('should return valid JSON with complete structured data', () {
-        final bundle = _createTestBundle();
+        final bundle = createTestBundle();
         final jsonStr = service.buildJson(bundle);
 
         // Should be valid JSON
@@ -131,7 +131,7 @@ void main() {
       });
 
       test('should include manuscript text in JSON export', () {
-        final bundle = _createTestBundle(manuscriptText: '特殊的稿件文本');
+        final bundle = createTestBundle(manuscriptText: '特殊的稿件文本');
         final jsonStr = service.buildJson(bundle);
         final parsed = jsonDecode(jsonStr) as Map<String, dynamic>;
 
@@ -139,7 +139,7 @@ void main() {
       });
 
       test('should include all foreshadowing entries in JSON export', () {
-        final bundle = _createTestBundle();
+        final bundle = createTestBundle();
         final jsonStr = service.buildJson(bundle);
         final parsed = jsonDecode(jsonStr) as Map<String, dynamic>;
 
@@ -150,7 +150,7 @@ void main() {
       });
 
       test('should include all plot nodes in JSON export', () {
-        final bundle = _createTestBundle();
+        final bundle = createTestBundle();
         final jsonStr = service.buildJson(bundle);
         final parsed = jsonDecode(jsonStr) as Map<String, dynamic>;
 
@@ -160,7 +160,7 @@ void main() {
       });
 
       test('should include guardian annotations in JSON export', () {
-        final bundle = _createTestBundle();
+        final bundle = createTestBundle();
         final jsonStr = service.buildJson(bundle);
         final parsed = jsonDecode(jsonStr) as Map<String, dynamic>;
 
@@ -170,7 +170,7 @@ void main() {
       });
 
       test('should include character cards in JSON export', () {
-        final bundle = _createTestBundle();
+        final bundle = createTestBundle();
         final jsonStr = service.buildJson(bundle);
         final parsed = jsonDecode(jsonStr) as Map<String, dynamic>;
 
@@ -180,7 +180,7 @@ void main() {
       });
 
       test('should include world settings in JSON export', () {
-        final bundle = _createTestBundle();
+        final bundle = createTestBundle();
         final jsonStr = service.buildJson(bundle);
         final parsed = jsonDecode(jsonStr) as Map<String, dynamic>;
 
@@ -190,7 +190,7 @@ void main() {
       });
 
       test('should include skill documents and active IDs in JSON export', () {
-        final bundle = _createTestBundle();
+        final bundle = createTestBundle();
         final jsonStr = service.buildJson(bundle);
         final parsed = jsonDecode(jsonStr) as Map<String, dynamic>;
 
@@ -207,7 +207,6 @@ void main() {
 
     group('local file writing', () {
       test('should write file to selected path via file writer', () async {
-        final bundle = _createTestBundle();
         await service.writeLocalFile('/test/output.txt', 'content');
 
         expect(writeCalls.length, 1);
@@ -216,7 +215,7 @@ void main() {
       });
 
       test('should write TXT content to file', () async {
-        final bundle = _createTestBundle();
+        final bundle = createTestBundle();
         final txt = service.buildTxt(bundle);
         await service.writeLocalFile('/test/manuscript.txt', txt);
 
@@ -224,7 +223,7 @@ void main() {
       });
 
       test('should write JSON content to file', () async {
-        final bundle = _createTestBundle();
+        final bundle = createTestBundle();
         final jsonStr = service.buildJson(bundle);
         await service.writeLocalFile('/test/export.json', jsonStr);
 
@@ -238,7 +237,7 @@ void main() {
 
     group('export format selection', () {
       test('should build content based on ExportFormat', () {
-        final bundle = _createTestBundle();
+        final bundle = createTestBundle();
 
         final txt = service.buildContent(bundle, ExportFormat.txt);
         final md = service.buildContent(bundle, ExportFormat.markdown);

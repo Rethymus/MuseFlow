@@ -19,7 +19,7 @@ void main() {
     await tearDownHiveTest();
   });
 
-  Chapter _createChapter({
+  Chapter createChapter({
     String id = '',
     String manuscriptId = 'ms-1',
     String title = 'Test Chapter',
@@ -39,7 +39,7 @@ void main() {
   }
 
   test('add creates chapter with uuid if id empty', () async {
-    final chapter = _createChapter(id: '');
+    final chapter = createChapter(id: '');
     final result = await repository.add(chapter);
 
     expect(result.id, isNotEmpty);
@@ -52,10 +52,10 @@ void main() {
 
   test('getByManuscriptId returns chapters filtered and sorted by sortOrder', () async {
     final msId = 'ms-filter';
-    await repository.add(_createChapter(id: 'ch-1', manuscriptId: msId, sortOrder: 2, title: 'Second'));
-    await repository.add(_createChapter(id: 'ch-2', manuscriptId: msId, sortOrder: 0, title: 'First'));
-    await repository.add(_createChapter(id: 'ch-3', manuscriptId: 'other-ms', sortOrder: 1, title: 'Other'));
-    await repository.add(_createChapter(id: 'ch-4', manuscriptId: msId, sortOrder: 1, title: 'Middle'));
+    await repository.add(createChapter(id: 'ch-1', manuscriptId: msId, sortOrder: 2, title: 'Second'));
+    await repository.add(createChapter(id: 'ch-2', manuscriptId: msId, sortOrder: 0, title: 'First'));
+    await repository.add(createChapter(id: 'ch-3', manuscriptId: 'other-ms', sortOrder: 1, title: 'Other'));
+    await repository.add(createChapter(id: 'ch-4', manuscriptId: msId, sortOrder: 1, title: 'Middle'));
 
     final results = repository.getByManuscriptId(msId);
 
@@ -88,9 +88,9 @@ void main() {
   });
 
   test('deleteByManuscriptId deletes all chapters with matching manuscriptId', () async {
-    await repository.add(_createChapter(id: 'ch-a', manuscriptId: 'ms-del'));
-    await repository.add(_createChapter(id: 'ch-b', manuscriptId: 'ms-del'));
-    await repository.add(_createChapter(id: 'ch-c', manuscriptId: 'ms-keep'));
+    await repository.add(createChapter(id: 'ch-a', manuscriptId: 'ms-del'));
+    await repository.add(createChapter(id: 'ch-b', manuscriptId: 'ms-del'));
+    await repository.add(createChapter(id: 'ch-c', manuscriptId: 'ms-keep'));
 
     await repository.deleteByManuscriptId('ms-del');
 
@@ -102,7 +102,7 @@ void main() {
   });
 
   test('getById returns chapter when found', () async {
-    final chapter = _createChapter(id: 'find-me');
+    final chapter = createChapter(id: 'find-me');
     await box.put('find-me', chapter.toJson());
 
     final result = repository.getById('find-me');
@@ -111,7 +111,7 @@ void main() {
   });
 
   test('update sets updatedAt and persists', () async {
-    final chapter = _createChapter(id: 'update-me');
+    final chapter = createChapter(id: 'update-me');
     await box.put('update-me', chapter.toJson());
 
     final updated = chapter.copyWith(title: 'New Title');
@@ -122,7 +122,7 @@ void main() {
   });
 
   test('delete removes chapter from box', () async {
-    final chapter = _createChapter(id: 'delete-me');
+    final chapter = createChapter(id: 'delete-me');
     await box.put('delete-me', chapter.toJson());
 
     await repository.delete('delete-me');

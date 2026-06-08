@@ -6,7 +6,6 @@ import 'package:museflow/core/presentation/app_shell.dart';
 import 'package:museflow/features/ai/presentation/banned_phrase_settings.dart';
 import 'package:museflow/features/ai/presentation/provider_management_page.dart';
 import 'package:museflow/features/capture/presentation/capture_page.dart';
-import 'package:museflow/features/editor/presentation/editor_page.dart';
 import 'package:museflow/features/manuscript/presentation/editor_with_sidebar.dart';
 import 'package:museflow/features/manuscript/presentation/manuscript_library_page.dart';
 import 'package:museflow/features/manuscript/presentation/manuscript_settings_page.dart';

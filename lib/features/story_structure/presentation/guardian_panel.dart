@@ -373,7 +373,7 @@ class _FilterChip extends StatelessWidget {
           border: Border.all(
             color: selected
                 ? colorScheme.primary
-                : colorScheme.outline.withOpacity(0.3),
+                : colorScheme.outline.withValues(alpha: 0.3),
           ),
         ),
         child: Text(

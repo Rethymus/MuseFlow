@@ -1,6 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:museflow/features/editor/application/diff_calculator.dart';
-import 'package:museflow/features/editor/domain/diff_state.dart';
 
 void main() {
   group('DiffCalculator', () {

@@ -4,7 +4,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:hive_ce/hive.dart';
 import 'package:museflow/core/presentation/providers.dart';
-import 'package:museflow/features/knowledge/application/world_setting_notifier.dart';
 import 'package:museflow/features/knowledge/domain/world_setting.dart';
 
 void main() {
@@ -143,7 +142,7 @@ void main() {
 
         final state = container.read(worldSettingNotifierProvider);
         expect(state.asData?.value, isNotNull);
-        expect(state.asData!.value!, isEmpty);
+        expect(state.asData!.value, isEmpty);
       });
     });
 

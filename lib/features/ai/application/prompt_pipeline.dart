@@ -181,8 +181,8 @@ class PromptPipeline {
         SystemPromptMiddleware(),
         PersonaInjectionMiddleware(),
         BannedListMiddleware(),
-        if (knowledgeInjectionMiddleware != null) knowledgeInjectionMiddleware,
-        if (skillEnforcementMiddleware != null) skillEnforcementMiddleware,
+        ?knowledgeInjectionMiddleware,
+        ?skillEnforcementMiddleware,
         UserContentMiddleware(),
       ],
     );

@@ -1,5 +1,4 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:super_editor/super_editor.dart';
 import 'package:museflow/features/editor/domain/diff_state.dart';
 
 void main() {

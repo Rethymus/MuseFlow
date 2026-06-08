@@ -18,8 +18,6 @@ import 'package:museflow/features/ai/domain/ai_exception.dart';
 import 'package:museflow/features/ai/application/token_budget_calculator.dart';
 import 'package:museflow/features/ai/domain/ai_provider.dart';
 import 'package:museflow/features/ai/infrastructure/openai_adapter.dart';
-import 'package:museflow/features/ai/presentation/synthesis_notifier.dart';
-import 'package:museflow/features/editor/application/editor_ai_notifier.dart';
 import 'package:museflow/features/editor/application/editor_prompt_pipeline.dart';
 import 'package:museflow/features/editor/domain/editor_ai_state.dart';
 import 'package:museflow/features/stats/application/token_audit_service.dart';

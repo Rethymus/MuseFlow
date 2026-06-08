@@ -6,7 +6,6 @@ import 'package:museflow/features/manuscript/domain/manuscript.dart';
 import 'package:museflow/features/manuscript/domain/chapter.dart';
 import 'package:museflow/features/manuscript/infrastructure/manuscript_repository.dart';
 import 'package:museflow/features/manuscript/infrastructure/chapter_repository.dart';
-import 'package:museflow/features/manuscript/application/manuscript_notifier.dart';
 
 import '../../../helpers/hive_test_helper.dart';
 

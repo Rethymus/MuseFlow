@@ -121,7 +121,7 @@ class _TokenSummarySection extends ConsumerWidget {
 
     return tokenAuditAsync.when(
       loading: () => const SizedBox.shrink(),
-      error: (_, __) => const SizedBox.shrink(),
+      error: (_, _) => const SizedBox.shrink(),
       data: (snapshot) {
         if (snapshot.totalCalls == 0) {
           return const Card(

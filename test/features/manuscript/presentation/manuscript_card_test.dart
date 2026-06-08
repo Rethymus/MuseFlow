@@ -6,7 +6,7 @@ import 'package:museflow/features/manuscript/presentation/manuscript_card.dart';
 void main() {
   final now = DateTime(2026, 6, 6, 12, 0);
 
-  Manuscript _testManuscript({
+  Manuscript testManuscript({
     String title = '测试文稿',
     String genre = '玄幻',
     String status = '写作中',
@@ -28,7 +28,7 @@ void main() {
   testWidgets(
     'should render cover letter from manuscript',
     (tester) async {
-      final manuscript = _testManuscript(coverLetter: '玄');
+      final manuscript = testManuscript(coverLetter: '玄');
       await tester.pumpWidget(
         MaterialApp(
           home: Scaffold(
@@ -47,7 +47,7 @@ void main() {
   testWidgets(
     'should render manuscript title',
     (tester) async {
-      final manuscript = _testManuscript(title: '龙族传说');
+      final manuscript = testManuscript(title: '龙族传说');
       await tester.pumpWidget(
         MaterialApp(
           home: Scaffold(
@@ -66,7 +66,7 @@ void main() {
   testWidgets(
     'should render progress bar for target word count',
     (tester) async {
-      final manuscript = _testManuscript(targetWordCount: 50000);
+      final manuscript = testManuscript(targetWordCount: 50000);
       await tester.pumpWidget(
         MaterialApp(
           home: Scaffold(
@@ -89,7 +89,7 @@ void main() {
   testWidgets(
     'should render status badge',
     (tester) async {
-      final manuscript = _testManuscript(status: '写作中');
+      final manuscript = testManuscript(status: '写作中');
       await tester.pumpWidget(
         MaterialApp(
           home: Scaffold(
@@ -108,7 +108,7 @@ void main() {
   testWidgets(
     'should use title substring as cover letter when coverLetter is empty',
     (tester) async {
-      final manuscript = _testManuscript(
+      final manuscript = testManuscript(
         title: '龙族传说',
         coverLetter: '',
       );

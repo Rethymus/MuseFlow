@@ -75,7 +75,7 @@ void main() {
 
   group('Chapter-aware ExportService', () {
     final service = ExportService(
-      fileWriter: (_, __) async {},
+      fileWriter: (_, _) async {},
     );
 
     test('should produce chapter headers in Markdown when chapters non-empty', () {

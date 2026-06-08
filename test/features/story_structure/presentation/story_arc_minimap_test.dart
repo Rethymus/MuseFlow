@@ -77,8 +77,8 @@ void main() {
     );
 
     controller.value = Matrix4.identity()
-      ..translate(-100.0, -50.0)
-      ..scale(1.5);
+      ..translateByDouble(-100.0, -50.0, 0.0, 1.0)
+      ..scaleByDouble(1.5, 1.5, 1.5, 1.0);
     await tester.pump();
 
     expect(find.byType(CustomPaint), findsWidgets);

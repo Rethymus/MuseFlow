@@ -172,9 +172,10 @@ class OpenAIAdapter implements AIAdapter {
     required String baseUrl,
   }) async {
     if (apiKey.isEmpty) return [];
-    _validateBaseUrl(baseUrl);
-    final client = OpenAIClient.withApiKey(apiKey, baseUrl: baseUrl);
+    OpenAIClient? client;
     try {
+      _validateBaseUrl(baseUrl);
+      client = OpenAIClient.withApiKey(apiKey, baseUrl: baseUrl);
       final modelList = await client.models.list().timeout(
         const Duration(seconds: 5),
       );
@@ -183,7 +184,7 @@ class OpenAIAdapter implements AIAdapter {
       // Per D-08: silent fallback on any error
       return [];
     } finally {
-      client.close();
+      client?.close();
     }
   }
 

@@ -19,7 +19,7 @@ void main() {
     await tearDownHiveTest();
   });
 
-  Manuscript _createManuscript({
+  Manuscript createManuscript({
     String id = '',
     String title = 'Test Manuscript',
     String genre = '玄幻',
@@ -37,7 +37,7 @@ void main() {
   }
 
   test('add creates manuscript with uuid if id empty, sets createdAt/updatedAt', () async {
-    final manuscript = _createManuscript(id: '');
+    final manuscript = createManuscript(id: '');
     final result = await repository.add(manuscript);
 
     expect(result.id, isNotEmpty);
@@ -51,7 +51,7 @@ void main() {
   });
 
   test('add preserves id if provided', () async {
-    final manuscript = _createManuscript(id: 'custom-id');
+    final manuscript = createManuscript(id: 'custom-id');
     final result = await repository.add(manuscript);
 
     expect(result.id, equals('custom-id'));
@@ -84,7 +84,7 @@ void main() {
   });
 
   test('getById returns manuscript when found', () async {
-    final manuscript = _createManuscript(id: 'find-me');
+    final manuscript = createManuscript(id: 'find-me');
     await box.put('find-me', manuscript.toJson());
 
     final result = repository.getById('find-me');
@@ -98,7 +98,7 @@ void main() {
   });
 
   test('update sets updatedAt and persists', () async {
-    final manuscript = _createManuscript(id: 'update-me');
+    final manuscript = createManuscript(id: 'update-me');
     await box.put('update-me', manuscript.toJson());
 
     final updated = manuscript.copyWith(title: 'Updated Title');
@@ -109,7 +109,7 @@ void main() {
   });
 
   test('delete removes manuscript from box', () async {
-    final manuscript = _createManuscript(id: 'delete-me');
+    final manuscript = createManuscript(id: 'delete-me');
     await box.put('delete-me', manuscript.toJson());
 
     await repository.delete('delete-me');
@@ -119,7 +119,7 @@ void main() {
   });
 
   test('softDelete sets deletedAt to DateTime.now() and updates entity', () async {
-    final manuscript = _createManuscript(id: 'soft-delete');
+    final manuscript = createManuscript(id: 'soft-delete');
     await box.put('soft-delete', manuscript.toJson());
 
     await repository.softDelete('soft-delete');
@@ -158,7 +158,7 @@ void main() {
   });
 
   test('hardDelete permanently removes manuscript', () async {
-    final manuscript = _createManuscript(id: 'hard-delete');
+    final manuscript = createManuscript(id: 'hard-delete');
     await box.put('hard-delete', manuscript.toJson());
 
     await repository.hardDelete('hard-delete');

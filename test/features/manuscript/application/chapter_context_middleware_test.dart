@@ -1,8 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:museflow/features/ai/application/prompt_pipeline.dart';
 import 'package:museflow/features/editor/application/chapter_context_middleware.dart';
-import 'package:museflow/core/domain/fragment.dart';
-import 'package:openai_dart/openai_dart.dart';
 
 void main() {
   group('ChapterContextMiddleware', () {

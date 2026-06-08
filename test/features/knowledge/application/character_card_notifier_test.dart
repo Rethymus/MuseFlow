@@ -4,7 +4,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:hive_ce/hive.dart';
 import 'package:museflow/core/presentation/providers.dart';
-import 'package:museflow/features/knowledge/application/character_card_notifier.dart';
 import 'package:museflow/features/knowledge/domain/character_card.dart';
 
 void main() {
@@ -134,7 +133,7 @@ void main() {
 
         final state = container.read(characterCardNotifierProvider);
         expect(state.asData?.value, isNotNull);
-        expect(state.asData!.value!, isEmpty);
+        expect(state.asData!.value, isEmpty);
       });
     });
 

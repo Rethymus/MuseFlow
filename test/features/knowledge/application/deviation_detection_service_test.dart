@@ -124,9 +124,9 @@ class _FakeOpenAIAdapter extends OpenAIAdapter {
   final List<String> chunks;
   List<ChatMessage> messages = const [];
 
-  @override
   Usage? usage;
 
+  @override
   Stream<String> createStream({
     required String apiKey,
     required String baseUrl,

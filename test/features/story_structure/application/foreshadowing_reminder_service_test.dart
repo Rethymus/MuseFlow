@@ -9,7 +9,7 @@ void main() {
     service = ForeshadowingReminderService();
   });
 
-  ForeshadowingEntry _makeEntry({
+  ForeshadowingEntry makeEntry({
     required String id,
     ForeshadowingStatus status = ForeshadowingStatus.planted,
     int plantedChapter = 1,
@@ -38,9 +38,9 @@ void main() {
 
     test('should return unresolved count reminder when open entries exist', () {
       final entries = [
-        _makeEntry(id: '1', status: ForeshadowingStatus.planted, plantedChapter: 1),
-        _makeEntry(id: '2', status: ForeshadowingStatus.developing, plantedChapter: 2),
-        _makeEntry(id: '3', status: ForeshadowingStatus.resolved, plantedChapter: 1),
+        makeEntry(id: '1', status: ForeshadowingStatus.planted, plantedChapter: 1),
+        makeEntry(id: '2', status: ForeshadowingStatus.developing, plantedChapter: 2),
+        makeEntry(id: '3', status: ForeshadowingStatus.resolved, plantedChapter: 1),
       ];
 
       final reminders = service.findReminders(
@@ -60,7 +60,7 @@ void main() {
     test('should return threshold overdue reminder', () {
       // Planted at chapter 1, threshold 3, current chapter 5 => overdue
       final entries = [
-        _makeEntry(id: '1', plantedChapter: 1),
+        makeEntry(id: '1', plantedChapter: 1),
       ];
 
       final reminders = service.findReminders(
@@ -78,7 +78,7 @@ void main() {
 
     test('should not return threshold overdue when within threshold', () {
       final entries = [
-        _makeEntry(id: '1', plantedChapter: 1),
+        makeEntry(id: '1', plantedChapter: 1),
       ];
 
       final reminders = service.findReminders(
@@ -95,7 +95,7 @@ void main() {
 
     test('should return target overdue reminder when past target chapter', () {
       final entries = [
-        _makeEntry(
+        makeEntry(
           id: '1',
           plantedChapter: 1,
           targetResolutionChapter: 5,
@@ -117,7 +117,7 @@ void main() {
 
     test('should not return target overdue when before target chapter', () {
       final entries = [
-        _makeEntry(
+        makeEntry(
           id: '1',
           plantedChapter: 1,
           targetResolutionChapter: 10,
@@ -138,7 +138,7 @@ void main() {
 
     test('should not return reminders for resolved entries', () {
       final entries = [
-        _makeEntry(id: '1', status: ForeshadowingStatus.resolved, plantedChapter: 1),
+        makeEntry(id: '1', status: ForeshadowingStatus.resolved, plantedChapter: 1),
       ];
 
       final reminders = service.findReminders(
@@ -155,7 +155,7 @@ void main() {
 
     test('should not return reminders for abandoned entries', () {
       final entries = [
-        _makeEntry(id: '1', status: ForeshadowingStatus.abandoned, plantedChapter: 1),
+        makeEntry(id: '1', status: ForeshadowingStatus.abandoned, plantedChapter: 1),
       ];
 
       final reminders = service.findReminders(
@@ -172,9 +172,9 @@ void main() {
 
     test('should group threshold overdue entries into single reminder', () {
       final entries = [
-        _makeEntry(id: '1', plantedChapter: 1),
-        _makeEntry(id: '2', plantedChapter: 2),
-        _makeEntry(id: '3', plantedChapter: 3),
+        makeEntry(id: '1', plantedChapter: 1),
+        makeEntry(id: '2', plantedChapter: 2),
+        makeEntry(id: '3', plantedChapter: 3),
       ];
 
       final reminders = service.findReminders(
@@ -193,8 +193,8 @@ void main() {
 
     test('should group target overdue entries into single reminder', () {
       final entries = [
-        _makeEntry(id: '1', plantedChapter: 1, targetResolutionChapter: 3),
-        _makeEntry(id: '2', plantedChapter: 1, targetResolutionChapter: 4),
+        makeEntry(id: '1', plantedChapter: 1, targetResolutionChapter: 3),
+        makeEntry(id: '2', plantedChapter: 1, targetResolutionChapter: 4),
       ];
 
       final reminders = service.findReminders(

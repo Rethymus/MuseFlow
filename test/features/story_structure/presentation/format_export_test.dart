@@ -5,7 +5,6 @@ import 'package:museflow/features/story_structure/domain/export_bundle.dart';
 import 'package:museflow/features/story_structure/domain/foreshadowing_entry.dart';
 import 'package:museflow/features/story_structure/domain/plot_node.dart';
 import 'package:museflow/features/story_structure/domain/guardian_annotation.dart';
-import 'package:museflow/features/story_structure/application/export_service.dart';
 import 'package:museflow/features/story_structure/presentation/format_clean_preview_dialog.dart';
 import 'package:museflow/features/story_structure/presentation/export_dialog.dart';
 
@@ -133,7 +132,7 @@ void main() {
   });
 
   group('ExportDialog', () {
-    ExportBundle _createTestBundle() {
+    ExportBundle createTestBundle() {
       return ExportBundle(
         schemaVersion: '1.0',
         exportedAt: DateTime(2026, 6, 4),
@@ -187,8 +186,8 @@ void main() {
           child: MaterialApp(
             home: Scaffold(
               body: ExportDialog(
-                bundle: _createTestBundle(),
-                onExport: (_, __) async {},
+                bundle: createTestBundle(),
+                onExport: (_, _) async {},
               ),
             ),
           ),
@@ -208,8 +207,8 @@ void main() {
           child: MaterialApp(
             home: Scaffold(
               body: ExportDialog(
-                bundle: _createTestBundle(),
-                onExport: (_, __) async {
+                bundle: createTestBundle(),
+                onExport: (_, _) async {
                   exportCalled = true;
                 },
               ),
@@ -234,8 +233,8 @@ void main() {
           child: MaterialApp(
             home: Scaffold(
               body: ExportDialog(
-                bundle: _createTestBundle(),
-                onExport: (_, __) async {},
+                bundle: createTestBundle(),
+                onExport: (_, _) async {},
               ),
             ),
           ),

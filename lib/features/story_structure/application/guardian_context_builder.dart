@@ -147,10 +147,9 @@ class GuardianContextBuilder {
   final int _tokenBudget;
 
   GuardianContextBuilder({
-    required TokenBudgetCalculator tokenBudgetCalculator,
-    required int tokenBudget,
-  })  : _tokenBudgetCalculator = tokenBudgetCalculator,
-        _tokenBudget = tokenBudget;
+    required this._tokenBudgetCalculator,
+    required this._tokenBudget,
+  });
 
   /// Builds a bounded context bundle for guardian checks.
   GuardianContextBundle build({

@@ -212,7 +212,7 @@ class GuardianNotifier extends AsyncNotifier<GuardianCheckResult> {
             .read(characterCardNotifierProvider)
             .asData
             ?.value
-            ?.cast<CharacterCard>() ??
+            .cast<CharacterCard>() ??
         [];
 
     // Gather world settings from notifier
@@ -220,12 +220,12 @@ class GuardianNotifier extends AsyncNotifier<GuardianCheckResult> {
             .read(worldSettingNotifierProvider)
             .asData
             ?.value
-            ?.cast<WorldSetting>() ??
+            .cast<WorldSetting>() ??
         [];
 
     // Gather plot nodes
     final plotNodes =
-        ref.read(plotNodeNotifierProvider).asData?.value?.cast<PlotNode>() ??
+        ref.read(plotNodeNotifierProvider).asData?.value.cast<PlotNode>() ??
             [];
 
     // Gather foreshadowing entries
@@ -233,7 +233,7 @@ class GuardianNotifier extends AsyncNotifier<GuardianCheckResult> {
             .read(foreshadowingNotifierProvider)
             .asData
             ?.value
-            ?.cast<ForeshadowingEntry>() ??
+            .cast<ForeshadowingEntry>() ??
         [];
 
     // Skill constraints are not yet available in the current codebase;

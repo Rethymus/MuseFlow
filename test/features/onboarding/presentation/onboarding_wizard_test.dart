@@ -609,8 +609,7 @@ void main() {
     });
 
     test('should persist WorldSetting to Hive via repository', () async {
-      final repository =
-          OnboardingProgressRepository(await Hive.openBox('settings'));
+      await Hive.openBox('settings');
       // Simulate the provider creating a world setting
       final worldRepo = WorldSettingRepository(worldSettingsBox);
       final setting = WorldSetting(

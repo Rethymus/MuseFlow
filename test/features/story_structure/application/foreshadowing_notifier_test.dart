@@ -31,7 +31,7 @@ void main() {
     await tearDownHiveTest();
   });
 
-  ForeshadowingEntry _makeEntry({
+  ForeshadowingEntry makeEntry({
     required String id,
     String title = 'Test',
     ForeshadowingStatus status = ForeshadowingStatus.planted,
@@ -51,8 +51,8 @@ void main() {
     test('build should load entries from repository', () async {
       // Pre-populate the box
       final repo = ForeshadowingRepository(box);
-      await repo.add(_makeEntry(id: 'e1'));
-      await repo.add(_makeEntry(id: 'e2'));
+      await repo.add(makeEntry(id: 'e1'));
+      await repo.add(makeEntry(id: 'e2'));
 
       final notifier = container.read(foreshadowingNotifierProvider.notifier);
       final entries = await notifier.future;
@@ -64,7 +64,7 @@ void main() {
     test('add should persist and refresh state', () async {
       final notifier = container.read(foreshadowingNotifierProvider.notifier);
 
-      await notifier.add(_makeEntry(id: 'e1'));
+      await notifier.add(makeEntry(id: 'e1'));
       final entries = await notifier.future;
 
       expect(entries, hasLength(1));
@@ -74,7 +74,7 @@ void main() {
     test('save should update existing entry and refresh state', () async {
       final notifier = container.read(foreshadowingNotifierProvider.notifier);
 
-      await notifier.add(_makeEntry(id: 'e1', title: 'Original'));
+      await notifier.add(makeEntry(id: 'e1', title: 'Original'));
       final original = (await notifier.future).first;
 
       await notifier.save(original.copyWith(title: 'Updated'));
@@ -86,7 +86,7 @@ void main() {
     test('delete should remove entry and refresh state', () async {
       final notifier = container.read(foreshadowingNotifierProvider.notifier);
 
-      await notifier.add(_makeEntry(id: 'e1'));
+      await notifier.add(makeEntry(id: 'e1'));
       await notifier.delete('e1');
 
       final entries = await notifier.future;
@@ -97,7 +97,7 @@ void main() {
         () async {
       final notifier = container.read(foreshadowingNotifierProvider.notifier);
 
-      await notifier.add(_makeEntry(id: 'e1'));
+      await notifier.add(makeEntry(id: 'e1'));
       await notifier.markResolved('e1', resolvedChapter: 10);
 
       final entry = (await notifier.future).first;
@@ -108,7 +108,7 @@ void main() {
     test('markAbandoned should set status to abandoned', () async {
       final notifier = container.read(foreshadowingNotifierProvider.notifier);
 
-      await notifier.add(_makeEntry(id: 'e1'));
+      await notifier.add(makeEntry(id: 'e1'));
       await notifier.markAbandoned('e1');
 
       final entry = (await notifier.future).first;
@@ -119,8 +119,8 @@ void main() {
         () async {
       final notifier = container.read(foreshadowingNotifierProvider.notifier);
 
-      await notifier.add(_makeEntry(id: 'e1', plantedChapter: 1));
-      await notifier.add(_makeEntry(
+      await notifier.add(makeEntry(id: 'e1', plantedChapter: 1));
+      await notifier.add(makeEntry(
         id: 'e2',
         status: ForeshadowingStatus.developing,
         plantedChapter: 1,
@@ -152,7 +152,7 @@ void main() {
         () async {
       final notifier = container.read(foreshadowingNotifierProvider.notifier);
 
-      await notifier.add(_makeEntry(id: 'e1'));
+      await notifier.add(makeEntry(id: 'e1'));
       await notifier.markResolved('e1', resolvedChapter: 5);
 
       // Wait for state to settle

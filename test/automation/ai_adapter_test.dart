@@ -3,7 +3,7 @@
 /// Validates:
 /// - AIAdapter abstract class exists with createStream method
 /// - OpenAIAdapter implements AIAdapter
-/// - openaiAdapterProvider is typed as Provider<AIAdapter>
+/// - openaiAdapterProvider is typed as `Provider<AIAdapter>`
 /// - Existing consumers still work after the refactor
 library;
 

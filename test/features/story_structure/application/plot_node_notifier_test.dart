@@ -28,7 +28,7 @@ void main() {
     await tearDownHiveTest();
   });
 
-  PlotNode _makeNode({
+  PlotNode makeNode({
     required String id,
     String title = 'Test node',
     int chapter = 1,
@@ -51,8 +51,8 @@ void main() {
     test('build should load nodes from repository', () async {
       // Pre-populate
       final repo = PlotNodeRepository(box);
-      await repo.add(_makeNode(id: 'pn-1'));
-      await repo.add(_makeNode(id: 'pn-2'));
+      await repo.add(makeNode(id: 'pn-1'));
+      await repo.add(makeNode(id: 'pn-2'));
 
       final notifier = container.read(plotNodeNotifierProvider.notifier);
       final nodes = await notifier.future;
@@ -63,7 +63,7 @@ void main() {
     test('add should persist and refresh state', () async {
       final notifier = container.read(plotNodeNotifierProvider.notifier);
 
-      await notifier.add(_makeNode(id: ''));
+      await notifier.add(makeNode(id: ''));
       final nodes = await notifier.future;
 
       expect(nodes, hasLength(1));
@@ -73,7 +73,7 @@ void main() {
     test('save should update existing node and refresh state', () async {
       final notifier = container.read(plotNodeNotifierProvider.notifier);
 
-      await notifier.add(_makeNode(id: 'pn-1', title: 'Original'));
+      await notifier.add(makeNode(id: 'pn-1', title: 'Original'));
       final original = (await notifier.future).first;
 
       await notifier.save(original.copyWith(title: 'Updated'));
@@ -85,7 +85,7 @@ void main() {
     test('delete should remove node and refresh state', () async {
       final notifier = container.read(plotNodeNotifierProvider.notifier);
 
-      await notifier.add(_makeNode(id: 'pn-1'));
+      await notifier.add(makeNode(id: 'pn-1'));
       var nodes = await notifier.future;
       expect(nodes, hasLength(1));
 

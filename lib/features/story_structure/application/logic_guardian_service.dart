@@ -23,12 +23,10 @@ class LogicGuardianService {
   final _uuid = const Uuid();
 
   LogicGuardianService({
-    required String apiKey,
-    required String baseUrl,
-    required String model,
-  })  : _apiKey = apiKey,
-        _baseUrl = baseUrl,
-        _model = model;
+    required this._apiKey,
+    required this._baseUrl,
+    required this._model,
+  });
 
   /// Builds the logic guardian check prompt with bounded context.
   String buildLogicPrompt({

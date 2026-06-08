@@ -40,7 +40,7 @@ class SecureStorageService {
   }
 
   String _fallbackPath(String providerId) {
-    return p.join(_fallbackDir, '${_apiKeyPrefix}$providerId');
+    return p.join(_fallbackDir, '$_apiKeyPrefix$providerId');
   }
 
   /// Saves an API key for the given provider.
