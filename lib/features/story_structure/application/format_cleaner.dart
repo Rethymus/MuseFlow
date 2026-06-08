@@ -47,6 +47,7 @@ class FormatCleaner {
     if (options.cleanMarkdown) {
       current = _cleanMarkdownHeadings(current, changes);
       current = _cleanMarkdownLists(current, changes);
+      current = _cleanMarkdownCodeFences(current, changes);
       current = _cleanMarkdownEmphasis(current, changes);
       current = _cleanHtmlTags(current, changes);
     }
@@ -422,6 +423,51 @@ class FormatCleaner {
     }
 
     return modified ? newLines.join('\n') : text;
+  }
+
+  /// Strips fenced code block markers while preserving contained prose.
+  String _cleanMarkdownCodeFences(String text, List<FormatChange> changes) {
+    if (!text.contains('```')) return text;
+
+    final pattern = RegExp(r'```(?:[^`\n]*)?\n?([\s\S]*?)```');
+    var modified = false;
+    final result = StringBuffer();
+    var lastEnd = 0;
+
+    for (final match in pattern.allMatches(text)) {
+      result.write(text.substring(lastEnd, match.start));
+      final inner = match.group(1) ?? '';
+      result.write(inner);
+
+      changes.add(FormatChange(
+        category: FormatChangeCategory.markdown,
+        original: match.group(0)!,
+        replacement: inner,
+        startOffset: match.start,
+        endOffset: match.end,
+        explanation: '移除 Markdown 代码围栏',
+      ));
+
+      lastEnd = match.end;
+      modified = true;
+    }
+
+    if (modified) {
+      result.write(text.substring(lastEnd));
+      return result.toString();
+    }
+
+    return text.replaceAllMapped('```', (match) {
+      changes.add(FormatChange(
+        category: FormatChangeCategory.markdown,
+        original: '```',
+        replacement: '',
+        startOffset: match.start,
+        endOffset: match.end,
+        explanation: '移除 Markdown 代码围栏',
+      ));
+      return '';
+    });
   }
 
   /// Strips unmatched emphasis markers (* or ** or _ or __) around text.
