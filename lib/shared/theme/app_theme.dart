@@ -12,7 +12,12 @@ ThemeData appTheme() {
     brightness: Brightness.dark,
   );
 
-  final baseTextTheme = GoogleFonts.notoSansScTextTheme();
+  const disableGoogleFonts = bool.fromEnvironment(
+    'MUSEFLOW_DISABLE_GOOGLE_FONTS',
+  );
+  final baseTextTheme = disableGoogleFonts
+      ? Typography.material2021().white.apply(fontFamily: 'Noto Sans CJK SC')
+      : GoogleFonts.notoSansScTextTheme();
 
   return ThemeData(
     colorScheme: colorScheme,

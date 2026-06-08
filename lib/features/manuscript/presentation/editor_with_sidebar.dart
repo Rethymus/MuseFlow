@@ -26,12 +26,13 @@ import 'package:super_editor/super_editor.dart';
 /// follows the current theme's onSurface color (dark mode fix, P14-07-UI-01).
 Stylesheet _buildManuscriptStylesheet(BuildContext context) {
   final textColor = Theme.of(context).colorScheme.onSurface;
+  final fontFamily = Theme.of(context).textTheme.bodyMedium?.fontFamily;
 
   return defaultStylesheet.copyWith(
     inlineTextStyler: (attributions, existingStyle) {
       var style = defaultInlineTextStyler(attributions, existingStyle);
       // Ensure text color follows the theme (dark mode fix).
-      style = style.copyWith(color: textColor);
+      style = style.copyWith(color: textColor, fontFamily: fontFamily);
       if (attributions.contains(aiProvenanceAttribution)) {
         style = style.copyWith(backgroundColor: provenanceColor);
       }
