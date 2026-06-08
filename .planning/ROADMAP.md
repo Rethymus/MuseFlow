@@ -5,7 +5,7 @@
 - ✅ **v1.0 MVP** — Phases 0–6 (shipped 2026-06-04)
 - ✅ **v1.1 创作体验升级** — Phases 7–10 (shipped 2026-06-05)
 - ✅ **v1.2 多文稿架构** — Phase 11 (shipped 2026-06-06)
-- 🚧 **v1.3 用户视角全流程验证 — 百章修仙小说** — Phases 12–16 (in progress)
+- ✅ **v1.3 用户视角全流程验证 — 百章修仙小说** — Phases 12–16 (shipped 2026-06-09)
 
 ## Phases
 
@@ -39,7 +39,7 @@
 
 </details>
 
-### 🚧 v1.3 用户视角全流程验证 — 百章修仙小说 (In Progress)
+### ✅ v1.3 用户视角全流程验证 — 百章修仙小说 (SHIPPED 2026-06-09)
 
 **Milestone Goal:** 代入核心用户视角，用 MuseFlow 真实写一篇100章修仙超短篇小说，在创作过程中走完所有功能、验证可靠性、发掘痛点。
 
@@ -204,7 +204,7 @@ Plans:
 
 **Wave 3** *(depends on Wave 2)*
 
-- [ ] 16-03-PLAN.md — REPORT-03 Anti-AI-scent blind read + REPORT-04 KB consistency analysis
+- [x] 16-03-PLAN.md — REPORT-03 Anti-AI-scent blind read + REPORT-04 KB consistency analysis
 
 
 ## Progress

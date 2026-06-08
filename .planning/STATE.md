@@ -4,21 +4,21 @@ milestone: v1.3
 milestone_name: 用户视角全流程验证 — 百章修仙小说
 status: milestone_complete
 stopped_at: Milestone complete (Phase 16 was final phase)
-last_updated: 2026-06-08T16:40:58.940Z
-last_activity: 2026-06-08 -- Phase 16 execution started
+last_updated: 2026-06-09T00:00:00.000Z
+last_activity: 2026-06-09 -- v1.3 Phase 16 completed, main synchronized, release tag v1.3-phase16-complete pushed
 progress:
   total_phases: 5
-  completed_phases: 4
+  completed_phases: 5
   total_plans: 27
-  completed_plans: 76
-  percent: 80
+  completed_plans: 27
+  percent: 100
 ---
 
 # Project State
 
 ## Project Reference
 
-See: .planning/PROJECT.md (updated 2026-06-06)
+See: .planning/PROJECT.md (updated 2026-06-09)
 
 **Core value:** 让AI帮你写好故事，但让读者看不出AI的痕迹。
 **Current focus:** Milestone complete
@@ -26,18 +26,18 @@ See: .planning/PROJECT.md (updated 2026-06-06)
 ## Current Position
 
 Phase: 16
-Plan: Not started
-Status: Milestone complete
-Last activity: 2026-06-08
+Plan: Complete
+Status: v1.3 milestone complete and tagged
+Last activity: 2026-06-09
 
-Progress: [████████████████████] 100% Phase 15 complete (24/24 plans across phases 12-15)
+Progress: [████████████████████] 100% v1.3 complete (27/27 plans across phases 12-16)
 
 ## Performance Metrics
 
 **Velocity:**
 
-- Total plans completed: 75 (v1.0: 25, v1.1: 17, v1.2: 6, v1.3: 24)
-- Total phases: 17 (0-15 complete, 16 planned)
+- Total plans completed: 76 (v1.0: 25, v1.1: 17, v1.2: 6, v1.3: 27 + quick/gap-closure tasks)
+- Total phases: 17 (0-16 complete)
 
 **By Phase (v1.3):**
 
@@ -47,14 +47,14 @@ Progress: [████████████████████] 100% Ph
 | 13. Automation Test Harness | 4 | Complete (with 1 gap closure) |
 | 14. World-Building & 30 Chapters | 10 | Complete (with 1 deferred) |
 | 15. Full Manuscript & Story Structure | 7 | Complete |
-| 16. Analysis & Reports | TBD | Not started |
+| 16. Analysis & Reports | 3 | Complete |
 
 **Recent Trend:**
 
-- Last 5 plans: 15-07, 15-06, 15-05, 15-04, 15-03
-- Trend: Strong, all 4 v1.3 phases completed (24 plans), Phase 16 remaining
+- Last 5 plans: 16-03, 16-02, 16-01, 15-07, 15-06
+- Trend: v1.3 complete; phases 12-16 delivered token audit, automation harness, full user journey validation, and analysis reports
 
-*Updated after Phase 15 completion, 2026-06-08*
+*Updated after v1.3 Phase 16 completion and tag push, 2026-06-09*
 
 ## Accumulated Context
 
@@ -83,9 +83,9 @@ Phase 12 blockers resolved:
 
 Remaining concerns:
 
-- GLM API key needed (user will provide at execution time)
-- Anti-AI-scent effectiveness unproven for xianxia prose — will be tested during creative validation
-- Manuscript/chapter context not fully wired to AI call sites (deferred to Phase 14-15)
+- Human UAT still needed on physical Windows/Android devices for IME composition, startup/lifecycle behavior, and report UX/semantic-quality checks
+- Anti-AI-scent banned phrase lists should be validated with broader real Chinese prose samples before release sign-off
+- Phase 7 bundled template prose needs human literary review before release sign-off
 
 ### Quick Tasks Completed
 
@@ -128,6 +128,6 @@ Items deferred at Phase 14 gap closure on 2026-06-08:
 
 ## Session Continuity
 
-Last session: 2026-06-08T12:13:50.061Z
-Stopped at: Phase 16 UI-SPEC approved
-Next step: /gsd:plan-phase 16 (analysis-reports)
+Last session: 2026-06-09
+Stopped at: v1.3 milestone complete; main/origin synchronized; tag v1.3-phase16-complete pushed
+Next step: run /gsd:complete-milestone or start /gsd:new-milestone for the next product cycle
