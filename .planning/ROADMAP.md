@@ -147,7 +147,24 @@ Plans:
   3. 用户可以将100章文稿导出为三种格式（Markdown 带章节标题结构、TXT 纯文本、JSON 含完整元数据）
   4. 用户可以查看写作统计数据（字数统计、AI 使用率、写作速度），数据在100章规模下准确
 
-**Plans**: TBD
+**Plans**: 6 plans
+
+Plans:
+**Wave 1**
+
+- [ ] 15-01-PLAN.md — Story outline extension (30->100 chapters), stage prompt definitions (JOURNEY-07/08/09/10 foundation)
+
+**Wave 2** *(depends on Wave 1)*
+
+- [ ] 15-02-PLAN.md — Deterministic adapter fix, 100-chapter generation with stage prompts + previous-chapter summary injection (JOURNEY-07)
+- [ ] 15-03-PLAN.md — Foreshadowing lifecycle test: 4 threads planted/resolved + deviation detection at 100-chapter scale (JOURNEY-07)
+- [ ] 15-04-PLAN.md — Format cleaning validation (100 chapters, 3 assertion categories + idempotent) + three-format export validation (JOURNEY-08, JOURNEY-09)
+- [ ] 15-05-PLAN.md — Writing statistics accuracy + token audit completeness at 100-chapter scale (JOURNEY-10)
+
+**Wave 3** *(depends on Wave 2)*
+
+- [ ] 15-06-PLAN.md — E2E full journey extension (30->100 chapters) + issue log template (JOURNEY-07, JOURNEY-10)
+
 **UI hint**: yes
 
 ### Phase 16: Analysis & Reports
@@ -186,5 +203,5 @@ Phases execute in numeric order: 12 → 13 → 14 → 15 → 16
 | 12. Token Audit Infrastructure | v1.3 | 3/3 | Complete   | 2026-06-06 |
 | 13. Automation Test Harness | v1.3 | 4/4 | Complete    | 2026-06-07 |
 | 14. World-Building & First 30 Chapters | v1.3 | 10/10 | Complete (with 1 deferred)   | 2026-06-08 |
-| 15. Full Manuscript & Story Structure | v1.3 | 0/? | Not started | - |
+| 15. Full Manuscript & Story Structure | v1.3 | 0/6 | Not started | - |
 | 16. Analysis & Reports | v1.3 | 0/? | Not started | - |
