@@ -18,6 +18,7 @@ import 'package:openai_dart/openai_dart.dart';
 import '../automation/helpers/fake_adapter.dart';
 import 'helpers/d11_bounds.dart';
 import 'helpers/journey_container.dart';
+import 'helpers/stage_prompts.dart';
 import 'helpers/story_outline.dart';
 import 'helpers/xianxia_fixtures.dart';
 
@@ -121,6 +122,219 @@ void main() {
     },
     skip: apiKey == null ? 'GLM_API_KEY not set' : null,
     timeout: const Timeout(Duration(minutes: 20)),
+  );
+  test(
+    'deterministic 100-chapter journey should generate with stage prompts and summary injection',
+    () async {
+      final localContainer = await createJourneyContainer(
+        apiKey: 'journey-local-test-key',
+        baseUrl: 'https://example.com/v1',
+        model: 'fake-model',
+        aiAdapter: _DeterministicJourneyAdapter(FakeAdapter()),
+      );
+      try {
+        await _setupWorldBuilding(localContainer);
+        final result = await _generateHundredChapterJourney(
+          container: localContainer,
+          manuscriptId: 'ms-deterministic-hundred',
+          useDelay: false,
+          runDeviationDetection: true,
+        );
+
+        expect(result.chapters, hasLength(100));
+        expect(result.snapshot.totalCalls, greaterThanOrEqualTo(100));
+        expect(result.snapshot.totalInputTokens, greaterThan(0));
+        expect(result.snapshot.totalOutputTokens, greaterThan(0));
+        expect(result.deviationChecks, equals(100));
+        expect(result.totalChapters, equals(100));
+        for (final chapter in result.chapters) {
+          expect(chapter.documentContent, isNotEmpty);
+          expect(chapter.documentContent.length, inInclusiveRange(300, 500));
+        }
+        debugPrint(
+          '[DETERMINISTIC] 100-chapter journey complete: 100/100, '
+          'totalCalls=${result.snapshot.totalCalls}, '
+          'length min/max/avg=${result.minLength}/${result.maxLength}/${result.averageLength}',
+        );
+      } finally {
+        await cleanupJourneyContainer(localContainer);
+      }
+    },
+    skip: apiKey != null
+        ? 'Deterministic no-credential path runs only without GLM_API_KEY'
+        : null,
+    timeout: const Timeout(Duration(minutes: 10)),
+  );
+
+  test(
+    'should generate chapters 31-100 with knowledge injection and stage prompts',
+    () async {
+      await _setupWorldBuilding(container!);
+      final result = await _generateHundredChapterJourney(
+        container: container!,
+        manuscriptId: 'ms-hundred-generation',
+        useDelay: true,
+        runDeviationDetection: true,
+      );
+
+      expect(result.chapters, hasLength(100));
+      expect(result.chaptersWithNames, equals(5));
+      expect(result.deviationChecks, equals(100));
+      expect(result.snapshot.totalCalls, greaterThanOrEqualTo(100));
+      expect(result.snapshot.totalInputTokens, greaterThan(0));
+      expect(result.snapshot.totalOutputTokens, greaterThan(0));
+      debugPrint(
+        '[AUDIT] 100-chapter total calls: ${result.snapshot.totalCalls}, '
+        'input: ${result.snapshot.totalInputTokens}, '
+        'output: ${result.snapshot.totalOutputTokens}',
+      );
+    },
+    skip: apiKey == null ? 'GLM_API_KEY not set' : null,
+    timeout: const Timeout(Duration(minutes: 60)),
+  );
+}
+
+Future<_JourneyResult> _generateHundredChapterJourney({
+  required ProviderContainer container,
+  required String manuscriptId,
+  required bool useDelay,
+  required bool runDeviationDetection,
+}) async {
+  final manuscriptRepo = await container.read(manuscriptRepositoryProvider.future);
+  final chapterRepository = await container.read(chapterRepositoryProvider.future);
+  final manuscript = await manuscriptRepo.add(
+    Manuscript(
+      id: manuscriptId,
+      title: '剑道苍穹',
+      genre: '修仙',
+      createdAt: DateTime(2026, 6, 8),
+      updatedAt: DateTime(2026, 6, 8),
+    ),
+  );
+  final chapters = await _createChapters(chapterRepository, manuscript.id, 100);
+
+  await _runGlmSmokeTest(container);
+
+  final pipeline = await container.read(promptPipelineProvider.future);
+  final adapter = container.read(openaiAdapterProvider);
+  final provider = container.read(activeProviderProvider)!;
+  final key = container.read(activeApiKeyProvider)!;
+  final auditService = await container.read(tokenAuditServiceProvider.future);
+
+  Future<String> generateChapter(int index) async {
+    final currentChapters = chapterRepository.getByManuscriptId(manuscript.id);
+    currentChapters.sort((a, b) => a.sortOrder.compareTo(b.sortOrder));
+    final previousContent = index > 0
+        ? currentChapters[index - 1].documentContent
+        : '';
+    final previousSummary = previousContent.isEmpty
+        ? ''
+        : previousContent.length > 100
+            ? '${previousContent.substring(0, 100)}...'
+            : previousContent;
+    final fragmentText = [
+      StagePrompts.forChapterIndex(index),
+      if (previousSummary.isNotEmpty) '上一章概要：$previousSummary',
+      StoryOutline.chapters[index],
+    ].where((text) => text.isNotEmpty).join('\n\n');
+    final fragment = Fragment(
+      id: 'frag-100-$index',
+      text: fragmentText,
+      createdAt: DateTime.now(),
+    );
+    final context = PromptContext(fragments: [fragment], bannedPhrases: const []);
+    final messages = pipeline.build(context);
+
+    Usage? capturedUsage;
+    final output = await adapter
+        .createStream(
+          apiKey: key,
+          baseUrl: provider.baseUrl,
+          model: provider.model,
+          messages: messages,
+          onUsage: (usage) => capturedUsage = usage,
+        )
+        .join();
+
+    final boundedOutput = enforceD11Bounds(output);
+
+    auditService.recordAudit(
+      usage: capturedUsage,
+      modelName: provider.model,
+      operationType: AuditOperationType.synthesis,
+      manuscriptId: manuscript.id,
+      chapterId: chapters[index].id,
+      inputText: fragmentText,
+      outputText: boundedOutput,
+    );
+    await chapterRepository.updateDocumentContent(chapters[index].id, boundedOutput);
+    return boundedOutput;
+  }
+
+  for (var i = 0; i < 100; i++) {
+    try {
+      final output = await generateChapter(i);
+      debugPrint('[JOURNEY] Chapter ${i + 1}/100 generated (${output.length} chars)');
+    } catch (e) {
+      final diagnostic = _safeExceptionDiagnostic(e);
+      debugPrint('[ERROR] Chapter ${i + 1}/100 failed: $diagnostic');
+      rethrow;
+    }
+
+    if (useDelay && i < 99) {
+      await Future.delayed(const Duration(seconds: 3));
+    }
+  }
+
+  final generatedChapters = chapterRepository.getByManuscriptId(manuscript.id);
+  expect(generatedChapters, hasLength(100));
+
+  var totalChars = 0;
+  var minLength = 1 << 30;
+  var maxLength = 0;
+  for (var i = 0; i < generatedChapters.length; i++) {
+    final content = generatedChapters[i].documentContent;
+    expect(content, isNotEmpty);
+    expect(content.length, inInclusiveRange(300, 500));
+    totalChars += content.length;
+    minLength = min(minLength, content.length);
+    maxLength = max(maxLength, content.length);
+    debugPrint('[JOURNEY] Chapter ${i + 1}: ${content.length} chars');
+  }
+  debugPrint('[JOURNEY] Total chars: $totalChars, avg: ${totalChars ~/ 100}');
+
+  var chaptersWithNames = 0;
+  for (final index in [44, 57, 79, 84, 96]) {
+    final content = generatedChapters[index].documentContent;
+    final matchedNames = StoryOutline.characterNames
+        .where(content.contains)
+        .toList(growable: false);
+    expect(matchedNames, isNotEmpty, reason: 'Chapter ${index + 1} should include a character name');
+    chaptersWithNames++;
+    debugPrint('[KNOWLEDGE] Chapter ${index + 1} contains: $matchedNames');
+  }
+
+  final deviationChecks = runDeviationDetection
+      ? await _runDeviationDetectionForAllChapters(
+          container: container,
+          manuscript: manuscript,
+          chapters: generatedChapters,
+        )
+      : 0;
+
+  await auditService.flush();
+  final auditRepository = await container.read(tokenAuditRepositoryProvider.future);
+  final snapshot = await auditRepository.buildSnapshot();
+
+  return _JourneyResult(
+    chapters: generatedChapters,
+    chaptersWithNames: chaptersWithNames,
+    deviationChecks: deviationChecks,
+    snapshot: snapshot,
+    minLength: minLength,
+    maxLength: maxLength,
+    averageLength: totalChars ~/ generatedChapters.length,
+    totalChapters: generatedChapters.length,
   );
 }
 
@@ -248,6 +462,7 @@ Future<_JourneyResult> _generateThirtyChapterJourney({
     minLength: minLength,
     maxLength: maxLength,
     averageLength: totalChars ~/ generatedChapters.length,
+    totalChapters: generatedChapters.length,
   );
 }
 
@@ -396,11 +611,11 @@ Future<int> _runDeviationDetectionForAllChapters({
         }
       }
     } catch (e) {
-      debugPrint('[ERROR] Deviation chapter ${i + 1}/30 failed: ${_safeExceptionDiagnostic(e)}');
+      debugPrint('[ERROR] Deviation chapter ${i + 1}/${chapters.length} failed: ${_safeExceptionDiagnostic(e)}');
       rethrow;
     }
   }
-  debugPrint('[DEVIATION] Warnings: $totalWarnings across 30 chapters');
+  debugPrint('[DEVIATION] Warnings: $totalWarnings across ${chapters.length} chapters');
   return chapters.length;
 }
 
@@ -471,6 +686,7 @@ class _JourneyResult {
   final int minLength;
   final int maxLength;
   final int averageLength;
+  final int totalChapters;
 
   const _JourneyResult({
     required this.chapters,
@@ -480,5 +696,6 @@ class _JourneyResult {
     required this.minLength,
     required this.maxLength,
     required this.averageLength,
+    required this.totalChapters,
   });
 }
