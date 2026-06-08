@@ -156,10 +156,10 @@ Plans:
 
 **Wave 2** *(depends on Wave 1)*
 
-- [ ] 15-02-PLAN.md — Deterministic adapter fix, 100-chapter generation with stage prompts + previous-chapter summary injection (JOURNEY-07)
-- [ ] 15-03-PLAN.md — Foreshadowing lifecycle test: 4 threads planted/resolved + deviation detection at 100-chapter scale (JOURNEY-07)
-- [ ] 15-04-PLAN.md — Format cleaning validation (100 chapters, 3 assertion categories + idempotent) + three-format export validation (JOURNEY-08, JOURNEY-09)
-- [ ] 15-05-PLAN.md — Writing statistics accuracy + token audit completeness at 100-chapter scale (JOURNEY-10)
+- [x] 15-02-PLAN.md — Deterministic adapter fix, 100-chapter generation with stage prompts + previous-chapter summary injection (JOURNEY-07)
+- [x] 15-03-PLAN.md — Foreshadowing lifecycle test: 4 threads planted/resolved + deviation detection at 100-chapter scale (JOURNEY-07)
+- [x] 15-04-PLAN.md — Format cleaning validation (100 chapters, 3 assertion categories + idempotent) + three-format export validation (JOURNEY-08, JOURNEY-09)
+- [x] 15-05-PLAN.md — Writing statistics accuracy + token audit completeness at 100-chapter scale (JOURNEY-10)
 
 **Wave 3** *(depends on Wave 2)*
 
@@ -203,5 +203,5 @@ Phases execute in numeric order: 12 → 13 → 14 → 15 → 16
 | 12. Token Audit Infrastructure | v1.3 | 3/3 | Complete   | 2026-06-06 |
 | 13. Automation Test Harness | v1.3 | 4/4 | Complete    | 2026-06-07 |
 | 14. World-Building & First 30 Chapters | v1.3 | 10/10 | Complete (with 1 deferred)   | 2026-06-08 |
-| 15. Full Manuscript & Story Structure | v1.3 | 1/7 | In Progress|  |
+| 15. Full Manuscript & Story Structure | v1.3 | 5/7 | In Progress|  |
 | 16. Analysis & Reports | v1.3 | 0/? | Not started | - |
