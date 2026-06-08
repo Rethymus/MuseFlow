@@ -43,10 +43,10 @@ Requirements for 用户视角全流程验证 — 百章修仙小说 milestone. E
 
 ### 分析与报告
 
-- [ ] **REPORT-01**: Token 消耗分析报告（万字短篇实际成本 + 传统长篇50万字消耗推算 + 优化建议）
-- [ ] **REPORT-02**: 用户痛点报告（功能缺陷列表 + 体验摩擦点 + 缺失需求建议，按严重程度分类）
-- [ ] **REPORT-03**: 反AI味效果评估（盲读测试：选取若干段落由人判断是否AI生成）
-- [ ] **REPORT-04**: 知识库一致性衰减分析（100章后角色卡和设定集与实际内容的一致性对比）
+- [x] **REPORT-01**: Token 消耗分析报告（万字短篇实际成本 + 传统长篇50万字消耗推算 + 优化建议）
+- [x] **REPORT-02**: 用户痛点报告（功能缺陷列表 + 体验摩擦点 + 缺失需求建议，按严重程度分类）
+- [x] **REPORT-03**: 反AI味效果评估（盲读测试：选取若干段落由人判断是否AI生成）
+- [x] **REPORT-04**: 知识库一致性衰减分析（100章后角色卡和设定集与实际内容的一致性对比）
 
 ## Out of Scope
 
@@ -82,10 +82,10 @@ Which phases cover which requirements. Updated during roadmap creation.
 | JOURNEY-08 | Phase 15 | Pending |
 | JOURNEY-09 | Phase 15 | Pending |
 | JOURNEY-10 | Phase 15 | Pending |
-| REPORT-01 | Phase 16 | Pending |
-| REPORT-02 | Phase 16 | Pending |
-| REPORT-03 | Phase 16 | Pending |
-| REPORT-04 | Phase 16 | Pending |
+| REPORT-01 | Phase 16 | Complete |
+| REPORT-02 | Phase 16 | Complete |
+| REPORT-03 | Phase 16 | Complete |
+| REPORT-04 | Phase 16 | Complete |
 
 **Coverage:**
 - v1.3 requirements: 20 total
