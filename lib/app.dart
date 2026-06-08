@@ -18,6 +18,7 @@ import 'package:museflow/features/knowledge/presentation/world_setting_form.dart
 import 'package:museflow/features/onboarding/presentation/onboarding_wizard_page.dart';
 import 'package:museflow/features/settings/presentation/settings_page.dart';
 import 'package:museflow/features/stats/presentation/project_stats_page.dart';
+import 'package:museflow/features/stats/presentation/token_audit_page.dart';
 import 'package:museflow/features/stats/presentation/writing_stats_page.dart';
 import 'package:museflow/features/story_structure/presentation/story_structure_page.dart';
 import 'package:museflow/features/templates/presentation/template_draft_page.dart';
@@ -184,9 +185,7 @@ class MuseFlowApp extends ConsumerWidget {
                     ),
                     GoRoute(
                       path: 'tokens',
-                      builder: (context, state) => const Scaffold(
-                        body: Center(child: Text('Token Audit Page - Coming in Plan 03')),
-                      ),
+                      builder: (context, state) => const TokenAuditPage(),
                     ),
                   ],
                 ),
