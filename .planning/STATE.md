@@ -91,7 +91,7 @@ Remaining concerns:
 
 | # | Description | Date | Commit | Directory |
 |---|-------------|------|--------|-----------|
-| 260608-obr | Fix Phase 12 token audit route: wire /stats/tokens to TokenAuditPage and add/repair route test | 2026-06-08 | d9ae23b | [260608-obr-fix-phase-12-token-audit-route-wire-stat](./quick/260608-obr-fix-phase-12-token-audit-route-wire-stat/) |
+| 260608-obr | Fix Phase 12 token audit route: wire /stats/tokens to TokenAuditPage and add/repair route test | 2026-06-08 | ecd991d | [260608-obr-fix-phase-12-token-audit-route-wire-stat](./quick/260608-obr-fix-phase-12-token-audit-route-wire-stat/) |
 
 ## Deferred Items
 
