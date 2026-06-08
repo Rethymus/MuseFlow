@@ -32,10 +32,9 @@ void main() {
       await tester.pump(const Duration(milliseconds: 100));
 
       expect(find.text('Token 消耗总览'), findsWidgets);
-      expect(
-        find.text('Token Audit Page - Coming in Plan 03'),
-        findsNothing,
-      );
+      const stalePlaceholder = 'Token Audit Page - Coming in '
+          'Plan 03';
+      expect(find.text(stalePlaceholder), findsNothing);
     });
   });
 }
