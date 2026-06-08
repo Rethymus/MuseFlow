@@ -93,7 +93,7 @@ Remaining concerns:
 |---|-------------|------|--------|-----------|
 | 260608-obr | Fix Phase 12 token audit route: wire /stats/tokens to TokenAuditPage and add/repair route test | 2026-06-08 | ecd991d | [260608-obr-fix-phase-12-token-audit-route-wire-stat](./quick/260608-obr-fix-phase-12-token-audit-route-wire-stat/) |
 | 260608-oxm | Finalize current workspace triage: verify Phase 12 validation test changes, commit them if green, refresh v1.3 milestone audit to reflect /stats/tokens quick-task fix, then inspect leftover agent worktrees for safe cleanup candidates | 2026-06-08 | 2018a5b | [260608-oxm-finalize-current-workspace-triage-verify](./quick/260608-oxm-finalize-current-workspace-triage-verify/) |
-| 260608-p9x | Safely clean approved clean agent worktrees and update dirty worktree disposition checklist | 2026-06-08 | 953870a | [260608-p9x-safely-clean-approved-clean-agent-worktr](./quick/260608-p9x-safely-clean-approved-clean-agent-worktr/) |
+| 260608-p9x | Safely clean approved clean agent worktrees and update dirty worktree disposition checklist | 2026-06-08 | 4f6ff1a | [260608-p9x-safely-clean-approved-clean-agent-worktr](./quick/260608-p9x-safely-clean-approved-clean-agent-worktr/) |
 
 ## Deferred Items
 
