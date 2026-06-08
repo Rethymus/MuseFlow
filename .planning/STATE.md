@@ -5,7 +5,7 @@ milestone_name: 用户视角全流程验证 — 百章修仙小说
 status: executing
 stopped_at: Phase 15 UI-SPEC approved
 last_updated: "2026-06-08T05:36:55.164Z"
-last_activity: 2026-06-08 -- Phase 15 execution started
+last_activity: 2026-06-08 -- Completed quick task 260608-obr: Fix Phase 12 token audit route: wire /stats/tokens to TokenAuditPage and add/repair route test
 progress:
   total_phases: 5
   completed_phases: 3
@@ -86,6 +86,12 @@ Remaining concerns:
 - GLM API key needed (user will provide at execution time)
 - Anti-AI-scent effectiveness unproven for xianxia prose — will be tested during creative validation
 - Manuscript/chapter context not fully wired to AI call sites (deferred to Phase 14-15)
+
+### Quick Tasks Completed
+
+| # | Description | Date | Commit | Directory |
+|---|-------------|------|--------|-----------|
+| 260608-obr | Fix Phase 12 token audit route: wire /stats/tokens to TokenAuditPage and add/repair route test | 2026-06-08 | d9ae23b | [260608-obr-fix-phase-12-token-audit-route-wire-stat](./quick/260608-obr-fix-phase-12-token-audit-route-wire-stat/) |
 
 ## Deferred Items
 
