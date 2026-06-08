@@ -4,8 +4,8 @@ milestone: v1.3
 milestone_name: 用户视角全流程验证 — 百章修仙小说
 status: executing
 stopped_at: Phase 15 UI-SPEC approved
-last_updated: "2026-06-08T04:55:32.394Z"
-last_activity: 2026-06-08 -- Phase 15 planning complete
+last_updated: "2026-06-08T04:58:12.370Z"
+last_activity: 2026-06-08 -- Phase 15 execution started
 progress:
   total_phases: 5
   completed_phases: 3
@@ -21,14 +21,14 @@ progress:
 See: .planning/PROJECT.md (updated 2026-06-06)
 
 **Core value:** 让AI帮你写好故事，但让读者看不出AI的痕迹。
-**Current focus:** Phase 14 — world-building-first-30-chapters
+**Current focus:** Phase 15 — full-manuscript-story-structure
 
 ## Current Position
 
-Phase: 14 (world-building-first-30-chapters) — EXECUTING
-Plan: 1 of 10
-Status: Ready to execute
-Last activity: 2026-06-08 -- Phase 15 planning complete
+Phase: 15 (full-manuscript-story-structure) — EXECUTING
+Plan: 1 of 7
+Status: Executing Phase 15
+Last activity: 2026-06-08 -- Phase 15 execution started
 
 Progress: [██████████] 100% (Phase 12 complete)
 

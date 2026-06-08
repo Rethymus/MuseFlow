@@ -152,7 +152,7 @@ Plans:
 Plans:
 **Wave 1**
 
-- [ ] 15-01-PLAN.md — Story outline extension (30->100 chapters), stage prompt definitions (JOURNEY-07/08/09/10 foundation)
+- [x] 15-01-PLAN.md — Story outline extension (30->100 chapters), stage prompt definitions (JOURNEY-07/08/09/10 foundation)
 
 **Wave 2** *(depends on Wave 1)*
 
@@ -203,5 +203,5 @@ Phases execute in numeric order: 12 → 13 → 14 → 15 → 16
 | 12. Token Audit Infrastructure | v1.3 | 3/3 | Complete   | 2026-06-06 |
 | 13. Automation Test Harness | v1.3 | 4/4 | Complete    | 2026-06-07 |
 | 14. World-Building & First 30 Chapters | v1.3 | 10/10 | Complete (with 1 deferred)   | 2026-06-08 |
-| 15. Full Manuscript & Story Structure | v1.3 | 0/7 | Not started | - |
+| 15. Full Manuscript & Story Structure | v1.3 | 1/7 | In Progress|  |
 | 16. Analysis & Reports | v1.3 | 0/? | Not started | - |
