@@ -186,7 +186,7 @@ class ReportExportService {
         final start = i * 10 + 1;
         final end = (i + 1) * 10;
         buffer.writeln(
-          '- 第$start-${end}章: '
+          '- 第$start-$end章: '
           '${(report.driftPerSegment[i] * 100).toStringAsFixed(1)}%',
         );
       }

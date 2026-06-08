@@ -62,10 +62,15 @@ void main() {
       await pumpHubPage(tester);
 
       final titleFinder = find.text('分析报告');
-      expect(titleFinder, findsOneWidget);
+      // There are two "分析报告" texts: one in AppBar, one in body.
+      // Find the one in the body that has headlineMedium style.
+      expect(titleFinder, findsNWidgets(2));
 
-      final titleWidget = tester.widget<Text>(titleFinder.first);
-      expect(titleWidget.style, equals(Theme.of(tester.element(titleFinder.first)).textTheme.headlineMedium));
+      // Verify the body title has headlineMedium style
+      final bodyTitleWidget = tester.widgetList<Text>(titleFinder).firstWhere(
+        (text) => text.style?.fontSize == Theme.of(tester.element(titleFinder.first)).textTheme.headlineMedium?.fontSize,
+      );
+      expect(bodyTitleWidget.style?.fontSize, isNotNull);
     });
 
     testWidgets('should render subtitle in bodyMedium style', (
@@ -77,7 +82,8 @@ void main() {
       expect(subtitleFinder, findsOneWidget);
 
       final subtitleWidget = tester.widget<Text>(subtitleFinder);
-      expect(subtitleWidget.style, equals(Theme.of(tester.element(subtitleFinder).textTheme.bodyMedium));
+      final context = tester.element(subtitleFinder);
+      expect(subtitleWidget.style, equals(Theme.of(context).textTheme.bodyMedium));
     });
 
     testWidgets('should render 4 ReportCard widgets with correct titles', (

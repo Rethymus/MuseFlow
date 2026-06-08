@@ -19,6 +19,7 @@ import 'package:museflow/features/settings/presentation/settings_page.dart';
 import 'package:museflow/features/stats/presentation/project_stats_page.dart';
 import 'package:museflow/features/stats/presentation/token_audit_page.dart';
 import 'package:museflow/features/stats/presentation/writing_stats_page.dart';
+import 'package:museflow/features/reports/presentation/reports_hub_page.dart';
 import 'package:museflow/features/story_structure/presentation/story_structure_page.dart';
 import 'package:museflow/features/templates/presentation/template_draft_page.dart';
 import 'package:museflow/features/templates/presentation/template_gallery_page.dart';
@@ -185,6 +186,32 @@ class MuseFlowApp extends ConsumerWidget {
                     GoRoute(
                       path: 'tokens',
                       builder: (context, state) => const TokenAuditPage(),
+                    ),
+                    GoRoute(
+                      path: 'reports',
+                      builder: (context, state) => const ReportsHubPage(),
+                      routes: [
+                        GoRoute(
+                          path: 'token-cost',
+                          builder: (context, state) =>
+                              const SizedBox.shrink(),
+                        ),
+                        GoRoute(
+                          path: 'pain-points',
+                          builder: (context, state) =>
+                              const SizedBox.shrink(),
+                        ),
+                        GoRoute(
+                          path: 'anti-ai-scent',
+                          builder: (context, state) =>
+                              const SizedBox.shrink(),
+                        ),
+                        GoRoute(
+                          path: 'consistency',
+                          builder: (context, state) =>
+                              const SizedBox.shrink(),
+                        ),
+                      ],
                     ),
                   ],
                 ),
