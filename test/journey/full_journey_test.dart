@@ -404,9 +404,9 @@ class _DeterministicFullJourneyAdapter implements AIAdapter {
   }
 
   String _chapterText(int index) {
-    final chapterNo = (index % StoryOutline.chapters.length) + 1;
+    final chapterNo = index + 1;
     final name = StoryOutline.characterNames[index % StoryOutline.characterNames.length];
-    final plot = StoryOutline.chapters[index % StoryOutline.chapters.length];
+    final plot = StoryOutline.chapters[index];
     final text = '第$chapterNo章，林风沿着青云宗山道前行，$name在旁提醒他莫忘清虚真人的告诫。$plot 他先整理灵气、核对门规、记录白灵的反应，再把今日所见写入随身玉简。夜色落下时，苏雪晴递来一盏灵茶，赵天磊的目光从演武场另一侧扫过，新的冲突已经埋下。这一章保持凡人少年稳步成长的节奏，既写修炼压力，也写宗门人情，让人物关系、境界限制和世界观禁忌自然进入叙事。林风只推进一个明确目标，不越过作者亲自打磨的边界。清虚真人要求他每晚复盘战斗细节，把白日的得失化成下一次行动的依据。苏雪晴则提醒他把每一次犹豫都写清楚。';
     return text.substring(0, min(420, text.length));
   }
