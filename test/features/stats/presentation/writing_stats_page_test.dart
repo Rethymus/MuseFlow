@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:museflow/features/stats/domain/daily_writing_stats.dart';
 import 'package:museflow/features/stats/domain/stats_snapshot.dart';
@@ -49,5 +50,7 @@ void main() {
 }
 
 Widget _app(StatsSnapshot snapshot) {
-  return MaterialApp(home: WritingStatsPage(debugSnapshot: snapshot));
+  return ProviderScope(
+    child: MaterialApp(home: WritingStatsPage(debugSnapshot: snapshot)),
+  );
 }

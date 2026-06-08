@@ -118,40 +118,42 @@ void main() {
 
       await tester.pumpWidget(
         MaterialApp(
-          home: Scaffold(
-            body: TokenAuditPage.withSnapshot(snapshot),
-          ),
+          home: TokenAuditPage.withSnapshot(snapshot),
         ),
       );
 
       await tester.pumpAndSettle();
 
-      // Should have 3 chart widgets
       expect(find.byType(ChapterTokenBarChart), findsOneWidget);
-      expect(find.byType(OperationTypePieChart), findsOneWidget);
-      expect(find.byType(TokenTrendLineChart), findsOneWidget);
-
-      // Chart section titles
       expect(find.text('每章 Token 分布'), findsOneWidget);
+
+      await tester.scrollUntilVisible(find.text('按操作类型分布'), 200);
+      expect(find.byType(OperationTypePieChart), findsOneWidget);
       expect(find.text('按操作类型分布'), findsOneWidget);
+
+      await tester.scrollUntilVisible(find.text('Token 消耗趋势'), 200);
+      expect(find.byType(TokenTrendLineChart), findsOneWidget);
       expect(find.text('Token 消耗趋势'), findsOneWidget);
     });
 
     testWidgets('AppBar title is Token 消耗总览', (tester) async {
-      final emptySnapshot = const TokenAuditSnapshot();
+      const emptySnapshot = TokenAuditSnapshot();
 
       await tester.pumpWidget(
-        MaterialApp(
-          home: Scaffold(
-            appBar: AppBar(title: const Text('Token 消耗总览')),
-            body: TokenAuditPage.withSnapshot(emptySnapshot),
-          ),
+        const MaterialApp(
+          home: TokenAuditPage.withSnapshot(emptySnapshot),
         ),
       );
 
       await tester.pumpAndSettle();
 
-      expect(find.text('Token 消耗总览'), findsOneWidget);
+      expect(
+        find.descendant(
+          of: find.byType(AppBar),
+          matching: find.text('Token 消耗总览'),
+        ),
+        findsOneWidget,
+      );
     });
   });
 }

@@ -15,12 +15,17 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:museflow/core/presentation/providers.dart';
 import 'package:museflow/features/ai/domain/ai_exception.dart';
+import 'package:museflow/features/ai/application/token_budget_calculator.dart';
 import 'package:museflow/features/ai/domain/ai_provider.dart';
 import 'package:museflow/features/ai/infrastructure/openai_adapter.dart';
 import 'package:museflow/features/ai/presentation/synthesis_notifier.dart';
 import 'package:museflow/features/editor/application/editor_ai_notifier.dart';
 import 'package:museflow/features/editor/application/editor_prompt_pipeline.dart';
 import 'package:museflow/features/editor/domain/editor_ai_state.dart';
+import 'package:museflow/features/stats/application/token_audit_service.dart';
+import 'package:museflow/features/stats/domain/audit_operation_type.dart';
+import 'package:museflow/features/stats/domain/token_audit_record.dart';
+import 'package:museflow/features/stats/infrastructure/token_audit_repository.dart';
 import 'package:openai_dart/openai_dart.dart';
 
 void main() {
@@ -33,20 +38,21 @@ void main() {
       String? apiKey,
       bool hasActiveProvider = true,
       bool hasApiKey = true,
+      TokenAuditService? auditService,
     }) {
       fakeAdapter = _FakeOpenAIAdapter();
 
       final testProvider = hasActiveProvider
           ? (activeProvider ??
-              AIProvider(
-                id: 'test-provider',
-                name: 'Test',
-                baseUrl: 'https://api.openai.com/v1',
-                type: AiProviderType.openai,
-                model: 'gpt-4o-mini',
-                isActive: true,
-                createdAt: DateTime(2026, 1, 1),
-              ))
+                AIProvider(
+                  id: 'test-provider',
+                  name: 'Test',
+                  baseUrl: 'https://api.openai.com/v1',
+                  type: AiProviderType.openai,
+                  model: 'gpt-4o-mini',
+                  isActive: true,
+                  createdAt: DateTime(2026, 1, 1),
+                ))
           : null;
 
       final testApiKey = hasApiKey ? (apiKey ?? 'test-key') : null;
@@ -58,6 +64,9 @@ void main() {
           activeApiKeyProvider.overrideWithValue(testApiKey),
           editorPromptPipelineProvider.overrideWith(
             (ref) async => EditorPromptPipeline(),
+          ),
+          tokenAuditServiceProvider.overrideWith(
+            (ref) async => auditService ?? _RecordingTokenAuditService(),
           ),
         ],
       );
@@ -81,7 +90,9 @@ void main() {
       test('should set error when no active provider', () {
         container = createContainer(hasActiveProvider: false);
 
-        container.read(editorAINotifierProvider.notifier).startOperation(
+        container
+            .read(editorAINotifierProvider.notifier)
+            .startOperation(
               EditorAIOperation.toneRewrite,
               '测试文字',
               'node-1',
@@ -98,7 +109,9 @@ void main() {
       test('should set error when no API key', () async {
         container = createContainer(hasApiKey: false);
 
-        container.read(editorAINotifierProvider.notifier).startOperation(
+        container
+            .read(editorAINotifierProvider.notifier)
+            .startOperation(
               EditorAIOperation.toneRewrite,
               '测试文字',
               'node-1',
@@ -117,7 +130,9 @@ void main() {
         container = createContainer();
         fakeAdapter.streamOutput = Stream.fromIterable(['月光', '下', '他走了']);
 
-        container.read(editorAINotifierProvider.notifier).startOperation(
+        container
+            .read(editorAINotifierProvider.notifier)
+            .startOperation(
               EditorAIOperation.toneRewrite,
               '月光洒在窗台上',
               'node-1',
@@ -131,11 +146,50 @@ void main() {
         expect(state.isStreaming, false);
       });
 
+      test(
+        'should record token audit after successful stream completion',
+        () async {
+          final auditService = _RecordingTokenAuditService();
+          container = createContainer(auditService: auditService);
+          fakeAdapter.streamOutput = Stream.fromIterable(['润色', '结果']);
+          fakeAdapter.usage = const Usage(
+            promptTokens: 13,
+            completionTokens: 7,
+            totalTokens: 20,
+          );
+
+          container
+              .read(editorAINotifierProvider.notifier)
+              .startOperation(
+                EditorAIOperation.paragraphPolish,
+                '原始文字',
+                'node-1',
+                0,
+                4,
+                manuscriptId: 'manuscript-1',
+                chapterId: 'chapter-1',
+              );
+          await _pumpAndWait();
+
+          expect(auditService.calls, hasLength(1));
+          final call = auditService.calls.single;
+          expect(call.usage, same(fakeAdapter.usage));
+          expect(call.modelName, 'gpt-4o-mini');
+          expect(call.operationType, AuditOperationType.polish);
+          expect(call.manuscriptId, 'manuscript-1');
+          expect(call.chapterId, 'chapter-1');
+          expect(call.inputText, '原始文字');
+          expect(call.outputText, '润色结果');
+        },
+      );
+
       test('should set operation type in state', () async {
         container = createContainer();
         fakeAdapter.streamOutput = Stream.fromIterable(['结果']);
 
-        container.read(editorAINotifierProvider.notifier).startOperation(
+        container
+            .read(editorAINotifierProvider.notifier)
+            .startOperation(
               EditorAIOperation.paragraphPolish,
               '测试',
               'node-1',
@@ -152,7 +206,9 @@ void main() {
         container = createContainer();
         fakeAdapter.streamOutput = Stream.fromIterable(['结果']);
 
-        container.read(editorAINotifierProvider.notifier).startOperation(
+        container
+            .read(editorAINotifierProvider.notifier)
+            .startOperation(
               EditorAIOperation.toneRewrite,
               '选中文字',
               'node-42',
@@ -172,7 +228,9 @@ void main() {
         container = createContainer();
         fakeAdapter.streamOutput = Stream.fromIterable(['然而，他走了。']);
 
-        container.read(editorAINotifierProvider.notifier).startOperation(
+        container
+            .read(editorAINotifierProvider.notifier)
+            .startOperation(
               EditorAIOperation.toneRewrite,
               '然而他走了',
               'node-1',
@@ -193,7 +251,9 @@ void main() {
         container = createContainer();
         fakeAdapter.streamOutput = Stream.fromIterable(['改好了']);
 
-        container.read(editorAINotifierProvider.notifier).startOperation(
+        container
+            .read(editorAINotifierProvider.notifier)
+            .startOperation(
               EditorAIOperation.freeInput,
               '原文',
               'node-1',
@@ -214,7 +274,9 @@ void main() {
         final controller = StreamController<String>();
         fakeAdapter.streamOutput = controller.stream;
 
-        container.read(editorAINotifierProvider.notifier).startOperation(
+        container
+            .read(editorAINotifierProvider.notifier)
+            .startOperation(
               EditorAIOperation.toneRewrite,
               '测试',
               'node-1',
@@ -246,7 +308,9 @@ void main() {
         container = createContainer();
         fakeAdapter.streamOutput = Stream.fromIterable(['文本']);
 
-        container.read(editorAINotifierProvider.notifier).startOperation(
+        container
+            .read(editorAINotifierProvider.notifier)
+            .startOperation(
               EditorAIOperation.toneRewrite,
               '测试',
               'node-1',
@@ -272,7 +336,9 @@ void main() {
         final controller = StreamController<String>();
         fakeAdapter.streamOutput = controller.stream;
 
-        container.read(editorAINotifierProvider.notifier).startOperation(
+        container
+            .read(editorAINotifierProvider.notifier)
+            .startOperation(
               EditorAIOperation.toneRewrite,
               '测试',
               'node-1',
@@ -296,7 +362,9 @@ void main() {
         final controller = StreamController<String>();
         fakeAdapter.streamOutput = controller.stream;
 
-        container.read(editorAINotifierProvider.notifier).startOperation(
+        container
+            .read(editorAINotifierProvider.notifier)
+            .startOperation(
               EditorAIOperation.toneRewrite,
               '测试',
               'node-1',
@@ -320,7 +388,9 @@ void main() {
         final controller = StreamController<String>();
         fakeAdapter.streamOutput = controller.stream;
 
-        container.read(editorAINotifierProvider.notifier).startOperation(
+        container
+            .read(editorAINotifierProvider.notifier)
+            .startOperation(
               EditorAIOperation.toneRewrite,
               '测试',
               'node-1',
@@ -364,6 +434,7 @@ Future<void> _pumpAndWait() async {
 
 class _FakeOpenAIAdapter extends OpenAIAdapter {
   Stream<String>? streamOutput;
+  Usage? usage;
 
   @override
   Stream<String> createStream({
@@ -375,7 +446,81 @@ class _FakeOpenAIAdapter extends OpenAIAdapter {
     double? topP,
     int? maxTokens,
     void Function(Usage?)? onUsage,
-  }) {
-    return streamOutput ?? Stream.fromIterable(['默认文本']);
+  }) async* {
+    await for (final chunk in streamOutput ?? Stream.fromIterable(['默认文本'])) {
+      yield chunk;
+    }
+    onUsage?.call(usage);
   }
+}
+
+class _RecordingTokenAuditService extends TokenAuditService {
+  _RecordingTokenAuditService()
+    : super(_NoopTokenAuditRepository(), TokenBudgetCalculator());
+
+  final List<_AuditCall> calls = [];
+
+  @override
+  void recordAudit({
+    required Usage? usage,
+    required String modelName,
+    required AuditOperationType operationType,
+    required String manuscriptId,
+    String? chapterId,
+    required String inputText,
+    required String outputText,
+  }) {
+    calls.add(
+      _AuditCall(
+        usage: usage,
+        modelName: modelName,
+        operationType: operationType,
+        manuscriptId: manuscriptId,
+        chapterId: chapterId,
+        inputText: inputText,
+        outputText: outputText,
+      ),
+    );
+  }
+}
+
+class _AuditCall {
+  const _AuditCall({
+    required this.usage,
+    required this.modelName,
+    required this.operationType,
+    required this.manuscriptId,
+    required this.chapterId,
+    required this.inputText,
+    required this.outputText,
+  });
+
+  final Usage? usage;
+  final String modelName;
+  final AuditOperationType operationType;
+  final String manuscriptId;
+  final String? chapterId;
+  final String inputText;
+  final String outputText;
+}
+
+class _NoopTokenAuditRepository implements TokenAuditRepository {
+  @override
+  Future<void> clearAll() async {}
+
+  @override
+  int get count => 0;
+
+  @override
+  Future<void> enforceLimit(int maxRecords) async {}
+
+  @override
+  Future<List<TokenAuditRecord>> loadAll() async => const [];
+
+  @override
+  Future<void> saveAll(List<TokenAuditRecord> records) async {}
+
+  @override
+  Future<TokenAuditSnapshot> buildSnapshot() async =>
+      const TokenAuditSnapshot();
 }

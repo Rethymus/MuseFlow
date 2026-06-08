@@ -17,6 +17,9 @@ import 'package:museflow/features/ai/infrastructure/openai_adapter.dart';
 import 'package:museflow/features/ai/presentation/synthesis_notifier.dart';
 import 'package:museflow/features/capture/presentation/capture_provider.dart';
 import 'package:museflow/core/presentation/providers.dart';
+import 'package:museflow/features/stats/application/token_audit_service.dart';
+import 'package:museflow/features/stats/domain/audit_operation_type.dart';
+import 'package:museflow/features/stats/domain/token_audit_record.dart';
 import 'package:openai_dart/openai_dart.dart';
 
 void main() {
@@ -61,6 +64,7 @@ void main() {
       String? apiKey,
       bool hasActiveProvider = true,
       bool hasApiKey = true,
+      TokenAuditService? auditService,
     }) {
       fakeAdapter = _FakeOpenAIAdapter();
 
@@ -85,6 +89,9 @@ void main() {
           activeProviderProvider.overrideWithValue(testProvider),
           activeApiKeyProvider.overrideWithValue(testApiKey),
           selectedFragmentsProvider.overrideWithValue(selectedFragments),
+          tokenAuditServiceProvider.overrideWith(
+            (ref) async => auditService ?? _RecordingTokenAuditService(),
+          ),
         ],
       );
     }
@@ -182,6 +189,57 @@ void main() {
         final state = container.read(synthesisProvider);
         expect(state.error, isNotNull);
         expect(state.error, contains('API Key'));
+      });
+
+      test('should record token audit after stream completes successfully', () async {
+        final service = _RecordingTokenAuditService();
+        container = createContainer(
+          selectedFragments: [
+            Fragment(id: 'f1', text: '月光', createdAt: DateTime(2026, 1, 1)),
+          ],
+          auditService: service,
+        );
+        fakeAdapter.streamOutput = Stream.fromIterable(['月光', '下']);
+        fakeAdapter.usage = const Usage(
+          promptTokens: 11,
+          completionTokens: 22,
+          totalTokens: 33,
+        );
+
+        container.read(synthesisProvider.notifier).startSynthesis();
+        await _pumpAndWait();
+
+        expect(service.records, hasLength(1));
+        final record = service.records.single;
+        expect(record.inputTokens, 11);
+        expect(record.outputTokens, 22);
+        expect(record.operationType, AuditOperationType.synthesis);
+        expect(record.modelName, 'gpt-4o-mini');
+      });
+
+      test('should not record token audit when stream errors', () async {
+        final service = _RecordingTokenAuditService();
+        container = createContainer(
+          selectedFragments: [
+            Fragment(id: 'f1', text: '月光', createdAt: DateTime(2026, 1, 1)),
+          ],
+          auditService: service,
+        );
+        final controller = StreamController<String>();
+        fakeAdapter.streamOutput = controller.stream;
+        fakeAdapter.usage = const Usage(
+          promptTokens: 11,
+          completionTokens: 22,
+          totalTokens: 33,
+        );
+
+        container.read(synthesisProvider.notifier).startSynthesis();
+        await _pump();
+        controller.addError(const AINetworkException());
+        await _pumpAndWait();
+
+        expect(service.records, isEmpty);
+        await controller.close();
       });
 
       test('should set error when no fragments selected', () async {
@@ -408,7 +466,7 @@ Future<void> _pumpAndWait() async {
   for (var i = 0; i < 10; i++) {
     await Future<void>.microtask(() {});
   }
-  await Future<void>.delayed(const Duration(milliseconds: 200));
+  await Future<void>.delayed(const Duration(milliseconds: 500));
   for (var i = 0; i < 10; i++) {
     await Future<void>.microtask(() {});
   }
@@ -419,6 +477,7 @@ Future<void> _pumpAndWait() async {
 /// Fake OpenAI adapter that returns a controllable stream.
 class _FakeOpenAIAdapter extends OpenAIAdapter {
   Stream<String>? streamOutput;
+  Usage? usage;
 
   @override
   Stream<String> createStream({
@@ -431,6 +490,55 @@ class _FakeOpenAIAdapter extends OpenAIAdapter {
     int? maxTokens,
     void Function(Usage?)? onUsage,
   }) {
-    return streamOutput ?? Stream.fromIterable(['默认文本']);
+    final source = streamOutput ?? Stream.fromIterable(['默认文本']);
+    return source.transform(
+      StreamTransformer<String, String>.fromHandlers(
+        handleData: (data, sink) => sink.add(data),
+        handleDone: (sink) {
+          onUsage?.call(usage);
+          sink.close();
+        },
+      ),
+    );
   }
+}
+
+class _RecordingTokenAuditService implements TokenAuditService {
+  final records = <TokenAuditRecord>[];
+
+  @override
+  void recordAudit({
+    required Usage? usage,
+    required String modelName,
+    required AuditOperationType operationType,
+    required String manuscriptId,
+    String? chapterId,
+    required String inputText,
+    required String outputText,
+  }) {
+    records.add(
+      TokenAuditRecord(
+        id: 'record-${records.length}',
+        inputTokens: usage?.promptTokens ?? 0,
+        outputTokens: usage?.completionTokens ?? 0,
+        modelName: modelName,
+        operationType: operationType,
+        manuscriptId: manuscriptId,
+        chapterId: chapterId,
+        timestamp: DateTime(2026, 1, 1),
+      ),
+    );
+  }
+
+  @override
+  Future<void> flush() async {}
+
+  @override
+  void dispose() {}
+
+  @override
+  Duration get debounceDuration => Duration.zero;
+
+  @override
+  void record_(TokenAuditRecord record) => records.add(record);
 }

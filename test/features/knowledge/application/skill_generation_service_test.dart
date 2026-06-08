@@ -1,6 +1,11 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:museflow/features/ai/application/token_budget_calculator.dart';
 import 'package:museflow/features/ai/infrastructure/openai_adapter.dart';
 import 'package:museflow/features/knowledge/application/skill_generation_service.dart';
+import 'package:museflow/features/stats/application/token_audit_service.dart';
+import 'package:museflow/features/stats/domain/audit_operation_type.dart';
+import 'package:museflow/features/stats/domain/token_audit_record.dart';
+import 'package:museflow/features/stats/infrastructure/token_audit_repository.dart';
 import 'package:openai_dart/openai_dart.dart';
 
 void main() {
@@ -30,6 +35,40 @@ void main() {
       expect(system, contains('## 禁忌/限制'));
       expect(user, contains('修仙门派体系'));
     });
+
+    test(
+      'should record token audit after successful stream completion',
+      () async {
+        final auditService = _RecordingTokenAuditService();
+        service = SkillGenerationService(
+          openAIAdapter: adapter,
+          apiKey: 'test-key',
+          baseUrl: 'https://api.example.com/v1',
+          model: 'test-model',
+          auditService: auditService,
+        );
+        adapter.usage = const Usage(
+          promptTokens: 12,
+          completionTokens: 8,
+          totalTokens: 20,
+        );
+
+        final chunks = await service
+            .generateSkillStream('修仙门派体系', manuscriptId: 'manuscript-1')
+            .toList();
+
+        expect(chunks, equals(['chunk-1', 'chunk-2']));
+        expect(auditService.calls, hasLength(1));
+        final call = auditService.calls.single;
+        expect(call.usage, same(adapter.usage));
+        expect(call.modelName, 'test-model');
+        expect(call.operationType, AuditOperationType.skillGen);
+        expect(call.manuscriptId, 'manuscript-1');
+        expect(call.chapterId, isNull);
+        expect(call.inputText, '修仙门派体系');
+        expect(call.outputText, 'chunk-1chunk-2');
+      },
+    );
 
     test('should parse markdown sections into SkillDocument', () {
       final document = service.parseSkillDocument(
@@ -90,6 +129,8 @@ class _FakeOpenAIAdapter extends OpenAIAdapter {
   List<ChatMessage> messages = const [];
 
   @override
+  Usage? usage;
+
   Stream<String> createStream({
     required String apiKey,
     required String baseUrl,
@@ -99,8 +140,82 @@ class _FakeOpenAIAdapter extends OpenAIAdapter {
     double? topP,
     int? maxTokens,
     void Function(Usage?)? onUsage,
-  }) {
+  }) async* {
     this.messages = messages;
-    return Stream.fromIterable(chunks);
+    for (final chunk in chunks) {
+      yield chunk;
+    }
+    onUsage?.call(usage);
   }
+}
+
+class _RecordingTokenAuditService extends TokenAuditService {
+  _RecordingTokenAuditService()
+    : super(_NoopTokenAuditRepository(), TokenBudgetCalculator());
+
+  final List<_AuditCall> calls = [];
+
+  @override
+  void recordAudit({
+    required Usage? usage,
+    required String modelName,
+    required AuditOperationType operationType,
+    required String manuscriptId,
+    String? chapterId,
+    required String inputText,
+    required String outputText,
+  }) {
+    calls.add(
+      _AuditCall(
+        usage: usage,
+        modelName: modelName,
+        operationType: operationType,
+        manuscriptId: manuscriptId,
+        chapterId: chapterId,
+        inputText: inputText,
+        outputText: outputText,
+      ),
+    );
+  }
+}
+
+class _AuditCall {
+  const _AuditCall({
+    required this.usage,
+    required this.modelName,
+    required this.operationType,
+    required this.manuscriptId,
+    required this.chapterId,
+    required this.inputText,
+    required this.outputText,
+  });
+
+  final Usage? usage;
+  final String modelName;
+  final AuditOperationType operationType;
+  final String manuscriptId;
+  final String? chapterId;
+  final String inputText;
+  final String outputText;
+}
+
+class _NoopTokenAuditRepository implements TokenAuditRepository {
+  @override
+  Future<void> clearAll() async {}
+
+  @override
+  int get count => 0;
+
+  @override
+  Future<void> enforceLimit(int maxRecords) async {}
+
+  @override
+  Future<List<TokenAuditRecord>> loadAll() async => const [];
+
+  @override
+  Future<void> saveAll(List<TokenAuditRecord> records) async {}
+
+  @override
+  Future<TokenAuditSnapshot> buildSnapshot() async =>
+      const TokenAuditSnapshot();
 }

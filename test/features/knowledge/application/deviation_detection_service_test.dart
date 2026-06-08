@@ -1,7 +1,12 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:museflow/features/ai/application/token_budget_calculator.dart';
 import 'package:museflow/features/ai/infrastructure/openai_adapter.dart';
 import 'package:museflow/features/knowledge/application/deviation_detection_service.dart';
 import 'package:museflow/features/knowledge/domain/skill_document.dart';
+import 'package:museflow/features/stats/application/token_audit_service.dart';
+import 'package:museflow/features/stats/domain/audit_operation_type.dart';
+import 'package:museflow/features/stats/domain/token_audit_record.dart';
+import 'package:museflow/features/stats/infrastructure/token_audit_repository.dart';
 import 'package:openai_dart/openai_dart.dart';
 
 void main() {
@@ -9,14 +14,14 @@ void main() {
     final now = DateTime(2026, 1, 1);
 
     SkillDocument activeSkill() => SkillDocument(
-          id: 'skill-1',
-          name: '修仙体系',
-          description: '',
-          content: '',
-          sections: SkillSections(rules: '灵气守恒', taboos: '不可复活亡者'),
-          isActive: true,
-          createdAt: now,
-        );
+      id: 'skill-1',
+      name: '修仙体系',
+      description: '',
+      content: '',
+      sections: SkillSections(rules: '灵气守恒', taboos: '不可复活亡者'),
+      isActive: true,
+      createdAt: now,
+    );
 
     test('should build prompt and parse medium plus clear warnings', () async {
       final adapter = _FakeOpenAIAdapter([
@@ -43,6 +48,43 @@ void main() {
       expect(userPrompt, contains('只报告 medium 或 clear'));
     });
 
+    test(
+      'should record token audit after successful stream completion',
+      () async {
+        final adapter = _FakeOpenAIAdapter(['[]'])
+          ..usage = const Usage(
+            promptTokens: 21,
+            completionTokens: 5,
+            totalTokens: 26,
+          );
+        final auditService = _RecordingTokenAuditService();
+        final service = DeviationDetectionService(
+          openAIAdapter: adapter,
+          apiKey: 'test-key',
+          baseUrl: 'https://api.example.com/v1',
+          model: 'test-model',
+          auditService: auditService,
+        );
+
+        await service.detectDeviations(
+          '亡者复活了',
+          [activeSkill()],
+          manuscriptId: 'manuscript-1',
+          chapterId: 'chapter-1',
+        );
+
+        expect(auditService.calls, hasLength(1));
+        final call = auditService.calls.single;
+        expect(call.usage, same(adapter.usage));
+        expect(call.modelName, 'test-model');
+        expect(call.operationType, AuditOperationType.deviationDetect);
+        expect(call.manuscriptId, 'manuscript-1');
+        expect(call.chapterId, 'chapter-1');
+        expect(call.inputText, contains('亡者复活了'));
+        expect(call.outputText, '[]');
+      },
+    );
+
     test('should return empty result for invalid JSON', () async {
       final service = DeviationDetectionService(
         openAIAdapter: _FakeOpenAIAdapter(['not json']),
@@ -64,8 +106,14 @@ void main() {
         model: 'test-model',
       );
 
-      expect((await service.detectDeviations('', [activeSkill()])).warnings, isEmpty);
-      expect((await service.detectDeviations('文本', const [])).warnings, isEmpty);
+      expect(
+        (await service.detectDeviations('', [activeSkill()])).warnings,
+        isEmpty,
+      );
+      expect(
+        (await service.detectDeviations('文本', const [])).warnings,
+        isEmpty,
+      );
     });
   });
 }
@@ -77,6 +125,8 @@ class _FakeOpenAIAdapter extends OpenAIAdapter {
   List<ChatMessage> messages = const [];
 
   @override
+  Usage? usage;
+
   Stream<String> createStream({
     required String apiKey,
     required String baseUrl,
@@ -86,8 +136,82 @@ class _FakeOpenAIAdapter extends OpenAIAdapter {
     double? topP,
     int? maxTokens,
     void Function(Usage?)? onUsage,
-  }) {
+  }) async* {
     this.messages = messages;
-    return Stream.fromIterable(chunks);
+    for (final chunk in chunks) {
+      yield chunk;
+    }
+    onUsage?.call(usage);
   }
+}
+
+class _RecordingTokenAuditService extends TokenAuditService {
+  _RecordingTokenAuditService()
+    : super(_NoopTokenAuditRepository(), TokenBudgetCalculator());
+
+  final List<_AuditCall> calls = [];
+
+  @override
+  void recordAudit({
+    required Usage? usage,
+    required String modelName,
+    required AuditOperationType operationType,
+    required String manuscriptId,
+    String? chapterId,
+    required String inputText,
+    required String outputText,
+  }) {
+    calls.add(
+      _AuditCall(
+        usage: usage,
+        modelName: modelName,
+        operationType: operationType,
+        manuscriptId: manuscriptId,
+        chapterId: chapterId,
+        inputText: inputText,
+        outputText: outputText,
+      ),
+    );
+  }
+}
+
+class _AuditCall {
+  const _AuditCall({
+    required this.usage,
+    required this.modelName,
+    required this.operationType,
+    required this.manuscriptId,
+    required this.chapterId,
+    required this.inputText,
+    required this.outputText,
+  });
+
+  final Usage? usage;
+  final String modelName;
+  final AuditOperationType operationType;
+  final String manuscriptId;
+  final String? chapterId;
+  final String inputText;
+  final String outputText;
+}
+
+class _NoopTokenAuditRepository implements TokenAuditRepository {
+  @override
+  Future<void> clearAll() async {}
+
+  @override
+  int get count => 0;
+
+  @override
+  Future<void> enforceLimit(int maxRecords) async {}
+
+  @override
+  Future<List<TokenAuditRecord>> loadAll() async => const [];
+
+  @override
+  Future<void> saveAll(List<TokenAuditRecord> records) async {}
+
+  @override
+  Future<TokenAuditSnapshot> buildSnapshot() async =>
+      const TokenAuditSnapshot();
 }

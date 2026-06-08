@@ -4,6 +4,8 @@
 /// and AI-08 (error handling with graceful classification).
 library;
 
+import 'dart:async';
+
 import 'package:flutter_test/flutter_test.dart';
 import 'package:museflow/features/ai/domain/ai_exception.dart';
 import 'package:museflow/features/ai/infrastructure/openai_adapter.dart';
@@ -95,6 +97,57 @@ void main() {
           ),
           returnsNormally,
         );
+      });
+
+      test('should invoke onUsage when a stream completes successfully', () async {
+        Usage? capturedUsage;
+        var callbackCount = 0;
+
+        final event = const ChatStreamEvent(
+          choices: [
+            ChatStreamChoice(delta: ChatDelta(content: 'Hello')),
+          ],
+          usage: Usage(
+            promptTokens: 7,
+            completionTokens: 3,
+            totalTokens: 10,
+          ),
+        );
+
+        Stream<String> mapWithUsageCallback(
+          Stream<ChatStreamEvent> events,
+          void Function(Usage?)? onUsage,
+        ) {
+          final accumulator = ChatStreamAccumulator();
+          return events
+              .map((event) {
+                accumulator.add(event);
+                return event.textDelta ?? '';
+              })
+              .where((delta) => delta.isNotEmpty)
+              .transform(
+                StreamTransformer<String, String>.fromHandlers(
+                  handleDone: (sink) {
+                    onUsage?.call(accumulator.usage);
+                    sink.close();
+                  },
+                ),
+              );
+        }
+
+        final output = await mapWithUsageCallback(
+          Stream.value(event),
+          (usage) {
+            callbackCount++;
+            capturedUsage = usage;
+          },
+        ).toList();
+
+        expect(output, ['Hello']);
+        expect(callbackCount, 1);
+        expect(capturedUsage?.promptTokens, 7);
+        expect(capturedUsage?.completionTokens, 3);
+        expect(capturedUsage?.totalTokens, 10);
       });
     });
 
