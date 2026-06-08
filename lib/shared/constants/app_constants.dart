@@ -34,6 +34,11 @@ abstract class AppConstants {
   static const String stats = '/stats';
   static const String statsProject = '/stats/project';
   static const String statsTokens = '/stats/tokens';
+  static const String statsReports = '/stats/reports';
+  static const String statsReportsTokenCost = '/stats/reports/token-cost';
+  static const String statsReportsPainPoints = '/stats/reports/pain-points';
+  static const String statsReportsAntiAiScent = '/stats/reports/anti-ai-scent';
+  static const String statsReportsConsistency = '/stats/reports/consistency';
   static const String onboarding = '/onboarding';
 
   // --- Manuscript routes ---
