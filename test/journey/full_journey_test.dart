@@ -16,6 +16,7 @@ import 'package:openai_dart/openai_dart.dart';
 import '../automation/helpers/fake_adapter.dart';
 import 'helpers/d11_bounds.dart';
 import 'helpers/journey_container.dart';
+import 'helpers/stage_prompts.dart';
 import 'helpers/story_outline.dart';
 import 'helpers/xianxia_fixtures.dart';
 
@@ -46,7 +47,7 @@ void main() {
   });
 
   test(
-    'should complete deterministic full xianxia journey without GLM credentials',
+    'should complete deterministic full xianxia journey to 100 chapters without GLM credentials',
     () async {
       final localContainer = await createJourneyContainer(
         apiKey: 'journey-local-test-key',
@@ -69,7 +70,7 @@ void main() {
         );
 
         final snapshot = await _phaseETokenAudit(localContainer);
-        expect(snapshot.totalCalls, greaterThanOrEqualTo(31));
+        expect(snapshot.totalCalls, greaterThanOrEqualTo(101));
         debugPrint('[E2E][DETERMINISTIC] Full journey complete');
       } finally {
         await cleanupJourneyContainer(localContainer);
@@ -79,7 +80,7 @@ void main() {
   );
 
   test(
-    'should complete full xianxia journey from world-building to 30 chapters',
+    'should complete full xianxia journey from world-building to 100 chapters',
     () async {
       debugPrint('[E2E] Starting full xianxia journey validation');
 
@@ -95,7 +96,7 @@ void main() {
       await _phaseETokenAudit(container!);
     },
     skip: apiKey == null ? 'GLM_API_KEY not set' : null,
-    timeout: const Timeout(Duration(minutes: 15)),
+    timeout: const Timeout(Duration(minutes: 60)),
   );
 }
 
@@ -217,14 +218,14 @@ Future<void> _phaseDSerialGeneration(
   required bool useDelay,
 }) async {
   final chapterRepository = await container.read(chapterRepositoryProvider.future);
-  final chapters = await _createThirtyChapters(chapterRepository, manuscript.id);
+  final chapters = await _createChapters(chapterRepository, manuscript.id, 100);
   final pipeline = await container.read(promptPipelineProvider.future);
   final adapter = container.read(openaiAdapterProvider);
   final provider = container.read(activeProviderProvider)!;
   final key = container.read(activeApiKeyProvider)!;
   final auditService = await container.read(tokenAuditServiceProvider.future);
 
-  for (var i = 0; i < 30; i++) {
+  for (var i = 0; i < 100; i++) {
     try {
       final output = await _generateChapter(
         index: i,
@@ -235,22 +236,23 @@ Future<void> _phaseDSerialGeneration(
         model: provider.model,
         manuscript: manuscript,
         chapter: chapters[i],
+        chapters: chapters,
         auditService: auditService,
         chapterRepository: chapterRepository,
       );
       expect(output.length, inInclusiveRange(300, 500));
-      debugPrint('[E2E] Chapter ${i + 1}/30 generated (${output.length} chars)');
+      debugPrint('[E2E] Chapter ${i + 1}/100 generated (${output.length} chars)');
     } catch (e) {
-      debugPrint('[E2E][ERROR] Chapter ${i + 1}/30 failed: ${_safeExceptionDiagnostic(e)}');
+      debugPrint('[E2E][ERROR] Chapter ${i + 1}/100 failed: ${_safeExceptionDiagnostic(e)}');
       rethrow;
     }
 
-    if (useDelay && i < 29) {
+    if (useDelay && i < 99) {
       await Future.delayed(const Duration(seconds: 3));
     }
   }
 
-  debugPrint('[E2E] Phase D: 30-chapter generation complete');
+  debugPrint('[E2E] Phase D: 100-chapter generation complete');
 }
 
 Future<dynamic> _phaseETokenAudit(ProviderContainer container) async {
@@ -258,7 +260,7 @@ Future<dynamic> _phaseETokenAudit(ProviderContainer container) async {
   await auditService.flush();
   final auditRepository = await container.read(tokenAuditRepositoryProvider.future);
   final snapshot = await auditRepository.buildSnapshot();
-  expect(snapshot.totalCalls, greaterThanOrEqualTo(31));
+  expect(snapshot.totalCalls, greaterThanOrEqualTo(101));
   expect(snapshot.totalInputTokens, greaterThan(0));
   expect(snapshot.totalOutputTokens, greaterThan(0));
   debugPrint(
@@ -278,12 +280,22 @@ Future<String> _generateChapter({
   required String model,
   required Manuscript manuscript,
   required Chapter chapter,
+  required List<Chapter> chapters,
   required dynamic auditService,
   required dynamic chapterRepository,
 }) async {
+  final previousContent = index > 0 ? chapters[index - 1].documentContent : '';
+  final previousSummary = previousContent.isEmpty
+      ? ''
+      : previousContent.substring(0, min(100, previousContent.length));
+  final fragmentText = [
+    StagePrompts.forChapterIndex(index),
+    if (previousSummary.isNotEmpty) '上一章概要：$previousSummary',
+    StoryOutline.chapters[index],
+  ].where((text) => text.isNotEmpty).join('\n\n');
   final fragment = Fragment(
     id: 'e2e-frag-$index',
-    text: StoryOutline.chapters[index],
+    text: fragmentText,
     createdAt: DateTime.now(),
   );
   final messages = pipeline.build(
@@ -309,19 +321,20 @@ Future<String> _generateChapter({
     operationType: AuditOperationType.synthesis,
     manuscriptId: manuscript.id,
     chapterId: chapter.id,
-    inputText: StoryOutline.chapters[index],
+    inputText: fragmentText,
     outputText: boundedOutput,
   );
   await chapterRepository.updateDocumentContent(chapter.id, boundedOutput);
   return boundedOutput;
 }
 
-Future<List<Chapter>> _createThirtyChapters(
+Future<List<Chapter>> _createChapters(
   dynamic chapterRepository,
   String manuscriptId,
+  int count,
 ) async {
   final chapters = <Chapter>[];
-  for (var i = 1; i <= 30; i++) {
+  for (var i = 1; i <= count; i++) {
     final plotPoint = StoryOutline.chapters[i - 1];
     final chapter = await chapterRepository.add(
       Chapter(
@@ -381,7 +394,10 @@ class _DeterministicFullJourneyAdapter implements AIAdapter {
     final String response;
     if (promptText.contains('返回格式') || promptText.contains('openings')) {
       response = _openingsJson;
-    } else if (promptText.contains('第') && promptText.contains('林风')) {
+    } else if (promptText.contains(_fragmentTexts.first)) {
+      response = _synthesisText;
+    } else if (_chapterIndex < StoryOutline.chapters.length &&
+        promptText.contains(StoryOutline.chapters[_chapterIndex])) {
       response = _chapterText(_chapterIndex++);
     } else {
       response = await _fallback
@@ -413,6 +429,9 @@ class _DeterministicFullJourneyAdapter implements AIAdapter {
 
   String get _openingsJson =>
       '{"openings":[{"style":"scene","text":"青云山夜雨初歇，石阶间浮起薄薄灵雾。林风握着旧木剑站在山门前，听见远处钟声穿过松林，像是在催促凡人少年迈入未知的修仙世界。"},{"style":"character","text":"林风把掌心磨破的血迹藏进袖中，仍然向执事行了一礼。清虚真人的目光从高台落下，苏雪晴微微颔首，他知道自己不能退。"},{"style":"suspense","text":"禁地深处的玉简为何只在林风靠近时发光？赵天磊的冷笑还未散去，白灵已经竖起耳朵，仿佛听见了某个被宗门封存多年的名字。"}]}';
+
+  String get _synthesisText =>
+      '林风在青云峰采药时发现古玉，玉简符文与清虚真人传授的无名功法隐隐呼应。苏雪晴暗中护他通过入门考核，赵天磊却因禁术暴露埋下祸根。禁地夜响、灵狐白灵、宗门暗流交织成凡人少年踏上仙途的第一道门槛。';
 
   Usage _usage(String prompt, String response) {
     final promptTokens = prompt.replaceAll(RegExp(r'\s'), '').length * 2;
