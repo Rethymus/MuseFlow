@@ -148,7 +148,7 @@ void main() {
 
       expect(md, contains('# 知识库一致性分析报告'));
       expect(md, contains('Alice'));
-      expect(md, contains('0.92'));
+      expect(md, contains('92.0%'));
       expect(md, contains('personality'));
     });
   });
