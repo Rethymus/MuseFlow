@@ -47,7 +47,7 @@
 - [x] **Phase 13: Automation Test Harness** — FakeAdapter + 测试脚本，无需真实 API 即可验证核心流程 (completed 2026-06-07)
 - [x] **Phase 14: World-Building & First 30 Chapters** — 修仙世界观搭建 + 碎片捕捉 + 开篇引导 + 前30章创作验证 (completed 2026-06-07)
 - [x] **Phase 15: Full Manuscript & Story Structure** — 31-100章创作 + 故事结构验证 + 格式清洗 + 导出验证 (completed 2026-06-08)
-- [ ] **Phase 16: Analysis & Reports** — Token成本分析 + 痛点报告 + 反AI味评估 + 知识库一致性分析
+- [x] **Phase 16: Analysis & Reports** — Token成本分析 + 痛点报告 + 反AI味评估 + 知识库一致性分析 (completed 2026-06-08)
 
 ## Phase Details
 
@@ -124,7 +124,7 @@ Plans:
 
 **Wave 3** *(depends on Wave 2)*
 
-- [ ] 16-03-PLAN.md — REPORT-03 Anti-AI-scent blind read + REPORT-04 KB consistency analysis
+- [x] 16-03-PLAN.md — REPORT-03 Anti-AI-scent blind read + REPORT-04 KB consistency analysis
 
 - [x] 14-02-PLAN.md — Fragment synthesis, opening guide, chapter management tests (JOURNEY-02, JOURNEY-03, JOURNEY-04)
 - [x] 14-03-PLAN.md — 30-chapter serial generation, E2E full-journey, issue log template (JOURNEY-05, JOURNEY-06)
@@ -162,7 +162,7 @@ Plans:
 
 **Wave 2** *(depends on Wave 1)*
 
-- [ ] 16-02-PLAN.md — REPORT-01 Token cost analysis + REPORT-02 Pain point report
+- [x] 16-02-PLAN.md — REPORT-01 Token cost analysis + REPORT-02 Pain point report
 
 **Wave 3** *(depends on Wave 2)*
 
@@ -230,4 +230,4 @@ Phases execute in numeric order: 12 → 13 → 14 → 15 → 16
 | 13. Automation Test Harness | v1.3 | 4/4 | Complete    | 2026-06-07 |
 | 14. World-Building & First 30 Chapters | v1.3 | 10/10 | Complete (with 1 deferred)   | 2026-06-08 |
 | 15. Full Manuscript & Story Structure | v1.3 | 7/7 | Complete   | 2026-06-08 |
-| 16. Analysis & Reports | v1.3 | 2/3 | In Progress|  |
+| 16. Analysis & Reports | v1.3 | 3/3 | Complete   | 2026-06-08 |
