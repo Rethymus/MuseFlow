@@ -28,7 +28,7 @@ dependencies:
 
   # AI integration
   openai_dart: ^6.0.0
-  anthropic_sdk_dart: ^4.0.0
+  anthropic_sdk_dart: ^4.1.0
   ollama_dart: ^2.2.0
 
   # Local storage
