@@ -11,7 +11,7 @@ Captured: 2026-06-09, Asia/Shanghai.
 | Sync state at startup | `main...origin/main` |
 | Latest local commit | `3da2ed2 feat: validate export paths and write selected files` |
 | Tags | `v0.1.1`, `v0.1.0`, `v1.3-phase16-complete`, `v1.2`, `v1.0` |
-| Flutter project version | `0.1.1+2` |
+| Flutter project version | `0.1.2+3` |
 | Platform directories | Present: `android/`, `linux/`, `windows/`; absent: `ios/`, `macos/`, `web/` |
 | GitHub metadata | Present: issue templates, PR template, Dependabot config, CI workflow, and release workflow |
 | README screenshots at startup | 21 PNG files under `docs/readme/screenshots/`; both READMEs reference the same 21 files |
@@ -55,7 +55,7 @@ Remote CI and release observation therefore used authenticated `gh`/GitHub API e
 | P0 | Linux secure-storage plaintext fallback contradicted release security goal | Fixed and validated | Removed plaintext fallback from `SecureStorageService`; focused test passed; locked Secret Service behavior fails securely |
 | P0 | GitHub CI/CD absent | Fixed and remotely verified | Added CI and release workflows; final audit verifies the current `main` CI run passes before closing the goal |
 | P0 | Platform artifact builds unverified | Fixed and release-verified | Android and Linux build locally; release workflow published Android, Linux, and Windows artifacts |
-| P0 | GitHub Release publication for v1.4 hardening | Fixed and verified | Published `v0.1.1`; Android/Linux/Windows artifacts and `SHA256SUMS.txt` are present; checksum verification passed |
+| P0 | GitHub Release publication for v1.4 hardening | Fixed and verified | Published `v0.1.2`; Android/Linux/Windows artifacts and `SHA256SUMS.txt` are present; checksum verification passed |
 | P1 | README screenshots are 19 images but v1.4 plan requires 21 workflow screenshots | Fixed locally | Generated 21 reproducible offline UI screenshots with `scripts/generate_readme_screenshots.mjs`; both READMEs reference all 21 files and README asset check passes |
 | P1 | Platform support docs absent | Fixed locally | Added `docs/platform/PLATFORM_SUPPORT.md` and `docs/platform/STORAGE_VALIDATION.md` |
 | P2 | Dependency cleanup | Improved, with remaining migration work deferred | Replaced the unconstrained direct `path: any` dependency with `path: ^1.9.1`. `flutter pub outdated` still reports `super_editor_markdown` as discontinued and several major-version updates. These are not CI/release blockers; replacing the editor Markdown stack should be handled as a separate migration with focused regression tests. |

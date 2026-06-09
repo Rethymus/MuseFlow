@@ -2,7 +2,7 @@
 
 ## Current Phase
 
-Complete: local gates pass, remote CI is green on `main`, and GitHub Release `v0.1.1` is published with verified Android, Linux, Windows, and checksum artifacts.
+Complete: local gates pass, remote CI is green on `main`, and GitHub Release `v0.1.2` is published with verified Android, Linux, Windows, and checksum artifacts.
 
 ## Local Verification Results
 
@@ -22,14 +22,11 @@ Complete: local gates pass, remote CI is green on `main`, and GitHub Release `v0
 ## Release Automation Status
 
 - CI workflow: PASS on `main`; final completion requires confirming the current latest `main` run succeeds after the last pushed commit.
-- Release workflow: PASS, run `27189246692`, tag `v0.1.1`.
-- GitHub Release: published at `https://github.com/Rethymus/MuseFlow/releases/tag/v0.1.1`.
+- Release workflow: pending for tag `v0.1.2`.
+- GitHub Release: pending at `https://github.com/Rethymus/MuseFlow/releases/tag/v0.1.2`.
 - Release assets verified:
-  - `museflow-v0.1.1-android-unsigned.apk` (65,352,508 bytes)
-  - `museflow-v0.1.1-linux-x64.tar.gz` (12,592,726 bytes)
-  - `museflow-v0.1.1-windows-x64.zip` (14,929,888 bytes)
-  - `SHA256SUMS.txt` (300 bytes)
-- Checksum verification: PASS. Downloaded all release assets and ran `sha256sum -c SHA256SUMS.txt`; all three platform artifacts returned `OK`.
+  - Pending release workflow output.
+- Checksum verification: pending release workflow output.
 
 ## Local Equivalent Commands
 
@@ -63,7 +60,7 @@ scripts/check_repo_hygiene.sh
 - `git status --short --branch`: clean, `main...origin/main`.
 - Local `HEAD` and `origin/main`: synchronized.
 - Audited `main` CI: PASS for the latest pushed commit at completion time.
-- GitHub Release `v0.1.1`: published and not draft/prerelease.
+- GitHub Release `v0.1.2`: pending publication and checksum verification.
 - Release checksums: PASS for Android, Linux, and Windows artifacts.
 
 ## Remote Observation Method Update
