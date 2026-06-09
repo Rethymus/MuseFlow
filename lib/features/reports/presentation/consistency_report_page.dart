@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:museflow/features/knowledge/application/deviation_detection_service.dart';
 import 'package:museflow/features/reports/application/report_export_service.dart';
 import 'package:museflow/features/reports/domain/consistency_report.dart';
 import 'package:museflow/features/reports/presentation/charts/consistency_drift_chart.dart';
@@ -114,12 +115,84 @@ class _ConsistencyReportContent extends StatelessWidget {
             child: ConsistencyDriftChart(driftScores: report.driftPerSegment),
           ),
           const SizedBox(height: 16),
+          _NarrativeQualitySection(snapshot: report.narrativeQuality),
+          const SizedBox(height: 16),
           _EntitySection(title: '角色一致性', results: report.characterResults),
           const SizedBox(height: 16),
           _EntitySection(title: '设定一致性', results: report.settingResults),
         ],
       ],
     );
+  }
+}
+
+class _NarrativeQualitySection extends StatelessWidget {
+  const _NarrativeQualitySection({required this.snapshot});
+
+  final NarrativeQualitySnapshot snapshot;
+
+  @override
+  Widget build(BuildContext context) {
+    final signals = snapshot.signals.take(8).toList(growable: false);
+    return _SectionCard(
+      title: '叙事质量复查',
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Wrap(
+            spacing: 12,
+            runSpacing: 12,
+            children: [
+              StatsSummaryCard(
+                icon: Icons.landscape_outlined,
+                title: '场景沉浸',
+                value: _percent(snapshot.immersionScore),
+              ),
+              StatsSummaryCard(
+                icon: Icons.record_voice_over_outlined,
+                title: '人设锚点',
+                value: _percent(snapshot.characterAnchoringScore),
+              ),
+              StatsSummaryCard(
+                icon: Icons.auto_fix_off_outlined,
+                title: '反AI味',
+                value: _percent(snapshot.antiAiScentScore),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          if (signals.isEmpty)
+            const Text('暂未发现需要优先复查的叙事质量信号。')
+          else
+            for (final signal in signals)
+              Card(
+                margin: const EdgeInsets.only(bottom: 8),
+                child: ListTile(
+                  leading: Icon(
+                    Icons.manage_search_outlined,
+                    color: _severityColor(context, signal.severity),
+                  ),
+                  title: Text('第${signal.chapterIndex + 1}章 · ${signal.title}'),
+                  subtitle: Text(
+                    '证据：${signal.evidence}\n建议：${signal.suggestion}',
+                  ),
+                  isThreeLine: true,
+                ),
+              ),
+        ],
+      ),
+    );
+  }
+
+  String _percent(double score) => '${(score * 100).toStringAsFixed(0)}%';
+
+  Color _severityColor(BuildContext context, DeviationSeverity severity) {
+    final colorScheme = Theme.of(context).colorScheme;
+    return switch (severity) {
+      DeviationSeverity.clear => colorScheme.error,
+      DeviationSeverity.medium => colorScheme.tertiary,
+      DeviationSeverity.low => colorScheme.primary,
+    };
   }
 }
 

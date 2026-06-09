@@ -143,6 +143,30 @@ class ReportExportService {
     buffer.writeln('- 角色检查: ${report.characterResults.length}');
     buffer.writeln('- 设定检查: ${report.settingResults.length}');
     buffer.writeln();
+    buffer.writeln('## 叙事质量复查');
+    buffer.writeln();
+    buffer.writeln(
+      '- 场景沉浸: ${(report.narrativeQuality.immersionScore * 100).toStringAsFixed(1)}%',
+    );
+    buffer.writeln(
+      '- 人设锚点: ${(report.narrativeQuality.characterAnchoringScore * 100).toStringAsFixed(1)}%',
+    );
+    buffer.writeln(
+      '- 反AI味: ${(report.narrativeQuality.antiAiScentScore * 100).toStringAsFixed(1)}%',
+    );
+    if (report.narrativeQuality.signals.isEmpty) {
+      buffer.writeln('- 暂未发现需要优先复查的叙事质量信号。');
+    } else {
+      buffer.writeln();
+      for (final signal in report.narrativeQuality.signals) {
+        buffer.writeln(
+          '- 第${signal.chapterIndex + 1}章 [${signal.severity.name}] ${signal.title}',
+        );
+        buffer.writeln('  - 证据: ${signal.evidence}');
+        buffer.writeln('  - 建议: ${signal.suggestion}');
+      }
+    }
+    buffer.writeln();
 
     void writeEntityResults(
       String sectionTitle,

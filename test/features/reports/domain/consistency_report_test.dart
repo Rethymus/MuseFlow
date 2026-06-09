@@ -45,6 +45,21 @@ void main() {
           0.75,
           0.72,
         ],
+        narrativeQuality: const NarrativeQualitySnapshot(
+          immersionScore: 0.8,
+          characterAnchoringScore: 0.7,
+          antiAiScentScore: 0.9,
+          signals: [
+            NarrativeQualitySignal(
+              chapterIndex: 2,
+              category: 'immersion',
+              title: '场景沉浸线索偏弱',
+              evidence: '感官词 0 个',
+              suggestion: '补充动作或感官细节。',
+              severity: DeviationSeverity.medium,
+            ),
+          ],
+        ),
       );
 
       expect(report.characterResults.length, 1);
@@ -53,6 +68,8 @@ void main() {
       expect(report.driftPerSegment.length, 10);
       expect(report.driftPerSegment.first, 0.95);
       expect(report.driftPerSegment.last, 0.72);
+      expect(report.narrativeQuality.immersionScore, 0.8);
+      expect(report.narrativeQuality.signals.single.chapterIndex, 2);
     });
 
     test('should support copyWith', () {
@@ -66,6 +83,32 @@ void main() {
       final updated = report.copyWith(overallConsistencyScore: 0.75);
       expect(updated.overallConsistencyScore, 0.75);
       expect(updated.characterResults, isEmpty); // unchanged
+    });
+  });
+
+  group('NarrativeQualitySnapshot', () {
+    test('should hold scores and review signals', () {
+      const signal = NarrativeQualitySignal(
+        chapterIndex: 4,
+        category: 'style',
+        title: '疑似模板化 AI 表达',
+        evidence: '总而言之',
+        suggestion: '改成角色动作或场景推进。',
+        severity: DeviationSeverity.medium,
+      );
+
+      const snapshot = NarrativeQualitySnapshot(
+        immersionScore: 0.6,
+        characterAnchoringScore: 0.7,
+        antiAiScentScore: 0.8,
+        signals: [signal],
+      );
+
+      expect(snapshot.immersionScore, 0.6);
+      expect(snapshot.characterAnchoringScore, 0.7);
+      expect(snapshot.antiAiScentScore, 0.8);
+      expect(snapshot.signals, [signal]);
+      expect(snapshot.copyWith(antiAiScentScore: 1.0).antiAiScentScore, 1.0);
     });
   });
 

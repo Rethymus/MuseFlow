@@ -107,6 +107,63 @@ void main() {
       },
     );
 
+    test('should produce narrative quality signals for thin chapters', () {
+      final service = _service(
+        chapters: [
+          _chapter('c1', 'm1', '林青玄觉得这一切很重要。'),
+          _chapter('c2', 'm1', '山风掠过石阶，他握紧剑柄，低声说要守住灵溪宗。'),
+        ],
+        characters: [_character('林青玄')],
+      );
+
+      final snapshot = service.analyze('m1').narrativeQuality;
+
+      expect(snapshot.immersionScore, 0.5);
+      expect(
+        snapshot.signals.any((signal) => signal.category == 'immersion'),
+        isTrue,
+      );
+      expect(
+        snapshot.signals.any((signal) => signal.category == 'character'),
+        isTrue,
+      );
+    });
+
+    test('should detect AI-scent phrases as author review signals', () {
+      final service = _service(
+        chapters: [_chapter('c1', 'm1', '值得注意的是，林青玄在这个过程中获得成长。')],
+        characters: [_character('林青玄')],
+      );
+
+      final snapshot = service.analyze('m1').narrativeQuality;
+
+      expect(snapshot.antiAiScentScore, 0.0);
+      expect(
+        snapshot.signals.any(
+          (signal) =>
+              signal.category == 'style' && signal.evidence.contains('值得注意的是'),
+        ),
+        isTrue,
+      );
+    });
+
+    test('should flag setting drift when setting lacks support terms', () {
+      final service = _service(
+        chapters: [
+          _chapter('c1', 'm1', '灵溪宗笼罩在晨雾中。'),
+          _chapter('c2', 'm1', '灵溪宗外钟声渐远。'),
+        ],
+        settings: [_setting('灵溪宗', rules: '剑修', factions: '外门弟子')],
+      );
+
+      final snapshot = service.analyze('m1').narrativeQuality;
+
+      expect(
+        snapshot.signals.any((signal) => signal.category == 'setting'),
+        isTrue,
+      );
+    });
+
     test('should check world setting keywords in chapter content', () {
       final service = _service(
         chapters: [

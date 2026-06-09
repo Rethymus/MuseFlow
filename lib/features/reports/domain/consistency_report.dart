@@ -136,6 +136,135 @@ class EntityConsistencyResult {
   }
 }
 
+/// A review signal that points the author to a chapter worth checking.
+class NarrativeQualitySignal {
+  const NarrativeQualitySignal({
+    required this.chapterIndex,
+    required this.category,
+    required this.title,
+    required this.evidence,
+    required this.suggestion,
+    required this.severity,
+  });
+
+  /// Zero-based chapter index in the analyzed manuscript.
+  final int chapterIndex;
+
+  /// Signal group, for example immersion, character, style, or setting.
+  final String category;
+
+  /// Short author-facing label.
+  final String title;
+
+  /// Local evidence that triggered the signal.
+  final String evidence;
+
+  /// Author-facing review suggestion. This should not rewrite prose.
+  final String suggestion;
+
+  /// Severity of the signal.
+  final DeviationSeverity severity;
+
+  NarrativeQualitySignal copyWith({
+    int? chapterIndex,
+    String? category,
+    String? title,
+    String? evidence,
+    String? suggestion,
+    DeviationSeverity? severity,
+  }) {
+    return NarrativeQualitySignal(
+      chapterIndex: chapterIndex ?? this.chapterIndex,
+      category: category ?? this.category,
+      title: title ?? this.title,
+      evidence: evidence ?? this.evidence,
+      suggestion: suggestion ?? this.suggestion,
+      severity: severity ?? this.severity,
+    );
+  }
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is NarrativeQualitySignal &&
+          runtimeType == other.runtimeType &&
+          chapterIndex == other.chapterIndex &&
+          category == other.category &&
+          title == other.title &&
+          evidence == other.evidence &&
+          suggestion == other.suggestion &&
+          severity == other.severity;
+
+  @override
+  int get hashCode =>
+      chapterIndex.hashCode ^
+      category.hashCode ^
+      title.hashCode ^
+      evidence.hashCode ^
+      suggestion.hashCode ^
+      severity.hashCode;
+}
+
+/// Local, deterministic narrative quality summary for creator review.
+class NarrativeQualitySnapshot {
+  const NarrativeQualitySnapshot({
+    required this.immersionScore,
+    required this.characterAnchoringScore,
+    required this.antiAiScentScore,
+    required this.signals,
+  });
+
+  const NarrativeQualitySnapshot.empty()
+    : immersionScore = 0.0,
+      characterAnchoringScore = 0.0,
+      antiAiScentScore = 0.0,
+      signals = const [];
+
+  /// Higher means chapters include more concrete scene/action/sensory anchors.
+  final double immersionScore;
+
+  /// Higher means character mentions are more often supported by behavior,
+  /// emotion, relation, or voice clues.
+  final double characterAnchoringScore;
+
+  /// Higher means fewer generic AI-scent phrases were detected.
+  final double antiAiScentScore;
+
+  /// Ordered review signals for the author.
+  final List<NarrativeQualitySignal> signals;
+
+  NarrativeQualitySnapshot copyWith({
+    double? immersionScore,
+    double? characterAnchoringScore,
+    double? antiAiScentScore,
+    List<NarrativeQualitySignal>? signals,
+  }) {
+    return NarrativeQualitySnapshot(
+      immersionScore: immersionScore ?? this.immersionScore,
+      characterAnchoringScore:
+          characterAnchoringScore ?? this.characterAnchoringScore,
+      antiAiScentScore: antiAiScentScore ?? this.antiAiScentScore,
+      signals: signals ?? this.signals,
+    );
+  }
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is NarrativeQualitySnapshot &&
+          runtimeType == other.runtimeType &&
+          immersionScore == other.immersionScore &&
+          characterAnchoringScore == other.characterAnchoringScore &&
+          antiAiScentScore == other.antiAiScentScore &&
+          EntityConsistencyResult._listEquals(signals, other.signals);
+
+  @override
+  int get hashCode =>
+      immersionScore.hashCode ^
+      characterAnchoringScore.hashCode ^
+      antiAiScentScore.hashCode;
+}
+
 /// Knowledge base consistency analysis report.
 ///
 /// Compares character cards and world settings against actual chapter
@@ -146,6 +275,7 @@ class ConsistencyReport {
     required this.settingResults,
     required this.overallConsistencyScore,
     required this.driftPerSegment,
+    this.narrativeQuality = const NarrativeQualitySnapshot.empty(),
   });
 
   /// Consistency results for each character.
@@ -161,11 +291,15 @@ class ConsistencyReport {
   /// Shows how consistency drifts over the course of the novel.
   final List<double> driftPerSegment;
 
+  /// Creator-facing local quality signals for reviewing narrative strength.
+  final NarrativeQualitySnapshot narrativeQuality;
+
   ConsistencyReport copyWith({
     List<EntityConsistencyResult>? characterResults,
     List<EntityConsistencyResult>? settingResults,
     double? overallConsistencyScore,
     List<double>? driftPerSegment,
+    NarrativeQualitySnapshot? narrativeQuality,
   }) {
     return ConsistencyReport(
       characterResults: characterResults ?? this.characterResults,
@@ -173,6 +307,7 @@ class ConsistencyReport {
       overallConsistencyScore:
           overallConsistencyScore ?? this.overallConsistencyScore,
       driftPerSegment: driftPerSegment ?? this.driftPerSegment,
+      narrativeQuality: narrativeQuality ?? this.narrativeQuality,
     );
   }
 }

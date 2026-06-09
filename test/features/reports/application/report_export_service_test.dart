@@ -145,11 +145,30 @@ void main() {
         settingResults: const [],
         overallConsistencyScore: 0.88,
         driftPerSegment: List.filled(10, 0.9),
+        narrativeQuality: const NarrativeQualitySnapshot(
+          immersionScore: 0.66,
+          characterAnchoringScore: 0.75,
+          antiAiScentScore: 0.9,
+          signals: [
+            NarrativeQualitySignal(
+              chapterIndex: 3,
+              category: 'style',
+              title: '疑似模板化 AI 表达',
+              evidence: '总而言之',
+              suggestion: '改成角色动作。',
+              severity: DeviationSeverity.medium,
+            ),
+          ],
+        ),
       );
 
       final md = service.buildConsistencyMarkdown(report);
 
       expect(md, contains('# 知识库一致性分析报告'));
+      expect(md, contains('## 叙事质量复查'));
+      expect(md, contains('场景沉浸'));
+      expect(md, contains('第4章'));
+      expect(md, contains('总而言之'));
       expect(md, contains('Alice'));
       expect(md, contains('92.0%'));
       expect(md, contains('personality'));

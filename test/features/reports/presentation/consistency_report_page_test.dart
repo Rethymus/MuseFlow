@@ -36,6 +36,23 @@ void main() {
       expect(find.byType(ConsistencyDriftChart), findsOneWidget);
     });
 
+    testWidgets('should render narrative quality review section and signals', (
+      tester,
+    ) async {
+      await tester.pumpWidget(
+        _wrap(const ConsistencyReportPage(), report: _report()),
+      );
+      await tester.pumpAndSettle();
+      await tester.scrollUntilVisible(find.text('叙事质量复查'), 200);
+
+      expect(find.text('叙事质量复查'), findsOneWidget);
+      expect(find.text('场景沉浸'), findsOneWidget);
+      expect(find.text('人设锚点'), findsOneWidget);
+      expect(find.text('反AI味'), findsOneWidget);
+      expect(find.textContaining('第3章 · 疑似模板化 AI 表达'), findsOneWidget);
+      expect(find.textContaining('证据：总而言之'), findsOneWidget);
+    });
+
     testWidgets(
       'should render character and setting sections with entity cards',
       (tester) async {
@@ -134,6 +151,21 @@ ConsistencyReport _report() {
     ],
     overallConsistencyScore: 0.75,
     driftPerSegment: List.generate(10, (index) => 1 - index / 10),
+    narrativeQuality: const NarrativeQualitySnapshot(
+      immersionScore: 0.6,
+      characterAnchoringScore: 0.7,
+      antiAiScentScore: 0.8,
+      signals: [
+        NarrativeQualitySignal(
+          chapterIndex: 2,
+          category: 'style',
+          title: '疑似模板化 AI 表达',
+          evidence: '总而言之',
+          suggestion: '改成角色动作或场景推进。',
+          severity: DeviationSeverity.medium,
+        ),
+      ],
+    ),
   );
 }
 
