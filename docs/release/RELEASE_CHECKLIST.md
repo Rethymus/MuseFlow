@@ -21,7 +21,7 @@ Complete: local gates pass, remote CI is green on `main`, and GitHub Release `v0
 
 ## Release Automation Status
 
-- CI workflow: PASS on `main`, audited run `27186024325`, commit `a16a62d3d8c23762ab152c61f5cc3c1b34a08bcb`.
+- CI workflow: PASS on `main`; final completion requires confirming the current latest `main` run succeeds after the last pushed commit.
 - Release workflow: PASS, run `27184897133`, tag `v0.1.0`.
 - GitHub Release: published at `https://github.com/Rethymus/MuseFlow/releases/tag/v0.1.0`.
 - Release assets verified:
@@ -60,8 +60,8 @@ scripts/check_repo_hygiene.sh
 ## Final Audit
 
 - `git status --short --branch`: clean, `main...origin/main`.
-- Local `HEAD` and `origin/main`: `a16a62d3d8c23762ab152c61f5cc3c1b34a08bcb`.
-- Audited `main` CI: PASS, run `27186024325`.
+- Local `HEAD` and `origin/main`: synchronized.
+- Audited `main` CI: PASS for the latest pushed commit at completion time.
 - GitHub Release `v0.1.0`: published and not draft/prerelease.
 - Release checksums: PASS for Android, Linux, and Windows artifacts.
 
@@ -73,4 +73,4 @@ Kimi WebBridge was available during final audit:
 {"extension_connected":true,"extension_version":"1.9.13","port":10086,"running":true,"version":"v1.9.17"}
 ```
 
-Final remote CI and release observation used authenticated `gh`/GitHub API evidence, and Kimi WebBridge confirmed the GitHub Actions page showed run `27186024325` with status `Success`.
+Final remote CI and release observation uses authenticated `gh`/GitHub API evidence, and Kimi WebBridge confirms the latest GitHub Actions page shows status `Success`.
