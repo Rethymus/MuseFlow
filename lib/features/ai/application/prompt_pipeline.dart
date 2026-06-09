@@ -71,6 +71,16 @@ class PromptContext {
   /// Truncated summary of the next chapter for AI context injection.
   final String? nextChapterSummary;
 
+  /// Author-facing warning about the previous chapter summary freshness.
+  ///
+  /// When present, [ChapterContextMiddleware] tells the model to treat the
+  /// adjacent summary as review context instead of authoritative manuscript
+  /// truth. This preserves author control when stored chapter memory is stale.
+  final String? previousChapterMemoryWarning;
+
+  /// Author-facing warning about the next chapter summary freshness.
+  final String? nextChapterMemoryWarning;
+
   const PromptContext({
     required this.fragments,
     this.additionalInstruction,
@@ -83,6 +93,8 @@ class PromptContext {
     this.userInstruction,
     this.previousChapterSummary,
     this.nextChapterSummary,
+    this.previousChapterMemoryWarning,
+    this.nextChapterMemoryWarning,
   });
 
   /// Creates a copy with an additional message appended.
@@ -99,6 +111,8 @@ class PromptContext {
       userInstruction: userInstruction,
       previousChapterSummary: previousChapterSummary,
       nextChapterSummary: nextChapterSummary,
+      previousChapterMemoryWarning: previousChapterMemoryWarning,
+      nextChapterMemoryWarning: nextChapterMemoryWarning,
     );
   }
 
@@ -116,6 +130,8 @@ class PromptContext {
       userInstruction: userInstruction,
       previousChapterSummary: previousChapterSummary,
       nextChapterSummary: nextChapterSummary,
+      previousChapterMemoryWarning: previousChapterMemoryWarning,
+      nextChapterMemoryWarning: nextChapterMemoryWarning,
     );
   }
 
@@ -135,6 +151,8 @@ class PromptContext {
       userInstruction: userInstruction,
       previousChapterSummary: previousChapterSummary,
       nextChapterSummary: nextChapterSummary,
+      previousChapterMemoryWarning: previousChapterMemoryWarning,
+      nextChapterMemoryWarning: nextChapterMemoryWarning,
     );
   }
 }

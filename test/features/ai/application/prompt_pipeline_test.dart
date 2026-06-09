@@ -91,6 +91,8 @@ void main() {
       expect(context.bannedPhrases, isEmpty);
       expect(context.messages, isEmpty);
       expect(context.tokenBudget, equals(4096));
+      expect(context.previousChapterMemoryWarning, isNull);
+      expect(context.nextChapterMemoryWarning, isNull);
     });
 
     test('should create with all parameters', () {
@@ -103,11 +105,15 @@ void main() {
         additionalInstruction: '追加指令',
         bannedPhrases: ['然而', '综上所述'],
         tokenBudget: 8000,
+        previousChapterMemoryWarning: '上一章摘要可能过期',
+        nextChapterMemoryWarning: '下一章摘要可能过期',
       );
 
       expect(context.additionalInstruction, equals('追加指令'));
       expect(context.bannedPhrases, equals(['然而', '综上所述']));
       expect(context.tokenBudget, equals(8000));
+      expect(context.previousChapterMemoryWarning, equals('上一章摘要可能过期'));
+      expect(context.nextChapterMemoryWarning, equals('下一章摘要可能过期'));
     });
 
     test('should support adding messages', () {
@@ -121,6 +127,27 @@ void main() {
       expect(updated.messages.length, equals(1));
       // Original should be unchanged (immutability)
       expect(context.messages, isEmpty);
+    });
+
+    test('message helpers should preserve chapter memory warnings', () {
+      final fragments = [
+        Fragment(id: 'f1', text: '碎片1', createdAt: DateTime.now()),
+      ];
+      final context = PromptContext(
+        fragments: fragments,
+        messages: [ChatMessage.system('old')],
+        previousChapterMemoryWarning: '上一章摘要可能过期',
+        nextChapterMemoryWarning: '下一章摘要可能过期',
+      );
+
+      final added = context.addMessage(ChatMessage.user('content'));
+      final replaced = context.replaceSystemMessage(0, 'new');
+      final withMessages = context.withMessages([ChatMessage.system('only')]);
+
+      for (final updated in [added, replaced, withMessages]) {
+        expect(updated.previousChapterMemoryWarning, '上一章摘要可能过期');
+        expect(updated.nextChapterMemoryWarning, '下一章摘要可能过期');
+      }
     });
   });
 
