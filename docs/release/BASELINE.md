@@ -9,8 +9,8 @@ Captured: 2026-06-09, Asia/Shanghai.
 | Branch | `main` |
 | Remote | `origin https://github.com/Rethymus/MuseFlow.git` |
 | Sync state at startup | `main...origin/main` |
-| Latest local commit | `3da2ed2 feat: validate export paths and write selected files` |
-| Tags | `v0.1.1`, `v0.1.0`, `v1.3-phase16-complete`, `v1.2`, `v1.0` |
+| Latest audited release commit | `18ea4b2 chore: prepare v0.1.2 release` |
+| Tags | `v0.1.2`, `v0.1.1`, `v0.1.0`, `v1.3-phase16-complete`, `v1.2`, `v1.0` |
 | Flutter project version | `0.1.2+3` |
 | Platform directories | Present: `android/`, `linux/`, `windows/`; absent: `ios/`, `macos/`, `web/` |
 | GitHub metadata | Present: issue templates, PR template, Dependabot config, CI workflow, and release workflow |
@@ -19,10 +19,10 @@ Captured: 2026-06-09, Asia/Shanghai.
 
 ## Remote Observation Method
 
-Kimi WebBridge was unavailable during this continuation audit because a stale PID file blocked the local HTTP probe:
+Kimi WebBridge daemon was running during the final continuation audit, but the browser extension was not connected:
 
 ```text
-{"note":"PID file exists but HTTP probe failed -- daemon may be starting or stuck","pid":1916,"running":false}
+{"extension_connected":false,"extension_id":"","extension_version":"","port":10086,"running":true,"version":"v1.9.17"}
 ```
 
 Remote CI and release observation therefore used authenticated `gh`/GitHub API evidence. The final audit must verify the current `main` run at the time of completion rather than relying on a stale hard-coded run id.
