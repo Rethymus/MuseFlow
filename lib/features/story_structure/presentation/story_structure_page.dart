@@ -429,10 +429,9 @@ class _FinishExportSection extends ConsumerWidget {
       context: context,
       builder: (_) => ExportDialog(
         bundle: bundle,
-        onExport: (format, content) async {
-          // In production, this would use file_picker to get a save path
-          // and then write the file. For now, delegate to export service.
-          debugPrint('Export: ${format.label}, ${content.length} chars');
+        onExport: (format, path, content) async {
+          final exportService = ref.read(exportServiceProvider);
+          await exportService.writeLocalFile(path, content);
         },
       ),
     );

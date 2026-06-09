@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:museflow/features/story_structure/domain/export_bundle.dart';
 
@@ -61,23 +62,9 @@ class ExportService {
   ///
   /// Uses synchronous write for simplicity. Wraps in async for the interface.
   static Future<void> dartFileWriter(String path, String content) async {
-    // Import dart:io dynamically so the class compiles in test environments.
-    // The actual import is at the call site in production providers.
-    final file = await _writeWithDartIo(path, content);
-    if (!file) {
-      throw StateError('Failed to write file: $path');
-    }
-  }
-
-  static Future<bool> _writeWithDartIo(String path, String content) async {
-    try {
-      // dart:io is available on Windows/Android but not in flutter test.
-      // Production callers should use the production provider which imports
-      // dart:io directly. This fallback exists for the type signature.
-      return false;
-    } catch (_) {
-      return false;
-    }
+    final file = File(path);
+    await file.parent.create(recursive: true);
+    await file.writeAsString(content);
   }
 
   /// Builds TXT content from the export bundle.

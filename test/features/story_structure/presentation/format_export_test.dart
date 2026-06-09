@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:museflow/features/story_structure/application/export_service.dart';
 import 'package:museflow/features/story_structure/domain/export_bundle.dart';
 import 'package:museflow/features/story_structure/domain/foreshadowing_entry.dart';
 import 'package:museflow/features/story_structure/domain/plot_node.dart';
@@ -188,7 +189,7 @@ void main() {
             home: Scaffold(
               body: ExportDialog(
                 bundle: createTestBundle(),
-                onExport: (_, _) async {},
+                onExport: (_, _, _) async {},
               ),
             ),
           ),
@@ -209,7 +210,7 @@ void main() {
             home: Scaffold(
               body: ExportDialog(
                 bundle: createTestBundle(),
-                onExport: (_, _) async {
+                onExport: (_, _, _) async {
                   exportCalled = true;
                 },
               ),
@@ -228,6 +229,25 @@ void main() {
       expect(exportCalled, isFalse);
     });
 
+    testWidgets('shows suggested local path before path is set', (
+      tester,
+    ) async {
+      await tester.pumpWidget(
+        ProviderScope(
+          child: MaterialApp(
+            home: Scaffold(
+              body: ExportDialog(
+                bundle: createTestBundle(),
+                onExport: (_, _, _) async {},
+              ),
+            ),
+          ),
+        ),
+      );
+
+      expect(find.text('museflow-export.txt'), findsOneWidget);
+    });
+
     testWidgets('shows local path feedback when path is set', (tester) async {
       await tester.pumpWidget(
         ProviderScope(
@@ -235,15 +255,12 @@ void main() {
             home: Scaffold(
               body: ExportDialog(
                 bundle: createTestBundle(),
-                onExport: (_, _) async {},
+                onExport: (_, _, _) async {},
               ),
             ),
           ),
         ),
       );
-
-      // Initially should show "未选择路径"
-      expect(find.text('未选择路径'), findsOneWidget);
 
       // Tap "选择路径" to open path dialog
       await tester.tap(find.text('选择路径'));
@@ -261,6 +278,76 @@ void main() {
 
       // Now the dialog should show the selected path
       expect(find.text('/fake/export/path.txt'), findsOneWidget);
+    });
+
+    testWidgets('path dialog rejects wrong extension for selected format', (
+      tester,
+    ) async {
+      await tester.pumpWidget(
+        ProviderScope(
+          child: MaterialApp(
+            home: Scaffold(
+              body: ExportDialog(
+                bundle: createTestBundle(),
+                onExport: (_, _, _) async {},
+              ),
+            ),
+          ),
+        ),
+      );
+
+      await tester.tap(find.text('Markdown'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('选择路径'));
+      await tester.pumpAndSettle();
+
+      await tester.enterText(find.byType(TextField), '/fake/export/path.txt');
+      await tester.tap(find.text('确定'));
+      await tester.pumpAndSettle();
+
+      expect(find.text('文件名必须以 .md 结尾'), findsOneWidget);
+      expect(find.widgetWithText(AlertDialog, '选择保存路径'), findsOneWidget);
+    });
+
+    testWidgets('export callback receives selected format path and content', (
+      tester,
+    ) async {
+      ExportFormat? exportedFormat;
+      String? exportedPath;
+      String? exportedContent;
+
+      await tester.pumpWidget(
+        ProviderScope(
+          child: MaterialApp(
+            home: Scaffold(
+              body: ExportDialog(
+                bundle: createTestBundle(),
+                onExport: (format, path, content) async {
+                  exportedFormat = format;
+                  exportedPath = path;
+                  exportedContent = content;
+                },
+              ),
+            ),
+          ),
+        ),
+      );
+
+      await tester.tap(find.text('JSON'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('选择路径'));
+      await tester.pumpAndSettle();
+      await tester.enterText(find.byType(TextField), '/fake/export/book.json');
+      await tester.tap(find.text('确定'));
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.byKey(const Key('export_button')));
+      await tester.pumpAndSettle();
+
+      expect(exportedFormat, ExportFormat.json);
+      expect(exportedPath, '/fake/export/book.json');
+      expect(exportedContent, contains('"schemaVersion": "1.0"'));
+      expect(find.text('/fake/export/book.json'), findsOneWidget);
     });
   });
 }

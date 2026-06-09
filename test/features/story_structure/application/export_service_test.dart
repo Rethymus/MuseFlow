@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:museflow/features/story_structure/application/export_service.dart';
@@ -231,6 +232,28 @@ void main() {
         // Verify it's valid JSON
         expect(() => jsonDecode(writeCalls[0].content), returnsNormally);
       });
+
+      test(
+        'dartFileWriter should create parent directories and write file',
+        () async {
+          final tempDir = await Directory.systemTemp.createTemp(
+            'museflow-export-test-',
+          );
+          addTearDown(() async {
+            if (await tempDir.exists()) {
+              await tempDir.delete(recursive: true);
+            }
+          });
+
+          final outputPath =
+              '${tempDir.path}/nested/reports/token-cost-report.md';
+          await ExportService.dartFileWriter(outputPath, '# report');
+
+          final outputFile = File(outputPath);
+          expect(await outputFile.exists(), isTrue);
+          expect(await outputFile.readAsString(), '# report');
+        },
+      );
     });
 
     // --- Export format selection ---

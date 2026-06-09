@@ -1,7 +1,7 @@
 name: museflow
 description: "MuseFlow 灵韵 — 人机协作小说创作辅助工具"
 publish_to: 'none'
-version: 0.1.0+1
+version: 0.1.1+2
 
 environment:
   sdk: ^3.12.0
