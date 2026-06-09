@@ -2,7 +2,7 @@
 
 ## Current Phase
 
-Complete: local gates pass, remote CI is green on `main`, and GitHub Release `v0.1.0` is published with verified Android, Linux, Windows, and checksum artifacts.
+Complete: local gates pass, remote CI is green on `main`, and GitHub Release `v0.1.1` is published with verified Android, Linux, Windows, and checksum artifacts.
 
 ## Local Verification Results
 
@@ -22,12 +22,12 @@ Complete: local gates pass, remote CI is green on `main`, and GitHub Release `v0
 ## Release Automation Status
 
 - CI workflow: PASS on `main`; final completion requires confirming the current latest `main` run succeeds after the last pushed commit.
-- Release workflow: PASS, run `27184897133`, tag `v0.1.0`.
-- GitHub Release: published at `https://github.com/Rethymus/MuseFlow/releases/tag/v0.1.0`.
+- Release workflow: PASS, run `27189246692`, tag `v0.1.1`.
+- GitHub Release: published at `https://github.com/Rethymus/MuseFlow/releases/tag/v0.1.1`.
 - Release assets verified:
-  - `museflow-v0.1.0-android-unsigned.apk` (65,336,120 bytes)
-  - `museflow-v0.1.0-linux-x64.tar.gz` (12,591,980 bytes)
-  - `museflow-v0.1.0-windows-x64.zip` (14,930,513 bytes)
+  - `museflow-v0.1.1-android-unsigned.apk` (65,352,508 bytes)
+  - `museflow-v0.1.1-linux-x64.tar.gz` (12,592,726 bytes)
+  - `museflow-v0.1.1-windows-x64.zip` (14,929,888 bytes)
   - `SHA256SUMS.txt` (300 bytes)
 - Checksum verification: PASS. Downloaded all release assets and ran `sha256sum -c SHA256SUMS.txt`; all three platform artifacts returned `OK`.
 
@@ -54,7 +54,8 @@ scripts/check_repo_hygiene.sh
   ```
 
   Result: app process started but no window became discoverable through `xdotool`; stderr showed `libsecret_error: KeyringLocked`. This is expected secure behavior under a locked Secret Service and confirms the app does not fall back to plaintext secret files. README screenshots were refreshed through the reproducible offline UI evidence flow instead of weakening production secure-storage behavior.
-- GitHub Actions emitted non-blocking Node.js 20 deprecation warnings for current marketplace actions. This does not block the release, but dependency updates should address it before GitHub removes Node.js 20 runner support.
+- Dependabot PRs for newer GitHub Actions major versions are open. Some PR checks fail because those proposed major versions currently change CI behavior; keep them under review instead of merging unverified automation upgrades.
+- Dependabot PR `#11` for `file_picker 11.0.2` fails Android build smoke because the generated registrant references `com.mr.flutter.plugin.filepicker.FilePickerPlugin`, which is no longer provided by that upgrade. Keep `file_picker` pinned until the migration path is verified.
 - GitHub Actions noted `windows-latest` redirection to `windows-2025-vs2026` by June 15, 2026; Windows release artifact still built and uploaded successfully.
 
 ## Final Audit
@@ -62,15 +63,15 @@ scripts/check_repo_hygiene.sh
 - `git status --short --branch`: clean, `main...origin/main`.
 - Local `HEAD` and `origin/main`: synchronized.
 - Audited `main` CI: PASS for the latest pushed commit at completion time.
-- GitHub Release `v0.1.0`: published and not draft/prerelease.
+- GitHub Release `v0.1.1`: published and not draft/prerelease.
 - Release checksums: PASS for Android, Linux, and Windows artifacts.
 
 ## Remote Observation Method Update
 
-Kimi WebBridge was available during final audit:
+Kimi WebBridge was unavailable during this continuation audit because a stale PID file blocked the local HTTP probe:
 
 ```text
-{"extension_connected":true,"extension_version":"1.9.13","port":10086,"running":true,"version":"v1.9.17"}
+{"note":"PID file exists but HTTP probe failed -- daemon may be starting or stuck","pid":1916,"running":false}
 ```
 
-Final remote CI and release observation uses authenticated `gh`/GitHub API evidence, and Kimi WebBridge confirms the latest GitHub Actions page shows status `Success`.
+Final remote CI and release observation uses authenticated `gh`/GitHub API evidence.
