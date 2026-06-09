@@ -2,16 +2,16 @@
 
 ## Current Phase
 
-Complete: Web testing target is implemented, remote CI is green on `main`, and GitHub Release `v0.1.3` is published with verified Android, Linux, Windows, Web, and checksum artifacts.
+Complete: Web testing target is implemented, remote CI is green on `main`, and GitHub Release `v0.1.4` is published with verified Android, Linux, Windows, Web, and checksum artifacts.
 
 ## Local Verification Results
 
 | Command | Status | Notes |
 | --- | --- | --- |
 | `flutter pub get` | PASS | Dependency warnings recorded in `BASELINE.md`; discontinued `super_editor_markdown` removed during Web target hardening |
-| `dart format --set-exit-if-changed .` | PASS | Formatted 395 files, 0 changed |
+| `dart format --set-exit-if-changed .` | PASS | Formatted 401 files, 0 changed |
 | `flutter analyze` | PASS | No issues found |
-| `flutter test` | PASS | 1170 passed, 12 skipped |
+| `flutter test` | PASS | 1179 passed, 12 skipped |
 | `flutter test test/infrastructure/secure_storage_test.dart` | PASS | 5 tests passed; unavailable secure-storage plugin paths skipped in this Linux test shell; confirms no plaintext Linux fallback path is created |
 | `xvfb-run -a flutter test integration_test/app_test.dart -d linux` | PASS | Remote CI run `27206511246` passed 4 Linux desktop smoke tests via xvfb; local shell lacks `xvfb-run`, and direct WSL Linux run built the test app but hung without output |
 | `scripts/check_readme_assets.sh` | PASS | Current 21 screenshot references are consistent |
@@ -22,16 +22,16 @@ Complete: Web testing target is implemented, remote CI is green on `main`, and G
 
 ## Release Automation Status
 
-- CI workflow: PASS on `main` for commit `04575bb3f24d7d95cc15364488c544463cbc3120`, run `27206511246`.
-- Release workflow: PASS for tag `v0.1.3`, run `27207296155`, commit `04575bb3f24d7d95cc15364488c544463cbc3120`.
-- GitHub Release: published as `MuseFlow v0.1.3` at `https://github.com/Rethymus/MuseFlow/releases/tag/v0.1.3`; not draft and not prerelease; published 2026-06-09T13:01:27Z.
+- CI workflow: PASS on `main` for commit `ec169cf96e22147951578045709ba12966b314af`, run `27211536093`.
+- Release workflow: PASS for tag `v0.1.4`, run `27212515205`, commit `ec169cf96e22147951578045709ba12966b314af`.
+- GitHub Release: published as `MuseFlow v0.1.4` at `https://github.com/Rethymus/MuseFlow/releases/tag/v0.1.4`; not draft and not prerelease; published 2026-06-09T14:28:15Z.
 - Release assets verified:
-  - `museflow-v0.1.3-android-unsigned.apk` - 65,418,200 bytes, SHA-256 `dbd42da7f8cbd4296f33ad6cc312d731fde7c7e4d2d00708b3ccba5ced3a84fd`
-  - `museflow-v0.1.3-linux-x64.tar.gz` - 12,595,280 bytes, SHA-256 `0f23449a9b7b206b661030e45c8b745c1193021d6742cfe5a344e3604706f3ba`
-  - `museflow-v0.1.3-web.zip` - 14,921,179 bytes, SHA-256 `2699d3517a63a2865cf830d3eb408006ecdf10d69d90d1c906328fdd0f0b5af0`
-  - `museflow-v0.1.3-windows-x64.zip` - 14,935,393 bytes, SHA-256 `d8aa5ab757b000bfb16a8753a0968e62e870137adc37c2dcfe38f4c4b4bbff24`
-  - `SHA256SUMS.txt` - 390 bytes, SHA-256 `fb0a7969642753bf844c635a6e687d6783e40acf41156e0880dc9f65da2c42c4`
-- Checksum verification: PASS after `gh release download v0.1.3 -D /tmp/museflow-v0.1.3-release` and `sha256sum -c SHA256SUMS.txt`.
+  - `museflow-v0.1.4-android-unsigned.apk` - 65,434,980 bytes, SHA-256 `db948abc04f0b239a86390570cb9d288407b073650114034a1c266105536ff5d`
+  - `museflow-v0.1.4-linux-x64.tar.gz` - 12,602,627 bytes, SHA-256 `fe1b1ddf9a18e45aeffe72a52b26372f0981ebde2b20f105a8fd05c815800745`
+  - `museflow-v0.1.4-web.zip` - 14,923,438 bytes, SHA-256 `6eaa67df1d7cfa37c7c8ca5f761971d5b69f5d05a4f9dcec7253fe2d8f27cc3a`
+  - `museflow-v0.1.4-windows-x64.zip` - 14,940,379 bytes, SHA-256 `96907eede6b0cbec733623d3e9808e4d5376c55a92325ceb129cf14e277fb8b4`
+  - `SHA256SUMS.txt` - 390 bytes, SHA-256 `4de36af537997bdd48263ef2a33da3601a7b262e6b6f9b8bacd479186dda68f6`
+- Checksum verification: PASS after `gh release download v0.1.4 -D /tmp/museflow-v0.1.4-release` and `sha256sum -c SHA256SUMS.txt`.
 
 ## Local Equivalent Commands
 
@@ -66,15 +66,15 @@ scripts/check_repo_hygiene.sh
 - `git status --short --branch`: clean, `main...origin/main`.
 - Local `HEAD` and `origin/main`: synchronized.
 - Audited `main` CI: PASS for the latest pushed commit at completion time.
-- GitHub Release `v0.1.3`: published, not draft, not prerelease, with Android/Linux/Windows/Web artifacts and checksums.
+- GitHub Release `v0.1.4`: published, not draft, not prerelease, with Android/Linux/Windows/Web artifacts and checksums.
 - Release checksums: PASS for Android, Linux, Windows, and Web artifacts.
 
 ## Remote Observation Method Update
 
-Kimi WebBridge daemon was running during the final continuation audit, but the browser extension was not connected:
+Kimi WebBridge daemon and browser extension were connected during the v0.1.4 release audit:
 
 ```text
-{"extension_connected":false,"extension_id":"","extension_version":"","port":10086,"running":true,"version":"v1.9.17"}
+{"extension_connected":true,"extension_id":"fldmhceldgbpfpkbgopacenieobmligc","extension_version":"1.9.13","port":10086,"running":true,"version":"v1.9.17"}
 ```
 
-Final remote CI and release observation uses authenticated `gh`/GitHub API evidence.
+Final remote CI and release observation used authenticated `gh`/GitHub API evidence plus Kimi WebBridge browser pages for Actions and Release visibility.
