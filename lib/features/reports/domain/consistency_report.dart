@@ -265,6 +265,140 @@ class NarrativeQualitySnapshot {
       antiAiScentScore.hashCode;
 }
 
+/// A local signal that adjacent chapter memory may be stale or underused.
+class ChapterMemoryFreshnessSignal {
+  const ChapterMemoryFreshnessSignal({
+    required this.chapterIndex,
+    required this.direction,
+    required this.summary,
+    required this.overlapScore,
+    required this.missingTerms,
+    required this.evidence,
+    required this.suggestion,
+    required this.severity,
+  });
+
+  /// Zero-based chapter index being reviewed.
+  final int chapterIndex;
+
+  /// Adjacent memory direction: previous or next.
+  final String direction;
+
+  /// Local memory preview derived from the adjacent chapter.
+  final String summary;
+
+  /// Term overlap score from 0.0 to 1.0.
+  final double overlapScore;
+
+  /// Meaningful terms present in the memory preview but absent locally.
+  final List<String> missingTerms;
+
+  /// Local evidence that triggered this signal.
+  final String evidence;
+
+  /// Author-facing review suggestion.
+  final String suggestion;
+
+  /// Severity of the signal.
+  final DeviationSeverity severity;
+
+  ChapterMemoryFreshnessSignal copyWith({
+    int? chapterIndex,
+    String? direction,
+    String? summary,
+    double? overlapScore,
+    List<String>? missingTerms,
+    String? evidence,
+    String? suggestion,
+    DeviationSeverity? severity,
+  }) {
+    return ChapterMemoryFreshnessSignal(
+      chapterIndex: chapterIndex ?? this.chapterIndex,
+      direction: direction ?? this.direction,
+      summary: summary ?? this.summary,
+      overlapScore: overlapScore ?? this.overlapScore,
+      missingTerms: missingTerms ?? this.missingTerms,
+      evidence: evidence ?? this.evidence,
+      suggestion: suggestion ?? this.suggestion,
+      severity: severity ?? this.severity,
+    );
+  }
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is ChapterMemoryFreshnessSignal &&
+          runtimeType == other.runtimeType &&
+          chapterIndex == other.chapterIndex &&
+          direction == other.direction &&
+          summary == other.summary &&
+          overlapScore == other.overlapScore &&
+          EntityConsistencyResult._listEquals(
+            missingTerms,
+            other.missingTerms,
+          ) &&
+          evidence == other.evidence &&
+          suggestion == other.suggestion &&
+          severity == other.severity;
+
+  @override
+  int get hashCode =>
+      chapterIndex.hashCode ^
+      direction.hashCode ^
+      summary.hashCode ^
+      overlapScore.hashCode ^
+      evidence.hashCode ^
+      suggestion.hashCode ^
+      severity.hashCode;
+}
+
+/// Local snapshot of whether adjacent chapter memory appears usable.
+class ChapterMemoryFreshnessSnapshot {
+  const ChapterMemoryFreshnessSnapshot({
+    required this.averageOverlapScore,
+    required this.staleSummaryCount,
+    required this.signals,
+  });
+
+  const ChapterMemoryFreshnessSnapshot.empty()
+    : averageOverlapScore = 0.0,
+      staleSummaryCount = 0,
+      signals = const [];
+
+  /// Average adjacent-memory overlap score. Higher means healthier.
+  final double averageOverlapScore;
+
+  /// Number of adjacent memory previews that need author review.
+  final int staleSummaryCount;
+
+  /// Ordered review signals for the author.
+  final List<ChapterMemoryFreshnessSignal> signals;
+
+  ChapterMemoryFreshnessSnapshot copyWith({
+    double? averageOverlapScore,
+    int? staleSummaryCount,
+    List<ChapterMemoryFreshnessSignal>? signals,
+  }) {
+    return ChapterMemoryFreshnessSnapshot(
+      averageOverlapScore: averageOverlapScore ?? this.averageOverlapScore,
+      staleSummaryCount: staleSummaryCount ?? this.staleSummaryCount,
+      signals: signals ?? this.signals,
+    );
+  }
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is ChapterMemoryFreshnessSnapshot &&
+          runtimeType == other.runtimeType &&
+          averageOverlapScore == other.averageOverlapScore &&
+          staleSummaryCount == other.staleSummaryCount &&
+          EntityConsistencyResult._listEquals(signals, other.signals);
+
+  @override
+  int get hashCode => averageOverlapScore.hashCode ^ staleSummaryCount.hashCode;
+}
+
 /// Knowledge base consistency analysis report.
 ///
 /// Compares character cards and world settings against actual chapter
@@ -276,6 +410,7 @@ class ConsistencyReport {
     required this.overallConsistencyScore,
     required this.driftPerSegment,
     this.narrativeQuality = const NarrativeQualitySnapshot.empty(),
+    this.memoryFreshness = const ChapterMemoryFreshnessSnapshot.empty(),
   });
 
   /// Consistency results for each character.
@@ -294,12 +429,16 @@ class ConsistencyReport {
   /// Creator-facing local quality signals for reviewing narrative strength.
   final NarrativeQualitySnapshot narrativeQuality;
 
+  /// Adjacent chapter memory freshness review for long-form continuity.
+  final ChapterMemoryFreshnessSnapshot memoryFreshness;
+
   ConsistencyReport copyWith({
     List<EntityConsistencyResult>? characterResults,
     List<EntityConsistencyResult>? settingResults,
     double? overallConsistencyScore,
     List<double>? driftPerSegment,
     NarrativeQualitySnapshot? narrativeQuality,
+    ChapterMemoryFreshnessSnapshot? memoryFreshness,
   }) {
     return ConsistencyReport(
       characterResults: characterResults ?? this.characterResults,
@@ -308,6 +447,7 @@ class ConsistencyReport {
           overallConsistencyScore ?? this.overallConsistencyScore,
       driftPerSegment: driftPerSegment ?? this.driftPerSegment,
       narrativeQuality: narrativeQuality ?? this.narrativeQuality,
+      memoryFreshness: memoryFreshness ?? this.memoryFreshness,
     );
   }
 }

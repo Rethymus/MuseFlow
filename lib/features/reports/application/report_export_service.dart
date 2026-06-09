@@ -167,6 +167,28 @@ class ReportExportService {
       }
     }
     buffer.writeln();
+    buffer.writeln('## 章节记忆新鲜度');
+    buffer.writeln();
+    buffer.writeln(
+      '- 记忆重合: ${(report.memoryFreshness.averageOverlapScore * 100).toStringAsFixed(1)}%',
+    );
+    buffer.writeln('- 需复查: ${report.memoryFreshness.staleSummaryCount}');
+    if (report.memoryFreshness.signals.isEmpty) {
+      buffer.writeln('- 暂无明显过期的章节记忆。');
+    } else {
+      buffer.writeln();
+      for (final signal in report.memoryFreshness.signals) {
+        final directionLabel = signal.direction == 'previous' ? '上一章' : '下一章';
+        buffer.writeln(
+          '- 第${signal.chapterIndex + 1}章 $directionLabel [${signal.severity.name}] '
+          '重合 ${(signal.overlapScore * 100).toStringAsFixed(1)}%',
+        );
+        buffer.writeln('  - 缺失: ${signal.missingTerms.join('、')}');
+        buffer.writeln('  - 证据: ${signal.evidence}');
+        buffer.writeln('  - 建议: ${signal.suggestion}');
+      }
+    }
+    buffer.writeln();
 
     void writeEntityResults(
       String sectionTitle,

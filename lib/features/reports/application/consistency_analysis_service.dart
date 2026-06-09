@@ -112,6 +112,7 @@ class ConsistencyAnalysisService {
         overallConsistencyScore: 0.0,
         driftPerSegment: List.filled(10, 0.0),
         narrativeQuality: const NarrativeQualitySnapshot.empty(),
+        memoryFreshness: const ChapterMemoryFreshnessSnapshot.empty(),
       );
     }
 
@@ -172,6 +173,7 @@ class ConsistencyAnalysisService {
         characters: characters,
         settings: settings,
       ),
+      memoryFreshness: _analyzeMemoryFreshness(chapters),
     );
   }
 
@@ -443,6 +445,162 @@ class ConsistencyAnalysisService {
     return terms.where(text.contains).toList(growable: false);
   }
 
+  ChapterMemoryFreshnessSnapshot _analyzeMemoryFreshness(
+    List<Chapter> chapters,
+  ) {
+    if (chapters.length < 2) {
+      return const ChapterMemoryFreshnessSnapshot.empty();
+    }
+
+    final signals = <ChapterMemoryFreshnessSignal>[];
+    var totalScore = 0.0;
+    var comparisons = 0;
+
+    for (var index = 0; index < chapters.length; index++) {
+      final current = chapters[index];
+      if (index > 0) {
+        final previous = chapters[index - 1];
+        final result = _compareAdjacentMemory(
+          chapterIndex: index,
+          direction: 'previous',
+          currentText: current.documentContent,
+          adjacentText: previous.documentContent,
+        );
+        if (result != null) {
+          totalScore += result.overlapScore;
+          comparisons++;
+          if (_isStaleMemory(result)) signals.add(result);
+        }
+      }
+      if (index < chapters.length - 1) {
+        final next = chapters[index + 1];
+        final result = _compareAdjacentMemory(
+          chapterIndex: index,
+          direction: 'next',
+          currentText: current.documentContent,
+          adjacentText: next.documentContent,
+        );
+        if (result != null) {
+          totalScore += result.overlapScore;
+          comparisons++;
+          if (_isStaleMemory(result)) signals.add(result);
+        }
+      }
+    }
+
+    signals.sort((a, b) {
+      final severityCompare = _severityRank(
+        b.severity,
+      ).compareTo(_severityRank(a.severity));
+      if (severityCompare != 0) return severityCompare;
+      final scoreCompare = a.overlapScore.compareTo(b.overlapScore);
+      if (scoreCompare != 0) return scoreCompare;
+      return a.chapterIndex.compareTo(b.chapterIndex);
+    });
+
+    return ChapterMemoryFreshnessSnapshot(
+      averageOverlapScore: comparisons == 0
+          ? 0.0
+          : (totalScore / comparisons).clamp(0.0, 1.0),
+      staleSummaryCount: signals.length,
+      signals: List.unmodifiable(signals.take(24)),
+    );
+  }
+
+  ChapterMemoryFreshnessSignal? _compareAdjacentMemory({
+    required int chapterIndex,
+    required String direction,
+    required String currentText,
+    required String adjacentText,
+  }) {
+    final summary = _memoryPreview(adjacentText);
+    final terms = _extractMemoryTerms(summary);
+    if (terms.length < 3) return null;
+
+    final matched = terms.where(currentText.contains).toSet();
+    final missing = terms.where((term) => !matched.contains(term)).toList();
+    final termOverlapScore = matched.length / terms.length;
+    final continuityScore = _characterContinuityScore(summary, currentText);
+    final overlapScore = max(termOverlapScore, continuityScore);
+    final directionLabel = direction == 'previous' ? '上一章' : '下一章';
+    final severity = overlapScore < 0.25
+        ? DeviationSeverity.clear
+        : DeviationSeverity.medium;
+
+    return ChapterMemoryFreshnessSignal(
+      chapterIndex: chapterIndex,
+      direction: direction,
+      summary: summary,
+      overlapScore: overlapScore.clamp(0.0, 1.0),
+      missingTerms: List.unmodifiable(missing.take(6)),
+      evidence:
+          '$directionLabel 记忆词 ${terms.length} 个，当前章承接 ${matched.length} 个',
+      suggestion: '$directionLabel 的关键记忆承接偏弱，复查继续写作前的上下文是否仍准确。',
+      severity: severity,
+    );
+  }
+
+  bool _isStaleMemory(ChapterMemoryFreshnessSignal signal) {
+    return signal.overlapScore < 0.4 && signal.missingTerms.length >= 3;
+  }
+
+  String _memoryPreview(String text) {
+    final compact = text.replaceAll(RegExp(r'\s+'), '');
+    if (compact.length <= 80) return compact;
+    return '${compact.substring(0, 80)}...';
+  }
+
+  List<String> _extractMemoryTerms(String text) {
+    final terms = <String>{};
+    final chineseMatches = RegExp(
+      r'[\u4e00-\u9fff]{2,8}',
+    ).allMatches(text).map((match) => match.group(0)!);
+    for (final match in chineseMatches) {
+      terms.addAll(_splitChineseTerm(match));
+    }
+    final latinMatches = RegExp(
+      r'[A-Za-z][A-Za-z0-9_-]{2,}',
+    ).allMatches(text).map((match) => match.group(0)!.toLowerCase());
+    terms.addAll(latinMatches);
+    return terms
+        .where((term) => !_memoryStopTerms.contains(term))
+        .take(24)
+        .toList(growable: false);
+  }
+
+  List<String> _splitChineseTerm(String term) {
+    if (term.length <= 4) return [term];
+    final chunks = <String>[];
+    for (var start = 0; start < term.length - 1; start += 2) {
+      final end = min(start + 4, term.length);
+      chunks.add(term.substring(start, end));
+    }
+    return chunks;
+  }
+
+  double _characterContinuityScore(String source, String target) {
+    final sourceUnits = _chineseBigrams(source);
+    if (sourceUnits.isEmpty) return 0.0;
+    final targetUnits = _chineseBigrams(target).toSet();
+    if (targetUnits.isEmpty) return 0.0;
+    final matched = sourceUnits.where(targetUnits.contains).length;
+    return (matched / sourceUnits.length).clamp(0.0, 1.0);
+  }
+
+  List<String> _chineseBigrams(String text) {
+    final chars = text
+        .replaceAll(RegExp(r'[^\u4e00-\u9fff]'), '')
+        .runes
+        .map(String.fromCharCode)
+        .toList(growable: false);
+    if (chars.length < 2) return const [];
+    return List.generate(
+      chars.length - 1,
+      (index) => '${chars[index]}${chars[index + 1]}',
+      growable: false,
+    );
+  }
+
   int _severityRank(DeviationSeverity severity) {
     return switch (severity) {
       DeviationSeverity.clear => 3,
@@ -450,4 +608,25 @@ class ConsistencyAnalysisService {
       DeviationSeverity.low => 1,
     };
   }
+
+  static const Set<String> _memoryStopTerms = {
+    '一个',
+    '一种',
+    '这里',
+    '他们',
+    '自己',
+    '这个',
+    '那个',
+    '已经',
+    '开始',
+    '继续',
+    '只是',
+    '没有',
+    '还是',
+    '不是',
+    '成为',
+    '知道',
+    '看见',
+    '听见',
+  };
 }

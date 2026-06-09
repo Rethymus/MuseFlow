@@ -160,6 +160,22 @@ void main() {
             ),
           ],
         ),
+        memoryFreshness: const ChapterMemoryFreshnessSnapshot(
+          averageOverlapScore: 0.42,
+          staleSummaryCount: 1,
+          signals: [
+            ChapterMemoryFreshnessSignal(
+              chapterIndex: 4,
+              direction: 'previous',
+              summary: '林青玄在禁地发现玉简。',
+              overlapScore: 0.25,
+              missingTerms: ['禁地', '玉简'],
+              evidence: '上一章 记忆词 4 个，当前章承接 1 个',
+              suggestion: '复查上一章上下文。',
+              severity: DeviationSeverity.clear,
+            ),
+          ],
+        ),
       );
 
       final md = service.buildConsistencyMarkdown(report);
@@ -169,6 +185,10 @@ void main() {
       expect(md, contains('场景沉浸'));
       expect(md, contains('第4章'));
       expect(md, contains('总而言之'));
+      expect(md, contains('## 章节记忆新鲜度'));
+      expect(md, contains('记忆重合'));
+      expect(md, contains('第5章 上一章'));
+      expect(md, contains('禁地、玉简'));
       expect(md, contains('Alice'));
       expect(md, contains('92.0%'));
       expect(md, contains('personality'));

@@ -117,6 +117,8 @@ class _ConsistencyReportContent extends StatelessWidget {
           const SizedBox(height: 16),
           _NarrativeQualitySection(snapshot: report.narrativeQuality),
           const SizedBox(height: 16),
+          _MemoryFreshnessSection(snapshot: report.memoryFreshness),
+          const SizedBox(height: 16),
           _EntitySection(title: '角色一致性', results: report.characterResults),
           const SizedBox(height: 16),
           _EntitySection(title: '设定一致性', results: report.settingResults),
@@ -185,6 +187,79 @@ class _NarrativeQualitySection extends StatelessWidget {
   }
 
   String _percent(double score) => '${(score * 100).toStringAsFixed(0)}%';
+
+  Color _severityColor(BuildContext context, DeviationSeverity severity) {
+    final colorScheme = Theme.of(context).colorScheme;
+    return switch (severity) {
+      DeviationSeverity.clear => colorScheme.error,
+      DeviationSeverity.medium => colorScheme.tertiary,
+      DeviationSeverity.low => colorScheme.primary,
+    };
+  }
+}
+
+class _MemoryFreshnessSection extends StatelessWidget {
+  const _MemoryFreshnessSection({required this.snapshot});
+
+  final ChapterMemoryFreshnessSnapshot snapshot;
+
+  @override
+  Widget build(BuildContext context) {
+    final signals = snapshot.signals.take(8).toList(growable: false);
+    return _SectionCard(
+      title: '章节记忆新鲜度',
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Wrap(
+            spacing: 12,
+            runSpacing: 12,
+            children: [
+              StatsSummaryCard(
+                icon: Icons.memory_outlined,
+                title: '记忆重合',
+                value:
+                    '${(snapshot.averageOverlapScore * 100).toStringAsFixed(0)}%',
+              ),
+              StatsSummaryCard(
+                icon: Icons.manage_search_outlined,
+                title: '需复查',
+                value: snapshot.staleSummaryCount.toString(),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          if (signals.isEmpty)
+            const Text('暂无明显过期的章节记忆。')
+          else
+            for (final signal in signals)
+              Card(
+                margin: const EdgeInsets.only(bottom: 8),
+                child: ListTile(
+                  leading: Icon(
+                    signal.direction == 'previous'
+                        ? Icons.arrow_back_outlined
+                        : Icons.arrow_forward_outlined,
+                    color: _severityColor(context, signal.severity),
+                  ),
+                  title: Text(
+                    '第${signal.chapterIndex + 1}章 · ${_directionLabel(signal.direction)}记忆承接偏弱',
+                  ),
+                  subtitle: Text(
+                    '重合：${(signal.overlapScore * 100).toStringAsFixed(0)}%\n'
+                    '缺失：${signal.missingTerms.join('、')}\n'
+                    '建议：${signal.suggestion}',
+                  ),
+                  isThreeLine: true,
+                ),
+              ),
+        ],
+      ),
+    );
+  }
+
+  static String _directionLabel(String direction) =>
+      direction == 'previous' ? '上一章' : '下一章';
 
   Color _severityColor(BuildContext context, DeviationSeverity severity) {
     final colorScheme = Theme.of(context).colorScheme;

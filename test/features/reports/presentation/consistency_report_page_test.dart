@@ -17,7 +17,7 @@ void main() {
       );
       await tester.pumpAndSettle();
 
-      expect(find.byType(StatsSummaryCard), findsNWidgets(4));
+      expect(find.byType(StatsSummaryCard), findsAtLeastNWidgets(4));
       expect(find.text('整体一致性'), findsOneWidget);
       expect(find.text('角色检查'), findsOneWidget);
       expect(find.text('设定检查'), findsOneWidget);
@@ -51,6 +51,22 @@ void main() {
       expect(find.text('反AI味'), findsOneWidget);
       expect(find.textContaining('第3章 · 疑似模板化 AI 表达'), findsOneWidget);
       expect(find.textContaining('证据：总而言之'), findsOneWidget);
+    });
+
+    testWidgets('should render chapter memory freshness section and signals', (
+      tester,
+    ) async {
+      await tester.pumpWidget(
+        _wrap(const ConsistencyReportPage(), report: _report()),
+      );
+      await tester.pumpAndSettle();
+      await tester.scrollUntilVisible(find.text('章节记忆新鲜度'), 200);
+
+      expect(find.text('章节记忆新鲜度'), findsOneWidget);
+      expect(find.text('记忆重合'), findsOneWidget);
+      expect(find.text('需复查'), findsOneWidget);
+      expect(find.textContaining('第5章 · 上一章记忆承接偏弱'), findsOneWidget);
+      expect(find.textContaining('缺失：禁地、玉简'), findsOneWidget);
     });
 
     testWidgets(
@@ -163,6 +179,22 @@ ConsistencyReport _report() {
           evidence: '总而言之',
           suggestion: '改成角色动作或场景推进。',
           severity: DeviationSeverity.medium,
+        ),
+      ],
+    ),
+    memoryFreshness: const ChapterMemoryFreshnessSnapshot(
+      averageOverlapScore: 0.42,
+      staleSummaryCount: 1,
+      signals: [
+        ChapterMemoryFreshnessSignal(
+          chapterIndex: 4,
+          direction: 'previous',
+          summary: '林青玄在禁地发现玉简。',
+          overlapScore: 0.25,
+          missingTerms: ['禁地', '玉简'],
+          evidence: '上一章 记忆词 4 个，当前章承接 1 个',
+          suggestion: '复查上一章上下文。',
+          severity: DeviationSeverity.clear,
         ),
       ],
     ),

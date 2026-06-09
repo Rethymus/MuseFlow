@@ -164,6 +164,44 @@ void main() {
       );
     });
 
+    test('should flag stale adjacent chapter memory when terms disconnect', () {
+      final service = _service(
+        chapters: [
+          _chapter('c1', 'm1', '林青玄在灵溪宗禁地发现玉简，清虚真人叮嘱他守住剑阵。', sortOrder: 1),
+          _chapter('c2', 'm1', '山雨落在荒原上，商队沿着旧路前行，没有人提起宗门旧事。', sortOrder: 2),
+        ],
+        characters: [_character('林青玄')],
+      );
+
+      final memory = service.analyze('m1').memoryFreshness;
+
+      expect(memory.staleSummaryCount, greaterThan(0));
+      expect(memory.averageOverlapScore, lessThan(1.0));
+      expect(
+        memory.signals.any(
+          (signal) =>
+              signal.direction == 'previous' &&
+              signal.missingTerms.any((term) => term.contains('灵溪')),
+        ),
+        isTrue,
+      );
+    });
+
+    test('should not flag adjacent memory when key terms carry forward', () {
+      final service = _service(
+        chapters: [
+          _chapter('c1', 'm1', '林青玄在灵溪宗禁地发现玉简，清虚真人叮嘱他守住剑阵。', sortOrder: 1),
+          _chapter('c2', 'm1', '林青玄带着玉简回到灵溪宗，向清虚真人复述禁地剑阵的异动。', sortOrder: 2),
+        ],
+        characters: [_character('林青玄')],
+      );
+
+      final memory = service.analyze('m1').memoryFreshness;
+
+      expect(memory.averageOverlapScore, greaterThan(0.4));
+      expect(memory.signals, isEmpty);
+    });
+
     test('should check world setting keywords in chapter content', () {
       final service = _service(
         chapters: [

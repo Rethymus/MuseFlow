@@ -60,6 +60,22 @@ void main() {
             ),
           ],
         ),
+        memoryFreshness: const ChapterMemoryFreshnessSnapshot(
+          averageOverlapScore: 0.45,
+          staleSummaryCount: 1,
+          signals: [
+            ChapterMemoryFreshnessSignal(
+              chapterIndex: 5,
+              direction: 'previous',
+              summary: '林青玄在灵溪宗发现禁地玉简。',
+              overlapScore: 0.25,
+              missingTerms: ['禁地', '玉简'],
+              evidence: '上一章 记忆词 4 个，当前章承接 1 个',
+              suggestion: '复查继续写作前的上下文是否仍准确。',
+              severity: DeviationSeverity.clear,
+            ),
+          ],
+        ),
       );
 
       expect(report.characterResults.length, 1);
@@ -70,6 +86,9 @@ void main() {
       expect(report.driftPerSegment.last, 0.72);
       expect(report.narrativeQuality.immersionScore, 0.8);
       expect(report.narrativeQuality.signals.single.chapterIndex, 2);
+      expect(report.memoryFreshness.averageOverlapScore, 0.45);
+      expect(report.memoryFreshness.staleSummaryCount, 1);
+      expect(report.memoryFreshness.signals.single.missingTerms, ['禁地', '玉简']);
     });
 
     test('should support copyWith', () {
@@ -109,6 +128,33 @@ void main() {
       expect(snapshot.antiAiScentScore, 0.8);
       expect(snapshot.signals, [signal]);
       expect(snapshot.copyWith(antiAiScentScore: 1.0).antiAiScentScore, 1.0);
+    });
+  });
+
+  group('ChapterMemoryFreshnessSnapshot', () {
+    test('should hold scores and memory freshness signals', () {
+      const signal = ChapterMemoryFreshnessSignal(
+        chapterIndex: 3,
+        direction: 'next',
+        summary: '苏雪晴在寒潭边留下玉佩。',
+        overlapScore: 0.2,
+        missingTerms: ['寒潭', '玉佩'],
+        evidence: '下一章 记忆词 5 个，当前章承接 1 个',
+        suggestion: '复查下一章上下文。',
+        severity: DeviationSeverity.clear,
+      );
+
+      const snapshot = ChapterMemoryFreshnessSnapshot(
+        averageOverlapScore: 0.55,
+        staleSummaryCount: 1,
+        signals: [signal],
+      );
+
+      expect(snapshot.averageOverlapScore, 0.55);
+      expect(snapshot.staleSummaryCount, 1);
+      expect(snapshot.signals, [signal]);
+      expect(snapshot.copyWith(staleSummaryCount: 2).staleSummaryCount, 2);
+      expect(signal.copyWith(overlapScore: 0.4).overlapScore, 0.4);
     });
   });
 
