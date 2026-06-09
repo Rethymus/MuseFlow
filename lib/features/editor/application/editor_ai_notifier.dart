@@ -316,46 +316,14 @@ class EditorAINotifier extends Notifier<EditorAIState> {
 
   /// Rejects a single sentence diff at [index].
   ///
-  /// For modifications: keeps original text (no document change).
-  /// For insertions: deletes the inserted range.
-  /// For deletions: re-inserts the original text.
+  /// AI output is only previewed until accepted, so rejecting a pending diff
+  /// never mutates the document. It simply marks the sentence as rejected.
   void rejectSentence(int index) {
     final currentDiff = state.diffResult;
     if (currentDiff == null || index >= currentDiff.sentences.length) return;
 
     final sentence = currentDiff.sentences[index];
     if (sentence.status != DiffStatus.pending) return;
-
-    final editor = ref.read(editorProvider);
-    if (editor == null) return;
-
-    if (sentence.isInsertion) {
-      // Delete the inserted range
-      final range = DocumentRange(
-        start: DocumentPosition(
-          nodeId: sentence.nodeId,
-          nodePosition: TextNodePosition(offset: sentence.startOffset),
-        ),
-        end: DocumentPosition(
-          nodeId: sentence.nodeId,
-          nodePosition: TextNodePosition(offset: sentence.endOffset),
-        ),
-      );
-      editor.execute([DeleteContentRequest(documentRange: range)]);
-    } else if (sentence.isDeletion) {
-      // Re-insert the original text
-      editor.execute([
-        InsertTextRequest(
-          documentPosition: DocumentPosition(
-            nodeId: sentence.nodeId,
-            nodePosition: TextNodePosition(offset: sentence.startOffset),
-          ),
-          textToInsert: sentence.originalText!,
-          attributions: {},
-        ),
-      ]);
-    }
-    // For modifications: keep original -- no document change needed
 
     // Update sentence status to rejected
     _updateSentenceStatus(index, DiffStatus.rejected);
@@ -365,7 +333,7 @@ class EditorAINotifier extends Notifier<EditorAIState> {
   void acceptAll() {
     final currentDiff = state.diffResult;
     if (currentDiff == null) return;
-    for (var i = 0; i < currentDiff.sentences.length; i++) {
+    for (var i = currentDiff.sentences.length - 1; i >= 0; i--) {
       if (currentDiff.sentences[i].status == DiffStatus.pending) {
         acceptSentence(i);
       }
