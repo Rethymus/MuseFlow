@@ -9,10 +9,10 @@ Captured: 2026-06-09, Asia/Shanghai.
 | Branch | `main` |
 | Remote | `origin https://github.com/Rethymus/MuseFlow.git` |
 | Sync state at startup | `main...origin/main` |
-| Latest audited release commit | `18ea4b2 chore: prepare v0.1.2 release` |
+| Latest audited release commit | Pending `v0.1.3` Web testing target release |
 | Tags | `v0.1.2`, `v0.1.1`, `v0.1.0`, `v1.3-phase16-complete`, `v1.2`, `v1.0` |
-| Flutter project version | `0.1.2+3` |
-| Platform directories | Present: `android/`, `linux/`, `windows/`; absent: `ios/`, `macos/`, `web/` |
+| Flutter project version | `0.1.3+4` |
+| Platform directories | Present: `android/`, `linux/`, `windows/`, `web/`; absent: `ios/`, `macos/` |
 | GitHub metadata | Present: issue templates, PR template, Dependabot config, CI workflow, and release workflow |
 | README screenshots at startup | 21 PNG files under `docs/readme/screenshots/`; both READMEs reference the same 21 files |
 | Untracked files at startup | None |
@@ -32,12 +32,12 @@ Remote CI and release observation therefore used authenticated `gh`/GitHub API e
 | Command | Result | Evidence |
 | --- | --- | --- |
 | `flutter --version` | PASS | Flutter 3.44.0 stable, Dart 3.12.0 |
-| `flutter pub get` | PASS with warnings | 1 discontinued package: `super_editor_markdown`; 26 packages newer outside constraints |
+| `flutter pub get` | PASS with warnings | Dependency updates remain available outside current constraints; discontinued `super_editor_markdown` removed after `super_editor` exposed the needed Markdown APIs directly |
 | `dart format --set-exit-if-changed .` | FAIL initially, then PASS after formatting | Initial run formatted 219 files; rerun formatted 383 files with 0 changes |
 | `flutter analyze` | FAIL initially, then PASS after fix | Initial lint: missing braces in `consistency_drift_chart.dart`; rerun: no issues |
 | `flutter test` | PASS | 1170 tests passed, 12 skipped |
 | `flutter test test/infrastructure/secure_storage_test.dart` | PASS | 5 tests passed; platform plugin unavailable in this Linux test shell, no plaintext fallback created |
-| `flutter test integration_test/app_test.dart -d linux` | PASS | 4 integration smoke tests passed on Linux desktop |
+| `xvfb-run -a flutter test integration_test/app_test.dart -d linux` | Pending remote CI for this Web-target continuation | Local shell lacks `xvfb-run`; direct WSL Linux run built the test app but hung without output. Remote CI installs `xvfb` and is the authoritative Linux desktop integration smoke gate. |
 
 ## Hygiene Findings
 
@@ -55,7 +55,8 @@ Remote CI and release observation therefore used authenticated `gh`/GitHub API e
 | P0 | Linux secure-storage plaintext fallback contradicted release security goal | Fixed and validated | Removed plaintext fallback from `SecureStorageService`; focused test passed; locked Secret Service behavior fails securely |
 | P0 | GitHub CI/CD absent | Fixed and remotely verified | Added CI and release workflows; final audit verifies the current `main` CI run passes before closing the goal |
 | P0 | Platform artifact builds unverified | Fixed and release-verified | Android and Linux build locally; release workflow published Android, Linux, and Windows artifacts |
-| P0 | GitHub Release publication for v1.4 hardening | Fixed and verified | Published `v0.1.2`; Android/Linux/Windows artifacts and `SHA256SUMS.txt` are present; checksum verification passed |
+| P0 | Web target absent despite testing goal | Fixed locally; remote release pending | Added `web/` runner, conditional platform code, Web export download writer, CI build gate, and local `flutter build web --release` evidence |
+| P0 | GitHub Release publication for v1.4 hardening | Fixed and verified for `v0.1.2`; pending Web target release | Published `v0.1.2`; Android/Linux/Windows artifacts and `SHA256SUMS.txt` are present; checksum verification passed. `v0.1.3` must add Web artifact evidence before this continuation goal is closed. |
 | P1 | README screenshots are 19 images but v1.4 plan requires 21 workflow screenshots | Fixed locally | Generated 21 reproducible offline UI screenshots with `scripts/generate_readme_screenshots.mjs`; both READMEs reference all 21 files and README asset check passes |
 | P1 | Platform support docs absent | Fixed locally | Added `docs/platform/PLATFORM_SUPPORT.md` and `docs/platform/STORAGE_VALIDATION.md` |
-| P2 | Dependency cleanup | Improved, with remaining migration work deferred | Replaced the unconstrained direct `path: any` dependency with `path: ^1.9.1`. `flutter pub outdated` still reports `super_editor_markdown` as discontinued and several major-version updates. These are not CI/release blockers; replacing the editor Markdown stack should be handled as a separate migration with focused regression tests. |
+| P2 | Dependency cleanup | Improved, with remaining migration work deferred | Replaced the unconstrained direct `path: any` dependency with `path: ^1.9.1`. Removed discontinued `super_editor_markdown` because current `super_editor` exports the Markdown serialization APIs used by the editor. Several major-version updates remain non-blocking and should be handled separately with focused regression tests. |

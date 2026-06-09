@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:io';
 import 'dart:ui';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -9,6 +8,7 @@ import 'package:museflow/core/domain/fragment.dart';
 import 'package:museflow/core/infrastructure/fragment_repository.dart';
 import 'package:museflow/core/infrastructure/secure_storage_service.dart';
 import 'package:museflow/core/infrastructure/settings_repository.dart';
+import 'package:museflow/core/platform/export_file_writer.dart';
 import 'package:museflow/features/ai/application/anti_ai_scent_processor.dart';
 import 'package:museflow/features/ai/application/prompt_pipeline.dart';
 import 'package:museflow/features/ai/application/provider_service.dart';
@@ -634,15 +634,8 @@ final logicGuardianServiceProvider = FutureProvider<LogicGuardianService>((
 /// Uses dart:io file writer for production. Injected via provider for
 /// consistency with the rest of the dependency graph.
 final exportServiceProvider = Provider<ExportService>((ref) {
-  return ExportService(fileWriter: _dartIoFileWriter);
+  return ExportService(fileWriter: writeExportFile);
 });
-
-/// Production file writer using dart:io.
-Future<void> _dartIoFileWriter(String path, String content) async {
-  // ignore: avoid_print
-  final file = File(path);
-  await file.writeAsString(content);
-}
 
 // ============================================================================
 // Manuscript & Chapter Providers

@@ -9,15 +9,15 @@ Captured for v1.4 release hardening on 2026-06-09.
 | Android | Tier 1 | `android/` runner exists; Gradle metadata uses `com.museflow.museflow`; local `flutter build apk --release` passed on 2026-06-09; release workflow publishes APK artifacts | APK |
 | Linux | Tier 1 | `linux/` runner exists; GTK desktop target; local `flutter build linux --release` passed on 2026-06-09; release workflow publishes tarball artifacts | `tar.gz` bundle |
 | Windows | Tier 1 | `windows/` runner exists; GitHub Actions Windows build publishes zip artifacts | `.zip` bundle |
-| Web | Future / unsupported for this release | No `web/` runner; storage behavior not validated | None |
+| Web | Testing / UAT | `web/` runner exists; local `flutter build web --release` passed on 2026-06-09; release workflow publishes a zip artifact for browser-based validation | `.zip` build output |
 | macOS | Future / unsupported for this release | No `macos/` runner; signing and secure storage not validated | None |
 | iOS | Future / unsupported for this release | No `ios/` runner; signing and secure storage not validated | None |
 
-Tier 1 is release-verified through GitHub Actions: the GitHub Release contains Android, Linux, and Windows artifacts plus `SHA256SUMS.txt`, and downloaded artifacts must pass checksum verification.
+Tier 1 is release-verified through GitHub Actions: the GitHub Release contains Android, Linux, and Windows artifacts plus `SHA256SUMS.txt`, and downloaded artifacts must pass checksum verification. Web is a testing/UAT target and is packaged separately to support browser validation without claiming production-grade browser secret storage.
 
 ## README Policy
 
-README platform claims must be limited to verified targets. Android, Linux, and Windows are the published release targets. Web, macOS, and iOS remain future/unsupported because runners and storage behavior have not been generated and validated.
+README platform claims must be limited to verified targets. Android, Linux, and Windows are the published release targets. Web is a testing/UAT target for README journey validation. macOS and iOS remain future/unsupported because runners and storage behavior have not been generated and validated.
 
 ## Native Metadata Notes
 

@@ -3,11 +3,12 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:museflow/core/infrastructure/settings_repository.dart';
 import 'package:museflow/core/presentation/providers.dart';
+import 'package:museflow/core/platform/window_controller.dart';
 import 'package:museflow/core/presentation/sidebar.dart';
 import 'package:museflow/shared/constants/app_constants.dart';
 import 'package:museflow/shared/utils/keyboard_shortcuts.dart';
-import 'package:window_manager/window_manager.dart';
 
 /// Main app shell with sidebar + content area layout.
 ///
@@ -26,27 +27,28 @@ class AppShellScaffold extends ConsumerStatefulWidget {
   ConsumerState<AppShellScaffold> createState() => _AppShellScaffoldState();
 }
 
-class _AppShellScaffoldState extends ConsumerState<AppShellScaffold>
-    with WindowListener {
+class _AppShellScaffoldState extends ConsumerState<AppShellScaffold> {
   Timer? _debounce;
+  late final PlatformWindowController _windowController;
 
   @override
   void initState() {
     super.initState();
-    windowManager.addListener(this);
+    _windowController = PlatformWindowController(
+      onGeometryChanged: _scheduleSaveGeometry,
+    );
+    _windowController.attach();
   }
 
   @override
   void dispose() {
     _debounce?.cancel();
-    windowManager.removeListener(this);
+    _windowController.detach();
     super.dispose();
   }
 
-  @override
   void onWindowResize() => _scheduleSaveGeometry();
 
-  @override
   void onWindowMove() => _scheduleSaveGeometry();
 
   /// Debounced save — coalesces rapid resize/move events into a single write.
@@ -55,17 +57,17 @@ class _AppShellScaffoldState extends ConsumerState<AppShellScaffold>
     _debounce = Timer(const Duration(milliseconds: 500), _saveGeometry);
   }
 
-  Future<void> _saveGeometry() async {
+  Future<SettingsRepository?> _readSettingsForGeometrySave() async {
     final settingsAsync = ref.read(settingsRepositoryProvider);
-    final settings = settingsAsync.value;
+    return settingsAsync.value;
+  }
+
+  Future<void> _saveGeometry() async {
+    final settings = await _readSettingsForGeometrySave();
     if (settings == null) return;
 
     try {
-      final size = await windowManager.getSize();
-      await settings.saveWindowSize(size);
-
-      final position = await windowManager.getPosition();
-      await settings.saveWindowPosition(position);
+      await savePlatformWindowGeometry(settings);
     } catch (_) {
       // Window geometry persistence is non-critical; don't crash the app.
       debugPrint('Warning: failed to persist window geometry');

@@ -17,7 +17,7 @@ Captured for v1.4 release hardening on 2026-06-09.
 | Windows | App data path from Flutter path provider/Hive | Windows Credential Manager | Release workflow built Windows artifact; secure-storage behavior remains tied to native Credential Manager runtime |
 | Android | App-private data directory | Android Keystore/encrypted preferences | Local and release workflow APK builds passed; runtime secure-storage behavior remains tied to Android Keystore |
 | Linux | XDG/app data path from Flutter path provider/Hive | Secret Service/libsecret | Unit test shell lacks platform plugin; no plaintext fallback is created |
-| Web | Not supported in this release | Not validated | No web runner |
+| Web | Browser storage for non-secret app data during testing/UAT | Production secret persistence not supported in this slice | Web runner exists and `flutter build web --release` passes; API-key persistence remains outside Tier 1 support |
 | macOS | Not supported in this release | Not validated | No macOS runner |
 | iOS | Not supported in this release | Not validated | No iOS runner |
 

@@ -98,3 +98,6 @@ jobs:
 
       - name: Build Linux release
         run: flutter build linux --release
+
+      - name: Build Web release
+        run: flutter build web --release

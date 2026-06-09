@@ -176,9 +176,42 @@ jobs:
           name: windows-release
           path: dist/*
 
+  web:
+    name: Web Artifact
+    needs: prepare
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - name: Resolve dependencies
+        run: flutter pub get
+
+      - name: Build Web release
+        run: flutter build web --release
+
+      - name: Package Web artifact
+        shell: bash
+        run: |
+          mkdir -p dist
+          (cd build/web && zip -qr "../../dist/museflow-${{ needs.prepare.outputs.tag }}-web.zip" .)
+          (cd dist && sha256sum * > SHA256SUMS-web.txt)
+
+      - name: Upload Web artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: web-release
+          path: dist/*
+
   publish:
     name: Publish GitHub Release
-    needs: [prepare, android, linux, windows]
+    needs: [prepare, android, linux, windows, web]
     runs-on: ubuntu-latest
     steps:
       - name: Check out repository
@@ -207,6 +240,7 @@ jobs:
           - Android APK: unsigned/debug-signed release APK. Verify before sideloading.
           - Linux x64: release bundle packaged as `tar.gz`.
           - Windows x64: release bundle packaged as `zip`.
+          - Web: browser build packaged as `zip` for testing/UAT. Web is not a production secure-storage target.
 
           ## Signing Status
 
@@ -226,7 +260,7 @@ jobs:
 
           ## Known Limits
 
-          Web, macOS, and iOS runners are not included in this release. Windows artifacts are produced by GitHub Actions.
+          Web is included as a testing/UAT artifact only. macOS and iOS runners are not included in this release. Windows artifacts are produced by GitHub Actions.
           NOTES
 
       - name: Publish release

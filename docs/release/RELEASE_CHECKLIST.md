@@ -2,34 +2,32 @@
 
 ## Current Phase
 
-Complete: local gates pass, remote CI is green on `main`, and GitHub Release `v0.1.2` is published with verified Android, Linux, Windows, and checksum artifacts.
+In progress: Web testing target is implemented locally. Completion requires remote CI green on `main`, GitHub Release `v0.1.3`, and verified Android, Linux, Windows, Web, and checksum artifacts.
 
 ## Local Verification Results
 
 | Command | Status | Notes |
 | --- | --- | --- |
-| `flutter pub get` | PASS | Dependency warnings recorded in `BASELINE.md` |
+| `flutter pub get` | PASS | Dependency warnings recorded in `BASELINE.md`; discontinued `super_editor_markdown` removed during Web target hardening |
 | `dart format --set-exit-if-changed .` | PASS | Formatted 395 files, 0 changed |
 | `flutter analyze` | PASS | No issues found |
 | `flutter test` | PASS | 1170 passed, 12 skipped |
 | `flutter test test/infrastructure/secure_storage_test.dart` | PASS | 5 tests passed; unavailable secure-storage plugin paths skipped in this Linux test shell; confirms no plaintext Linux fallback path is created |
-| `flutter test integration_test/app_test.dart -d linux` | PASS | 4 Linux desktop smoke tests passed: app launch, settings navigation, provider settings navigation, and preset provider rendering |
+| `xvfb-run -a flutter test integration_test/app_test.dart -d linux` | Pending remote CI | Local shell lacks `xvfb-run`; direct WSL Linux run built the test app but hung without output. Remote CI installs `xvfb` and remains the authoritative integration smoke gate. |
 | `scripts/check_readme_assets.sh` | PASS | Current 21 screenshot references are consistent |
 | `scripts/check_repo_hygiene.sh` | PASS | No tracked generated/local/secret-like artifacts or obvious secret regex hits |
 | `flutter build apk --release` | PASS | Built `build/app/outputs/flutter-apk/app-release.apk` (65.3 MB); Flutter emitted a non-blocking Kotlin Gradle Plugin migration warning for transitive plugins |
 | `flutter build linux --release` | PASS | Built `build/linux/x64/release/bundle/museflow` |
+| `flutter build web --release` | PASS | Built `build/web`; Web is a testing/UAT target, not a production secure-storage target |
 
 ## Release Automation Status
 
-- CI workflow: PASS on `main` for commit `18ea4b29bf9fe9614d8d17d50675a75c6d4deef3` before this evidence update; final completion requires confirming the current latest `main` run succeeds after the last pushed commit.
-- Release workflow: PASS for tag `v0.1.2`, run `27203601782`, commit `18ea4b29bf9fe9614d8d17d50675a75c6d4deef3`.
-- GitHub Release: published as `MuseFlow v0.1.2` at `https://github.com/Rethymus/MuseFlow/releases/tag/v0.1.2`; not draft and not prerelease; published 2026-06-09T11:52:15Z.
+- CI workflow: pending final `main` run after Web testing target commit.
+- Release workflow: pending for tag `v0.1.3`.
+- GitHub Release: pending at `https://github.com/Rethymus/MuseFlow/releases/tag/v0.1.3`.
 - Release assets verified:
-  - `museflow-v0.1.2-android-unsigned.apk` - 65,352,508 bytes, SHA-256 `31b66b866df1e3244d50ec49f6ab7bc1c8f8225dc9d6b5cc9f0fa57faa5c4a67`
-  - `museflow-v0.1.2-linux-x64.tar.gz` - 12,592,705 bytes, SHA-256 `2d2c1cb5b6267de88b06fbe7cb11473cad4505e9b5d45e09229265824c7a4c13`
-  - `museflow-v0.1.2-windows-x64.zip` - 14,929,893 bytes, SHA-256 `47aa4b2529cf8f127f27d2f97eeb3010f34351b60eda6112de453c406b1c97e1`
-  - `SHA256SUMS.txt` - 300 bytes, SHA-256 `1d9a78e378ae982e62c44f12644edba52dfe9a91a3b52d6e74358fd6b4556dea`
-- Checksum verification: PASS after `gh release download v0.1.2 -D /tmp/museflow-v0.1.2-release` and `sha256sum -c SHA256SUMS.txt`.
+  - Pending release workflow output.
+- Checksum verification: pending release workflow output.
 
 ## Local Equivalent Commands
 
@@ -39,7 +37,8 @@ dart format --set-exit-if-changed .
 flutter analyze
 flutter test
 flutter test test/infrastructure/secure_storage_test.dart
-flutter test integration_test/app_test.dart -d linux
+xvfb-run -a flutter test integration_test/app_test.dart -d linux
+flutter build web --release
 scripts/check_readme_assets.sh
 scripts/check_repo_hygiene.sh
 ```
@@ -63,8 +62,8 @@ scripts/check_repo_hygiene.sh
 - `git status --short --branch`: clean, `main...origin/main`.
 - Local `HEAD` and `origin/main`: synchronized.
 - Audited `main` CI: PASS for the latest pushed commit at completion time.
-- GitHub Release `v0.1.2`: published, not draft, not prerelease, with Android/Linux/Windows artifacts and checksums.
-- Release checksums: PASS for Android, Linux, and Windows artifacts.
+- GitHub Release `v0.1.3`: pending publication and checksum verification.
+- Release checksums: pending for Android, Linux, Windows, and Web artifacts.
 
 ## Remote Observation Method Update
 

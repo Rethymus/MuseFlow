@@ -6,10 +6,10 @@ import 'package:hive_ce_flutter/hive_flutter.dart';
 import 'package:museflow/app.dart';
 import 'package:museflow/core/infrastructure/hive_adapters.dart';
 import 'package:museflow/core/infrastructure/secure_storage_service.dart';
+import 'package:museflow/core/platform/window_controller.dart';
 import 'package:museflow/features/manuscript/infrastructure/chapter_repository.dart';
 import 'package:museflow/features/manuscript/infrastructure/manuscript_purge_service.dart';
 import 'package:museflow/features/manuscript/infrastructure/manuscript_repository.dart';
-import 'package:window_manager/window_manager.dart';
 
 /// Reads saved window geometry from the encrypted settings box.
 ///
@@ -93,26 +93,9 @@ void main() async {
   // Read saved window geometry before showing the window
   final geometry = await _readSavedGeometry();
 
-  // Configure window manager for desktop
-  await WindowManager.instance.ensureInitialized();
-  windowManager.waitUntilReadyToShow(
-    WindowOptions(
-      size: geometry.size ?? const Size(1200, 800),
-      minimumSize: const Size(800, 600),
-      center: geometry.position == null,
-      backgroundColor: Colors.transparent,
-      skipTaskbar: false,
-      titleBarStyle: TitleBarStyle.normal,
-      title: 'MuseFlow 灵韵',
-    ),
-    () async {
-      // Restore saved position only if one was persisted.
-      if (geometry.position != null) {
-        await windowManager.setPosition(geometry.position!);
-      }
-      await windowManager.show();
-      await windowManager.focus();
-    },
+  await configurePlatformWindow(
+    savedSize: geometry.size,
+    savedPosition: geometry.position,
   );
 
   runApp(const ProviderScope(child: MuseFlowApp()));

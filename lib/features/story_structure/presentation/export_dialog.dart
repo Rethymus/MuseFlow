@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter/foundation.dart';
 import 'package:museflow/features/story_structure/application/export_service.dart';
 import 'package:museflow/features/story_structure/domain/export_bundle.dart';
 
@@ -104,7 +105,7 @@ class _ExportDialogState extends ConsumerState<ExportDialog> {
             children: [
               // Info text
               Text(
-                '文件只会保存到你选择的本地路径。',
+                kIsWeb ? '文件会由浏览器下载到默认下载位置。' : '文件只会保存到你选择的本地路径。',
                 style: TextStyle(color: colorScheme.onSurfaceVariant),
               ),
               const SizedBox(height: 16),
@@ -156,7 +157,10 @@ class _ExportDialogState extends ConsumerState<ExportDialog> {
               const SizedBox(height: 16),
 
               // Path picker
-              const Text('保存路径', style: TextStyle(fontWeight: FontWeight.w600)),
+              Text(
+                kIsWeb ? '下载文件名' : '保存路径',
+                style: const TextStyle(fontWeight: FontWeight.w600),
+              ),
               const SizedBox(height: 8),
               Row(
                 children: [
@@ -174,7 +178,7 @@ class _ExportDialogState extends ConsumerState<ExportDialog> {
                   const SizedBox(width: 8),
                   OutlinedButton(
                     onPressed: _pickPath,
-                    child: const Text('选择路径'),
+                    child: Text(kIsWeb ? '设置文件名' : '选择路径'),
                   ),
                 ],
               ),
@@ -200,7 +204,9 @@ class _ExportDialogState extends ConsumerState<ExportDialog> {
                     const SizedBox(width: 8),
                     Expanded(
                       child: Text(
-                        '已导出至: $_selectedPath',
+                        kIsWeb
+                            ? '已开始下载: $_selectedPath'
+                            : '已导出至: $_selectedPath',
                         overflow: TextOverflow.ellipsis,
                       ),
                     ),
@@ -352,7 +358,9 @@ class _PathInputDialogState extends State<_PathInputDialog> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            '请输入以 ${widget.format.extension} 结尾的本地文件路径。',
+            kIsWeb
+                ? '请输入以 ${widget.format.extension} 结尾的下载文件名。'
+                : '请输入以 ${widget.format.extension} 结尾的本地文件路径。',
             style: Theme.of(context).textTheme.bodySmall,
           ),
           const SizedBox(height: 12),
@@ -361,7 +369,9 @@ class _PathInputDialogState extends State<_PathInputDialog> {
             autofocus: true,
             decoration: InputDecoration(
               labelText: '文件路径',
-              hintText: '例如: ~/Documents/manuscript${widget.format.extension}',
+              hintText: kIsWeb
+                  ? '例如: manuscript${widget.format.extension}'
+                  : '例如: ~/Documents/manuscript${widget.format.extension}',
               errorText: _errorText,
             ),
             onChanged: (_) {
