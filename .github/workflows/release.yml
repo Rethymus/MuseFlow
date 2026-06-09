@@ -94,7 +94,7 @@ jobs:
           (cd dist && sha256sum * > SHA256SUMS-android.txt)
 
       - name: Upload Android artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: android-release
           path: dist/*
@@ -135,7 +135,7 @@ jobs:
           (cd dist && sha256sum * > SHA256SUMS-linux.txt)
 
       - name: Upload Linux artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: linux-release
           path: dist/*
@@ -171,7 +171,7 @@ jobs:
           Get-FileHash dist\* -Algorithm SHA256 | ForEach-Object { "$($_.Hash.ToLower())  $(Split-Path $_.Path -Leaf)" } | Set-Content dist\SHA256SUMS-windows.txt
 
       - name: Upload Windows artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: windows-release
           path: dist/*
@@ -204,7 +204,7 @@ jobs:
           (cd dist && sha256sum * > SHA256SUMS-web.txt)
 
       - name: Upload Web artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: web-release
           path: dist/*
