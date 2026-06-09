@@ -9,6 +9,7 @@ library;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:museflow/core/presentation/providers.dart';
+import 'package:museflow/features/ai/application/anti_ai_scent_processor.dart';
 
 /// Status bar widget that shows manuscript word count progress and
 /// pending AI modification count.
@@ -32,11 +33,13 @@ class StatusBar extends ConsumerWidget {
     final aiState = ref.watch(editorAINotifierProvider);
     final diffResult = aiState.diffResult;
     final hasPendingDiffs = diffResult != null && !diffResult.allResolved;
+    final reviewSignals = aiState.reviewSignals;
+    final hasReviewSignals = reviewSignals.isNotEmpty;
     final hasManuscriptContext =
         currentWordCount != null && targetWordCount != null;
 
     // Hide when no diff and no manuscript context
-    if (!hasPendingDiffs && !hasManuscriptContext) {
+    if (!hasPendingDiffs && !hasManuscriptContext && !hasReviewSignals) {
       return const SizedBox.shrink();
     }
 
@@ -89,6 +92,28 @@ class StatusBar extends ConsumerWidget {
               ),
             ),
           ],
+          if ((hasManuscriptContext || hasPendingDiffs) &&
+              hasReviewSignals) ...[
+            Padding(
+              padding: const EdgeInsets.only(left: 16),
+              child: Text(
+                '|',
+                style: TextStyle(
+                  fontSize: 12,
+                  color: colorScheme.onSurfaceVariant.withValues(alpha: 0.4),
+                ),
+              ),
+            ),
+          ],
+          if (hasReviewSignals)
+            Flexible(
+              child: Padding(
+                padding: EdgeInsets.only(
+                  left: hasManuscriptContext || hasPendingDiffs ? 16 : 0,
+                ),
+                child: _ReviewSignalSummary(signals: reviewSignals),
+              ),
+            ),
         ],
       ),
     );
@@ -109,5 +134,53 @@ class StatusBar extends ConsumerWidget {
       }
     }
     return parts.reversed.join(',');
+  }
+}
+
+class _ReviewSignalSummary extends StatelessWidget {
+  const _ReviewSignalSummary({required this.signals});
+
+  final List<ReviewSignal> signals;
+
+  @override
+  Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final primarySignal = _highestSeveritySignal(signals);
+    final color = switch (primarySignal.severity) {
+      ReviewSignalSeverity.high => colorScheme.error,
+      ReviewSignalSeverity.medium => colorScheme.tertiary,
+      ReviewSignalSeverity.low => colorScheme.onSurfaceVariant,
+    };
+
+    return Tooltip(
+      message: '${primarySignal.description}（${primarySignal.evidence}）',
+      child: Text(
+        '${signals.length} 条AI味复查：${primarySignal.title}',
+        overflow: TextOverflow.ellipsis,
+        maxLines: 1,
+        style: TextStyle(
+          fontSize: 12,
+          fontWeight: FontWeight.w600,
+          color: color,
+        ),
+      ),
+    );
+  }
+
+  ReviewSignal _highestSeveritySignal(List<ReviewSignal> signals) {
+    final sorted = [...signals]
+      ..sort(
+        (a, b) =>
+            _severityRank(b.severity).compareTo(_severityRank(a.severity)),
+      );
+    return sorted.first;
+  }
+
+  int _severityRank(ReviewSignalSeverity severity) {
+    return switch (severity) {
+      ReviewSignalSeverity.high => 3,
+      ReviewSignalSeverity.medium => 2,
+      ReviewSignalSeverity.low => 1,
+    };
   }
 }

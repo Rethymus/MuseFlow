@@ -5,6 +5,7 @@
 library;
 
 import 'package:flutter_test/flutter_test.dart';
+import 'package:museflow/features/ai/application/anti_ai_scent_processor.dart';
 import 'package:museflow/features/editor/domain/editor_ai_state.dart';
 
 void main() {
@@ -50,6 +51,7 @@ void main() {
       expect(state.selectionStartOffset, 0);
       expect(state.selectionEndOffset, 0);
       expect(state.userInstruction, isNull);
+      expect(state.reviewSignals, isEmpty);
     });
 
     test('copyWith should create a new state with updated fields', () {
@@ -96,6 +98,21 @@ void main() {
       const state = EditorAIState();
       final updated = state.copyWith(userInstruction: '请改得更生动');
       expect(updated.userInstruction, '请改得更生动');
+    });
+
+    test('copyWith should allow setting reviewSignals', () {
+      const state = EditorAIState();
+      const signal = ReviewSignal(
+        title: '转场套话偏多',
+        description: '需要作者复查',
+        severity: ReviewSignalSeverity.medium,
+        evidence: '2 次',
+      );
+
+      final updated = state.copyWith(reviewSignals: const [signal]);
+
+      expect(updated.reviewSignals, contains(signal));
+      expect(state.reviewSignals, isEmpty);
     });
 
     test('should be immutable -- copyWith does not mutate original', () {

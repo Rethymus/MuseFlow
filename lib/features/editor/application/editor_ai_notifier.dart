@@ -220,6 +220,7 @@ class EditorAINotifier extends Notifier<EditorAIState> {
       progressText: result.processedText,
       isStreaming: false,
       diffResult: diffResult,
+      reviewSignals: result.reviewSignals,
     );
 
     // D-12: Clear one-time anchors after AI operation completes

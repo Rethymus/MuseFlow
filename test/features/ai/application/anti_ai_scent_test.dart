@@ -135,6 +135,36 @@ void main() {
         // Should have at least one of each type
         expect(types, contains(HighlightType.structuralPattern));
       });
+
+      test('should return review signals for structural AI-scent risk', () {
+        final result = processor.process(
+          '与此同时，林风体内灵力翻涌，周身气息骤然拔高。'
+          '就在这时，他眼中闪过一丝冷光，磅礴的力量震开石阶。'
+          '下一刻，真正的考验才刚刚开始。',
+          bannedPhrases: [],
+        );
+
+        expect(result.reviewSignals, isNotEmpty);
+        expect(
+          result.reviewSignals.map((signal) => signal.title),
+          containsAll(['转场套话偏多', '类型文套句偏多', '结尾悬念公式化']),
+        );
+      });
+
+      test('should flag uniform sentence rhythm for author review', () {
+        final result = processor.process(
+          '林风握紧木剑走过石阶。'
+          '苏雪晴停在山门望着他。'
+          '赵天磊冷笑着挡住去路。'
+          '清虚真人沉默地抬起手。',
+          bannedPhrases: [],
+        );
+
+        expect(
+          result.reviewSignals.map((signal) => signal.title),
+          contains('句长节奏过于整齐'),
+        );
+      });
     });
 
     group('edge cases', () {

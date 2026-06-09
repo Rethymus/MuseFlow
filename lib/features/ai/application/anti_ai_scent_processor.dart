@@ -8,6 +8,8 @@
 /// Per D-10: Structural patterns highlighted for manual review, not auto-replaced.
 library;
 
+import 'dart:math' as math;
+
 /// Type of text highlight found during processing.
 enum HighlightType {
   /// A banned word that was auto-replaced with a synonym or deleted.
@@ -15,6 +17,41 @@ enum HighlightType {
 
   /// A structural pattern (套话句式) highlighted for manual review.
   structuralPattern,
+}
+
+/// Severity of an author-facing AI-scent review signal.
+enum ReviewSignalSeverity {
+  /// Low-risk note for author awareness.
+  low,
+
+  /// Medium-risk signal that deserves review before accepting AI text.
+  medium,
+
+  /// High-risk signal that can make the output feel template-like.
+  high,
+}
+
+/// A deterministic review signal that explains why AI output may need
+/// author attention before being accepted.
+class ReviewSignal {
+  /// Human-readable title for the signal.
+  final String title;
+
+  /// Concrete explanation of the detected pattern.
+  final String description;
+
+  /// Severity for prioritizing author review.
+  final ReviewSignalSeverity severity;
+
+  /// Optional evidence value shown to users/tests, e.g. "7 次".
+  final String evidence;
+
+  const ReviewSignal({
+    required this.title,
+    required this.description,
+    required this.severity,
+    required this.evidence,
+  });
 }
 
 /// A highlight location in the processed text.
@@ -52,9 +89,13 @@ class ProcessingResult {
   /// Locations of highlights in the processed text.
   final List<TextHighlight> highlights;
 
+  /// Author-facing review signals for structural AI-scent risk.
+  final List<ReviewSignal> reviewSignals;
+
   const ProcessingResult({
     required this.processedText,
     required this.highlights,
+    this.reviewSignals = const [],
   });
 }
 
@@ -110,6 +151,35 @@ class AntiAIScentProcessor {
     RegExp(r'在[^，。！？\n]{1,20}中，[^，。！？\n]{1,20}发挥了重要作用'),
   ];
 
+  static const List<String> _transitionCliches = [
+    '与此同时',
+    '就在这时',
+    '不料',
+    '忽然',
+    '突然',
+    '下一刻',
+    '片刻之后',
+  ];
+
+  static const List<String> _xianxiaCliches = [
+    '灵气涌动',
+    '磅礴的力量',
+    '眼中闪过一丝',
+    '不由得',
+    '倒吸一口凉气',
+    '周身气息',
+    '体内灵力',
+    '剑气纵横',
+  ];
+
+  static const List<String> _formulaicEndings = [
+    '一场更大的风暴',
+    '真正的考验',
+    '才刚刚开始',
+    '等待着他',
+    '命运的齿轮',
+  ];
+
   /// Processes the given [text] and returns a [ProcessingResult].
   ///
   /// [bannedPhrases] are additional phrases to remove (appended to the
@@ -137,9 +207,12 @@ class AntiAIScentProcessor {
     // Phase 2: Structural pattern highlighting
     processedText = _applyStructuralHighlights(processedText, highlights);
 
+    final reviewSignals = _buildReviewSignals(processedText, highlights);
+
     return ProcessingResult(
       processedText: processedText,
       highlights: highlights,
+      reviewSignals: reviewSignals,
     );
   }
 
@@ -293,5 +366,120 @@ class AntiAIScentProcessor {
     }
 
     return result;
+  }
+
+  List<ReviewSignal> _buildReviewSignals(
+    String text,
+    List<TextHighlight> highlights,
+  ) {
+    final signals = <ReviewSignal>[];
+    final transitionCount = _countPhraseHits(text, _transitionCliches);
+    if (transitionCount >= 2) {
+      signals.add(
+        ReviewSignal(
+          title: '转场套话偏多',
+          description: '连续使用常见转场词会让段落显得机械，建议作者手动调整节奏。',
+          severity: transitionCount >= 4
+              ? ReviewSignalSeverity.high
+              : ReviewSignalSeverity.medium,
+          evidence: '$transitionCount 次',
+        ),
+      );
+    }
+
+    final genreClicheCount = _countPhraseHits(text, _xianxiaCliches);
+    if (genreClicheCount >= 2) {
+      signals.add(
+        ReviewSignal(
+          title: '类型文套句偏多',
+          description: '修仙常见短语重复出现，可能削弱作者自己的画面感。',
+          severity: genreClicheCount >= 4
+              ? ReviewSignalSeverity.high
+              : ReviewSignalSeverity.medium,
+          evidence: '$genreClicheCount 次',
+        ),
+      );
+    }
+
+    final endingCount = _countPhraseHits(text, _formulaicEndings);
+    if (endingCount > 0) {
+      signals.add(
+        ReviewSignal(
+          title: '结尾悬念公式化',
+          description: '章节收束出现常见钩子句式，采纳前建议改成更贴合当前人物选择的结尾。',
+          severity: ReviewSignalSeverity.medium,
+          evidence: '$endingCount 处',
+        ),
+      );
+    }
+
+    final sentenceLengths = _sentenceLengths(text);
+    final rhythmScore = _sentenceRhythmUniformity(sentenceLengths);
+    if (rhythmScore >= 0.72 && sentenceLengths.length >= 4) {
+      signals.add(
+        ReviewSignal(
+          title: '句长节奏过于整齐',
+          description: '多句长度接近会形成 AI 式匀速叙述，可穿插短句、动作或停顿。',
+          severity: rhythmScore >= 0.85
+              ? ReviewSignalSeverity.high
+              : ReviewSignalSeverity.medium,
+          evidence: '${(rhythmScore * 100).round()}%',
+        ),
+      );
+    }
+
+    final structuralCount = highlights
+        .where((h) => h.type == HighlightType.structuralPattern)
+        .length;
+    if (structuralCount >= 2) {
+      signals.add(
+        ReviewSignal(
+          title: '结构化句式重复',
+          description: '多个句子被标记为套话结构，建议逐句确认是否符合角色和场景。',
+          severity: ReviewSignalSeverity.medium,
+          evidence: '$structuralCount 处',
+        ),
+      );
+    }
+
+    return signals;
+  }
+
+  int _countPhraseHits(String text, List<String> phrases) {
+    var count = 0;
+    for (final phrase in phrases) {
+      var offset = 0;
+      while (true) {
+        final index = text.indexOf(phrase, offset);
+        if (index == -1) break;
+        count++;
+        offset = index + phrase.length;
+      }
+    }
+    return count;
+  }
+
+  List<int> _sentenceLengths(String text) {
+    return text
+        .split(RegExp(r'[。！？!?；;\n]+'))
+        .map((s) => s.replaceAll(RegExp(r'\s+'), '').length)
+        .where((length) => length >= 4)
+        .toList();
+  }
+
+  double _sentenceRhythmUniformity(List<int> lengths) {
+    if (lengths.length < 4) return 0;
+    final average = lengths.reduce((a, b) => a + b) / lengths.length;
+    if (average == 0) return 0;
+    final variance =
+        lengths
+            .map((length) {
+              final diff = length - average;
+              return diff * diff;
+            })
+            .reduce((a, b) => a + b) /
+        lengths.length;
+    final coefficientOfVariation = math.sqrt(variance) / average;
+    return (1 - coefficientOfVariation).clamp(0, 1);
   }
 }

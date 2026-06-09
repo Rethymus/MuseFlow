@@ -5,6 +5,7 @@
 library;
 
 import 'package:museflow/features/editor/domain/diff_state.dart';
+import 'package:museflow/features/ai/application/anti_ai_scent_processor.dart';
 
 /// Types of AI operations available in the editor floating toolbar.
 ///
@@ -67,6 +68,9 @@ class EditorAIState {
   /// The diff result after an AI operation completes, or null when no diff.
   final DiffResult? diffResult;
 
+  /// Author-facing anti-AI-scent review signals for the latest AI output.
+  final List<ReviewSignal> reviewSignals;
+
   /// Creates an [EditorAIState] with sensible defaults (idle state).
   const EditorAIState({
     this.isStreaming = false,
@@ -79,6 +83,7 @@ class EditorAIState {
     this.selectionEndOffset = 0,
     this.userInstruction,
     this.diffResult,
+    this.reviewSignals = const [],
   });
 
   /// Creates a copy with the given fields replaced.
@@ -97,6 +102,7 @@ class EditorAIState {
     int? selectionEndOffset,
     Object? userInstruction = _sentinel,
     Object? diffResult = _sentinel,
+    List<ReviewSignal>? reviewSignals,
   }) {
     return EditorAIState(
       isStreaming: isStreaming ?? this.isStreaming,
@@ -115,6 +121,7 @@ class EditorAIState {
       diffResult: diffResult == _sentinel
           ? this.diffResult
           : diffResult as DiffResult?,
+      reviewSignals: reviewSignals ?? this.reviewSignals,
     );
   }
 }

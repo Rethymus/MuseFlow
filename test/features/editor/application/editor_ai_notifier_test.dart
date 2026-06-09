@@ -242,6 +242,33 @@ void main() {
         expect(state.progressText, contains('但是'));
         expect(state.progressText, isNot(contains('然而')));
       });
+
+      test('should store anti-AI-scent review signals after stream', () async {
+        container = createContainer();
+        fakeAdapter.streamOutput = Stream.fromIterable([
+          '与此同时，林风体内灵力翻涌，周身气息骤然拔高。'
+              '就在这时，他眼中闪过一丝冷光，磅礴的力量震开石阶。'
+              '下一刻，真正的考验才刚刚开始。',
+        ]);
+
+        container
+            .read(editorAINotifierProvider.notifier)
+            .startOperation(
+              EditorAIOperation.paragraphPolish,
+              '林风走上石阶。',
+              'node-1',
+              0,
+              7,
+            );
+        await _pumpAndWait();
+
+        final state = container.read(editorAINotifierProvider);
+        expect(state.reviewSignals, isNotEmpty);
+        expect(
+          state.reviewSignals.map((signal) => signal.title),
+          contains('转场套话偏多'),
+        );
+      });
     });
 
     group('freeInput with userInstruction', () {
