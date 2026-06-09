@@ -21,7 +21,7 @@ Complete: local gates pass, remote CI is green on `main`, and GitHub Release `v0
 
 ## Release Automation Status
 
-- CI workflow: PASS on `main`, latest run `27185384533`, commit `e3ff6482f09a7628398cff86c60f6fbd2518d297`.
+- CI workflow: PASS on `main`, audited run `27186024325`, commit `a16a62d3d8c23762ab152c61f5cc3c1b34a08bcb`.
 - Release workflow: PASS, run `27184897133`, tag `v0.1.0`.
 - GitHub Release: published at `https://github.com/Rethymus/MuseFlow/releases/tag/v0.1.0`.
 - Release assets verified:
@@ -60,17 +60,17 @@ scripts/check_repo_hygiene.sh
 ## Final Audit
 
 - `git status --short --branch`: clean, `main...origin/main`.
-- Local `HEAD` and `origin/main`: `e3ff6482f09a7628398cff86c60f6fbd2518d297`.
-- Latest `main` CI: PASS, run `27185384533`.
+- Local `HEAD` and `origin/main`: `a16a62d3d8c23762ab152c61f5cc3c1b34a08bcb`.
+- Audited `main` CI: PASS, run `27186024325`.
 - GitHub Release `v0.1.0`: published and not draft/prerelease.
 - Release checksums: PASS for Android, Linux, and Windows artifacts.
 
 ## Remote Observation Method Update
 
-Kimi WebBridge daemon was restarted successfully, but the browser extension is currently disconnected:
+Kimi WebBridge was available during final audit:
 
 ```text
-{"extension_connected":false,"extension_id":"","extension_version":"","port":10086,"running":true,"version":"v1.9.17"}
+{"extension_connected":true,"extension_version":"1.9.13","port":10086,"running":true,"version":"v1.9.17"}
 ```
 
-Per the release plan fallback rule, remote CI and release observation will use authenticated `gh`/GitHub API unless the browser extension reconnects before push.
+Final remote CI and release observation used authenticated `gh`/GitHub API evidence, and Kimi WebBridge confirmed the GitHub Actions page showed run `27186024325` with status `Success`.
