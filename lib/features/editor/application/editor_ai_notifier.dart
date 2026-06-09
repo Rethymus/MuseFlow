@@ -20,6 +20,7 @@ import 'package:museflow/features/ai/domain/ai_exception.dart';
 import 'package:museflow/features/ai/domain/ai_provider.dart';
 import 'package:museflow/features/ai/presentation/banned_phrase_settings.dart';
 import 'package:museflow/features/editor/application/diff_calculator.dart';
+import 'package:museflow/features/editor/application/intent_preservation_analyzer.dart';
 import 'package:museflow/features/editor/domain/diff_state.dart';
 import 'package:museflow/features/editor/domain/editor_ai_state.dart';
 import 'package:museflow/features/editor/infrastructure/provenance_attribution.dart';
@@ -207,6 +208,10 @@ class EditorAINotifier extends Notifier<EditorAIState> {
       state.progressText ?? '',
       bannedPhrases: bannedPhrases,
     );
+    final intentSignals = const IntentPreservationAnalyzer().analyze(
+      originalText: state.selectedText,
+      aiText: result.processedText,
+    );
 
     // Calculate sentence-level diff between original and AI text
     final diffResult = DiffCalculator.calculate(
@@ -220,7 +225,7 @@ class EditorAINotifier extends Notifier<EditorAIState> {
       progressText: result.processedText,
       isStreaming: false,
       diffResult: diffResult,
-      reviewSignals: result.reviewSignals,
+      reviewSignals: [...result.reviewSignals, ...intentSignals],
     );
 
     // D-12: Clear one-time anchors after AI operation completes

@@ -269,6 +269,31 @@ void main() {
           contains('转场套话偏多'),
         );
       });
+
+      test(
+        'should store intent preservation review signals after stream',
+        () async {
+          container = createContainer();
+          fakeAdapter.streamOutput = Stream.fromIterable(['林风握着旧物，想起有人说过的话。']);
+
+          container
+              .read(editorAINotifierProvider.notifier)
+              .startOperation(
+                EditorAIOperation.toneRewrite,
+                '林风握着青铜玉简，想起苏雪晴在紫霄宫前说过的话。',
+                'node-1',
+                0,
+                24,
+              );
+          await _pumpAndWait();
+
+          final state = container.read(editorAINotifierProvider);
+          expect(
+            state.reviewSignals.map((signal) => signal.title),
+            contains('原文关键信息可能丢失'),
+          );
+        },
+      );
     });
 
     group('freeInput with userInstruction', () {
