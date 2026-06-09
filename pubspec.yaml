@@ -27,7 +27,7 @@ dependencies:
   go_router: ^17.2.3
 
   # AI integration
-  openai_dart: ^6.0.0
+  openai_dart: ^6.2.0
   anthropic_sdk_dart: ^4.0.0
   ollama_dart: ^2.2.0
 
