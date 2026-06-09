@@ -20,6 +20,7 @@ import 'package:museflow/features/ai/domain/ai_exception.dart';
 import 'package:museflow/features/ai/domain/ai_provider.dart';
 import 'package:museflow/features/ai/presentation/banned_phrase_settings.dart';
 import 'package:museflow/features/editor/application/diff_calculator.dart';
+import 'package:museflow/features/editor/application/editor_chapter_memory_context_builder.dart';
 import 'package:museflow/features/editor/application/intent_preservation_analyzer.dart';
 import 'package:museflow/features/editor/domain/diff_state.dart';
 import 'package:museflow/features/editor/domain/editor_ai_state.dart';
@@ -127,6 +128,10 @@ class EditorAINotifier extends Notifier<EditorAIState> {
 
     // D-15: Inject active anchors into the prompt context
     final activeAnchors = ref.read(contextAnchorNotifierProvider);
+    final chapterMemory = await _buildChapterMemoryContext(
+      manuscriptId: manuscriptId,
+      chapterId: chapterId,
+    );
 
     final context = PromptContext(
       fragments: [],
@@ -135,6 +140,10 @@ class EditorAINotifier extends Notifier<EditorAIState> {
       userInstruction: userInstruction,
       bannedPhrases: bannedPhrases,
       anchors: activeAnchors.isNotEmpty ? activeAnchors : null,
+      previousChapterSummary: chapterMemory.previousChapterSummary,
+      nextChapterSummary: chapterMemory.nextChapterSummary,
+      previousChapterMemoryWarning: chapterMemory.previousChapterMemoryWarning,
+      nextChapterMemoryWarning: chapterMemory.nextChapterMemoryWarning,
     );
     final messages = pipeline.build(context);
 
@@ -195,6 +204,27 @@ class EditorAINotifier extends Notifier<EditorAIState> {
       if (!_cancelled) {
         state = state.copyWith(isStreaming: false, error: '生成中断，请重试');
       }
+    }
+  }
+
+  Future<EditorChapterMemoryContext> _buildChapterMemoryContext({
+    required String? manuscriptId,
+    required String? chapterId,
+  }) async {
+    if (manuscriptId == null ||
+        manuscriptId.trim().isEmpty ||
+        chapterId == null ||
+        chapterId.trim().isEmpty) {
+      return const EditorChapterMemoryContext();
+    }
+
+    try {
+      final builder = await ref.read(
+        editorChapterMemoryContextBuilderProvider.future,
+      );
+      return builder.build(manuscriptId: manuscriptId, chapterId: chapterId);
+    } catch (_) {
+      return const EditorChapterMemoryContext();
     }
   }
 

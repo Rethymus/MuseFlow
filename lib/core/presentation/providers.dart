@@ -18,6 +18,7 @@ import 'package:museflow/features/ai/domain/ai_provider.dart';
 import 'package:museflow/features/ai/infrastructure/openai_adapter.dart';
 import 'package:museflow/features/ai/infrastructure/provider_repository.dart';
 import 'package:museflow/features/editor/application/diff_calculator.dart';
+import 'package:museflow/features/editor/application/editor_chapter_memory_context_builder.dart';
 import 'package:museflow/features/editor/application/editor_prompt_pipeline.dart';
 import 'package:museflow/features/editor/application/selective_undo.dart';
 import 'package:museflow/features/knowledge/application/character_card_notifier.dart';
@@ -261,6 +262,17 @@ final editorPromptPipelineProvider = FutureProvider<EditorPromptPipeline>((
     skillEnforcementMiddleware: skillMiddleware,
   );
 });
+
+/// Builds adjacent chapter memory context for editor AI prompt calls.
+final editorChapterMemoryContextBuilderProvider =
+    FutureProvider<EditorChapterMemoryContextBuilder>((ref) async {
+      final chapterRepository = await ref.watch(
+        chapterRepositoryProvider.future,
+      );
+      return EditorChapterMemoryContextBuilder(
+        chapterRepository: chapterRepository,
+      );
+    });
 
 /// Provides a [DiffCalculator] instance for sentence-level diff computation.
 ///

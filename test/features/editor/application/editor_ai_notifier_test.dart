@@ -13,13 +13,17 @@ import 'dart:async';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:hive_ce/hive.dart';
 import 'package:museflow/core/presentation/providers.dart';
 import 'package:museflow/features/ai/domain/ai_exception.dart';
 import 'package:museflow/features/ai/application/token_budget_calculator.dart';
 import 'package:museflow/features/ai/domain/ai_provider.dart';
 import 'package:museflow/features/ai/infrastructure/openai_adapter.dart';
+import 'package:museflow/features/editor/application/editor_chapter_memory_context_builder.dart';
 import 'package:museflow/features/editor/application/editor_prompt_pipeline.dart';
 import 'package:museflow/features/editor/domain/editor_ai_state.dart';
+import 'package:museflow/features/manuscript/domain/chapter.dart';
+import 'package:museflow/features/manuscript/infrastructure/chapter_repository.dart';
 import 'package:museflow/features/stats/application/token_audit_service.dart';
 import 'package:museflow/features/stats/domain/audit_operation_type.dart';
 import 'package:museflow/features/stats/domain/token_audit_record.dart';
@@ -37,6 +41,7 @@ void main() {
       bool hasActiveProvider = true,
       bool hasApiKey = true,
       TokenAuditService? auditService,
+      EditorChapterMemoryContextBuilder? chapterMemoryContextBuilder,
     }) {
       fakeAdapter = _FakeOpenAIAdapter();
 
@@ -66,6 +71,10 @@ void main() {
           tokenAuditServiceProvider.overrideWith(
             (ref) async => auditService ?? _RecordingTokenAuditService(),
           ),
+          if (chapterMemoryContextBuilder != null)
+            editorChapterMemoryContextBuilderProvider.overrideWith(
+              (ref) async => chapterMemoryContextBuilder,
+            ),
         ],
       );
     }
@@ -294,6 +303,48 @@ void main() {
           );
         },
       );
+
+      test(
+        'should inject adjacent chapter memory warnings into prompt',
+        () async {
+          final chapterRepository = _MemoryChapterRepository([
+            _chapter(
+              id: 'previous',
+              sortOrder: 1,
+              text: '林风雨夜守山。苏雪晴递来玉简，赵天磊暗中放出白灵，清虚真人宣布宗门试炼提前。',
+            ),
+            _chapter(id: 'current', sortOrder: 2, text: '当前章节正文。'),
+          ]);
+          container = createContainer(
+            chapterMemoryContextBuilder: EditorChapterMemoryContextBuilder(
+              chapterRepository: chapterRepository,
+              summaryCharacterLimit: 26,
+            ),
+          );
+          fakeAdapter.streamOutput = Stream.fromIterable(['结果']);
+
+          container
+              .read(editorAINotifierProvider.notifier)
+              .startOperation(
+                EditorAIOperation.paragraphPolish,
+                '当前选中文字',
+                'node-1',
+                0,
+                6,
+                manuscriptId: 'm1',
+                chapterId: 'current',
+              );
+          await _pumpAndWait();
+
+          final promptText = fakeAdapter.lastMessages
+              .map((message) => message.toJson()['content'])
+              .join('\n');
+          expect(promptText, contains('上一章节摘要'));
+          expect(promptText, contains('记忆复查提示'));
+          expect(promptText, contains('截断上下文'));
+          expect(promptText, contains('当前选中文字'));
+        },
+      );
     });
 
     group('freeInput with userInstruction', () {
@@ -485,6 +536,7 @@ Future<void> _pumpAndWait() async {
 class _FakeOpenAIAdapter extends OpenAIAdapter {
   Stream<String>? streamOutput;
   Usage? usage;
+  List<ChatMessage> lastMessages = const [];
 
   @override
   Stream<String> createStream({
@@ -497,11 +549,47 @@ class _FakeOpenAIAdapter extends OpenAIAdapter {
     int? maxTokens,
     void Function(Usage?)? onUsage,
   }) async* {
+    lastMessages = messages;
     await for (final chunk in streamOutput ?? Stream.fromIterable(['默认文本'])) {
       yield chunk;
     }
     onUsage?.call(usage);
   }
+}
+
+class _MemoryChapterRepository extends ChapterRepository {
+  _MemoryChapterRepository(this.chapters) : super(_FakeBox());
+
+  final List<Chapter> chapters;
+
+  @override
+  List<Chapter> getByManuscriptId(String manuscriptId) {
+    return chapters
+        .where((chapter) => chapter.manuscriptId == manuscriptId)
+        .toList()
+      ..sort((a, b) => a.sortOrder.compareTo(b.sortOrder));
+  }
+}
+
+Chapter _chapter({
+  required String id,
+  required int sortOrder,
+  required String text,
+}) {
+  return Chapter(
+    id: id,
+    manuscriptId: 'm1',
+    title: '第$sortOrder章',
+    sortOrder: sortOrder,
+    documentContent: text,
+    createdAt: DateTime(2026, 1, sortOrder),
+    updatedAt: DateTime(2026, 1, sortOrder),
+  );
+}
+
+class _FakeBox implements Box<dynamic> {
+  @override
+  dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
 }
 
 class _RecordingTokenAuditService extends TokenAuditService {
