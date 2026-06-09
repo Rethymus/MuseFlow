@@ -14,8 +14,8 @@ Captured for v1.4 release hardening on 2026-06-09.
 
 | Platform | Hive location expectation | Secret storage expectation | Validation status |
 | --- | --- | --- | --- |
-| Windows | App data path from Flutter path provider/Hive | Windows Credential Manager | Pending Windows Actions smoke |
-| Android | App-private data directory | Android Keystore/encrypted preferences | Pending Android build/device smoke |
+| Windows | App data path from Flutter path provider/Hive | Windows Credential Manager | Release workflow built Windows artifact; secure-storage behavior remains tied to native Credential Manager runtime |
+| Android | App-private data directory | Android Keystore/encrypted preferences | Local and release workflow APK builds passed; runtime secure-storage behavior remains tied to Android Keystore |
 | Linux | XDG/app data path from Flutter path provider/Hive | Secret Service/libsecret | Unit test shell lacks platform plugin; no plaintext fallback is created |
 | Web | Not supported in this release | Not validated | No web runner |
 | macOS | Not supported in this release | Not validated | No macOS runner |
@@ -41,9 +41,11 @@ Command:
 HOME=/tmp/museflow-readme-home XDG_DATA_HOME=/tmp/museflow-readme-home/.local/share ./build/linux/x64/release/bundle/museflow
 ```
 
-Result: process started, but no visible window was discoverable by `xdotool`; stderr included `libsecret_error: KeyringLocked`. This confirms that a locked or unavailable Secret Service prevents startup paths that need secure storage, rather than falling back to plaintext files. README screenshot refresh should use a real user desktop session with unlocked Secret Service or a dedicated demo/test boot path that bypasses native secret reads without changing production behavior.
+Result: process started, but no visible window was discoverable by `xdotool`; stderr included `libsecret_error: KeyringLocked`. This confirms that a locked or unavailable Secret Service prevents startup paths that need secure storage, rather than falling back to plaintext files. README screenshots were refreshed through the reproducible offline UI evidence flow so production secure-storage behavior stayed strict.
 
-## Manual Smoke To Complete Before Release
+## Manual Runtime Smoke For Future Signed Releases
+
+These checks are recommended before a future signed end-user release, especially on a real Windows desktop and Android device:
 
 1. Save an API key, restart the app, and confirm the provider still reports a saved key.
 2. Save window size/position, restart, and confirm geometry restores.

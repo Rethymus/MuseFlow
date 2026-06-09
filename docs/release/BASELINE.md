@@ -19,13 +19,13 @@ Captured: 2026-06-09, Asia/Shanghai.
 
 ## Remote Observation Method
 
-Kimi WebBridge is healthy and available for browser-based GitHub Actions and Release observation:
+Kimi WebBridge was healthy at baseline and available for browser-based GitHub Actions and Release observation:
 
 ```text
 {"extension_connected":true,"extension_version":"1.9.13","port":10086,"running":true,"version":"v1.9.17"}
 ```
 
-`gh` is also authenticated as `Rethymus` with `repo` and `workflow` scopes, so GitHub CLI/API can be used as a fallback if browser observation fails.
+During final verification the daemon remained running but the browser extension disconnected. Per the goal fallback rule and Kimi operations guide, remote CI and release observation used authenticated `gh`/GitHub API evidence instead of asking for manual browser checks.
 
 ## Baseline Commands
 
@@ -52,10 +52,10 @@ Kimi WebBridge is healthy and available for browser-based GitHub Actions and Rel
 | --- | --- | --- | --- |
 | P0 | Format gate failed on current `HEAD` | Fixed locally | Repository-wide `dart format` changed 219 files; rerun passed |
 | P0 | Analyzer lint blocked CI readiness | Fixed locally | Added braces in `lib/features/reports/presentation/charts/consistency_drift_chart.dart`; analyzer passed |
-| P0 | Linux secure-storage plaintext fallback contradicted release security goal | Fixed locally, needs broader validation | Removed plaintext fallback from `SecureStorageService`; focused test passed |
-| P0 | GitHub CI/CD absent | Fixed locally, remote pending | Added CI and release workflows; not pushed/observed yet |
-| P0 | Platform artifact builds unverified | Partially fixed locally | Android APK and Linux release bundle build locally; Windows remains Actions-only |
-| P0 | GitHub Release missing for v1.4 hardening | Open | Add release workflow, tag/version policy, publish and verify |
+| P0 | Linux secure-storage plaintext fallback contradicted release security goal | Fixed and validated | Removed plaintext fallback from `SecureStorageService`; focused test passed; locked Secret Service behavior fails securely |
+| P0 | GitHub CI/CD absent | Fixed and remotely verified | Added CI and release workflows; latest `main` CI run `27185384533` passed |
+| P0 | Platform artifact builds unverified | Fixed and release-verified | Android and Linux build locally; release workflow published Android, Linux, and Windows artifacts |
+| P0 | GitHub Release publication for v1.4 hardening | Fixed and verified | Published `v0.1.0`; Android/Linux/Windows artifacts and `SHA256SUMS.txt` are present; checksum verification passed |
 | P1 | README screenshots are 19 images but v1.4 plan requires 21 workflow screenshots | Fixed locally | Generated 21 reproducible offline UI screenshots with `scripts/generate_readme_screenshots.mjs`; both READMEs reference all 21 files and README asset check passes |
 | P1 | Platform support docs absent | Fixed locally | Added `docs/platform/PLATFORM_SUPPORT.md` and `docs/platform/STORAGE_VALIDATION.md` |
-| P2 | Dependency cleanup | Open | `path: any`; `super_editor_markdown` discontinued |
+| P2 | Dependency cleanup | Evaluated, deferred | `flutter pub outdated` still reports `super_editor_markdown` as discontinued and several major-version updates. These are not CI/release blockers; replacing the editor Markdown stack should be handled as a separate migration with focused regression tests. |

@@ -21,7 +21,7 @@ Complete: local gates pass, remote CI is green on `main`, and GitHub Release `v0
 
 ## Release Automation Status
 
-- CI workflow: PASS on `main`, latest run `27184882708`, commit `66a0da5ab364ccabf8d00f28edd7a811e46ee4b9`.
+- CI workflow: PASS on `main`, latest run `27185384533`, commit `e3ff6482f09a7628398cff86c60f6fbd2518d297`.
 - Release workflow: PASS, run `27184897133`, tag `v0.1.0`.
 - GitHub Release: published at `https://github.com/Rethymus/MuseFlow/releases/tag/v0.1.0`.
 - Release assets verified:
@@ -44,22 +44,26 @@ scripts/check_readme_assets.sh
 scripts/check_repo_hygiene.sh
 ```
 
-## Known Open Items
+## Residual Non-Blocking Notes
 
-- README screenshots refreshed locally. `scripts/generate_readme_screenshots.mjs` generated 21 reproducible 1440x1000 PNGs with offline demo data; visual spot-check confirmed readable Chinese and no square icon placeholders; `README.md` and `README.en.md` reference all 21 files.
+- README screenshots are refreshed and complete. `scripts/generate_readme_screenshots.mjs` generated 21 reproducible 1440x1000 PNGs with offline demo data; visual spot-check confirmed readable Chinese and no square icon placeholders; `README.md` and `README.en.md` reference all 21 files, and `scripts/check_readme_assets.sh` passes.
 - Attempted Linux desktop runtime capture from the local release bundle with isolated app data:
 
   ```bash
   HOME=/tmp/museflow-readme-home XDG_DATA_HOME=/tmp/museflow-readme-home/.local/share ./build/linux/x64/release/bundle/museflow
   ```
 
-  Result: app process started but no window became discoverable through `xdotool`; stderr showed `libsecret_error: KeyringLocked`. This is consistent with the no-plaintext-fallback storage policy. Screenshot refresh still needs a real desktop session with unlocked Secret Service, or a test/demo boot path that bypasses native secure storage without weakening production storage behavior.
+  Result: app process started but no window became discoverable through `xdotool`; stderr showed `libsecret_error: KeyringLocked`. This is expected secure behavior under a locked Secret Service and confirms the app does not fall back to plaintext secret files. README screenshots were refreshed through the reproducible offline UI evidence flow instead of weakening production secure-storage behavior.
 - GitHub Actions emitted non-blocking Node.js 20 deprecation warnings for current marketplace actions. This does not block the release, but dependency updates should address it before GitHub removes Node.js 20 runner support.
 - GitHub Actions noted `windows-latest` redirection to `windows-2025-vs2026` by June 15, 2026; Windows release artifact still built and uploaded successfully.
 
-## Next Exact Action
+## Final Audit
 
-Run final clean-state audit and close the release-hardening goal.
+- `git status --short --branch`: clean, `main...origin/main`.
+- Local `HEAD` and `origin/main`: `e3ff6482f09a7628398cff86c60f6fbd2518d297`.
+- Latest `main` CI: PASS, run `27185384533`.
+- GitHub Release `v0.1.0`: published and not draft/prerelease.
+- Release checksums: PASS for Android, Linux, and Windows artifacts.
 
 ## Remote Observation Method Update
 
