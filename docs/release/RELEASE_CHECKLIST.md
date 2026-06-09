@@ -2,7 +2,7 @@
 
 ## Current Phase
 
-Phase 1-4 in progress: GitHub metadata and release workflow are drafted locally; local verification gates and Android/Linux build smokes pass; remote CI, Windows artifacts, and GitHub Release verification are still pending.
+Phase 5 in progress: local verification gates pass and remote CI is green on `main`; GitHub Release artifact publication and verification are still pending.
 
 ## Local Verification Results
 
@@ -21,9 +21,9 @@ Phase 1-4 in progress: GitHub metadata and release workflow are drafted locally;
 
 ## Release Automation Status
 
-- CI workflow: created locally in `.github/workflows/ci.yml`; remote run pending.
-- Release workflow: created locally in `.github/workflows/release.yml`; remote run pending.
-- Latest Actions run: `27184067602` failed on Linux integration/build because the Ubuntu runner was missing `libsecret-1-dev`; workflow dependency fix is pending rerun.
+- CI workflow: PASS on `main`, run `27184451043`, commit `869ac635f973838dfd157a94a76f59b7a8959d9b`.
+- Release workflow: created in `.github/workflows/release.yml`; release run pending.
+- Latest Actions run: `27184451043` passed after adding `libsecret-1-dev` to Linux runner dependencies. Jobs passed: Format/Analyze/Test, README Assets and Hygiene, Build Smoke.
 - GitHub Release: not yet created.
 - Artifacts required before close: Android APK, Linux tar.gz, Windows zip, SHA-256 checksums.
 
@@ -50,12 +50,12 @@ scripts/check_repo_hygiene.sh
   ```
 
   Result: app process started but no window became discoverable through `xdotool`; stderr showed `libsecret_error: KeyringLocked`. This is consistent with the no-plaintext-fallback storage policy. Screenshot refresh still needs a real desktop session with unlocked Secret Service, or a test/demo boot path that bypasses native secure storage without weakening production storage behavior.
-- Windows build must be validated by GitHub Actions.
-- Push, observe remote CI through Kimi WebBridge or `gh`, repair failures, then publish and verify a GitHub Release.
+- Windows build must be validated by the release workflow.
+- Publish and verify a GitHub Release.
 
 ## Next Exact Action
 
-Commit the verified hardening changes, push, and observe GitHub Actions through `gh` fallback unless Kimi WebBridge reconnects.
+Trigger release workflow for `v0.1.0`, then verify Android, Linux, Windows, and checksum artifacts on the GitHub Release.
 
 ## Remote Observation Method Update
 
