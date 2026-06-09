@@ -23,7 +23,7 @@ Phase 1-4 in progress: GitHub metadata and release workflow are drafted locally;
 
 - CI workflow: created locally in `.github/workflows/ci.yml`; remote run pending.
 - Release workflow: created locally in `.github/workflows/release.yml`; remote run pending.
-- Latest Actions run: not yet applicable after this hardening branch state.
+- Latest Actions run: `27184067602` failed on Linux integration/build because the Ubuntu runner was missing `libsecret-1-dev`; workflow dependency fix is pending rerun.
 - GitHub Release: not yet created.
 - Artifacts required before close: Android APK, Linux tar.gz, Windows zip, SHA-256 checksums.
 
