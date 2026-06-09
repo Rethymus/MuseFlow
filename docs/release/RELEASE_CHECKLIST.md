@@ -2,7 +2,7 @@
 
 ## Current Phase
 
-Phase 5 in progress: local verification gates pass and remote CI is green on `main`; GitHub Release artifact publication and verification are still pending.
+Complete: local gates pass, remote CI is green on `main`, and GitHub Release `v0.1.0` is published with verified Android, Linux, Windows, and checksum artifacts.
 
 ## Local Verification Results
 
@@ -21,11 +21,15 @@ Phase 5 in progress: local verification gates pass and remote CI is green on `ma
 
 ## Release Automation Status
 
-- CI workflow: PASS on `main`, run `27184451043`, commit `869ac635f973838dfd157a94a76f59b7a8959d9b`.
-- Release workflow: created in `.github/workflows/release.yml`; release run pending.
-- Latest Actions run: `27184451043` passed after adding `libsecret-1-dev` to Linux runner dependencies. Jobs passed: Format/Analyze/Test, README Assets and Hygiene, Build Smoke.
-- GitHub Release: not yet created.
-- Artifacts required before close: Android APK, Linux tar.gz, Windows zip, SHA-256 checksums.
+- CI workflow: PASS on `main`, latest run `27184882708`, commit `66a0da5ab364ccabf8d00f28edd7a811e46ee4b9`.
+- Release workflow: PASS, run `27184897133`, tag `v0.1.0`.
+- GitHub Release: published at `https://github.com/Rethymus/MuseFlow/releases/tag/v0.1.0`.
+- Release assets verified:
+  - `museflow-v0.1.0-android-unsigned.apk` (65,336,120 bytes)
+  - `museflow-v0.1.0-linux-x64.tar.gz` (12,591,980 bytes)
+  - `museflow-v0.1.0-windows-x64.zip` (14,930,513 bytes)
+  - `SHA256SUMS.txt` (300 bytes)
+- Checksum verification: PASS. Downloaded all release assets and ran `sha256sum -c SHA256SUMS.txt`; all three platform artifacts returned `OK`.
 
 ## Local Equivalent Commands
 
@@ -50,12 +54,12 @@ scripts/check_repo_hygiene.sh
   ```
 
   Result: app process started but no window became discoverable through `xdotool`; stderr showed `libsecret_error: KeyringLocked`. This is consistent with the no-plaintext-fallback storage policy. Screenshot refresh still needs a real desktop session with unlocked Secret Service, or a test/demo boot path that bypasses native secure storage without weakening production storage behavior.
-- Windows build must be validated by the release workflow.
-- Publish and verify a GitHub Release.
+- GitHub Actions emitted non-blocking Node.js 20 deprecation warnings for current marketplace actions. This does not block the release, but dependency updates should address it before GitHub removes Node.js 20 runner support.
+- GitHub Actions noted `windows-latest` redirection to `windows-2025-vs2026` by June 15, 2026; Windows release artifact still built and uploaded successfully.
 
 ## Next Exact Action
 
-Trigger release workflow for `v0.1.0`, then verify Android, Linux, Windows, and checksum artifacts on the GitHub Release.
+Run final clean-state audit and close the release-hardening goal.
 
 ## Remote Observation Method Update
 
