@@ -155,7 +155,7 @@ class _ReviewSignalSummary extends StatelessWidget {
     return Tooltip(
       message: '${primarySignal.description}（${primarySignal.evidence}）',
       child: Text(
-        '${signals.length} 条AI味复查：${primarySignal.title}',
+        '${signals.length} 条AI修改复查：${primarySignal.title}',
         overflow: TextOverflow.ellipsis,
         maxLines: 1,
         style: TextStyle(
