@@ -2,7 +2,7 @@
 
 ## Current Phase
 
-In progress: Web testing target is implemented locally. Completion requires remote CI green on `main`, GitHub Release `v0.1.3`, and verified Android, Linux, Windows, Web, and checksum artifacts.
+Complete: Web testing target is implemented, remote CI is green on `main`, and GitHub Release `v0.1.3` is published with verified Android, Linux, Windows, Web, and checksum artifacts.
 
 ## Local Verification Results
 
@@ -13,7 +13,7 @@ In progress: Web testing target is implemented locally. Completion requires remo
 | `flutter analyze` | PASS | No issues found |
 | `flutter test` | PASS | 1170 passed, 12 skipped |
 | `flutter test test/infrastructure/secure_storage_test.dart` | PASS | 5 tests passed; unavailable secure-storage plugin paths skipped in this Linux test shell; confirms no plaintext Linux fallback path is created |
-| `xvfb-run -a flutter test integration_test/app_test.dart -d linux` | Pending remote CI | Local shell lacks `xvfb-run`; direct WSL Linux run built the test app but hung without output. Remote CI installs `xvfb` and remains the authoritative integration smoke gate. |
+| `xvfb-run -a flutter test integration_test/app_test.dart -d linux` | PASS | Remote CI run `27206511246` passed 4 Linux desktop smoke tests via xvfb; local shell lacks `xvfb-run`, and direct WSL Linux run built the test app but hung without output |
 | `scripts/check_readme_assets.sh` | PASS | Current 21 screenshot references are consistent |
 | `scripts/check_repo_hygiene.sh` | PASS | No tracked generated/local/secret-like artifacts or obvious secret regex hits |
 | `flutter build apk --release` | PASS | Built `build/app/outputs/flutter-apk/app-release.apk` (65.3 MB); Flutter emitted a non-blocking Kotlin Gradle Plugin migration warning for transitive plugins |
@@ -22,12 +22,16 @@ In progress: Web testing target is implemented locally. Completion requires remo
 
 ## Release Automation Status
 
-- CI workflow: pending final `main` run after Web testing target commit.
-- Release workflow: pending for tag `v0.1.3`.
-- GitHub Release: pending at `https://github.com/Rethymus/MuseFlow/releases/tag/v0.1.3`.
+- CI workflow: PASS on `main` for commit `04575bb3f24d7d95cc15364488c544463cbc3120`, run `27206511246`.
+- Release workflow: PASS for tag `v0.1.3`, run `27207296155`, commit `04575bb3f24d7d95cc15364488c544463cbc3120`.
+- GitHub Release: published as `MuseFlow v0.1.3` at `https://github.com/Rethymus/MuseFlow/releases/tag/v0.1.3`; not draft and not prerelease; published 2026-06-09T13:01:27Z.
 - Release assets verified:
-  - Pending release workflow output.
-- Checksum verification: pending release workflow output.
+  - `museflow-v0.1.3-android-unsigned.apk` - 65,418,200 bytes, SHA-256 `dbd42da7f8cbd4296f33ad6cc312d731fde7c7e4d2d00708b3ccba5ced3a84fd`
+  - `museflow-v0.1.3-linux-x64.tar.gz` - 12,595,280 bytes, SHA-256 `0f23449a9b7b206b661030e45c8b745c1193021d6742cfe5a344e3604706f3ba`
+  - `museflow-v0.1.3-web.zip` - 14,921,179 bytes, SHA-256 `2699d3517a63a2865cf830d3eb408006ecdf10d69d90d1c906328fdd0f0b5af0`
+  - `museflow-v0.1.3-windows-x64.zip` - 14,935,393 bytes, SHA-256 `d8aa5ab757b000bfb16a8753a0968e62e870137adc37c2dcfe38f4c4b4bbff24`
+  - `SHA256SUMS.txt` - 390 bytes, SHA-256 `fb0a7969642753bf844c635a6e687d6783e40acf41156e0880dc9f65da2c42c4`
+- Checksum verification: PASS after `gh release download v0.1.3 -D /tmp/museflow-v0.1.3-release` and `sha256sum -c SHA256SUMS.txt`.
 
 ## Local Equivalent Commands
 
@@ -62,8 +66,8 @@ scripts/check_repo_hygiene.sh
 - `git status --short --branch`: clean, `main...origin/main`.
 - Local `HEAD` and `origin/main`: synchronized.
 - Audited `main` CI: PASS for the latest pushed commit at completion time.
-- GitHub Release `v0.1.3`: pending publication and checksum verification.
-- Release checksums: pending for Android, Linux, Windows, and Web artifacts.
+- GitHub Release `v0.1.3`: published, not draft, not prerelease, with Android/Linux/Windows/Web artifacts and checksums.
+- Release checksums: PASS for Android, Linux, Windows, and Web artifacts.
 
 ## Remote Observation Method Update
 

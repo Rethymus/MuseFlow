@@ -9,8 +9,8 @@ Captured: 2026-06-09, Asia/Shanghai.
 | Branch | `main` |
 | Remote | `origin https://github.com/Rethymus/MuseFlow.git` |
 | Sync state at startup | `main...origin/main` |
-| Latest audited release commit | Pending `v0.1.3` Web testing target release |
-| Tags | `v0.1.2`, `v0.1.1`, `v0.1.0`, `v1.3-phase16-complete`, `v1.2`, `v1.0` |
+| Latest audited release commit | `04575bb feat: add web testing target` |
+| Tags | `v0.1.3`, `v0.1.2`, `v0.1.1`, `v0.1.0`, `v1.3-phase16-complete`, `v1.2`, `v1.0` |
 | Flutter project version | `0.1.3+4` |
 | Platform directories | Present: `android/`, `linux/`, `windows/`, `web/`; absent: `ios/`, `macos/` |
 | GitHub metadata | Present: issue templates, PR template, Dependabot config, CI workflow, and release workflow |
@@ -37,7 +37,7 @@ Remote CI and release observation therefore used authenticated `gh`/GitHub API e
 | `flutter analyze` | FAIL initially, then PASS after fix | Initial lint: missing braces in `consistency_drift_chart.dart`; rerun: no issues |
 | `flutter test` | PASS | 1170 tests passed, 12 skipped |
 | `flutter test test/infrastructure/secure_storage_test.dart` | PASS | 5 tests passed; platform plugin unavailable in this Linux test shell, no plaintext fallback created |
-| `xvfb-run -a flutter test integration_test/app_test.dart -d linux` | Pending remote CI for this Web-target continuation | Local shell lacks `xvfb-run`; direct WSL Linux run built the test app but hung without output. Remote CI installs `xvfb` and is the authoritative Linux desktop integration smoke gate. |
+| `xvfb-run -a flutter test integration_test/app_test.dart -d linux` | PASS in remote CI for this Web-target continuation | Remote CI run `27206511246` passed the Linux desktop integration smoke. Local shell lacks `xvfb-run`; direct WSL Linux run built the test app but hung without output. |
 
 ## Hygiene Findings
 
@@ -55,8 +55,8 @@ Remote CI and release observation therefore used authenticated `gh`/GitHub API e
 | P0 | Linux secure-storage plaintext fallback contradicted release security goal | Fixed and validated | Removed plaintext fallback from `SecureStorageService`; focused test passed; locked Secret Service behavior fails securely |
 | P0 | GitHub CI/CD absent | Fixed and remotely verified | Added CI and release workflows; final audit verifies the current `main` CI run passes before closing the goal |
 | P0 | Platform artifact builds unverified | Fixed and release-verified | Android and Linux build locally; release workflow published Android, Linux, and Windows artifacts |
-| P0 | Web target absent despite testing goal | Fixed locally; remote release pending | Added `web/` runner, conditional platform code, Web export download writer, CI build gate, and local `flutter build web --release` evidence |
-| P0 | GitHub Release publication for v1.4 hardening | Fixed and verified for `v0.1.2`; pending Web target release | Published `v0.1.2`; Android/Linux/Windows artifacts and `SHA256SUMS.txt` are present; checksum verification passed. `v0.1.3` must add Web artifact evidence before this continuation goal is closed. |
+| P0 | Web target absent despite testing goal | Fixed and release-verified | Added `web/` runner, conditional platform code, Web export download writer, CI build gate, release artifact, and local/remote `flutter build web --release` evidence |
+| P0 | GitHub Release publication for v1.4 hardening | Fixed and verified for `v0.1.3` | Published `v0.1.3`; Android/Linux/Windows/Web artifacts and `SHA256SUMS.txt` are present; checksum verification passed |
 | P1 | README screenshots are 19 images but v1.4 plan requires 21 workflow screenshots | Fixed locally | Generated 21 reproducible offline UI screenshots with `scripts/generate_readme_screenshots.mjs`; both READMEs reference all 21 files and README asset check passes |
 | P1 | Platform support docs absent | Fixed locally | Added `docs/platform/PLATFORM_SUPPORT.md` and `docs/platform/STORAGE_VALIDATION.md` |
 | P2 | Dependency cleanup | Improved, with remaining migration work deferred | Replaced the unconstrained direct `path: any` dependency with `path: ^1.9.1`. Removed discontinued `super_editor_markdown` because current `super_editor` exports the Markdown serialization APIs used by the editor. Several major-version updates remain non-blocking and should be handled separately with focused regression tests. |
