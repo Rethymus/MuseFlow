@@ -38,10 +38,7 @@ class SettingsRepository {
 
   /// Saves the window position to the encrypted settings box.
   Future<void> saveWindowPosition(Offset position) async {
-    await _box.put(_windowPositionKey, {
-      'x': position.dx,
-      'y': position.dy,
-    });
+    await _box.put(_windowPositionKey, {'x': position.dx, 'y': position.dy});
   }
 
   /// Retrieves the persisted window position, or null if not set.

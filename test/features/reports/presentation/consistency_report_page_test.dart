@@ -12,7 +12,9 @@ import 'package:museflow/features/stats/presentation/stats_summary_card.dart';
 void main() {
   group('ConsistencyReportPage', () {
     testWidgets('should render four summary cards', (tester) async {
-      await tester.pumpWidget(_wrap(const ConsistencyReportPage(), report: _report()));
+      await tester.pumpWidget(
+        _wrap(const ConsistencyReportPage(), report: _report()),
+      );
       await tester.pumpAndSettle();
 
       expect(find.byType(StatsSummaryCard), findsNWidgets(4));
@@ -22,40 +24,51 @@ void main() {
       expect(find.text('一致性警报'), findsOneWidget);
     });
 
-    testWidgets('should render consistency trend line chart section', (tester) async {
-      await tester.pumpWidget(_wrap(const ConsistencyReportPage(), report: _report()));
+    testWidgets('should render consistency trend line chart section', (
+      tester,
+    ) async {
+      await tester.pumpWidget(
+        _wrap(const ConsistencyReportPage(), report: _report()),
+      );
       await tester.pumpAndSettle();
 
       expect(find.text('一致性趋势（每10章）'), findsOneWidget);
       expect(find.byType(ConsistencyDriftChart), findsOneWidget);
     });
 
-    testWidgets('should render character and setting sections with entity cards', (tester) async {
-      await tester.pumpWidget(_wrap(const ConsistencyReportPage(), report: _report()));
-      await tester.pumpAndSettle();
-      await tester.scrollUntilVisible(find.text('角色一致性'), 200);
+    testWidgets(
+      'should render character and setting sections with entity cards',
+      (tester) async {
+        await tester.pumpWidget(
+          _wrap(const ConsistencyReportPage(), report: _report()),
+        );
+        await tester.pumpAndSettle();
+        await tester.scrollUntilVisible(find.text('角色一致性'), 200);
 
-      expect(find.text('角色一致性'), findsOneWidget);
-      expect(find.text('林青玄'), findsOneWidget);
-      await tester.scrollUntilVisible(find.text('设定一致性'), 200);
-      expect(find.text('设定一致性'), findsOneWidget);
-      expect(find.text('灵溪宗'), findsOneWidget);
-    });
+        expect(find.text('角色一致性'), findsOneWidget);
+        expect(find.text('林青玄'), findsOneWidget);
+        await tester.scrollUntilVisible(find.text('设定一致性'), 200);
+        expect(find.text('设定一致性'), findsOneWidget);
+        expect(find.text('灵溪宗'), findsOneWidget);
+      },
+    );
 
     testWidgets('should show export button in app bar', (tester) async {
-      await tester.pumpWidget(_wrap(const ConsistencyReportPage(), report: _report()));
+      await tester.pumpWidget(
+        _wrap(const ConsistencyReportPage(), report: _report()),
+      );
 
       expect(find.byIcon(Icons.download_outlined), findsOneWidget);
     });
   });
 
   group('ConsistencyFlagTile', () {
-    testWidgets('should render entity field expected observed and severity', (tester) async {
+    testWidgets('should render entity field expected observed and severity', (
+      tester,
+    ) async {
       await tester.pumpWidget(
         MaterialApp(
-          home: Scaffold(
-            body: ConsistencyFlagTile(flag: _flag()),
-          ),
+          home: Scaffold(body: ConsistencyFlagTile(flag: _flag())),
         ),
       );
 
@@ -67,7 +80,9 @@ void main() {
   });
 
   group('ConsistencyDriftChart', () {
-    testWidgets('should render ten data points with x-axis labels', (tester) async {
+    testWidgets('should render ten data points with x-axis labels', (
+      tester,
+    ) async {
       await tester.pumpWidget(
         MaterialApp(
           home: Scaffold(
@@ -89,7 +104,9 @@ void main() {
 Widget _wrap(Widget child, {required ConsistencyReport report}) {
   return ProviderScope(
     overrides: [
-      consistencyReportProvider.overrideWith(() => _FakeConsistencyReportNotifier(report)),
+      consistencyReportProvider.overrideWith(
+        () => _FakeConsistencyReportNotifier(report),
+      ),
     ],
     child: MaterialApp(home: child),
   );

@@ -6,14 +6,7 @@ import 'package:museflow/features/story_structure/application/guardian_notifier.
 import 'package:museflow/features/story_structure/domain/guardian_annotation.dart';
 
 /// Filter options for guardian finding kinds.
-enum GuardianFilter {
-  all,
-  character,
-  timeline,
-  world,
-  skill,
-  foreshadowing,
-}
+enum GuardianFilter { all, character, timeline, world, skill, foreshadowing }
 
 /// Side panel for manual guardian checks and finding display.
 ///
@@ -59,10 +52,7 @@ class _GuardianPanelState extends ConsumerState<GuardianPanel> {
             children: [
               const Icon(Icons.shield_outlined, size: 20),
               const SizedBox(width: 8),
-              Text(
-                '故事守护',
-                style: Theme.of(context).textTheme.titleMedium,
-              ),
+              Text('故事守护', style: Theme.of(context).textTheme.titleMedium),
             ],
           ),
         ),
@@ -85,8 +75,10 @@ class _GuardianPanelState extends ConsumerState<GuardianPanel> {
     );
   }
 
-  Widget _buildCheckButtons(GuardianCheckResult result,
-      {required bool hasApiKey}) {
+  Widget _buildCheckButtons(
+    GuardianCheckResult result, {
+    required bool hasApiKey,
+  }) {
     if (result.state == GuardianCheckState.checking) {
       return const Row(
         children: [
@@ -108,15 +100,15 @@ class _GuardianPanelState extends ConsumerState<GuardianPanel> {
           Text(
             'AI 检查未启用',
             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: Theme.of(context).colorScheme.outline,
-                ),
+              color: Theme.of(context).colorScheme.outline,
+            ),
           ),
           const SizedBox(height: 4),
           Text(
             '请先在设置中配置 AI 模型和 API Key。',
             style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                  color: Theme.of(context).colorScheme.outline,
-                ),
+              color: Theme.of(context).colorScheme.outline,
+            ),
           ),
         ],
       );
@@ -126,17 +118,15 @@ class _GuardianPanelState extends ConsumerState<GuardianPanel> {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         FilledButton.tonal(
-          onPressed: widget.selectedText != null &&
-                  widget.selectedText!.isNotEmpty
+          onPressed:
+              widget.selectedText != null && widget.selectedText!.isNotEmpty
               ? _runLogicCheck
               : null,
           child: const Text('检查选中文本'),
         ),
         const SizedBox(height: 8),
         FilledButton.tonal(
-          onPressed: widget.currentChapter != null
-              ? _runChapterCheck
-              : null,
+          onPressed: widget.currentChapter != null ? _runChapterCheck : null,
           child: const Text('检查当前章节'),
         ),
       ],
@@ -183,8 +173,7 @@ class _GuardianPanelState extends ConsumerState<GuardianPanel> {
           _FilterChip(
             label: '伏笔',
             selected: _filter == GuardianFilter.foreshadowing,
-            onTap: () =>
-                setState(() => _filter = GuardianFilter.foreshadowing),
+            onTap: () => setState(() => _filter = GuardianFilter.foreshadowing),
           ),
         ],
       ),
@@ -192,7 +181,8 @@ class _GuardianPanelState extends ConsumerState<GuardianPanel> {
   }
 
   List<GuardianAnnotation> _filteredAnnotations(
-      List<GuardianAnnotation> annotations) {
+    List<GuardianAnnotation> annotations,
+  ) {
     if (_filter == GuardianFilter.all) return annotations;
     return annotations.where((a) {
       switch (_filter) {
@@ -259,10 +249,7 @@ class _GuardianPanelState extends ConsumerState<GuardianPanel> {
                     style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
                   ),
                   SizedBox(height: 8),
-                  Text(
-                    '你仍然是最终判断者。',
-                    textAlign: TextAlign.center,
-                  ),
+                  Text('你仍然是最终判断者。', textAlign: TextAlign.center),
                 ],
               ),
             ),
@@ -290,10 +277,7 @@ class _GuardianPanelState extends ConsumerState<GuardianPanel> {
           children: [
             const Icon(Icons.error_outline, size: 48),
             const SizedBox(height: 16),
-            Text(
-              '检查失败',
-              style: Theme.of(context).textTheme.titleMedium,
-            ),
+            Text('检查失败', style: Theme.of(context).textTheme.titleMedium),
             const SizedBox(height: 8),
             Text(message, textAlign: TextAlign.center),
             const SizedBox(height: 16),
@@ -306,9 +290,8 @@ class _GuardianPanelState extends ConsumerState<GuardianPanel> {
                 ),
                 const SizedBox(width: 8),
                 TextButton(
-                  onPressed: () => ref
-                      .read(guardianNotifierProvider.notifier)
-                      .resetToIdle(),
+                  onPressed: () =>
+                      ref.read(guardianNotifierProvider.notifier).resetToIdle(),
                   child: const Text('关闭'),
                 ),
               ],
@@ -379,10 +362,10 @@ class _FilterChip extends StatelessWidget {
         child: Text(
           label,
           style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                color: selected
-                    ? colorScheme.onPrimaryContainer
-                    : colorScheme.onSurface,
-              ),
+            color: selected
+                ? colorScheme.onPrimaryContainer
+                : colorScheme.onSurface,
+          ),
         ),
       ),
     );
@@ -397,10 +380,7 @@ class _FindingCard extends StatelessWidget {
   final GuardianAnnotation annotation;
   final VoidCallback onDismiss;
 
-  const _FindingCard({
-    required this.annotation,
-    required this.onDismiss,
-  });
+  const _FindingCard({required this.annotation, required this.onDismiss});
 
   @override
   Widget build(BuildContext context) {
@@ -452,9 +432,9 @@ class _FindingCard extends StatelessWidget {
                 ),
                 child: Text(
                   '"${annotation.sourceText}"',
-                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        fontStyle: FontStyle.italic,
-                      ),
+                  style: Theme.of(
+                    context,
+                  ).textTheme.bodySmall?.copyWith(fontStyle: FontStyle.italic),
                 ),
               ),
             ],
@@ -463,9 +443,9 @@ class _FindingCard extends StatelessWidget {
               const SizedBox(height: 4),
               Text(
                 '未能精确定位',
-                style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                      color: colorScheme.outline,
-                    ),
+                style: Theme.of(
+                  context,
+                ).textTheme.bodySmall?.copyWith(color: colorScheme.outline),
               ),
             ],
             // Suggested fix (copyable, never auto-applied)

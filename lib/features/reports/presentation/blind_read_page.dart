@@ -26,12 +26,15 @@ class BlindReadPage extends ConsumerWidget {
       body: state.isComplete
           ? _ResultView(result: state.result!)
           : state.hasStarted
-              ? _EvaluationView(state: state)
-              : const _InitialView(),
+          ? _EvaluationView(state: state)
+          : const _InitialView(),
     );
   }
 
-  Future<void> _exportResult(BuildContext context, BlindReadResult result) async {
+  Future<void> _exportResult(
+    BuildContext context,
+    BlindReadResult result,
+  ) async {
     final markdown = const ReportExportService().buildBlindReadMarkdown(result);
     const path = 'anti-ai-scent-report.md';
     await ExportService.dartFileWriter(path, markdown);
@@ -57,7 +60,8 @@ class _InitialView extends ConsumerWidget {
               const Text('需要先完成章节创作才能进行盲读测试。'),
               const SizedBox(height: 16),
               FilledButton(
-                onPressed: () => ref.read(blindReadProvider.notifier).startEvaluation(),
+                onPressed: () =>
+                    ref.read(blindReadProvider.notifier).startEvaluation(),
                 child: const Text('开始盲读'),
               ),
             ],
@@ -77,7 +81,9 @@ class _EvaluationView extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final excerpt = state.currentExcerpt;
     if (excerpt == null) return const Center(child: Text('需要先完成章节创作才能进行盲读测试。'));
-    final progress = state.excerpts.isEmpty ? 0.0 : state.currentIndex / state.excerpts.length;
+    final progress = state.excerpts.isEmpty
+        ? 0.0
+        : state.currentIndex / state.excerpts.length;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
@@ -91,8 +97,8 @@ class _EvaluationView extends ConsumerWidget {
           child: Text(
             '第 ${state.currentIndex + 1} / ${state.excerpts.length} 段',
             style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                  color: Theme.of(context).colorScheme.onSurfaceVariant,
-                ),
+              color: Theme.of(context).colorScheme.onSurfaceVariant,
+            ),
           ),
         ),
         Expanded(
@@ -103,13 +109,18 @@ class _EvaluationView extends ConsumerWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('第${excerpt.chapterIndex}章', style: Theme.of(context).textTheme.labelLarge),
+                  Text(
+                    '第${excerpt.chapterIndex}章',
+                    style: Theme.of(context).textTheme.labelLarge,
+                  ),
                   const SizedBox(height: 16),
                   Expanded(
                     child: SingleChildScrollView(
                       child: Text(
                         excerpt.text,
-                        style: Theme.of(context).textTheme.bodyLarge?.copyWith(height: 1.8),
+                        style: Theme.of(
+                          context,
+                        ).textTheme.bodyLarge?.copyWith(height: 1.8),
                       ),
                     ),
                   ),
@@ -124,17 +135,20 @@ class _EvaluationView extends ConsumerWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               FilledButton(
-                onPressed: () => ref.read(blindReadProvider.notifier).judgeExcerpt(true),
+                onPressed: () =>
+                    ref.read(blindReadProvider.notifier).judgeExcerpt(true),
                 child: const Text('AI 生成'),
               ),
               const SizedBox(width: 12),
               OutlinedButton(
-                onPressed: () => ref.read(blindReadProvider.notifier).judgeExcerpt(false),
+                onPressed: () =>
+                    ref.read(blindReadProvider.notifier).judgeExcerpt(false),
                 child: const Text('人写的'),
               ),
               const SizedBox(width: 12),
               TextButton(
-                onPressed: () => ref.read(blindReadProvider.notifier).skipExcerpt(),
+                onPressed: () =>
+                    ref.read(blindReadProvider.notifier).skipExcerpt(),
                 child: const Text('跳过'),
               ),
             ],
@@ -156,8 +170,8 @@ class _ResultView extends ConsumerWidget {
     final interpretation = score < 0.4
         ? 'AI 内容自然度高，难以分辨。'
         : score <= 0.7
-            ? 'AI 内容有一定可辨识性。'
-            : 'AI 内容特征明显，需要加强反AI味处理。';
+        ? 'AI 内容有一定可辨识性。'
+        : 'AI 内容特征明显，需要加强反AI味处理。';
     return Center(
       child: Card(
         child: Padding(
@@ -165,9 +179,14 @@ class _ResultView extends ConsumerWidget {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Text('盲读辨识率：${(score * 100).toStringAsFixed(0)}%', style: Theme.of(context).textTheme.headlineMedium),
+              Text(
+                '盲读辨识率：${(score * 100).toStringAsFixed(0)}%',
+                style: Theme.of(context).textTheme.headlineMedium,
+              ),
               const SizedBox(height: 12),
-              Text('你判断了 ${result.totalJudged} 段，其中 ${result.correctCount} 段判断正确。'),
+              Text(
+                '你判断了 ${result.totalJudged} 段，其中 ${result.correctCount} 段判断正确。',
+              ),
               const SizedBox(height: 8),
               Text(interpretation),
               const SizedBox(height: 16),

@@ -18,10 +18,12 @@ void main() {
 
     container = ProviderContainer(
       overrides: [
-        foreshadowingRepositoryProvider
-            .overrideWith((ref) async => ForeshadowingRepository(box)),
-        foreshadowingReminderServiceProvider
-            .overrideWithValue(ForeshadowingReminderService()),
+        foreshadowingRepositoryProvider.overrideWith(
+          (ref) async => ForeshadowingRepository(box),
+        ),
+        foreshadowingReminderServiceProvider.overrideWithValue(
+          ForeshadowingReminderService(),
+        ),
       ],
     );
   });
@@ -93,17 +95,19 @@ void main() {
       expect(entries, isEmpty);
     });
 
-    test('markResolved should set status to resolved and set resolvedChapter',
-        () async {
-      final notifier = container.read(foreshadowingNotifierProvider.notifier);
+    test(
+      'markResolved should set status to resolved and set resolvedChapter',
+      () async {
+        final notifier = container.read(foreshadowingNotifierProvider.notifier);
 
-      await notifier.add(makeEntry(id: 'e1'));
-      await notifier.markResolved('e1', resolvedChapter: 10);
+        await notifier.add(makeEntry(id: 'e1'));
+        await notifier.markResolved('e1', resolvedChapter: 10);
 
-      final entry = (await notifier.future).first;
-      expect(entry.status, ForeshadowingStatus.resolved);
-      expect(entry.resolvedChapter, 10);
-    });
+        final entry = (await notifier.future).first;
+        expect(entry.status, ForeshadowingStatus.resolved);
+        expect(entry.resolvedChapter, 10);
+      },
+    );
 
     test('markAbandoned should set status to abandoned', () async {
       final notifier = container.read(foreshadowingNotifierProvider.notifier);
@@ -115,60 +119,69 @@ void main() {
       expect(entry.status, ForeshadowingStatus.abandoned);
     });
 
-    test('remindersForChapter should return reminders for current state',
-        () async {
-      final notifier = container.read(foreshadowingNotifierProvider.notifier);
+    test(
+      'remindersForChapter should return reminders for current state',
+      () async {
+        final notifier = container.read(foreshadowingNotifierProvider.notifier);
 
-      await notifier.add(makeEntry(id: 'e1', plantedChapter: 1));
-      await notifier.add(makeEntry(
-        id: 'e2',
-        status: ForeshadowingStatus.developing,
-        plantedChapter: 1,
-      ));
+        await notifier.add(makeEntry(id: 'e1', plantedChapter: 1));
+        await notifier.add(
+          makeEntry(
+            id: 'e2',
+            status: ForeshadowingStatus.developing,
+            plantedChapter: 1,
+          ),
+        );
 
-      // Wait for state to settle
-      await notifier.future;
+        // Wait for state to settle
+        await notifier.future;
 
-      final reminders = notifier.remindersForChapter(
-        currentChapter: 5,
-        defaultThreshold: 3,
-      );
+        final reminders = notifier.remindersForChapter(
+          currentChapter: 5,
+          defaultThreshold: 3,
+        );
 
-      expect(reminders, isNotEmpty);
-      // Should have at least unresolved count and threshold overdue
-      expect(
-        reminders.any((r) =>
-            r.kind == ForeshadowingReminderKind.unresolvedCount),
-        isTrue,
-      );
-      expect(
-        reminders.any((r) =>
-            r.kind == ForeshadowingReminderKind.thresholdOverdue),
-        isTrue,
-      );
-    });
+        expect(reminders, isNotEmpty);
+        // Should have at least unresolved count and threshold overdue
+        expect(
+          reminders.any(
+            (r) => r.kind == ForeshadowingReminderKind.unresolvedCount,
+          ),
+          isTrue,
+        );
+        expect(
+          reminders.any(
+            (r) => r.kind == ForeshadowingReminderKind.thresholdOverdue,
+          ),
+          isTrue,
+        );
+      },
+    );
 
-    test('remindersForChapter should return empty for resolved entries',
-        () async {
-      final notifier = container.read(foreshadowingNotifierProvider.notifier);
+    test(
+      'remindersForChapter should return empty for resolved entries',
+      () async {
+        final notifier = container.read(foreshadowingNotifierProvider.notifier);
 
-      await notifier.add(makeEntry(id: 'e1'));
-      await notifier.markResolved('e1', resolvedChapter: 5);
+        await notifier.add(makeEntry(id: 'e1'));
+        await notifier.markResolved('e1', resolvedChapter: 5);
 
-      // Wait for state to settle
-      await notifier.future;
+        // Wait for state to settle
+        await notifier.future;
 
-      final reminders = notifier.remindersForChapter(
-        currentChapter: 100,
-        defaultThreshold: 1,
-      );
+        final reminders = notifier.remindersForChapter(
+          currentChapter: 100,
+          defaultThreshold: 1,
+        );
 
-      // Resolved entries should not generate reminders
-      expect(
-        reminders.where((r) =>
-            r.kind == ForeshadowingReminderKind.unresolvedCount),
-        isEmpty,
-      );
-    });
+        // Resolved entries should not generate reminders
+        expect(
+          reminders.where(
+            (r) => r.kind == ForeshadowingReminderKind.unresolvedCount,
+          ),
+          isEmpty,
+        );
+      },
+    );
   });
 }

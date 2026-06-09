@@ -48,8 +48,14 @@ void main() {
           expect(result.aiUsageRate, inInclusiveRange(0.95, 1.0));
           expect(writingSpeed, greaterThan(0));
           expect(result.statsSnapshot.totalUnits, greaterThan(0));
-          expect(result.statsSnapshot.aiAssistRatio, inInclusiveRange(0.95, 1.0));
-          expect(result.tokenAuditSnapshot.totalCalls, greaterThanOrEqualTo(100));
+          expect(
+            result.statsSnapshot.aiAssistRatio,
+            inInclusiveRange(0.95, 1.0),
+          );
+          expect(
+            result.tokenAuditSnapshot.totalCalls,
+            greaterThanOrEqualTo(100),
+          );
           expect(result.tokenAuditSnapshot.totalInputTokens, greaterThan(0));
           expect(result.tokenAuditSnapshot.totalOutputTokens, greaterThan(0));
 
@@ -73,9 +79,15 @@ Future<_StatsJourneyResult> _generateHundredChapterStatsJourney({
   required ProviderContainer container,
   required String manuscriptId,
 }) async {
-  final manuscriptRepository = await container.read(manuscriptRepositoryProvider.future);
-  final chapterRepository = await container.read(chapterRepositoryProvider.future);
-  final statsCollector = await container.read(writingStatsCollectorProvider.future);
+  final manuscriptRepository = await container.read(
+    manuscriptRepositoryProvider.future,
+  );
+  final chapterRepository = await container.read(
+    chapterRepositoryProvider.future,
+  );
+  final statsCollector = await container.read(
+    writingStatsCollectorProvider.future,
+  );
   final auditService = await container.read(tokenAuditServiceProvider.future);
   final manuscript = await manuscriptRepository.add(
     Manuscript(
@@ -86,7 +98,10 @@ Future<_StatsJourneyResult> _generateHundredChapterStatsJourney({
       updatedAt: DateTime(2026, 6, 8),
     ),
   );
-  final chapters = await _createHundredChapters(chapterRepository, manuscript.id);
+  final chapters = await _createHundredChapters(
+    chapterRepository,
+    manuscript.id,
+  );
 
   final pipeline = await container.read(promptPipelineProvider.future);
   final adapter = container.read(openaiAdapterProvider);
@@ -99,7 +114,10 @@ Future<_StatsJourneyResult> _generateHundredChapterStatsJourney({
       text: StoryOutline.chapters[index],
       createdAt: DateTime.now(),
     );
-    final context = PromptContext(fragments: [fragment], bannedPhrases: const []);
+    final context = PromptContext(
+      fragments: [fragment],
+      bannedPhrases: const [],
+    );
     final messages = pipeline.build(context);
 
     Usage? capturedUsage;
@@ -128,17 +146,26 @@ Future<_StatsJourneyResult> _generateHundredChapterStatsJourney({
       projectId: manuscript.id,
       documentId: chapters[index].id,
     );
-    await chapterRepository.updateDocumentContent(chapters[index].id, boundedOutput);
-    debugPrint('[STATS] Chapter ${index + 1}/100 generated (${boundedOutput.length} chars)');
+    await chapterRepository.updateDocumentContent(
+      chapters[index].id,
+      boundedOutput,
+    );
+    debugPrint(
+      '[STATS] Chapter ${index + 1}/100 generated (${boundedOutput.length} chars)',
+    );
   }
 
   await auditService.flush();
   await statsCollector.flush();
-  final auditRepository = await container.read(tokenAuditRepositoryProvider.future);
+  final auditRepository = await container.read(
+    tokenAuditRepositoryProvider.future,
+  );
   final tokenAuditSnapshot = await auditRepository.buildSnapshot();
   _expectCompleteTokenAudit(tokenAuditSnapshot, expectedRecords: 100);
   container.invalidate(writingStatsNotifierProvider);
-  final statsSnapshot = await container.read(writingStatsNotifierProvider.future);
+  final statsSnapshot = await container.read(
+    writingStatsNotifierProvider.future,
+  );
 
   final generatedChapters = chapterRepository.getByManuscriptId(manuscript.id);
   expect(generatedChapters, hasLength(100));
@@ -242,7 +269,9 @@ Future<void> _setupWorldBuilding(ProviderContainer container) async {
   final result = await instantiationService.saveDraft(draft);
   expect(result.worldSetting, isNotNull);
 
-  final characterRepository = await container.read(characterCardRepositoryProvider.future);
+  final characterRepository = await container.read(
+    characterCardRepositoryProvider.future,
+  );
   for (final card in [
     XianxiaFixtures.protagonist(),
     XianxiaFixtures.master(),
@@ -277,7 +306,9 @@ class _DeterministicStatsAdapter implements AIAdapter {
     int? maxTokens,
     void Function(Usage?)? onUsage,
   }) async* {
-    final promptText = messages.map((message) => message.toJson()['content']).join('\n');
+    final promptText = messages
+        .map((message) => message.toJson()['content'])
+        .join('\n');
     if (!promptText.contains('第') || !promptText.contains('林风')) {
       yield* _fallback.createStream(
         apiKey: apiKey,
@@ -302,9 +333,11 @@ class _DeterministicStatsAdapter implements AIAdapter {
 
   String _chapterText(int index) {
     final chapterNo = (index % StoryOutline.chapters.length) + 1;
-    final name = StoryOutline.characterNames[index % StoryOutline.characterNames.length];
+    final name =
+        StoryOutline.characterNames[index % StoryOutline.characterNames.length];
     final plot = StoryOutline.chapters[index % StoryOutline.chapters.length];
-    final text = '第$chapterNo章，林风沿着青云宗山道前行，$name在旁提醒他莫忘清虚真人的告诫。$plot 他没有急着求成，而是先整理灵气、核对门规、记录白灵的反应，再把今日所见写入随身玉简。夜色落下时，苏雪晴递来一盏灵茶，赵天磊的目光从演武场另一侧扫过，新的冲突已经埋下。这一章保持凡人少年稳步成长的节奏，既写修炼压力，也写宗门人情，让知识库中的人物关系、境界限制和世界观禁忌自然进入叙事。林风明白每一次选择都会影响后续百章的因果，因此他只推进一个明确目标，不越过作者亲自打磨的边界。清虚真人要求他每晚复盘战斗细节，把白日的得失化成下一次行动的依据。';
+    final text =
+        '第$chapterNo章，林风沿着青云宗山道前行，$name在旁提醒他莫忘清虚真人的告诫。$plot 他没有急着求成，而是先整理灵气、核对门规、记录白灵的反应，再把今日所见写入随身玉简。夜色落下时，苏雪晴递来一盏灵茶，赵天磊的目光从演武场另一侧扫过，新的冲突已经埋下。这一章保持凡人少年稳步成长的节奏，既写修炼压力，也写宗门人情，让知识库中的人物关系、境界限制和世界观禁忌自然进入叙事。林风明白每一次选择都会影响后续百章的因果，因此他只推进一个明确目标，不越过作者亲自打磨的边界。清虚真人要求他每晚复盘战斗细节，把白日的得失化成下一次行动的依据。';
     return text.substring(0, min(430, text.length));
   }
 

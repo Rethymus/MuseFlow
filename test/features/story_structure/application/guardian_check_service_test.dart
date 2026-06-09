@@ -17,8 +17,9 @@ class TestCharacterSource implements CharacterSource {
     final lowerQuery = query.toLowerCase();
     return _cards.where((card) {
       if (card.name.toLowerCase().contains(lowerQuery)) return true;
-      return card.aliases
-          .any((alias) => alias.toLowerCase().contains(lowerQuery));
+      return card.aliases.any(
+        (alias) => alias.toLowerCase().contains(lowerQuery),
+      );
     }).toList();
   }
 }
@@ -61,7 +62,8 @@ void main() {
           model: 'test-model',
         );
 
-        final text = 'Alice walked into the room and boldly declared her intentions to everyone.';
+        final text =
+            'Alice walked into the room and boldly declared her intentions to everyone.';
 
         final prompt = service.buildPrompt(text: text);
 

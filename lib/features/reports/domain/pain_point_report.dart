@@ -90,16 +90,13 @@ class PainPointReport {
   final List<PainPointIssue> issues;
 
   /// Count of issues with severity '高'.
-  int get totalHigh =>
-      issues.where((i) => i.severity == '高').length;
+  int get totalHigh => issues.where((i) => i.severity == '高').length;
 
   /// Count of issues with severity '中'.
-  int get totalMedium =>
-      issues.where((i) => i.severity == '中').length;
+  int get totalMedium => issues.where((i) => i.severity == '中').length;
 
   /// Count of issues with severity '低'.
-  int get totalLow =>
-      issues.where((i) => i.severity == '低').length;
+  int get totalLow => issues.where((i) => i.severity == '低').length;
 
   PainPointReport copyWith({List<PainPointIssue>? issues}) {
     return PainPointReport(issues: issues ?? this.issues);

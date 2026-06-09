@@ -50,8 +50,9 @@ class ProviderManagementState {
   }) {
     return ProviderManagementState(
       providers: providers ?? this.providers,
-      selectedProvider:
-          clearSelected ? null : (selectedProvider ?? this.selectedProvider),
+      selectedProvider: clearSelected
+          ? null
+          : (selectedProvider ?? this.selectedProvider),
       activeProvider: activeProvider ?? this.activeProvider,
       isLoading: isLoading,
       error: error,
@@ -186,8 +187,7 @@ class ProviderManagementNotifier extends Notifier<ProviderManagementState> {
     }
     try {
       await service.deleteProvider(id);
-      state =
-          state.copyWith(clearSelected: true, clearConnectionResult: true);
+      state = state.copyWith(clearSelected: true, clearConnectionResult: true);
       _reload();
     } catch (e) {
       state = state.copyWith(error: '删除失败: $e');
@@ -220,8 +220,10 @@ class ProviderManagementNotifier extends Notifier<ProviderManagementState> {
       state = state.copyWith(connectionTestResult: '服务未就绪');
       return;
     }
-    state =
-        state.copyWith(isTestingConnection: true, clearConnectionResult: true);
+    state = state.copyWith(
+      isTestingConnection: true,
+      clearConnectionResult: true,
+    );
     try {
       await service.testConnection(
         apiKey: apiKey,
@@ -279,10 +281,7 @@ class ProviderManagementNotifier extends Notifier<ProviderManagementState> {
         baseUrl: baseUrl,
       );
       adapter.dispose();
-      state = state.copyWith(
-        availableModels: models,
-        isFetchingModels: false,
-      );
+      state = state.copyWith(availableModels: models, isFetchingModels: false);
     } catch (_) {
       // Per D-08: silent fallback
       state = state.copyWith(
@@ -301,8 +300,8 @@ class ProviderManagementNotifier extends Notifier<ProviderManagementState> {
 /// Provider for the provider management page state.
 final providerManagementProvider =
     NotifierProvider<ProviderManagementNotifier, ProviderManagementState>(
-  ProviderManagementNotifier.new,
-);
+      ProviderManagementNotifier.new,
+    );
 
 /// Computed provider returning preset provider templates.
 final presetProvidersProvider = Provider<List<AIProvider>>((ref) {

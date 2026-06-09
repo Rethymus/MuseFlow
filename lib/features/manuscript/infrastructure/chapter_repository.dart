@@ -42,7 +42,9 @@ class ChapterRepository {
   List<Chapter> getAll() {
     try {
       return _box.values
-          .map((json) => Chapter.fromJson(Map<String, dynamic>.from(json as Map)))
+          .map(
+            (json) => Chapter.fromJson(Map<String, dynamic>.from(json as Map)),
+          )
           .toList();
     } catch (e) {
       throw StateError('Failed to read chapters: $e');
@@ -66,12 +68,16 @@ class ChapterRepository {
   List<Chapter> getByManuscriptId(String manuscriptId) {
     try {
       return _box.values
-          .map((json) => Chapter.fromJson(Map<String, dynamic>.from(json as Map)))
+          .map(
+            (json) => Chapter.fromJson(Map<String, dynamic>.from(json as Map)),
+          )
           .where((chapter) => chapter.manuscriptId == manuscriptId)
           .toList()
         ..sort((a, b) => a.sortOrder.compareTo(b.sortOrder));
     } catch (e) {
-      throw StateError('Failed to read chapters for manuscript $manuscriptId: $e');
+      throw StateError(
+        'Failed to read chapters for manuscript $manuscriptId: $e',
+      );
     }
   }
 
@@ -101,7 +107,9 @@ class ChapterRepository {
       );
       await _box.put(chapterId, updated.toJson());
     } catch (e) {
-      throw StateError('Failed to update document content for chapter $chapterId: $e');
+      throw StateError(
+        'Failed to update document content for chapter $chapterId: $e',
+      );
     }
   }
 
@@ -125,7 +133,9 @@ class ChapterRepository {
         await _box.delete(chapter.id);
       }
     } catch (e) {
-      throw StateError('Failed to delete chapters for manuscript $manuscriptId: $e');
+      throw StateError(
+        'Failed to delete chapters for manuscript $manuscriptId: $e',
+      );
     }
   }
 }

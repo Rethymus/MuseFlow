@@ -6,27 +6,30 @@ import 'package:museflow/features/reports/domain/blind_read_result.dart';
 
 void main() {
   group('BlindReadService', () {
-    test('should select one eligible excerpt per chapter when count matches chapters', () {
-      final service = BlindReadService(
-        chapterRepository: _FakeChapterRepository(
-          List.generate(
-            10,
-            (index) => _chapter(
-              'c$index',
-              'm1',
-              '第$index章足够长的段落内容，用来进行反AI味盲读测试，确保长度超过五十个字符并且可以被服务抽取，文本继续补足长度。',
-              sortOrder: index + 1,
+    test(
+      'should select one eligible excerpt per chapter when count matches chapters',
+      () {
+        final service = BlindReadService(
+          chapterRepository: _FakeChapterRepository(
+            List.generate(
+              10,
+              (index) => _chapter(
+                'c$index',
+                'm1',
+                '第$index章足够长的段落内容，用来进行反AI味盲读测试，确保长度超过五十个字符并且可以被服务抽取，文本继续补足长度。',
+                sortOrder: index + 1,
+              ),
             ),
           ),
-        ),
-      );
+        );
 
-      final excerpts = service.selectExcerpts(count: 10);
+        final excerpts = service.selectExcerpts(count: 10);
 
-      expect(excerpts, hasLength(10));
-      expect(excerpts.map((e) => e.chapterId).toSet(), hasLength(10));
-      expect(excerpts.every((e) => e.humanVerdict == null), isTrue);
-    });
+        expect(excerpts, hasLength(10));
+        expect(excerpts.map((e) => e.chapterId).toSet(), hasLength(10));
+        expect(excerpts.every((e) => e.humanVerdict == null), isTrue);
+      },
+    );
 
     test('should filter out paragraphs shorter than minParagraphLength', () {
       final service = BlindReadService(
@@ -39,7 +42,10 @@ void main() {
         ]),
       );
 
-      final excerpts = service.selectExcerpts(count: 10, minParagraphLength: 50);
+      final excerpts = service.selectExcerpts(
+        count: 10,
+        minParagraphLength: 50,
+      );
 
       expect(excerpts, hasLength(1));
       expect(excerpts.single.text, isNot(contains('太短')));
@@ -62,7 +68,10 @@ void main() {
 
       final excerpts = service.selectExcerpts(count: 10);
 
-      expect(excerpts.map((e) => e.chapterIndex).toList(), isNot(List.generate(10, (i) => i + 1)));
+      expect(
+        excerpts.map((e) => e.chapterIndex).toList(),
+        isNot(List.generate(10, (i) => i + 1)),
+      );
     });
 
     test('should return empty list when no chapters exist', () {
@@ -97,20 +106,23 @@ void main() {
       expect(result.score, 1.0);
     });
 
-    test('should compute mixed score because all source content is AI generated', () {
-      final service = BlindReadService(
-        chapterRepository: _FakeChapterRepository(const []),
-      );
-      final result = service.computeResult([
-        _excerpt('a', true),
-        _excerpt('b', false),
-        _excerpt('c', true),
-      ]);
+    test(
+      'should compute mixed score because all source content is AI generated',
+      () {
+        final service = BlindReadService(
+          chapterRepository: _FakeChapterRepository(const []),
+        );
+        final result = service.computeResult([
+          _excerpt('a', true),
+          _excerpt('b', false),
+          _excerpt('c', true),
+        ]);
 
-      expect(result.totalJudged, 3);
-      expect(result.correctCount, 2);
-      expect(result.score, closeTo(2 / 3, 0.001));
-    });
+        expect(result.totalJudged, 3);
+        expect(result.correctCount, 2);
+        expect(result.score, closeTo(2 / 3, 0.001));
+      },
+    );
 
     test('should exclude skipped excerpts from totalJudged', () {
       final service = BlindReadService(

@@ -38,6 +38,8 @@ class ChapterContextMiddleware extends PromptMiddleware {
 
     if (buffer.isEmpty) return context;
 
-    return context.addMessage(ChatMessage.system(buffer.toString().trimRight()));
+    return context.addMessage(
+      ChatMessage.system(buffer.toString().trimRight()),
+    );
   }
 }

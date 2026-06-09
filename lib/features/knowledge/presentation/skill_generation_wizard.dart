@@ -7,7 +7,8 @@ class SkillGenerationWizard extends ConsumerStatefulWidget {
   const SkillGenerationWizard({super.key});
 
   @override
-  ConsumerState<SkillGenerationWizard> createState() => _SkillGenerationWizardState();
+  ConsumerState<SkillGenerationWizard> createState() =>
+      _SkillGenerationWizardState();
 }
 
 class _SkillGenerationWizardState extends ConsumerState<SkillGenerationWizard> {
@@ -37,10 +38,16 @@ class _SkillGenerationWizardState extends ConsumerState<SkillGenerationWizard> {
           padding: const EdgeInsets.only(top: 16),
           child: Row(
             children: [
-              FilledButton(onPressed: details.onStepContinue, child: Text(_step == 2 ? '完成' : '下一步')),
+              FilledButton(
+                onPressed: details.onStepContinue,
+                child: Text(_step == 2 ? '完成' : '下一步'),
+              ),
               const SizedBox(width: 8),
               if (details.onStepCancel != null)
-                TextButton(onPressed: details.onStepCancel, child: const Text('上一步')),
+                TextButton(
+                  onPressed: details.onStepCancel,
+                  child: const Text('上一步'),
+                ),
             ],
           ),
         ),
@@ -88,12 +95,17 @@ class _SkillGenerationWizardState extends ConsumerState<SkillGenerationWizard> {
 
   void _continue(bool hasGenerated) {
     if (_step == 0) {
-      if (_nameController.text.trim().isEmpty || _conceptController.text.trim().isEmpty) {
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('请填写名称和概念')));
+      if (_nameController.text.trim().isEmpty ||
+          _conceptController.text.trim().isEmpty) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text('请填写名称和概念')));
         return;
       }
       setState(() => _step = 1);
-      ref.read(skillGenerationNotifierProvider.notifier).generateSkill(
+      ref
+          .read(skillGenerationNotifierProvider.notifier)
+          .generateSkill(
             _conceptController.text.trim(),
             _nameController.text.trim(),
           );

@@ -17,8 +17,8 @@ class TokenAuditRecord {
     required this.manuscriptId,
     this.chapterId,
     required this.timestamp,
-  })  : assert(inputTokens >= 0, 'inputTokens must be non-negative'),
-        assert(outputTokens >= 0, 'outputTokens must be non-negative');
+  }) : assert(inputTokens >= 0, 'inputTokens must be non-negative'),
+       assert(outputTokens >= 0, 'outputTokens must be non-negative');
 
   final String id;
   final int inputTokens;
@@ -41,7 +41,8 @@ class TokenAuditRecord {
       inputTokens: json['inputTokens'] as int,
       outputTokens: json['outputTokens'] as int,
       modelName: json['modelName'] as String,
-      operationType: AuditOperationType.values[json['operationTypeIndex'] as int],
+      operationType:
+          AuditOperationType.values[json['operationTypeIndex'] as int],
       manuscriptId: json['manuscriptId'] as String,
       chapterId: json['chapterId'] as String?,
       timestamp: DateTime.parse(json['timestamp'] as String),

@@ -84,11 +84,7 @@ void main() {
     test('should return 0 score when no excerpts judged', () {
       final result = BlindReadResult(
         excerpts: const [
-          BlindReadExcerpt(
-            text: 't1',
-            chapterId: 'ch-1',
-            chapterIndex: 1,
-          ),
+          BlindReadExcerpt(text: 't1', chapterId: 'ch-1', chapterIndex: 1),
         ],
         correctCount: 0,
       );
@@ -98,10 +94,7 @@ void main() {
     });
 
     test('should support copyWith', () {
-      final result = BlindReadResult(
-        excerpts: const [],
-        correctCount: 0,
-      );
+      final result = BlindReadResult(excerpts: const [], correctCount: 0);
 
       final updated = result.copyWith(correctCount: 5);
       expect(updated.correctCount, 5);

@@ -20,8 +20,9 @@ class _MockCaptureNotifier extends CaptureNotifier {
 
 void main() {
   group('QuickCaptureDialog', () {
-    testWidgets('should render with title, TextField, and action buttons',
-        (tester) async {
+    testWidgets('should render with title, TextField, and action buttons', (
+      tester,
+    ) async {
       await tester.pumpWidget(
         ProviderScope(
           child: MaterialApp(
@@ -60,15 +61,14 @@ void main() {
       expect(find.text('取消'), findsOneWidget);
     });
 
-    testWidgets('should save fragment when 保存 is tapped with text',
-        (tester) async {
+    testWidgets('should save fragment when 保存 is tapped with text', (
+      tester,
+    ) async {
       final mockNotifier = _MockCaptureNotifier();
 
       await tester.pumpWidget(
         ProviderScope(
-          overrides: [
-            captureProvider.overrideWith(() => mockNotifier),
-          ],
+          overrides: [captureProvider.overrideWith(() => mockNotifier)],
           child: MaterialApp(
             home: Scaffold(
               body: Builder(
@@ -107,15 +107,14 @@ void main() {
       expect(find.text('快速捕捉'), findsNothing);
     });
 
-    testWidgets('should close without saving when 取消 is tapped',
-        (tester) async {
+    testWidgets('should close without saving when 取消 is tapped', (
+      tester,
+    ) async {
       final mockNotifier = _MockCaptureNotifier();
 
       await tester.pumpWidget(
         ProviderScope(
-          overrides: [
-            captureProvider.overrideWith(() => mockNotifier),
-          ],
+          overrides: [captureProvider.overrideWith(() => mockNotifier)],
           child: MaterialApp(
             home: Scaffold(
               body: Builder(
@@ -154,15 +153,14 @@ void main() {
       expect(find.text('快速捕捉'), findsNothing);
     });
 
-    testWidgets('should not save when text is empty and 保存 is tapped',
-        (tester) async {
+    testWidgets('should not save when text is empty and 保存 is tapped', (
+      tester,
+    ) async {
       final mockNotifier = _MockCaptureNotifier();
 
       await tester.pumpWidget(
         ProviderScope(
-          overrides: [
-            captureProvider.overrideWith(() => mockNotifier),
-          ],
+          overrides: [captureProvider.overrideWith(() => mockNotifier)],
           child: MaterialApp(
             home: Scaffold(
               body: Builder(
@@ -203,9 +201,7 @@ void main() {
 
       await tester.pumpWidget(
         ProviderScope(
-          overrides: [
-            captureProvider.overrideWith(() => mockNotifier),
-          ],
+          overrides: [captureProvider.overrideWith(() => mockNotifier)],
           child: MaterialApp(
             home: Scaffold(
               body: Builder(
@@ -248,9 +244,7 @@ void main() {
         ProviderScope(
           child: MaterialApp(
             home: QuickCaptureShortcut(
-              child: const Scaffold(
-                body: Text('TEST_CONTENT'),
-              ),
+              child: const Scaffold(body: Text('TEST_CONTENT')),
             ),
           ),
         ),
@@ -286,15 +280,14 @@ void main() {
       expect(foundOurShortcut, isTrue);
     });
 
-    testWidgets('should contain Actions for QuickCaptureIntent',
-        (tester) async {
+    testWidgets('should contain Actions for QuickCaptureIntent', (
+      tester,
+    ) async {
       await tester.pumpWidget(
         ProviderScope(
           child: MaterialApp(
             home: QuickCaptureShortcut(
-              child: const Scaffold(
-                body: Text('TEST_CONTENT'),
-              ),
+              child: const Scaffold(body: Text('TEST_CONTENT')),
             ),
           ),
         ),

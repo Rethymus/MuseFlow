@@ -140,8 +140,7 @@ class _FormatCleanPreviewDialogState extends State<FormatCleanPreviewDialog> {
     );
   }
 
-  Widget _buildSummaryStrip(
-      FormatCleanResult result, ColorScheme colorScheme) {
+  Widget _buildSummaryStrip(FormatCleanResult result, ColorScheme colorScheme) {
     final categories = <FormatChangeCategory>{};
     for (final change in result.changes) {
       categories.add(change.category);
@@ -160,13 +159,15 @@ class _FormatCleanPreviewDialogState extends State<FormatCleanPreviewDialog> {
             style: const TextStyle(fontWeight: FontWeight.w600),
           ),
           const SizedBox(width: 16),
-          ...categories.map((cat) => Padding(
-                padding: const EdgeInsets.only(right: 8),
-                child: Chip(
-                  label: Text(_categoryLabel(cat)),
-                  visualDensity: VisualDensity.compact,
-                ),
-              )),
+          ...categories.map(
+            (cat) => Padding(
+              padding: const EdgeInsets.only(right: 8),
+              child: Chip(
+                label: Text(_categoryLabel(cat)),
+                visualDensity: VisualDensity.compact,
+              ),
+            ),
+          ),
         ],
       ),
     );

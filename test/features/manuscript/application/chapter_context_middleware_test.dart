@@ -57,9 +57,7 @@ void main() {
     });
 
     test('should return unchanged context when no summaries provided', () {
-      final context = PromptContext(
-        fragments: const [],
-      );
+      final context = PromptContext(fragments: const []);
 
       final result = middleware.apply(context);
 

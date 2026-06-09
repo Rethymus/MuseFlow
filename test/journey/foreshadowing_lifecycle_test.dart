@@ -43,7 +43,9 @@ void main() {
           await notifier.add(entry);
         }
 
-        final entries = await container.read(foreshadowingNotifierProvider.future);
+        final entries = await container.read(
+          foreshadowingNotifierProvider.future,
+        );
         expect(entries, hasLength(4));
         expect(
           entries.map((entry) => entry.status).toSet(),
@@ -65,19 +67,39 @@ void main() {
     });
 
     group('State transitions', () {
-      test('should transition entries through planted-developing-resolved', () async {
-        final resolvedEntries = await _runFullForeshadowingLifecycle(container);
+      test(
+        'should transition entries through planted-developing-resolved',
+        () async {
+          final resolvedEntries = await _runFullForeshadowingLifecycle(
+            container,
+          );
 
-        expect(resolvedEntries, hasLength(4));
-        expect(
-          resolvedEntries.map((entry) => entry.status).toSet(),
-          equals({ForeshadowingStatus.resolved}),
-        );
-        expect(_entryById(resolvedEntries, 'fs-mysterious-origin').resolvedChapter, 92);
-        expect(_entryById(resolvedEntries, 'fs-senior-sister-secret').resolvedChapter, 78);
-        expect(_entryById(resolvedEntries, 'fs-forbidden-zone').resolvedChapter, 88);
-        expect(_entryById(resolvedEntries, 'fs-ancient-artifact').resolvedChapter, 96);
-      });
+          expect(resolvedEntries, hasLength(4));
+          expect(
+            resolvedEntries.map((entry) => entry.status).toSet(),
+            equals({ForeshadowingStatus.resolved}),
+          );
+          expect(
+            _entryById(resolvedEntries, 'fs-mysterious-origin').resolvedChapter,
+            92,
+          );
+          expect(
+            _entryById(
+              resolvedEntries,
+              'fs-senior-sister-secret',
+            ).resolvedChapter,
+            78,
+          );
+          expect(
+            _entryById(resolvedEntries, 'fs-forbidden-zone').resolvedChapter,
+            88,
+          );
+          expect(
+            _entryById(resolvedEntries, 'fs-ancient-artifact').resolvedChapter,
+            96,
+          );
+        },
+      );
     });
 
     group('Cross-chapter tracking', () {
@@ -100,34 +122,48 @@ void main() {
     });
 
     group('Reminder service', () {
-      test('should generate threshold overdue reminders at chapter 85', () async {
-        final notifier = container.read(foreshadowingNotifierProvider.notifier);
-        for (final entry in _foreshadowingEntries()) {
-          await notifier.add(entry);
-        }
-        final entries = await container.read(foreshadowingNotifierProvider.future);
-        final service = container.read(foreshadowingReminderServiceProvider);
+      test(
+        'should generate threshold overdue reminders at chapter 85',
+        () async {
+          final notifier = container.read(
+            foreshadowingNotifierProvider.notifier,
+          );
+          for (final entry in _foreshadowingEntries()) {
+            await notifier.add(entry);
+          }
+          final entries = await container.read(
+            foreshadowingNotifierProvider.future,
+          );
+          final service = container.read(foreshadowingReminderServiceProvider);
 
-        final reminders = service.findReminders(
-          entries: entries,
-          currentChapter: 85,
-          defaultThreshold: 50,
-        );
-        final thresholdReminder = reminders.singleWhere(
-          (reminder) => reminder.kind == ForeshadowingReminderKind.thresholdOverdue,
-        );
+          final reminders = service.findReminders(
+            entries: entries,
+            currentChapter: 85,
+            defaultThreshold: 50,
+          );
+          final thresholdReminder = reminders.singleWhere(
+            (reminder) =>
+                reminder.kind == ForeshadowingReminderKind.thresholdOverdue,
+          );
 
-        expect(thresholdReminder.count, greaterThanOrEqualTo(2));
-        expect(thresholdReminder.entryIds, contains('fs-mysterious-origin'));
-        expect(thresholdReminder.entryIds, contains('fs-senior-sister-secret'));
-      });
+          expect(thresholdReminder.count, greaterThanOrEqualTo(2));
+          expect(thresholdReminder.entryIds, contains('fs-mysterious-origin'));
+          expect(
+            thresholdReminder.entryIds,
+            contains('fs-senior-sister-secret'),
+          );
+        },
+      );
     });
 
     group('Full lifecycle end state', () {
       test('should have all threads resolved by chapter 100', () async {
         final resolvedEntries = await _runFullForeshadowingLifecycle(container);
 
-        expect(resolvedEntries, everyElement((ForeshadowingEntry entry) => entry.isResolved));
+        expect(
+          resolvedEntries,
+          everyElement((ForeshadowingEntry entry) => entry.isResolved),
+        );
         expect(
           resolvedEntries.map((entry) => entry.resolvedChapter),
           everyElement(inInclusiveRange(75, 96)),
@@ -140,36 +176,48 @@ void main() {
     });
 
     group('Deviation detection', () {
-      test('should run deviation detection across 100 chapters without errors', () async {
-        await _setupSkills(container);
-        final manuscriptRepository = await container.read(manuscriptRepositoryProvider.future);
-        final chapterRepository = await container.read(chapterRepositoryProvider.future);
-        final manuscript = await manuscriptRepository.add(
-          Manuscript(
-            id: 'ms-foreshadowing-deviation',
-            title: '剑道苍穹',
-            genre: '修仙',
-            createdAt: DateTime(2026, 6, 8),
-            updatedAt: DateTime(2026, 6, 8),
-          ),
-        );
-        final chapters = await _createChapters(chapterRepository, manuscript.id);
+      test(
+        'should run deviation detection across 100 chapters without errors',
+        () async {
+          await _setupSkills(container);
+          final manuscriptRepository = await container.read(
+            manuscriptRepositoryProvider.future,
+          );
+          final chapterRepository = await container.read(
+            chapterRepositoryProvider.future,
+          );
+          final manuscript = await manuscriptRepository.add(
+            Manuscript(
+              id: 'ms-foreshadowing-deviation',
+              title: '剑道苍穹',
+              genre: '修仙',
+              createdAt: DateTime(2026, 6, 8),
+              updatedAt: DateTime(2026, 6, 8),
+            ),
+          );
+          final chapters = await _createChapters(
+            chapterRepository,
+            manuscript.id,
+          );
 
-        await _generateChapterContent(
-          container: container,
-          manuscript: manuscript,
-          chapters: chapters,
-        );
-        final generatedChapters = chapterRepository.getByManuscriptId(manuscript.id);
-        final totalWarnings = await _runDeviationDetection(
-          container: container,
-          manuscript: manuscript,
-          chapters: generatedChapters,
-        );
+          await _generateChapterContent(
+            container: container,
+            manuscript: manuscript,
+            chapters: chapters,
+          );
+          final generatedChapters = chapterRepository.getByManuscriptId(
+            manuscript.id,
+          );
+          final totalWarnings = await _runDeviationDetection(
+            container: container,
+            manuscript: manuscript,
+            chapters: generatedChapters,
+          );
 
-        expect(generatedChapters, hasLength(100));
-        expect(totalWarnings, greaterThanOrEqualTo(100));
-      });
+          expect(generatedChapters, hasLength(100));
+          expect(totalWarnings, greaterThanOrEqualTo(100));
+        },
+      );
     });
   });
 }
@@ -272,11 +320,18 @@ Future<void> _developAndResolve({
       updatedAt: DateTime(2026, 6, 8),
     ),
   );
-  final developingEntries = await container.read(foreshadowingNotifierProvider.future);
-  expect(_entryById(developingEntries, id).status, ForeshadowingStatus.developing);
+  final developingEntries = await container.read(
+    foreshadowingNotifierProvider.future,
+  );
+  expect(
+    _entryById(developingEntries, id).status,
+    ForeshadowingStatus.developing,
+  );
 
   await notifier.markResolved(id, resolvedChapter: resolvedChapter);
-  final resolvedEntries = await container.read(foreshadowingNotifierProvider.future);
+  final resolvedEntries = await container.read(
+    foreshadowingNotifierProvider.future,
+  );
   final resolvedEntry = _entryById(resolvedEntries, id);
   expect(resolvedEntry.status, ForeshadowingStatus.resolved);
   expect(resolvedEntry.resolvedChapter, resolvedChapter);
@@ -303,7 +358,9 @@ class _DeterministicForeshadowAdapter implements AIAdapter {
     int? maxTokens,
     void Function(Usage?)? onUsage,
   }) async* {
-    final promptText = messages.map((message) => message.toJson()['content']).join('\n');
+    final promptText = messages
+        .map((message) => message.toJson()['content'])
+        .join('\n');
     if (promptText.contains('设定一致性审校员')) {
       final response = _deviationWarnings();
       yield response;
@@ -334,9 +391,11 @@ class _DeterministicForeshadowAdapter implements AIAdapter {
 
   String _chapterText(int index) {
     final chapterNo = (index % StoryOutline.chapters.length) + 1;
-    final name = StoryOutline.characterNames[index % StoryOutline.characterNames.length];
+    final name =
+        StoryOutline.characterNames[index % StoryOutline.characterNames.length];
     final plot = StoryOutline.chapters[index % StoryOutline.chapters.length];
-    final text = '第$chapterNo章，林风沿青云宗石阶缓步而上，$name在旁提醒他谨守门规。$plot 他先核对境界限制，再记录白灵的反应，并把清虚真人的叮嘱写入玉简。夜色落下时，苏雪晴送来灵茶，赵天磊从演武场另一侧望来，新的冲突埋下却不急于爆发。林风明白每章只推进一个目标，修炼、宗门人情和伏笔都要留给作者继续打磨，不能越过凡人本心。清虚真人要求他复盘今日得失，确认没有现代科技、越级法术或破坏门规的描写，让故事在百章尺度上保持稳定。';
+    final text =
+        '第$chapterNo章，林风沿青云宗石阶缓步而上，$name在旁提醒他谨守门规。$plot 他先核对境界限制，再记录白灵的反应，并把清虚真人的叮嘱写入玉简。夜色落下时，苏雪晴送来灵茶，赵天磊从演武场另一侧望来，新的冲突埋下却不急于爆发。林风明白每章只推进一个目标，修炼、宗门人情和伏笔都要留给作者继续打磨，不能越过凡人本心。清虚真人要求他复盘今日得失，确认没有现代科技、越级法术或破坏门规的描写，让故事在百章尺度上保持稳定。';
     return text.substring(0, text.length < 430 ? text.length : 430);
   }
 
@@ -355,7 +414,10 @@ class _DeterministicForeshadowAdapter implements AIAdapter {
   }
 }
 
-Future<List<Chapter>> _createChapters(dynamic chapterRepository, String manuscriptId) async {
+Future<List<Chapter>> _createChapters(
+  dynamic chapterRepository,
+  String manuscriptId,
+) async {
   final chapters = <Chapter>[];
   for (var i = 1; i <= 100; i++) {
     final plotPoint = StoryOutline.chapters[i - 1];
@@ -392,7 +454,9 @@ Future<void> _generateChapterContent({
   final adapter = container.read(openaiAdapterProvider);
   final provider = container.read(activeProviderProvider)!;
   final key = container.read(activeApiKeyProvider)!;
-  final chapterRepository = await container.read(chapterRepositoryProvider.future);
+  final chapterRepository = await container.read(
+    chapterRepositoryProvider.future,
+  );
 
   for (var index = 0; index < chapters.length; index++) {
     final fragment = Fragment(
@@ -400,7 +464,10 @@ Future<void> _generateChapterContent({
       text: StoryOutline.chapters[index],
       createdAt: DateTime(2026, 6, 8),
     );
-    final context = PromptContext(fragments: [fragment], bannedPhrases: const []);
+    final context = PromptContext(
+      fragments: [fragment],
+      bannedPhrases: const [],
+    );
     final output = await adapter
         .createStream(
           apiKey: key,
@@ -410,7 +477,10 @@ Future<void> _generateChapterContent({
         )
         .join();
     final boundedOutput = enforceD11Bounds(output);
-    await chapterRepository.updateDocumentContent(chapters[index].id, boundedOutput);
+    await chapterRepository.updateDocumentContent(
+      chapters[index].id,
+      boundedOutput,
+    );
     debugPrint('[FORESHADOWING] Chapter ${index + 1}/100 generated');
   }
 }
@@ -420,9 +490,14 @@ Future<int> _runDeviationDetection({
   required Manuscript manuscript,
   required List<Chapter> chapters,
 }) async {
-  final deviationService = await container.read(deviationDetectionServiceProvider.future);
+  final deviationService = await container.read(
+    deviationDetectionServiceProvider.future,
+  );
   final skillRepo = await container.read(skillRepositoryProvider.future);
-  final activeSkills = skillRepo.getAll().where((skill) => skill.isActive).toList();
+  final activeSkills = skillRepo
+      .getAll()
+      .where((skill) => skill.isActive)
+      .toList();
   expect(activeSkills, isA<List<SkillDocument>>());
   expect(activeSkills, isNotEmpty);
 

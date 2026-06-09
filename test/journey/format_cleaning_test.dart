@@ -31,35 +31,56 @@ void main() {
   });
 
   group('100-chapter batch cleaning', () {
-    test('should clean 100 chapters with no Markdown residue (D-08 category 1)', () {
-      expect(rawChapters, hasLength(100));
-      final cleanedResults = _cleanAll(rawChapters, cleaner);
-      final headingPattern = RegExp(r'(^|\n)#{1,6}\s', multiLine: true);
-      final boldPattern = RegExp(r'\*\*[^*]+\*\*');
+    test(
+      'should clean 100 chapters with no Markdown residue (D-08 category 1)',
+      () {
+        expect(rawChapters, hasLength(100));
+        final cleanedResults = _cleanAll(rawChapters, cleaner);
+        final headingPattern = RegExp(r'(^|\n)#{1,6}\s', multiLine: true);
+        final boldPattern = RegExp(r'\*\*[^*]+\*\*');
 
-      for (var i = 0; i < cleanedResults.length; i++) {
-        final result = cleanedResults[i];
-        if (result.hasChanges) {
-          debugPrint('[D-08] chapter ${i + 1} markdown changes=${result.changes.length}');
+        for (var i = 0; i < cleanedResults.length; i++) {
+          final result = cleanedResults[i];
+          if (result.hasChanges) {
+            debugPrint(
+              '[D-08] chapter ${i + 1} markdown changes=${result.changes.length}',
+            );
+          }
+          expect(
+            result.cleanedText,
+            isNot(matches(headingPattern)),
+            reason: 'Chapter ${i + 1} still has Markdown heading markers',
+          );
+          expect(
+            result.cleanedText,
+            isNot(matches(boldPattern)),
+            reason: 'Chapter ${i + 1} still has bold markers',
+          );
+          expect(
+            result.cleanedText,
+            isNot(contains('```')),
+            reason: 'Chapter ${i + 1} still has code fences',
+          );
         }
-        expect(result.cleanedText, isNot(matches(headingPattern)), reason: 'Chapter ${i + 1} still has Markdown heading markers');
-        expect(result.cleanedText, isNot(matches(boldPattern)), reason: 'Chapter ${i + 1} still has bold markers');
-        expect(result.cleanedText, isNot(contains('```')), reason: 'Chapter ${i + 1} still has code fences');
-      }
-    });
+      },
+    );
 
-    test('should normalize CJK punctuation across 100 chapters (D-08 category 2)', () {
-      final cjkAsciiPunctuationPattern = RegExp(r'[一-鿿][,;:!?]');
-      final cleanedResults = _cleanAll(rawChapters, cleaner);
+    test(
+      'should normalize CJK punctuation across 100 chapters (D-08 category 2)',
+      () {
+        final cjkAsciiPunctuationPattern = RegExp(r'[一-鿿][,;:!?]');
+        final cleanedResults = _cleanAll(rawChapters, cleaner);
 
-      for (var i = 0; i < cleanedResults.length; i++) {
-        expect(
-          cleanedResults[i].cleanedText,
-          isNot(matches(cjkAsciiPunctuationPattern)),
-          reason: 'Chapter ${i + 1} still has CJK followed by ASCII punctuation',
-        );
-      }
-    });
+        for (var i = 0; i < cleanedResults.length; i++) {
+          expect(
+            cleanedResults[i].cleanedText,
+            isNot(matches(cjkAsciiPunctuationPattern)),
+            reason:
+                'Chapter ${i + 1} still has CJK followed by ASCII punctuation',
+          );
+        }
+      },
+    );
 
     test('should normalize layout across 100 chapters (D-08 category 3)', () {
       final excessiveBlankLinesPattern = RegExp(r'\n{4,}');
@@ -79,47 +100,61 @@ void main() {
 
       for (var i = 0; i < cleanedResults.length; i++) {
         final secondPass = cleaner.clean(cleanedResults[i].cleanedText);
-        expect(secondPass.changes, isEmpty, reason: 'Chapter ${i + 1} produced second-pass changes');
+        expect(
+          secondPass.changes,
+          isEmpty,
+          reason: 'Chapter ${i + 1} produced second-pass changes',
+        );
       }
     });
   });
 
   group('FormatCleanResult validation', () {
-    test('should preserve original text and produce non-empty cleaned text for every chapter', () {
-      final cleanedResults = _cleanAll(rawChapters, cleaner);
+    test(
+      'should preserve original text and produce non-empty cleaned text for every chapter',
+      () {
+        final cleanedResults = _cleanAll(rawChapters, cleaner);
 
-      for (var i = 0; i < cleanedResults.length; i++) {
-        final result = cleanedResults[i];
-        expect(result, isA<FormatCleanResult>());
-        expect(result.originalText, rawChapters[i]);
-        expect(result.cleanedText, isNotEmpty, reason: 'Chapter ${i + 1} cleaned text is empty');
-      }
-    });
+        for (var i = 0; i < cleanedResults.length; i++) {
+          final result = cleanedResults[i];
+          expect(result, isA<FormatCleanResult>());
+          expect(result.originalText, rawChapters[i]);
+          expect(
+            result.cleanedText,
+            isNotEmpty,
+            reason: 'Chapter ${i + 1} cleaned text is empty',
+          );
+        }
+      },
+    );
 
-    test('should keep journey container available without external AI calls', () {
-      final provider = container.read(activeProviderProvider);
-      final manuscript = Manuscript(
-        id: 'format-cleaning-journey',
-        title: '剑道苍穹',
-        genre: '修仙',
-        createdAt: _fixedDate,
-        updatedAt: _fixedDate,
-      );
-      final chapter = Chapter(
-        id: 'format-cleaning-chapter-1',
-        manuscriptId: manuscript.id,
-        title: '第1章',
-        sortOrder: 1,
-        documentContent: rawChapters.first,
-        createdAt: _fixedDate,
-        updatedAt: _fixedDate,
-      );
+    test(
+      'should keep journey container available without external AI calls',
+      () {
+        final provider = container.read(activeProviderProvider);
+        final manuscript = Manuscript(
+          id: 'format-cleaning-journey',
+          title: '剑道苍穹',
+          genre: '修仙',
+          createdAt: _fixedDate,
+          updatedAt: _fixedDate,
+        );
+        final chapter = Chapter(
+          id: 'format-cleaning-chapter-1',
+          manuscriptId: manuscript.id,
+          title: '第1章',
+          sortOrder: 1,
+          documentContent: rawChapters.first,
+          createdAt: _fixedDate,
+          updatedAt: _fixedDate,
+        );
 
-      expect(provider, isNotNull);
-      expect(provider!.model, 'fake-model');
-      expect(manuscript.title, '剑道苍穹');
-      expect(chapter.documentContent, contains('**加粗文本**'));
-    });
+        expect(provider, isNotNull);
+        expect(provider!.model, 'fake-model');
+        expect(manuscript.title, '剑道苍穹');
+        expect(chapter.documentContent, contains('**加粗文本**'));
+      },
+    );
   });
 }
 
@@ -146,7 +181,10 @@ List<String> _buildRawChapters() {
   });
 }
 
-List<FormatCleanResult> _cleanAll(List<String> rawChapters, FormatCleaner cleaner) {
+List<FormatCleanResult> _cleanAll(
+  List<String> rawChapters,
+  FormatCleaner cleaner,
+) {
   return [
     for (final chapterContent in rawChapters) cleaner.clean(chapterContent),
   ];

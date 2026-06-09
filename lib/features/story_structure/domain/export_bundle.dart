@@ -75,33 +75,45 @@ class ExportBundle {
           ? DateTime.parse(json['exportedAt'] as String)
           : null,
       manuscriptText: json['manuscriptText'] as String? ?? '',
-      foreshadowingEntries: (json['foreshadowingEntries'] as List<dynamic>?)
-              ?.map((e) => ForeshadowingEntry.fromJson(e as Map<String, dynamic>))
+      foreshadowingEntries:
+          (json['foreshadowingEntries'] as List<dynamic>?)
+              ?.map(
+                (e) => ForeshadowingEntry.fromJson(e as Map<String, dynamic>),
+              )
               .toList() ??
           const [],
-      plotNodes: (json['plotNodes'] as List<dynamic>?)
+      plotNodes:
+          (json['plotNodes'] as List<dynamic>?)
               ?.map((e) => PlotNode.fromJson(e as Map<String, dynamic>))
               .toList() ??
           const [],
-      guardianAnnotations: (json['guardianAnnotations'] as List<dynamic>?)
-              ?.map((e) => GuardianAnnotation.fromJson(e as Map<String, dynamic>))
+      guardianAnnotations:
+          (json['guardianAnnotations'] as List<dynamic>?)
+              ?.map(
+                (e) => GuardianAnnotation.fromJson(e as Map<String, dynamic>),
+              )
               .toList() ??
           const [],
-      characterCards: (json['characterCards'] as List<dynamic>?)
+      characterCards:
+          (json['characterCards'] as List<dynamic>?)
               ?.map((e) => e as Map<String, dynamic>)
               .toList() ??
           const [],
-      worldSettings: (json['worldSettings'] as List<dynamic>?)
+      worldSettings:
+          (json['worldSettings'] as List<dynamic>?)
               ?.map((e) => e as Map<String, dynamic>)
               .toList() ??
           const [],
-      skillDocuments: (json['skillDocuments'] as List<dynamic>?)
+      skillDocuments:
+          (json['skillDocuments'] as List<dynamic>?)
               ?.map((e) => e as Map<String, dynamic>)
               .toList() ??
           const [],
       activeSkillIds:
-          (json['activeSkillIds'] as List<dynamic>?)?.cast<String>() ?? const [],
-      chapters: (json['chapters'] as List<dynamic>?)
+          (json['activeSkillIds'] as List<dynamic>?)?.cast<String>() ??
+          const [],
+      chapters:
+          (json['chapters'] as List<dynamic>?)
               ?.map((e) => ChapterExport.fromJson(e as Map<String, dynamic>))
               .toList() ??
           const [],
@@ -115,11 +127,13 @@ class ExportBundle {
       'schemaVersion': schemaVersion,
       'exportedAt': exportedAt?.toIso8601String(),
       'manuscriptText': manuscriptText,
-      'foreshadowingEntries':
-          foreshadowingEntries.map((e) => e.toJson()).toList(),
+      'foreshadowingEntries': foreshadowingEntries
+          .map((e) => e.toJson())
+          .toList(),
       'plotNodes': plotNodes.map((e) => e.toJson()).toList(),
-      'guardianAnnotations':
-          guardianAnnotations.map((e) => e.toJson()).toList(),
+      'guardianAnnotations': guardianAnnotations
+          .map((e) => e.toJson())
+          .toList(),
       'characterCards': characterCards,
       'worldSettings': worldSettings,
       'skillDocuments': skillDocuments,
@@ -149,19 +163,19 @@ class ExportBundle {
 
   @override
   int get hashCode => Object.hash(
-        schemaVersion,
-        exportedAt,
-        manuscriptText,
-        Object.hashAll(foreshadowingEntries),
-        Object.hashAll(plotNodes),
-        Object.hashAll(guardianAnnotations),
-        Object.hashAll(characterCards),
-        Object.hashAll(worldSettings),
-        Object.hashAll(skillDocuments),
-        Object.hashAll(activeSkillIds),
-        Object.hashAll(chapters),
-        metadata,
-      );
+    schemaVersion,
+    exportedAt,
+    manuscriptText,
+    Object.hashAll(foreshadowingEntries),
+    Object.hashAll(plotNodes),
+    Object.hashAll(guardianAnnotations),
+    Object.hashAll(characterCards),
+    Object.hashAll(worldSettings),
+    Object.hashAll(skillDocuments),
+    Object.hashAll(activeSkillIds),
+    Object.hashAll(chapters),
+    metadata,
+  );
 
   static bool _listEquals<T>(List<T> a, List<T> b) {
     if (a.length != b.length) return false;
@@ -172,7 +186,9 @@ class ExportBundle {
   }
 
   static bool _mapListEquals(
-      List<Map<String, dynamic>> a, List<Map<String, dynamic>> b) {
+    List<Map<String, dynamic>> a,
+    List<Map<String, dynamic>> b,
+  ) {
     if (a.length != b.length) return false;
     for (var i = 0; i < a.length; i++) {
       if (!_mapEquals(a[i], b[i])) return false;

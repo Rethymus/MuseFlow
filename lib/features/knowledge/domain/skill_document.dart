@@ -41,13 +41,13 @@ class SkillSections {
   }
 
   Map<String, dynamic> toJson() => {
-        'powerHierarchy': powerHierarchy,
-        'factionRelations': factionRelations,
-        'rules': rules,
-        'taboos': taboos,
-        'terminology': terminology,
-        'rawContent': rawContent,
-      };
+    'powerHierarchy': powerHierarchy,
+    'factionRelations': factionRelations,
+    'rules': rules,
+    'taboos': taboos,
+    'terminology': terminology,
+    'rawContent': rawContent,
+  };
 
   SkillSections copyWith({
     String? powerHierarchy,
@@ -131,13 +131,13 @@ class SkillSections {
 
   @override
   int get hashCode => Object.hash(
-        powerHierarchy,
-        factionRelations,
-        rules,
-        taboos,
-        terminology,
-        rawContent,
-      );
+    powerHierarchy,
+    factionRelations,
+    rules,
+    taboos,
+    terminology,
+    rawContent,
+  );
 }
 
 class SkillDocument implements KnowledgeEntity {
@@ -190,19 +190,21 @@ class SkillDocument implements KnowledgeEntity {
   }
 
   factory SkillDocument.fromJsonString(String jsonString) {
-    return SkillDocument.fromJson(jsonDecode(jsonString) as Map<String, dynamic>);
+    return SkillDocument.fromJson(
+      jsonDecode(jsonString) as Map<String, dynamic>,
+    );
   }
 
   Map<String, dynamic> toJson() => {
-        'id': id,
-        'name': name,
-        'description': description,
-        'content': content,
-        'sections': sections.toJson(),
-        'isActive': isActive,
-        'createdAt': createdAt.toIso8601String(),
-        'updatedAt': updatedAt?.toIso8601String(),
-      };
+    'id': id,
+    'name': name,
+    'description': description,
+    'content': content,
+    'sections': sections.toJson(),
+    'isActive': isActive,
+    'createdAt': createdAt.toIso8601String(),
+    'updatedAt': updatedAt?.toIso8601String(),
+  };
 
   SkillDocument copyWith({
     String? id,
@@ -257,13 +259,13 @@ class SkillDocument implements KnowledgeEntity {
 
   @override
   int get hashCode => Object.hash(
-        id,
-        name,
-        description,
-        content,
-        sections,
-        isActive,
-        createdAt,
-        updatedAt,
-      );
+    id,
+    name,
+    description,
+    content,
+    sections,
+    isActive,
+    createdAt,
+    updatedAt,
+  );
 }

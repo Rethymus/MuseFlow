@@ -50,9 +50,7 @@ void main() {
     });
 
     Future<void> pumpHubPage(WidgetTester tester) async {
-      await tester.pumpWidget(
-        MaterialApp.router(routerConfig: goRouter),
-      );
+      await tester.pumpWidget(MaterialApp.router(routerConfig: goRouter));
       await tester.pumpAndSettle();
     }
 
@@ -67,9 +65,15 @@ void main() {
       expect(titleFinder, findsNWidgets(2));
 
       // Verify the body title has headlineMedium style
-      final bodyTitleWidget = tester.widgetList<Text>(titleFinder).firstWhere(
-        (text) => text.style?.fontSize == Theme.of(tester.element(titleFinder.first)).textTheme.headlineMedium?.fontSize,
-      );
+      final bodyTitleWidget = tester
+          .widgetList<Text>(titleFinder)
+          .firstWhere(
+            (text) =>
+                text.style?.fontSize ==
+                Theme.of(
+                  tester.element(titleFinder.first),
+                ).textTheme.headlineMedium?.fontSize,
+          );
       expect(bodyTitleWidget.style?.fontSize, isNotNull);
     });
 
@@ -83,7 +87,10 @@ void main() {
 
       final subtitleWidget = tester.widget<Text>(subtitleFinder);
       final context = tester.element(subtitleFinder);
-      expect(subtitleWidget.style, equals(Theme.of(context).textTheme.bodyMedium));
+      expect(
+        subtitleWidget.style,
+        equals(Theme.of(context).textTheme.bodyMedium),
+      );
     });
 
     testWidgets('should render 4 ReportCard widgets with correct titles', (
@@ -97,50 +104,27 @@ void main() {
       expect(find.text('知识库一致性分析'), findsOneWidget);
     });
 
-    testWidgets('should render 4 ReportCard widgets with correct descriptions', (
-      WidgetTester tester,
-    ) async {
-      await pumpHubPage(tester);
+    testWidgets(
+      'should render 4 ReportCard widgets with correct descriptions',
+      (WidgetTester tester) async {
+        await pumpHubPage(tester);
 
-      expect(
-        find.text('万字短篇实际成本与50万字长篇消耗推算'),
-        findsOneWidget,
-      );
-      expect(
-        find.text('功能缺陷 + 体验摩擦 + 缺失需求，按严重程度分类'),
-        findsOneWidget,
-      );
-      expect(
-        find.text('盲读测试评估 AI 生成内容的自然度'),
-        findsOneWidget,
-      );
-      expect(
-        find.text('角色卡和设定集与实际内容的一致性对比'),
-        findsOneWidget,
-      );
-    });
+        expect(find.text('万字短篇实际成本与50万字长篇消耗推算'), findsOneWidget);
+        expect(find.text('功能缺陷 + 体验摩擦 + 缺失需求，按严重程度分类'), findsOneWidget);
+        expect(find.text('盲读测试评估 AI 生成内容的自然度'), findsOneWidget);
+        expect(find.text('角色卡和设定集与实际内容的一致性对比'), findsOneWidget);
+      },
+    );
 
     testWidgets('should render 4 report cards with correct icons', (
       WidgetTester tester,
     ) async {
       await pumpHubPage(tester);
 
-      expect(
-        find.byIcon(Icons.analytics_outlined),
-        findsOneWidget,
-      );
-      expect(
-        find.byIcon(Icons.bug_report_outlined),
-        findsOneWidget,
-      );
-      expect(
-        find.byIcon(Icons.visibility_outlined),
-        findsOneWidget,
-      );
-      expect(
-        find.byIcon(Icons.fact_check_outlined),
-        findsOneWidget,
-      );
+      expect(find.byIcon(Icons.analytics_outlined), findsOneWidget);
+      expect(find.byIcon(Icons.bug_report_outlined), findsOneWidget);
+      expect(find.byIcon(Icons.visibility_outlined), findsOneWidget);
+      expect(find.byIcon(Icons.fact_check_outlined), findsOneWidget);
     });
 
     testWidgets('should render chevron trailing icons on cards', (
@@ -197,9 +181,7 @@ void main() {
       expect(find.byIcon(Icons.chevron_right), findsOneWidget);
     });
 
-    testWidgets('should call onTap when tapped', (
-      WidgetTester tester,
-    ) async {
+    testWidgets('should call onTap when tapped', (WidgetTester tester) async {
       var tapped = false;
       await tester.pumpWidget(
         MaterialApp(
@@ -223,10 +205,7 @@ void main() {
     test('should have all 5 report route constants', () {
       expect(AppConstants.statsReports, '/stats/reports');
       expect(AppConstants.statsReportsTokenCost, '/stats/reports/token-cost');
-      expect(
-        AppConstants.statsReportsPainPoints,
-        '/stats/reports/pain-points',
-      );
+      expect(AppConstants.statsReportsPainPoints, '/stats/reports/pain-points');
       expect(
         AppConstants.statsReportsAntiAiScent,
         '/stats/reports/anti-ai-scent',

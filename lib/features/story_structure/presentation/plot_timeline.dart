@@ -43,10 +43,7 @@ class PlotTimeline extends ConsumerWidget {
                   SizedBox(height: 16),
                   Text(
                     '时间线还空着',
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.w600,
-                    ),
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
                   ),
                   SizedBox(height: 8),
                   Text(
@@ -104,8 +101,8 @@ class _GroupedTimeline extends ConsumerWidget {
                   Text(
                     '第$chapter章',
                     style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                          color: Theme.of(context).colorScheme.primary,
-                        ),
+                      color: Theme.of(context).colorScheme.primary,
+                    ),
                   ),
                   const SizedBox(width: 8),
                   Text(
@@ -185,7 +182,9 @@ class _PlotNodeCard extends ConsumerWidget {
                     ),
                     if (node.linkedForeshadowingIds.isNotEmpty)
                       Chip(
-                        label: Text('${node.linkedForeshadowingIds.length} 条伏笔'),
+                        label: Text(
+                          '${node.linkedForeshadowingIds.length} 条伏笔',
+                        ),
                         avatar: const Icon(Icons.lightbulb_outline, size: 14),
                         visualDensity: VisualDensity.compact,
                         materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,

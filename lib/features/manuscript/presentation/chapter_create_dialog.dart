@@ -5,10 +5,7 @@ import 'package:flutter/services.dart';
 ///
 /// Per T-11-05 (mitigate): Title field validates non-empty and max 100 chars.
 class ChapterCreateDialog extends StatefulWidget {
-  const ChapterCreateDialog({
-    super.key,
-    this.initialTitle = '',
-  });
+  const ChapterCreateDialog({super.key, this.initialTitle = ''});
 
   /// Optional initial title to pre-fill.
   final String initialTitle;
@@ -63,9 +60,7 @@ class _ChapterCreateDialogState extends State<ChapterCreateDialog> {
           errorText: _errorText,
           border: const OutlineInputBorder(),
         ),
-        inputFormatters: [
-          LengthLimitingTextInputFormatter(100),
-        ],
+        inputFormatters: [LengthLimitingTextInputFormatter(100)],
         onSubmitted: (_) => _submit(),
       ),
       actions: [
@@ -73,10 +68,7 @@ class _ChapterCreateDialogState extends State<ChapterCreateDialog> {
           onPressed: () => Navigator.of(context).pop(),
           child: const Text('取消'),
         ),
-        FilledButton(
-          onPressed: _submit,
-          child: const Text('创建'),
-        ),
+        FilledButton(onPressed: _submit, child: const Text('创建')),
       ],
     );
   }

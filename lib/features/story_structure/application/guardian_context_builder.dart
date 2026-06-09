@@ -105,7 +105,8 @@ class GuardianContextBundle {
     }
 
     // Omitted counts note
-    final totalOmitted = omittedCharacterCount +
+    final totalOmitted =
+        omittedCharacterCount +
         omittedWorldSettingCount +
         omittedSkillCount +
         omittedPlotNodeCount +
@@ -226,23 +227,29 @@ class GuardianContextBuilder {
 
   /// Finds characters whose name or any alias appears in the checked text.
   List<CharacterCard> _findCharactersByText(
-      List<CharacterCard> characters, String text) {
+    List<CharacterCard> characters,
+    String text,
+  ) {
     final lowerText = text.toLowerCase();
     return characters.where((card) {
       if (lowerText.contains(card.name.toLowerCase())) return true;
-      return card.aliases
-          .any((alias) => lowerText.contains(alias.toLowerCase()));
+      return card.aliases.any(
+        (alias) => lowerText.contains(alias.toLowerCase()),
+      );
     }).toList();
   }
 
   /// Finds world settings whose name or any alias appears in the checked text.
   List<WorldSetting> _findWorldSettingsByText(
-      List<WorldSetting> settings, String text) {
+    List<WorldSetting> settings,
+    String text,
+  ) {
     final lowerText = text.toLowerCase();
     return settings.where((setting) {
       if (lowerText.contains(setting.name.toLowerCase())) return true;
-      return setting.aliases
-          .any((alias) => lowerText.contains(alias.toLowerCase()));
+      return setting.aliases.any(
+        (alias) => lowerText.contains(alias.toLowerCase()),
+      );
     }).toList();
   }
 
@@ -261,8 +268,7 @@ class GuardianContextBuilder {
     required int budget,
   }) {
     final relevant = _findWorldSettingsByText(worldSettings, checkedText);
-    return _fitWithinBudget(
-        relevant, budget, (s) => '${s.name}: ${s.rules}');
+    return _fitWithinBudget(relevant, budget, (s) => '${s.name}: ${s.rules}');
   }
 
   _BudgetResult<String> _selectSkillConstraints({
@@ -285,7 +291,10 @@ class GuardianContextBuilder {
         return aDiff.compareTo(bDiff);
       });
     return _fitWithinBudget(
-        sorted, budget, (n) => '第${n.chapter}章 ${n.title}: ${n.summary}');
+      sorted,
+      budget,
+      (n) => '第${n.chapter}章 ${n.title}: ${n.summary}',
+    );
   }
 
   _BudgetResult<ForeshadowingEntry> _selectForeshadowing({
@@ -294,16 +303,17 @@ class GuardianContextBuilder {
     required int budget,
   }) {
     // Only unresolved entries, sorted by proximity to current chapter
-    final unresolved = entries
-        .where((e) => e.isOpen)
-        .toList()
+    final unresolved = entries.where((e) => e.isOpen).toList()
       ..sort((a, b) {
         final aDiff = (a.plantedChapter - currentChapter).abs();
         final bDiff = (b.plantedChapter - currentChapter).abs();
         return aDiff.compareTo(bDiff);
       });
     return _fitWithinBudget(
-        unresolved, budget, (e) => '${e.title}: ${e.notes}');
+      unresolved,
+      budget,
+      (e) => '${e.title}: ${e.notes}',
+    );
   }
 
   /// Generic budget-fitting: includes items in order until budget exhausted.

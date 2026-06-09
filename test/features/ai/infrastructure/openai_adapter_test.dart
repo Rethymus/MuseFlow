@@ -24,19 +24,18 @@ void main() {
     });
 
     group('createStream', () {
-      test('should return Stream<String> of text deltas from streaming events',
-          () async {
-        // Simulate the adapter converting ChatStreamEvents to text deltas
+      test(
+        'should return Stream<String> of text deltas from streaming events',
+        () async {
+          // Simulate the adapter converting ChatStreamEvents to text deltas
 
-        // We test the adapter's stream mapping logic by verifying
-        // the method signature and basic contract.
-        // The actual streaming is tested in integration tests.
-        expect(adapter, isNotNull);
-        expect(
-          adapter.createStream,
-          isA<Function>(),
-        );
-      });
+          // We test the adapter's stream mapping logic by verifying
+          // the method signature and basic contract.
+          // The actual streaming is tested in integration tests.
+          expect(adapter, isNotNull);
+          expect(adapter.createStream, isA<Function>());
+        },
+      );
 
       test('should accept apiKey, baseUrl, model, and messages parameters', () {
         // Verify the adapter exposes the correct API surface
@@ -99,74 +98,68 @@ void main() {
         );
       });
 
-      test('should invoke onUsage when a stream completes successfully', () async {
-        Usage? capturedUsage;
-        var callbackCount = 0;
+      test(
+        'should invoke onUsage when a stream completes successfully',
+        () async {
+          Usage? capturedUsage;
+          var callbackCount = 0;
 
-        final event = const ChatStreamEvent(
-          choices: [
-            ChatStreamChoice(delta: ChatDelta(content: 'Hello')),
-          ],
-          usage: Usage(
-            promptTokens: 7,
-            completionTokens: 3,
-            totalTokens: 10,
-          ),
-        );
+          final event = const ChatStreamEvent(
+            choices: [ChatStreamChoice(delta: ChatDelta(content: 'Hello'))],
+            usage: Usage(promptTokens: 7, completionTokens: 3, totalTokens: 10),
+          );
 
-        Stream<String> mapWithUsageCallback(
-          Stream<ChatStreamEvent> events,
-          void Function(Usage?)? onUsage,
-        ) {
-          final accumulator = ChatStreamAccumulator();
-          return events
-              .map((event) {
-                accumulator.add(event);
-                return event.textDelta ?? '';
-              })
-              .where((delta) => delta.isNotEmpty)
-              .transform(
-                StreamTransformer<String, String>.fromHandlers(
-                  handleDone: (sink) {
-                    onUsage?.call(accumulator.usage);
-                    sink.close();
-                  },
-                ),
-              );
-        }
+          Stream<String> mapWithUsageCallback(
+            Stream<ChatStreamEvent> events,
+            void Function(Usage?)? onUsage,
+          ) {
+            final accumulator = ChatStreamAccumulator();
+            return events
+                .map((event) {
+                  accumulator.add(event);
+                  return event.textDelta ?? '';
+                })
+                .where((delta) => delta.isNotEmpty)
+                .transform(
+                  StreamTransformer<String, String>.fromHandlers(
+                    handleDone: (sink) {
+                      onUsage?.call(accumulator.usage);
+                      sink.close();
+                    },
+                  ),
+                );
+          }
 
-        final output = await mapWithUsageCallback(
-          Stream.value(event),
-          (usage) {
+          final output = await mapWithUsageCallback(Stream.value(event), (
+            usage,
+          ) {
             callbackCount++;
             capturedUsage = usage;
-          },
-        ).toList();
+          }).toList();
 
-        expect(output, ['Hello']);
-        expect(callbackCount, 1);
-        expect(capturedUsage?.promptTokens, 7);
-        expect(capturedUsage?.completionTokens, 3);
-        expect(capturedUsage?.totalTokens, 10);
-      });
+          expect(output, ['Hello']);
+          expect(callbackCount, 1);
+          expect(capturedUsage?.promptTokens, 7);
+          expect(capturedUsage?.completionTokens, 3);
+          expect(capturedUsage?.totalTokens, 10);
+        },
+      );
     });
 
     group('error classification', () {
-      test('should classify AuthenticationException as AIAuthException',
-          () async {
-        // Verify the error classifier maps correctly
-        final exception = AuthenticationException(
-          message: 'Invalid API key',
-        );
+      test(
+        'should classify AuthenticationException as AIAuthException',
+        () async {
+          // Verify the error classifier maps correctly
+          final exception = AuthenticationException(message: 'Invalid API key');
 
-        final classified = OpenAIAdapter.classifyException(exception);
-        expect(classified, isA<AIAuthException>());
-      });
+          final classified = OpenAIAdapter.classifyException(exception);
+          expect(classified, isA<AIAuthException>());
+        },
+      );
 
       test('should classify RateLimitException as AIRateLimitException', () {
-        final exception = RateLimitException(
-          message: 'Rate limited',
-        );
+        final exception = RateLimitException(message: 'Rate limited');
 
         final classified = OpenAIAdapter.classifyException(exception);
         expect(classified, isA<AIRateLimitException>());
@@ -194,8 +187,7 @@ void main() {
         expect(classified, isA<AINetworkException>());
       });
 
-      test(
-          'should classify ApiException 401/403 as AIAuthException', () {
+      test('should classify ApiException 401/403 as AIAuthException', () {
         final exception401 = ApiException(
           message: 'Unauthorized',
           statusCode: 401,
@@ -319,18 +311,10 @@ void main() {
         // using a simulated stream of events
         final events = [
           const ChatStreamEvent(
-            choices: [
-              ChatStreamChoice(
-                delta: ChatDelta(content: 'Hello'),
-              ),
-            ],
+            choices: [ChatStreamChoice(delta: ChatDelta(content: 'Hello'))],
           ),
           const ChatStreamEvent(
-            choices: [
-              ChatStreamChoice(
-                delta: ChatDelta(content: ' World'),
-              ),
-            ],
+            choices: [ChatStreamChoice(delta: ChatDelta(content: ' World'))],
           ),
         ];
 
@@ -341,11 +325,7 @@ void main() {
 
       test('should filter null textDelta events', () {
         final event = const ChatStreamEvent(
-          choices: [
-            ChatStreamChoice(
-              delta: ChatDelta(role: 'assistant'),
-            ),
-          ],
+          choices: [ChatStreamChoice(delta: ChatDelta(role: 'assistant'))],
         );
 
         // Role-only events have null textDelta
@@ -354,21 +334,24 @@ void main() {
     });
 
     group('createStream with nullable parameters', () {
-      test('should accept optional temperature, topP, maxTokens parameters', () {
-        // Verify the adapter exposes the extended API surface
-        expect(
-          () => adapter.createStream(
-            apiKey: 'test-key',
-            baseUrl: 'https://api.openai.com/v1',
-            model: 'gpt-4o-mini',
-            messages: [ChatMessage.user('test')],
-            temperature: 1.5,
-            topP: 0.9,
-            maxTokens: 4096,
-          ),
-          returnsNormally,
-        );
-      });
+      test(
+        'should accept optional temperature, topP, maxTokens parameters',
+        () {
+          // Verify the adapter exposes the extended API surface
+          expect(
+            () => adapter.createStream(
+              apiKey: 'test-key',
+              baseUrl: 'https://api.openai.com/v1',
+              model: 'gpt-4o-mini',
+              messages: [ChatMessage.user('test')],
+              temperature: 1.5,
+              topP: 0.9,
+              maxTokens: 4096,
+            ),
+            returnsNormally,
+          );
+        },
+      );
 
       test('should accept null temperature, topP, maxTokens parameters', () {
         expect(
@@ -387,8 +370,7 @@ void main() {
     });
 
     group('fetchModelList security (CR-01/CR-02)', () {
-      test(
-          'should return empty list for non-HTTPS baseUrl '
+      test('should return empty list for non-HTTPS baseUrl '
           '(CR-01)', () async {
         // CR-01: fetchModelList must validate HTTPS before creating OpenAIClient.
         // Per D-08 model-list discovery stays silent on any provider/config error
@@ -406,8 +388,7 @@ void main() {
         }
       });
 
-      test(
-          'should return empty list for empty apiKey without '
+      test('should return empty list for empty apiKey without '
           'validating baseUrl', () async {
         // Empty apiKey early-return should not call _validateBaseUrl.
         final adapter = OpenAIAdapter();
@@ -419,8 +400,7 @@ void main() {
         adapter.dispose();
       });
 
-      test(
-          'should close OpenAIClient even on exception '
+      test('should close OpenAIClient even on exception '
           '(CR-02)', () async {
         // CR-02: client.close() must be called in a finally block.
         // Use an invalid HTTPS URL that will fail DNS resolution,

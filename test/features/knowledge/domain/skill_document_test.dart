@@ -20,17 +20,11 @@ void main() {
     });
 
     test('should reject sections exceeding 10000 characters', () {
-      expect(
-        () => SkillSections(rules: 'a' * 10001),
-        throwsArgumentError,
-      );
+      expect(() => SkillSections(rules: 'a' * 10001), throwsArgumentError);
     });
 
     test('should accept sections at exactly 10000 characters', () {
-      expect(
-        () => SkillSections(rules: 'a' * 10000),
-        returnsNormally,
-      );
+      expect(() => SkillSections(rules: 'a' * 10000), returnsNormally);
     });
   });
 

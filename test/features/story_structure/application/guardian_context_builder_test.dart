@@ -60,9 +60,7 @@ void main() {
       tokenBudget = TokenBudgetCalculator();
     });
 
-    GuardianContextBuilder builder({
-      int budget = 4000,
-    }) {
+    GuardianContextBuilder builder({int budget = 4000}) {
       return GuardianContextBuilder(
         tokenBudgetCalculator: tokenBudget,
         tokenBudget: budget,
@@ -181,7 +179,8 @@ void main() {
           20,
           (i) => makeCharacter(
             id: 'c$i',
-            name: 'Character$i with a long personality description that uses tokens',
+            name:
+                'Character$i with a long personality description that uses tokens',
             personality: 'A' * 200,
           ),
         );
@@ -204,52 +203,55 @@ void main() {
     });
 
     group('world setting relevance', () {
-      test('should include world settings whose name appears in checked text', () {
-        final magic = makeWorldSetting(id: 'w1', name: 'Magic System');
-        final tech = makeWorldSetting(id: 'w2', name: 'Technology');
+      test(
+        'should include world settings whose name appears in checked text',
+        () {
+          final magic = makeWorldSetting(id: 'w1', name: 'Magic System');
+          final tech = makeWorldSetting(id: 'w2', name: 'Technology');
 
-        final result = builder().build(
-          checkedText: 'The Magic System governs all spells.',
-          currentChapter: 1,
-          characters: [],
-          worldSettings: [magic, tech],
-          skillConstraints: const [],
-          plotNodes: [],
-          foreshadowingEntries: [],
-        );
+          final result = builder().build(
+            checkedText: 'The Magic System governs all spells.',
+            currentChapter: 1,
+            characters: [],
+            worldSettings: [magic, tech],
+            skillConstraints: const [],
+            plotNodes: [],
+            foreshadowingEntries: [],
+          );
 
-        expect(result.relevantWorldSettings, contains(magic));
-        expect(result.relevantWorldSettings, isNot(contains(tech)));
-      });
+          expect(result.relevantWorldSettings, contains(magic));
+          expect(result.relevantWorldSettings, isNot(contains(tech)));
+        },
+      );
 
-      test('should include world settings whose alias appears in checked text', () {
-        final magic = makeWorldSetting(
-          id: 'w1',
-          name: 'Magic System',
-          aliases: ['The Weave'],
-        );
+      test(
+        'should include world settings whose alias appears in checked text',
+        () {
+          final magic = makeWorldSetting(
+            id: 'w1',
+            name: 'Magic System',
+            aliases: ['The Weave'],
+          );
 
-        final result = builder().build(
-          checkedText: 'She tapped into The Weave.',
-          currentChapter: 1,
-          characters: [],
-          worldSettings: [magic],
-          skillConstraints: const [],
-          plotNodes: [],
-          foreshadowingEntries: [],
-        );
+          final result = builder().build(
+            checkedText: 'She tapped into The Weave.',
+            currentChapter: 1,
+            characters: [],
+            worldSettings: [magic],
+            skillConstraints: const [],
+            plotNodes: [],
+            foreshadowingEntries: [],
+          );
 
-        expect(result.relevantWorldSettings, contains(magic));
-      });
+          expect(result.relevantWorldSettings, contains(magic));
+        },
+      );
 
       test('should omit unrelated world settings when budget is small', () {
         final settings = List.generate(
           10,
-          (i) => makeWorldSetting(
-            id: 'w$i',
-            name: 'World$i',
-            rules: 'Rule ' * 50,
-          ),
+          (i) =>
+              makeWorldSetting(id: 'w$i', name: 'World$i', rules: 'Rule ' * 50),
         );
 
         final text = settings.map((s) => s.name).join(' and ');
@@ -289,7 +291,10 @@ void main() {
       });
 
       test('should omit skill constraints when budget is exceeded', () {
-        final constraints = List.generate(20, (i) => 'Constraint $i: ${'X' * 100}');
+        final constraints = List.generate(
+          20,
+          (i) => 'Constraint $i: ${'X' * 100}',
+        );
 
         final result = builder(budget: 200).build(
           checkedText: 'Some text',
@@ -307,9 +312,21 @@ void main() {
 
     group('plot node relevance', () {
       test('should prioritize plot nodes matching current chapter', () {
-        final ch3Node = makePlotNode(id: 'p1', title: 'Chapter 3 Event', chapter: 3);
-        final ch5Node = makePlotNode(id: 'p2', title: 'Chapter 5 Event', chapter: 5);
-        final ch1Node = makePlotNode(id: 'p3', title: 'Chapter 1 Event', chapter: 1);
+        final ch3Node = makePlotNode(
+          id: 'p1',
+          title: 'Chapter 3 Event',
+          chapter: 3,
+        );
+        final ch5Node = makePlotNode(
+          id: 'p2',
+          title: 'Chapter 5 Event',
+          chapter: 5,
+        );
+        final ch1Node = makePlotNode(
+          id: 'p3',
+          title: 'Chapter 1 Event',
+          chapter: 1,
+        );
 
         final result = builder().build(
           checkedText: 'The protagonist arrives.',
@@ -469,7 +486,11 @@ void main() {
           skillConstraints: const ['No teleportation.'],
           plotNodes: [makePlotNode(id: 'p1', title: 'Arrival', chapter: 1)],
           foreshadowingEntries: [
-            makeForeshadowing(id: 'f1', title: 'Hidden Power', plantedChapter: 1),
+            makeForeshadowing(
+              id: 'f1',
+              title: 'Hidden Power',
+              plantedChapter: 1,
+            ),
           ],
         );
 

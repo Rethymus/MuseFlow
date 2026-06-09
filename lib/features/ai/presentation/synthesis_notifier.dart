@@ -230,7 +230,8 @@ class SynthesisNotifier extends Notifier<SynthesisState> {
             usage: usage,
             modelName: provider.model,
             operationType: AuditOperationType.synthesis,
-            manuscriptId: '', // TODO: pass from caller when manuscript context available
+            manuscriptId:
+                '', // TODO: pass from caller when manuscript context available
             chapterId: null,
             inputText: inputText,
             outputText: state.accumulatedText,

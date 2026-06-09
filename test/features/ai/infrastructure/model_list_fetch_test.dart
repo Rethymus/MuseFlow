@@ -48,10 +48,7 @@ void main() {
 
     test('should exist as a method on OpenAIAdapter', () {
       // Verify the method exists and has the correct signature
-      expect(
-        adapter.fetchModelList,
-        isA<Function>(),
-      );
+      expect(adapter.fetchModelList, isA<Function>());
     });
   });
 }

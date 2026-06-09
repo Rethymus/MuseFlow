@@ -126,14 +126,14 @@ class ContextAnchor implements AnchorReference {
 
   @override
   int get hashCode => Object.hash(
-        id,
-        text,
-        nodeId,
-        startOffset,
-        endOffset,
-        isPersistent,
-        createdAt,
-      );
+    id,
+    text,
+    nodeId,
+    startOffset,
+    endOffset,
+    isPersistent,
+    createdAt,
+  );
 
   @override
   String toString() =>

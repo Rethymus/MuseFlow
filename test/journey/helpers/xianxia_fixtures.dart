@@ -12,12 +12,7 @@ class XianxiaFixtures {
   static const Uuid _uuid = Uuid();
 
   static List<CharacterCard> characters() {
-    return [
-      protagonist(),
-      master(),
-      senior(),
-      rival(),
-    ];
+    return [protagonist(), master(), senior(), rival()];
   }
 
   /// Protagonist: mortal youth turned cultivator.
@@ -112,9 +107,7 @@ class XianxiaFixtures {
         name: '世界观禁忌',
         description: '本世界中不存在的事物和概念',
         content: '仙侠世界观中禁止出现现代科技元素',
-        sections: SkillSections(
-          taboos: '不存在火器、枪械、现代电子设备；不存在科学概念；通信只能用符箓或灵兽传书',
-        ),
+        sections: SkillSections(taboos: '不存在火器、枪械、现代电子设备；不存在科学概念；通信只能用符箓或灵兽传书'),
         isActive: true,
         createdAt: _fixedDate,
       ),

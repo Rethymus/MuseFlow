@@ -81,22 +81,26 @@ void main() {
       });
 
       test('should return all added cards', () async {
-        await repository.add(CharacterCard(
-          id: '',
-          name: 'Card1',
-          personality: '',
-          appearance: '',
-          backstory: '',
-          createdAt: now,
-        ));
-        await repository.add(CharacterCard(
-          id: '',
-          name: 'Card2',
-          personality: '',
-          appearance: '',
-          backstory: '',
-          createdAt: now,
-        ));
+        await repository.add(
+          CharacterCard(
+            id: '',
+            name: 'Card1',
+            personality: '',
+            appearance: '',
+            backstory: '',
+            createdAt: now,
+          ),
+        );
+        await repository.add(
+          CharacterCard(
+            id: '',
+            name: 'Card2',
+            personality: '',
+            appearance: '',
+            backstory: '',
+            createdAt: now,
+          ),
+        );
 
         final result = repository.getAll();
 
@@ -113,14 +117,16 @@ void main() {
       });
 
       test('should return card by ID', () async {
-        final added = await repository.add(CharacterCard(
-          id: '',
-          name: 'FindMe',
-          personality: '',
-          appearance: '',
-          backstory: '',
-          createdAt: now,
-        ));
+        final added = await repository.add(
+          CharacterCard(
+            id: '',
+            name: 'FindMe',
+            personality: '',
+            appearance: '',
+            backstory: '',
+            createdAt: now,
+          ),
+        );
 
         final result = repository.getById(added.id);
 
@@ -131,14 +137,16 @@ void main() {
 
     group('update', () {
       test('should update existing card and set updatedAt', () async {
-        final added = await repository.add(CharacterCard(
-          id: '',
-          name: 'Original',
-          personality: '',
-          appearance: '',
-          backstory: '',
-          createdAt: now,
-        ));
+        final added = await repository.add(
+          CharacterCard(
+            id: '',
+            name: 'Original',
+            personality: '',
+            appearance: '',
+            backstory: '',
+            createdAt: now,
+          ),
+        );
 
         final updated = added.copyWith(name: 'Updated');
         await repository.update(updated);
@@ -149,14 +157,16 @@ void main() {
       });
 
       test('should persist changes in box', () async {
-        final added = await repository.add(CharacterCard(
-          id: '',
-          name: 'Original',
-          personality: '',
-          appearance: '',
-          backstory: '',
-          createdAt: now,
-        ));
+        final added = await repository.add(
+          CharacterCard(
+            id: '',
+            name: 'Original',
+            personality: '',
+            appearance: '',
+            backstory: '',
+            createdAt: now,
+          ),
+        );
 
         await repository.update(added.copyWith(name: 'Changed'));
 
@@ -167,14 +177,16 @@ void main() {
 
     group('delete', () {
       test('should remove card from box', () async {
-        final added = await repository.add(CharacterCard(
-          id: '',
-          name: 'ToDelete',
-          personality: '',
-          appearance: '',
-          backstory: '',
-          createdAt: now,
-        ));
+        final added = await repository.add(
+          CharacterCard(
+            id: '',
+            name: 'ToDelete',
+            personality: '',
+            appearance: '',
+            backstory: '',
+            createdAt: now,
+          ),
+        );
 
         await repository.delete(added.id);
 
@@ -190,22 +202,26 @@ void main() {
 
     group('searchByName', () {
       test('should find cards by name substring (case-insensitive)', () async {
-        await repository.add(CharacterCard(
-          id: '',
-          name: '李逍遥',
-          personality: '',
-          appearance: '',
-          backstory: '',
-          createdAt: now,
-        ));
-        await repository.add(CharacterCard(
-          id: '',
-          name: '赵灵儿',
-          personality: '',
-          appearance: '',
-          backstory: '',
-          createdAt: now,
-        ));
+        await repository.add(
+          CharacterCard(
+            id: '',
+            name: '李逍遥',
+            personality: '',
+            appearance: '',
+            backstory: '',
+            createdAt: now,
+          ),
+        );
+        await repository.add(
+          CharacterCard(
+            id: '',
+            name: '赵灵儿',
+            personality: '',
+            appearance: '',
+            backstory: '',
+            createdAt: now,
+          ),
+        );
 
         final result = repository.searchByName('逍遥');
 
@@ -214,15 +230,17 @@ void main() {
       });
 
       test('should find cards by alias substring', () async {
-        await repository.add(CharacterCard(
-          id: '',
-          name: '李逍遥',
-          personality: '',
-          appearance: '',
-          backstory: '',
-          aliases: ['逍遥哥哥', '灵儿的心上人'],
-          createdAt: now,
-        ));
+        await repository.add(
+          CharacterCard(
+            id: '',
+            name: '李逍遥',
+            personality: '',
+            appearance: '',
+            backstory: '',
+            aliases: ['逍遥哥哥', '灵儿的心上人'],
+            createdAt: now,
+          ),
+        );
 
         final result = repository.searchByName('心上人');
 
@@ -231,14 +249,16 @@ void main() {
       });
 
       test('should return empty list when no match', () async {
-        await repository.add(CharacterCard(
-          id: '',
-          name: '李逍遥',
-          personality: '',
-          appearance: '',
-          backstory: '',
-          createdAt: now,
-        ));
+        await repository.add(
+          CharacterCard(
+            id: '',
+            name: '李逍遥',
+            personality: '',
+            appearance: '',
+            backstory: '',
+            createdAt: now,
+          ),
+        );
 
         final result = repository.searchByName('不存在');
 

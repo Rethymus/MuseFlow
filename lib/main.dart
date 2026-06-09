@@ -44,10 +44,7 @@ Future<({Size? size, Offset? position})> _readSavedGeometry() async {
     Offset? savedPosition;
     final posData = box.get('windowPosition');
     if (posData != null) {
-      savedPosition = Offset(
-        posData['x'] as double,
-        posData['y'] as double,
-      );
+      savedPosition = Offset(posData['x'] as double, posData['y'] as double);
     }
 
     return (size: savedSize, position: savedPosition);
@@ -118,9 +115,5 @@ void main() async {
     },
   );
 
-  runApp(
-    const ProviderScope(
-      child: MuseFlowApp(),
-    ),
-  );
+  runApp(const ProviderScope(child: MuseFlowApp()));
 }

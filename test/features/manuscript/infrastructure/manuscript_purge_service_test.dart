@@ -31,64 +31,67 @@ void main() {
     await tearDownHiveTest();
   });
 
-  test('purgeExpired deletes chapters then manuscripts older than 30 days', () async {
-    final now = DateTime.now();
-    final oldDate = now.subtract(const Duration(days: 31));
-    final recentDate = now.subtract(const Duration(days: 5));
+  test(
+    'purgeExpired deletes chapters then manuscripts older than 30 days',
+    () async {
+      final now = DateTime.now();
+      final oldDate = now.subtract(const Duration(days: 31));
+      final recentDate = now.subtract(const Duration(days: 5));
 
-    // Old soft-deleted manuscript (should be purged)
-    final oldManuscript = Manuscript(
-      id: 'old-ms',
-      title: 'Old',
-      genre: '玄幻',
-      createdAt: now,
-      updatedAt: now,
-      deletedAt: oldDate,
-    );
-    await manuscriptBox.put('old-ms', oldManuscript.toJson());
+      // Old soft-deleted manuscript (should be purged)
+      final oldManuscript = Manuscript(
+        id: 'old-ms',
+        title: 'Old',
+        genre: '玄幻',
+        createdAt: now,
+        updatedAt: now,
+        deletedAt: oldDate,
+      );
+      await manuscriptBox.put('old-ms', oldManuscript.toJson());
 
-    // Add chapters belonging to old manuscript
-    final oldChapter = Chapter(
-      id: 'old-ch-1',
-      manuscriptId: 'old-ms',
-      title: 'Old Chapter',
-      sortOrder: 0,
-      createdAt: now,
-      updatedAt: now,
-    );
-    await chapterBox.put('old-ch-1', oldChapter.toJson());
+      // Add chapters belonging to old manuscript
+      final oldChapter = Chapter(
+        id: 'old-ch-1',
+        manuscriptId: 'old-ms',
+        title: 'Old Chapter',
+        sortOrder: 0,
+        createdAt: now,
+        updatedAt: now,
+      );
+      await chapterBox.put('old-ch-1', oldChapter.toJson());
 
-    // Recent soft-deleted manuscript (should NOT be purged)
-    final recentManuscript = Manuscript(
-      id: 'recent-ms',
-      title: 'Recent',
-      genre: '科幻',
-      createdAt: now,
-      updatedAt: now,
-      deletedAt: recentDate,
-    );
-    await manuscriptBox.put('recent-ms', recentManuscript.toJson());
+      // Recent soft-deleted manuscript (should NOT be purged)
+      final recentManuscript = Manuscript(
+        id: 'recent-ms',
+        title: 'Recent',
+        genre: '科幻',
+        createdAt: now,
+        updatedAt: now,
+        deletedAt: recentDate,
+      );
+      await manuscriptBox.put('recent-ms', recentManuscript.toJson());
 
-    final recentChapter = Chapter(
-      id: 'recent-ch-1',
-      manuscriptId: 'recent-ms',
-      title: 'Recent Chapter',
-      sortOrder: 0,
-      createdAt: now,
-      updatedAt: now,
-    );
-    await chapterBox.put('recent-ch-1', recentChapter.toJson());
+      final recentChapter = Chapter(
+        id: 'recent-ch-1',
+        manuscriptId: 'recent-ms',
+        title: 'Recent Chapter',
+        sortOrder: 0,
+        createdAt: now,
+        updatedAt: now,
+      );
+      await chapterBox.put('recent-ch-1', recentChapter.toJson());
 
-    await purgeService.purgeExpired();
+      await purgeService.purgeExpired();
 
-    // Old manuscript and chapter should be gone
-    expect(manuscriptRepo.getById('old-ms'), isNull);
-    expect(chapterRepo.getById('old-ch-1'), isNull);
+      // Old manuscript and chapter should be gone
+      expect(manuscriptRepo.getById('old-ms'), isNull);
+      expect(chapterRepo.getById('old-ch-1'), isNull);
 
-    // Recent manuscript and chapter should still exist
-    expect(manuscriptRepo.getById('recent-ms'), isNotNull);
-    expect(chapterRepo.getById('recent-ch-1'), isNotNull);
-  });
+      // Recent manuscript and chapter should still exist
+      expect(manuscriptRepo.getById('recent-ms'), isNotNull);
+      expect(chapterRepo.getById('recent-ch-1'), isNotNull);
+    },
+  );
 
   test('purgeExpired with custom retention period', () async {
     final now = DateTime.now();

@@ -47,8 +47,9 @@ class ForeshadowingRepository {
   List<ForeshadowingEntry> getAll() {
     try {
       return _box.values
-          .map((json) =>
-              ForeshadowingEntry.fromJson(json as Map<String, dynamic>))
+          .map(
+            (json) => ForeshadowingEntry.fromJson(json as Map<String, dynamic>),
+          )
           .toList();
     } catch (e) {
       throw StateError('Failed to read foreshadowing entries: $e');
@@ -75,8 +76,7 @@ class ForeshadowingRepository {
       final updated = entry.copyWith(updatedAt: DateTime.now());
       await _box.put(entry.id, updated.toJson());
     } catch (e) {
-      throw StateError(
-          'Failed to update foreshadowing entry ${entry.id}: $e');
+      throw StateError('Failed to update foreshadowing entry ${entry.id}: $e');
     }
   }
 

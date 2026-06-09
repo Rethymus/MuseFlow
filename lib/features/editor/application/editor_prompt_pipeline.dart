@@ -30,20 +30,19 @@ class EditorPromptPipeline extends PromptPipeline {
   EditorPromptPipeline({
     KnowledgeInjectionMiddleware? knowledgeInjectionMiddleware,
     SkillEnforcementMiddleware? skillEnforcementMiddleware,
-  })
-      : super(
-          middlewares: [
-            SystemPromptMiddleware(),
-            PersonaInjectionMiddleware(),
-            BannedListMiddleware(),
-            ?knowledgeInjectionMiddleware,
-            ?skillEnforcementMiddleware,
-            const ContextAnchorMiddleware(),
-            const ChapterContextMiddleware(),
-            EditorOperationMiddleware(),
-            EditorUserContentMiddleware(),
-          ],
-        );
+  }) : super(
+         middlewares: [
+           SystemPromptMiddleware(),
+           PersonaInjectionMiddleware(),
+           BannedListMiddleware(),
+           ?knowledgeInjectionMiddleware,
+           ?skillEnforcementMiddleware,
+           const ContextAnchorMiddleware(),
+           const ChapterContextMiddleware(),
+           EditorOperationMiddleware(),
+           EditorUserContentMiddleware(),
+         ],
+       );
 }
 
 /// Middleware that appends operation-specific system prompt instructions.
@@ -61,10 +60,8 @@ class EditorOperationMiddleware extends PromptMiddleware {
     if (operation == null) return context;
 
     final instruction = switch (operation) {
-      EditorAIOperation.toneRewrite =>
-        '请调整以下文字的叙事语气和风格，保持原文意思不变。',
-      EditorAIOperation.paragraphPolish =>
-        '请润色以下文段，提升文字质量和文学性。',
+      EditorAIOperation.toneRewrite => '请调整以下文字的叙事语气和风格，保持原文意思不变。',
+      EditorAIOperation.paragraphPolish => '请润色以下文段，提升文字质量和文学性。',
       EditorAIOperation.freeInput =>
         '请根据以下指令修改选中的文字：${context.userInstruction ?? ""}',
     };
@@ -100,9 +97,7 @@ class EditorUserContentMiddleware extends PromptMiddleware {
     if (selectedText == null || selectedText.isEmpty) {
       // No selected text -- fall back to fragment-based content
       // This shouldn't happen in editor mode, but handle gracefully
-      return context.addMessage(
-        ChatMessage.user('没有选中任何文字。'),
-      );
+      return context.addMessage(ChatMessage.user('没有选中任何文字。'));
     }
 
     final buffer = StringBuffer();

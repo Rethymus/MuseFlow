@@ -40,10 +40,7 @@ void main() {
         isPersistent: true,
         createdAt: DateTime(2026, 6, 2),
       );
-      final context = PromptContext(
-        fragments: [],
-        anchors: [anchor],
-      );
+      final context = PromptContext(fragments: [], anchors: [anchor]);
 
       final result = middleware.apply(context);
 
@@ -76,10 +73,7 @@ void main() {
           createdAt: DateTime(2026, 6, 2),
         ),
       ];
-      final context = PromptContext(
-        fragments: [],
-        anchors: anchors,
-      );
+      final context = PromptContext(fragments: [], anchors: anchors);
 
       final result = middleware.apply(context);
 

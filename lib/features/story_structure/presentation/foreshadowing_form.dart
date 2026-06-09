@@ -110,7 +110,8 @@ class _ForeshadowingFormState extends ConsumerState<ForeshadowingForm> {
                   ),
                 ],
                 selected: {_mode},
-                onSelectionChanged: (modes) => setState(() => _mode = modes.first),
+                onSelectionChanged: (modes) =>
+                    setState(() => _mode = modes.first),
               ),
               const SizedBox(height: 16),
 
@@ -181,8 +182,8 @@ class _ForeshadowingFormState extends ConsumerState<ForeshadowingForm> {
                       onSaved: (value) {
                         _targetResolutionChapter =
                             value != null && value.isNotEmpty
-                                ? int.parse(value)
-                                : null;
+                            ? int.parse(value)
+                            : null;
                       },
                     ),
                   ),
@@ -221,10 +222,7 @@ class _ForeshadowingFormState extends ConsumerState<ForeshadowingForm> {
           onPressed: () => Navigator.of(context).pop(),
           child: const Text('取消'),
         ),
-        FilledButton(
-          onPressed: _save,
-          child: Text(_isEditing ? '保存' : '创建'),
-        ),
+        FilledButton(onPressed: _save, child: Text(_isEditing ? '保存' : '创建')),
       ],
     );
   }

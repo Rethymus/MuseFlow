@@ -45,11 +45,6 @@ class EntityMatch {
           length == other.length;
 
   @override
-  int get hashCode => Object.hash(
-        entityId,
-        entityType,
-        entityName,
-        position,
-        length,
-      );
+  int get hashCode =>
+      Object.hash(entityId, entityType, entityName, position, length);
 }

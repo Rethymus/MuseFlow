@@ -81,9 +81,7 @@ void main() {
     });
 
     test('should handle null fields in JSON', () {
-      final json = <String, dynamic>{
-        'currentStep': 1,
-      };
+      final json = <String, dynamic>{'currentStep': 1};
 
       final result = OnboardingProgress.fromJson(json);
 
@@ -119,10 +117,7 @@ void main() {
     });
 
     test('should treat empty string as no world/character name', () {
-      final progress = OnboardingProgress(
-        worldName: '',
-        characterName: '',
-      );
+      final progress = OnboardingProgress(worldName: '', characterName: '');
       expect(progress.hasWorldName, isFalse);
       expect(progress.hasCharacterName, isFalse);
     });
@@ -152,9 +147,7 @@ void main() {
     });
 
     test('should overwrite previous progress on save', () async {
-      await repository.saveProgress(
-        const OnboardingProgress(currentStep: 1),
-      );
+      await repository.saveProgress(const OnboardingProgress(currentStep: 1));
       await repository.saveProgress(
         const OnboardingProgress(currentStep: 3, completedSteps: [0, 1, 2]),
       );
@@ -176,20 +169,20 @@ void main() {
       expect(repository.isCompleted(), isFalse);
     });
 
-    test('should return initial progress when box has non-Map data (T-08-03)',
-        () async {
-      await box.put('onboarding_progress', 'not_a_map');
+    test(
+      'should return initial progress when box has non-Map data (T-08-03)',
+      () async {
+        await box.put('onboarding_progress', 'not_a_map');
 
-      final progress = repository.getProgress();
+        final progress = repository.getProgress();
 
-      expect(progress.currentStep, 0);
-      expect(progress.completedSteps, isEmpty);
-    });
+        expect(progress.currentStep, 0);
+        expect(progress.completedSteps, isEmpty);
+      },
+    );
 
     test('should persist completion flag independently of progress', () async {
-      await repository.saveProgress(
-        const OnboardingProgress(currentStep: 4),
-      );
+      await repository.saveProgress(const OnboardingProgress(currentStep: 4));
       await repository.markCompleted();
 
       // Both should be readable independently

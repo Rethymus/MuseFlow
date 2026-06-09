@@ -12,7 +12,8 @@ import 'helpers/story_outline.dart';
 
 void main() {
   final apiKey = Platform.environment['GLM_API_KEY'];
-  final baseUrl = Platform.environment['GLM_BASE_URL'] ??
+  final baseUrl =
+      Platform.environment['GLM_BASE_URL'] ??
       'https://open.bigmodel.cn/api/paas/v4';
   final model = Platform.environment['GLM_MODEL'] ?? 'glm-4-flash';
 
@@ -86,14 +87,9 @@ void main() {
           fragments.add(await fragmentRepo.addFragment(text));
         }
 
-        final pipeline = await container.read(
-          promptPipelineProvider.future,
-        );
+        final pipeline = await container.read(promptPipelineProvider.future);
 
-        final context = PromptContext(
-          fragments: fragments,
-          bannedPhrases: [],
-        );
+        final context = PromptContext(fragments: fragments, bannedPhrases: []);
 
         final messages = pipeline.build(context);
 
@@ -103,17 +99,15 @@ void main() {
         // Verify at least one message contains fragment text content
         // Extract text content from messages using pattern matching
         String extractContent(ChatMessage m) => switch (m) {
-              SystemMessage(:final content) => content,
-              UserMessage(:final content) => content is UserTextContent
-                  ? content.text
-                  : content.toString(),
-              AssistantMessage(:final content) => content ?? '',
-              DeveloperMessage(:final content) => content,
-              ToolMessage() => '',
-            };
+          SystemMessage(:final content) => content,
+          UserMessage(:final content) =>
+            content is UserTextContent ? content.text : content.toString(),
+          AssistantMessage(:final content) => content ?? '',
+          DeveloperMessage(:final content) => content,
+          ToolMessage() => '',
+        };
 
-        final allContent =
-            messages.map(extractContent).join(' ');
+        final allContent = messages.map(extractContent).join(' ');
 
         // Check that fragment content was assembled into messages
         var foundFragmentContent = false;
@@ -156,14 +150,9 @@ void main() {
           fragments.add(await fragmentRepo.addFragment(text));
         }
 
-        final pipeline = await container.read(
-          promptPipelineProvider.future,
-        );
+        final pipeline = await container.read(promptPipelineProvider.future);
 
-        final context = PromptContext(
-          fragments: fragments,
-          bannedPhrases: [],
-        );
+        final context = PromptContext(fragments: fragments, bannedPhrases: []);
 
         final messages = pipeline.build(context);
 
@@ -199,10 +188,16 @@ void main() {
         print('[SYNTHESIS] Length: ${output.length} chars');
 
         expect(output, isNotEmpty);
-        expect(output.length, greaterThan(50),
-            reason: 'Synthesis output should exceed 50 characters');
-        expect(capturedUsage, isNotNull,
-            reason: 'onUsage callback should be invoked');
+        expect(
+          output.length,
+          greaterThan(50),
+          reason: 'Synthesis output should exceed 50 characters',
+        );
+        expect(
+          capturedUsage,
+          isNotNull,
+          reason: 'onUsage callback should be invoked',
+        );
       },
       skip: apiKey == null ? 'GLM_API_KEY not set' : null,
       timeout: const Timeout(Duration(seconds: 120)),
@@ -230,14 +225,9 @@ void main() {
           fragments.add(await fragmentRepo.addFragment(text));
         }
 
-        final pipeline = await container.read(
-          promptPipelineProvider.future,
-        );
+        final pipeline = await container.read(promptPipelineProvider.future);
 
-        final context = PromptContext(
-          fragments: fragments,
-          bannedPhrases: [],
-        );
+        final context = PromptContext(fragments: fragments, bannedPhrases: []);
 
         final messages = pipeline.build(context);
 
@@ -283,9 +273,12 @@ void main() {
         }
 
         // Assert at least 1 character name found (knowledge injection working)
-        expect(matchedNames.length, greaterThanOrEqualTo(1),
-            reason:
-                'Synthesis should contain at least 1 character name, proving knowledge injection works');
+        expect(
+          matchedNames.length,
+          greaterThanOrEqualTo(1),
+          reason:
+              'Synthesis should contain at least 1 character name, proving knowledge injection works',
+        );
       },
       skip: apiKey == null ? 'GLM_API_KEY not set' : null,
       timeout: const Timeout(Duration(seconds: 120)),

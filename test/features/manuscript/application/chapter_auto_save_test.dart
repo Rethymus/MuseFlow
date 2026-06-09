@@ -1,4 +1,3 @@
-
 import 'package:flutter_test/flutter_test.dart';
 import 'package:hive_ce/hive.dart';
 import 'package:museflow/features/manuscript/domain/chapter.dart';
@@ -127,7 +126,10 @@ void main() {
     await autoSave.forceSave();
 
     // Verify content was persisted through the explicit forceSave
-    expect(repository.getById('ch-1')!.documentContent, equals('dirty content'));
+    expect(
+      repository.getById('ch-1')!.documentContent,
+      equals('dirty content'),
+    );
 
     // Now dispose. After dispose, any pending dirty data should NOT
     // be expected to persist because dispose only cancels timers.
@@ -176,31 +178,52 @@ void main() {
     );
   });
 
-  test('forceSave is awaitable and returns after persistence completes', () async {
-    await box.put('ch-1', createChapter().toJson());
+  test(
+    'forceSave is awaitable and returns after persistence completes',
+    () async {
+      await box.put('ch-1', createChapter().toJson());
 
-    autoSave.onDocumentChanged('ch-1', 'awaitable content');
+      autoSave.onDocumentChanged('ch-1', 'awaitable content');
 
-    // Await forceSave -- it must complete before we proceed
-    await autoSave.forceSave();
+      // Await forceSave -- it must complete before we proceed
+      await autoSave.forceSave();
 
-    // Content must be persisted immediately after await
-    expect(repository.getById('ch-1')!.documentContent, equals('awaitable content'));
-  });
+      // Content must be persisted immediately after await
+      expect(
+        repository.getById('ch-1')!.documentContent,
+        equals('awaitable content'),
+      );
+    },
+  );
 
-  test('switching chapters saves pending changes for previous chapter', () async {
-    await box.put('ch-1', createChapter(id: 'ch-1', documentContent: 'content 1').toJson());
-    await box.put('ch-2', createChapter(id: 'ch-2', documentContent: 'content 2').toJson());
+  test(
+    'switching chapters saves pending changes for previous chapter',
+    () async {
+      await box.put(
+        'ch-1',
+        createChapter(id: 'ch-1', documentContent: 'content 1').toJson(),
+      );
+      await box.put(
+        'ch-2',
+        createChapter(id: 'ch-2', documentContent: 'content 2').toJson(),
+      );
 
-    autoSave.onDocumentChanged('ch-1', 'updated content 1');
+      autoSave.onDocumentChanged('ch-1', 'updated content 1');
 
-    // Switch to another chapter (should force save first)
-    await autoSave.forceSave();
-    autoSave.onDocumentChanged('ch-2', 'updated content 2');
+      // Switch to another chapter (should force save first)
+      await autoSave.forceSave();
+      autoSave.onDocumentChanged('ch-2', 'updated content 2');
 
-    await autoSave.forceSave();
+      await autoSave.forceSave();
 
-    expect(repository.getById('ch-1')!.documentContent, equals('updated content 1'));
-    expect(repository.getById('ch-2')!.documentContent, equals('updated content 2'));
-  });
+      expect(
+        repository.getById('ch-1')!.documentContent,
+        equals('updated content 1'),
+      );
+      expect(
+        repository.getById('ch-2')!.documentContent,
+        equals('updated content 2'),
+      );
+    },
+  );
 }

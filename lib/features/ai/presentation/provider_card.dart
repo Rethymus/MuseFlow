@@ -9,11 +9,7 @@ class ProviderCard extends StatelessWidget {
   final AIProvider provider;
   final VoidCallback onTap;
 
-  const ProviderCard({
-    super.key,
-    required this.provider,
-    required this.onTap,
-  });
+  const ProviderCard({super.key, required this.provider, required this.onTap});
 
   @override
   Widget build(BuildContext context) {
@@ -90,10 +86,10 @@ class ProviderCard extends StatelessWidget {
   }
 
   String get _description => switch (provider.type) {
-        AiProviderType.openai => 'GPT-4o Mini, ${provider.baseUrl}',
-        AiProviderType.deepseek => 'DeepSeek Chat, ${provider.baseUrl}',
-        AiProviderType.ollama => '本地模型, 无需 API Key',
-        AiProviderType.claude => 'Claude Sonnet 4, ${provider.baseUrl}',
-        AiProviderType.custom => '自定义模型配置',
-      };
+    AiProviderType.openai => 'GPT-4o Mini, ${provider.baseUrl}',
+    AiProviderType.deepseek => 'DeepSeek Chat, ${provider.baseUrl}',
+    AiProviderType.ollama => '本地模型, 无需 API Key',
+    AiProviderType.claude => 'Claude Sonnet 4, ${provider.baseUrl}',
+    AiProviderType.custom => '自定义模型配置',
+  };
 }

@@ -41,19 +41,18 @@ void main() {
     }) {
       return ProviderScope(
         overrides: [
-          captureProvider.overrideWith(() => _TestCaptureNotifier(captureState)),
+          captureProvider.overrideWith(
+            () => _TestCaptureNotifier(captureState),
+          ),
           captureInputProvider.overrideWith(() => _TestCaptureInputNotifier()),
         ],
-        child: const MaterialApp(
-          home: Scaffold(
-            body: CapturePage(),
-          ),
-        ),
+        child: const MaterialApp(home: Scaffold(body: CapturePage())),
       );
     }
 
-    testWidgets('should display input field with correct hint text',
-        (tester) async {
+    testWidgets('should display input field with correct hint text', (
+      tester,
+    ) async {
       await tester.pumpWidget(buildTestWidget());
       await tester.pumpAndSettle();
 
@@ -61,35 +60,35 @@ void main() {
       expect(find.text('输入灵感碎片，按回车添加...'), findsOneWidget);
     });
 
-    testWidgets('should show empty state when no fragments exist',
-        (tester) async {
+    testWidgets('should show empty state when no fragments exist', (
+      tester,
+    ) async {
       await tester.pumpWidget(buildTestWidget());
       await tester.pumpAndSettle();
 
       expect(find.text('还没有灵感碎片'), findsOneWidget);
-      expect(
-        find.text('在上方输入框中写下你的第一个灵感，按回车即可保存。'),
-        findsOneWidget,
-      );
+      expect(find.text('在上方输入框中写下你的第一个灵感，按回车即可保存。'), findsOneWidget);
     });
 
-    testWidgets('should display filter chips with correct labels',
-        (tester) async {
+    testWidgets('should display filter chips with correct labels', (
+      tester,
+    ) async {
       await tester.pumpWidget(buildTestWidget());
       await tester.pumpAndSettle();
 
-      expect(find.text('全部'), findsWidgets); // May appear in filter and empty state
+      expect(
+        find.text('全部'),
+        findsWidgets,
+      ); // May appear in filter and empty state
       expect(find.text('故事'), findsOneWidget);
       expect(find.text('章节'), findsOneWidget);
       expect(find.text('场景'), findsOneWidget);
     });
 
-    testWidgets('should display fragment cards with text and timestamp',
-        (tester) async {
-      final state = CaptureState(
-        fragments: testFragments,
-        isLoading: false,
-      );
+    testWidgets('should display fragment cards with text and timestamp', (
+      tester,
+    ) async {
+      final state = CaptureState(fragments: testFragments, isLoading: false);
 
       await tester.pumpWidget(buildTestWidget(captureState: state));
       await tester.pumpAndSettle();
@@ -103,10 +102,7 @@ void main() {
     });
 
     testWidgets('should show checkboxes on fragment cards', (tester) async {
-      final state = CaptureState(
-        fragments: testFragments,
-        isLoading: false,
-      );
+      final state = CaptureState(fragments: testFragments, isLoading: false);
 
       await tester.pumpWidget(buildTestWidget(captureState: state));
       await tester.pumpAndSettle();
@@ -116,9 +112,7 @@ void main() {
 
     testWidgets('should show loading indicator while loading', (tester) async {
       await tester.pumpWidget(
-        buildTestWidget(
-          captureState: const CaptureState(isLoading: true),
-        ),
+        buildTestWidget(captureState: const CaptureState(isLoading: true)),
       );
       // Use pump instead of pumpAndSettle -- CircularProgressIndicator animates indefinitely
       await tester.pump();
@@ -127,10 +121,7 @@ void main() {
     });
 
     testWidgets('should display tag chips on fragment cards', (tester) async {
-      final state = CaptureState(
-        fragments: testFragments,
-        isLoading: false,
-      );
+      final state = CaptureState(fragments: testFragments, isLoading: false);
 
       await tester.pumpWidget(buildTestWidget(captureState: state));
       await tester.pumpAndSettle();

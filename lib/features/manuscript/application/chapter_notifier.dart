@@ -19,32 +19,28 @@ class ChapterNotifier extends AsyncNotifier<List<Chapter>> {
   ///
   /// Call this when entering a manuscript's editor view.
   Future<void> loadChapters(String manuscriptId) async {
-    final repository =
-        await ref.read(chapterRepositoryProvider.future);
+    final repository = await ref.read(chapterRepositoryProvider.future);
     final chapters = repository.getByManuscriptId(manuscriptId);
     state = AsyncData(chapters);
   }
 
   /// Adds a new chapter and refreshes the state.
   Future<void> add(Chapter chapter) async {
-    final repository =
-        await ref.read(chapterRepositoryProvider.future);
+    final repository = await ref.read(chapterRepositoryProvider.future);
     await repository.add(chapter);
     _refreshWith(repository, chapter.manuscriptId);
   }
 
   /// Updates an existing chapter and refreshes the state.
   Future<void> save(Chapter chapter) async {
-    final repository =
-        await ref.read(chapterRepositoryProvider.future);
+    final repository = await ref.read(chapterRepositoryProvider.future);
     await repository.update(chapter);
     _refreshWith(repository, chapter.manuscriptId);
   }
 
   /// Deletes a chapter by ID and refreshes the state.
   Future<void> delete(String id) async {
-    final repository =
-        await ref.read(chapterRepositoryProvider.future);
+    final repository = await ref.read(chapterRepositoryProvider.future);
     final chapter = repository.getById(id);
     await repository.delete(id);
     if (chapter != null) {
@@ -65,8 +61,7 @@ class ChapterNotifier extends AsyncNotifier<List<Chapter>> {
   /// Recalculates all [sortOrder] values to be sequential (0, 1, 2, ...)
   /// after the reorder operation to prevent gap accumulation.
   Future<void> reorder(String manuscriptId, int oldIndex, int newIndex) async {
-    final repository =
-        await ref.read(chapterRepositoryProvider.future);
+    final repository = await ref.read(chapterRepositoryProvider.future);
     final chapters = List<Chapter>.from(
       repository.getByManuscriptId(manuscriptId),
     );
@@ -95,8 +90,7 @@ class ChapterNotifier extends AsyncNotifier<List<Chapter>> {
   /// Copies the title, content, and manuscriptId. The duplicate
   /// is placed at the end of the chapter list.
   Future<void> duplicateChapter(String chapterId) async {
-    final repository =
-        await ref.read(chapterRepositoryProvider.future);
+    final repository = await ref.read(chapterRepositoryProvider.future);
     final existing = repository.getById(chapterId);
     if (existing == null) return;
 
@@ -132,8 +126,7 @@ class ChapterNotifier extends AsyncNotifier<List<Chapter>> {
     String beforeContent,
     String afterContent,
   ) async {
-    final repository =
-        await ref.read(chapterRepositoryProvider.future);
+    final repository = await ref.read(chapterRepositoryProvider.future);
     final existing = repository.getById(chapterId);
     if (existing == null) return;
 
@@ -143,14 +136,11 @@ class ChapterNotifier extends AsyncNotifier<List<Chapter>> {
     final originalSortOrder = existing.sortOrder;
 
     // Update original with beforeContent
-    await repository.update(
-      existing.copyWith(documentContent: beforeContent),
-    );
+    await repository.update(existing.copyWith(documentContent: beforeContent));
 
     // Get all chapters after updating to calculate sortOrder
     final chapters = repository.getByManuscriptId(existing.manuscriptId);
-    final originalIndex =
-        chapters.indexWhere((c) => c.id == chapterId);
+    final originalIndex = chapters.indexWhere((c) => c.id == chapterId);
 
     // Shift chapters after the original up by 1
     for (var i = chapters.length - 1; i > originalIndex; i--) {
@@ -182,8 +172,7 @@ class ChapterNotifier extends AsyncNotifier<List<Chapter>> {
   /// The first chapter receives the combined content, the second is deleted.
   /// All subsequent chapters' sortOrder values are recalculated.
   Future<void> mergeChapters(String chapterId1, String chapterId2) async {
-    final repository =
-        await ref.read(chapterRepositoryProvider.future);
+    final repository = await ref.read(chapterRepositoryProvider.future);
     final chapter1 = repository.getById(chapterId1);
     final chapter2 = repository.getById(chapterId2);
     if (chapter1 == null || chapter2 == null) return;
@@ -202,9 +191,7 @@ class ChapterNotifier extends AsyncNotifier<List<Chapter>> {
     final chapters = repository.getByManuscriptId(chapter1.manuscriptId);
     for (var i = 0; i < chapters.length; i++) {
       if (chapters[i].sortOrder != i) {
-        await repository.update(
-          chapters[i].copyWith(sortOrder: i),
-        );
+        await repository.update(chapters[i].copyWith(sortOrder: i));
       }
     }
 
@@ -213,8 +200,8 @@ class ChapterNotifier extends AsyncNotifier<List<Chapter>> {
 
   /// Refreshes the state by reading the repository again.
   void _refreshWith(ChapterRepository repository, [String? manuscriptId]) {
-    final effectiveManuscriptId = manuscriptId ??
-        (state.asData?.value ?? []).firstOrNull?.manuscriptId;
+    final effectiveManuscriptId =
+        manuscriptId ?? (state.asData?.value ?? []).firstOrNull?.manuscriptId;
     if (effectiveManuscriptId == null) {
       ref.invalidateSelf();
       return;

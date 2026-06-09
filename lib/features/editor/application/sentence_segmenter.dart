@@ -41,8 +41,9 @@ abstract class SentenceSegmenter {
 
         // Check if the NEXT character is the same sentence-ending punctuation.
         // If so, keep accumulating (e.g., ！！！ or …… stays as one group).
-        final nextChar =
-            i + 1 < runes.length ? String.fromCharCode(runes[i + 1]) : null;
+        final nextChar = i + 1 < runes.length
+            ? String.fromCharCode(runes[i + 1])
+            : null;
         if (nextChar != null && nextChar == char && _isSentenceEnd(nextChar)) {
           continue; // More of the same punctuation coming
         }

@@ -66,7 +66,10 @@ void main() {
     test('should have exactly 4 unique groups', () {
       final groups = AuditOperationType.values.map((e) => e.group).toSet();
       expect(groups.length, 4);
-      expect(groups, containsAll(['organize', 'edit', 'worldview', 'template']));
+      expect(
+        groups,
+        containsAll(['organize', 'edit', 'worldview', 'template']),
+      );
     });
 
     test('should map rewrite, polish, freeInput to edit group', () {
@@ -75,11 +78,14 @@ void main() {
       expect(AuditOperationType.freeInput.group, 'edit');
     });
 
-    test('should map skillGen, opening, deviationDetect to worldview group', () {
-      expect(AuditOperationType.skillGen.group, 'worldview');
-      expect(AuditOperationType.opening.group, 'worldview');
-      expect(AuditOperationType.deviationDetect.group, 'worldview');
-    });
+    test(
+      'should map skillGen, opening, deviationDetect to worldview group',
+      () {
+        expect(AuditOperationType.skillGen.group, 'worldview');
+        expect(AuditOperationType.opening.group, 'worldview');
+        expect(AuditOperationType.deviationDetect.group, 'worldview');
+      },
+    );
 
     test('should have non-empty label for each operation type', () {
       for (final operationType in AuditOperationType.values) {

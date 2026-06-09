@@ -94,8 +94,9 @@ class WorldSettingRepository {
       final lowerQuery = query.toLowerCase();
       return getAll().where((setting) {
         if (setting.name.toLowerCase().contains(lowerQuery)) return true;
-        return setting.aliases
-            .any((alias) => alias.toLowerCase().contains(lowerQuery));
+        return setting.aliases.any(
+          (alias) => alias.toLowerCase().contains(lowerQuery),
+        );
       }).toList();
     } catch (e) {
       throw StateError('Failed to search world settings: $e');

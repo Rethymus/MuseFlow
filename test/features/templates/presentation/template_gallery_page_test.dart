@@ -46,7 +46,9 @@ void main() {
       expect(find.text('玄幻｜血脉觉醒'), findsNothing);
     });
 
-    testWidgets('tags are displayed as passive labels without tap handlers', (tester) async {
+    testWidgets('tags are displayed as passive labels without tap handlers', (
+      tester,
+    ) async {
       await _pumpGallery(tester);
       await _pumpUntilFound(tester, find.text('血脉'));
 
@@ -65,7 +67,9 @@ void main() {
       expect(find.byType(DecoratedBox), findsWidgets);
     });
 
-    testWidgets('tapping a template card navigates to template detail route', (tester) async {
+    testWidgets('tapping a template card navigates to template detail route', (
+      tester,
+    ) async {
       final router = GoRouter(
         initialLocation: '/gallery',
         routes: [
@@ -75,9 +79,8 @@ void main() {
           ),
           GoRoute(
             path: '/knowledge/templates/:id',
-            builder: (context, state) => Text(
-              'detail:${state.pathParameters['id']}',
-            ),
+            builder: (context, state) =>
+                Text('detail:${state.pathParameters['id']}'),
           ),
         ],
       );
@@ -95,15 +98,18 @@ void main() {
       // Tap the first template card (玄幻)
       await tester.tap(find.text('玄幻｜血脉觉醒'));
       await tester.pump(const Duration(milliseconds: 300));
-      await _pumpUntilFound(tester, find.textContaining('detail:'), maxPumps: 10);
-
-      expect(
-        find.text('detail:male-xuanhuan-bloodline'),
-        findsOneWidget,
+      await _pumpUntilFound(
+        tester,
+        find.textContaining('detail:'),
+        maxPumps: 10,
       );
+
+      expect(find.text('detail:male-xuanhuan-bloodline'), findsOneWidget);
     });
 
-    testWidgets('shows loading indicator before templates load', (tester) async {
+    testWidgets('shows loading indicator before templates load', (
+      tester,
+    ) async {
       // Use a slow-loading repository to observe loading state
       final slowRepository = WorldTemplateRepository(
         assetPath: 'test.json',
@@ -132,7 +138,9 @@ void main() {
       expect(find.byType(CircularProgressIndicator), findsNothing);
     });
 
-    testWidgets('route constant knowledgeTemplates matches expected path', (tester) async {
+    testWidgets('route constant knowledgeTemplates matches expected path', (
+      tester,
+    ) async {
       // Verify the constant exists and has the expected value
       expect(AppConstants.knowledgeTemplates, '/knowledge/templates');
 

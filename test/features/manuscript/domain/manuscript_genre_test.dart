@@ -34,8 +34,11 @@ void main() {
         final color = ManuscriptGenre.genreColor(genre);
         expect(color, isNonZero, reason: 'Genre "$genre" should have a color');
         // Verify it is a valid ARGB color (0xFF prefix)
-        expect(color & 0xFF000000, 0xFF000000,
-            reason: 'Genre "$genre" color should be opaque (0xFF alpha)');
+        expect(
+          color & 0xFF000000,
+          0xFF000000,
+          reason: 'Genre "$genre" color should be opaque (0xFF alpha)',
+        );
       }
     });
 
@@ -45,17 +48,11 @@ void main() {
     });
 
     test('statusValues contains correct manuscript statuses', () {
-      expect(
-        ManuscriptGenre.statusValues,
-        ['构思中', '写作中', '已完成'],
-      );
+      expect(ManuscriptGenre.statusValues, ['构思中', '写作中', '已完成']);
     });
 
     test('chapterStatusValues contains correct chapter statuses', () {
-      expect(
-        ManuscriptGenre.chapterStatusValues,
-        ['草稿', '初稿', '精修', '定稿'],
-      );
+      expect(ManuscriptGenre.chapterStatusValues, ['草稿', '初稿', '精修', '定稿']);
     });
 
     test('all genre colors are visually distinct', () {
@@ -65,8 +62,11 @@ void main() {
         colors.add(color);
       }
       // All 14 genres should have distinct colors
-      expect(colors.length, 14,
-          reason: 'Each genre should have a unique color');
+      expect(
+        colors.length,
+        14,
+        reason: 'Each genre should have a unique color',
+      );
     });
   });
 }

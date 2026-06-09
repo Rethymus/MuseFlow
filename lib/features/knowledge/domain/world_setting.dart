@@ -181,17 +181,17 @@ class WorldSetting implements KnowledgeEntity {
 
   @override
   int get hashCode => Object.hash(
-        id,
-        name,
-        description,
-        rules,
-        factions,
-        geography,
-        techLevel,
-        Object.hashAll(aliases),
-        createdAt,
-        updatedAt,
-      );
+    id,
+    name,
+    description,
+    rules,
+    factions,
+    geography,
+    techLevel,
+    Object.hashAll(aliases),
+    createdAt,
+    updatedAt,
+  );
 
   @override
   String toString() =>

@@ -101,8 +101,9 @@ class EditorAIState {
     return EditorAIState(
       isStreaming: isStreaming ?? this.isStreaming,
       operation: operation ?? this.operation,
-      progressText:
-          progressText == _sentinel ? this.progressText : progressText as String?,
+      progressText: progressText == _sentinel
+          ? this.progressText
+          : progressText as String?,
       error: error == _sentinel ? this.error : error as String?,
       selectedText: selectedText ?? this.selectedText,
       selectionNodeId: selectionNodeId ?? this.selectionNodeId,
@@ -111,8 +112,9 @@ class EditorAIState {
       userInstruction: userInstruction == _sentinel
           ? this.userInstruction
           : userInstruction as String?,
-      diffResult:
-          diffResult == _sentinel ? this.diffResult : diffResult as DiffResult?,
+      diffResult: diffResult == _sentinel
+          ? this.diffResult
+          : diffResult as DiffResult?,
     );
   }
 }

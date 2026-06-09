@@ -22,8 +22,7 @@ class ManuscriptNotifier extends AsyncNotifier<List<Manuscript>> {
   /// Delegates to [ManuscriptRepository.add] for the manuscript and
   /// [ChapterRepository.add] for the initial chapter.
   Future<void> create(Manuscript manuscript) async {
-    final manuscriptRepo =
-        await ref.read(manuscriptRepositoryProvider.future);
+    final manuscriptRepo = await ref.read(manuscriptRepositoryProvider.future);
     final chapterRepo = await ref.read(chapterRepositoryProvider.future);
 
     final saved = await manuscriptRepo.add(manuscript);
@@ -47,8 +46,7 @@ class ManuscriptNotifier extends AsyncNotifier<List<Manuscript>> {
 
   /// Updates an existing manuscript and refreshes the state.
   Future<void> save(Manuscript manuscript) async {
-    final repository =
-        await ref.read(manuscriptRepositoryProvider.future);
+    final repository = await ref.read(manuscriptRepositoryProvider.future);
     await repository.update(manuscript);
     ref.invalidateSelf();
   }
@@ -58,8 +56,7 @@ class ManuscriptNotifier extends AsyncNotifier<List<Manuscript>> {
   /// Sets [deletedAt] via the repository. The manuscript remains
   /// recoverable for 30 days.
   Future<void> softDelete(String id) async {
-    final repository =
-        await ref.read(manuscriptRepositoryProvider.future);
+    final repository = await ref.read(manuscriptRepositoryProvider.future);
     await repository.softDelete(id);
     ref.invalidateSelf();
   }
@@ -68,8 +65,7 @@ class ManuscriptNotifier extends AsyncNotifier<List<Manuscript>> {
   ///
   /// Cascades chapter deletion before manuscript hard-deletion.
   Future<void> purgeDeleted() async {
-    final manuscriptRepo =
-        await ref.read(manuscriptRepositoryProvider.future);
+    final manuscriptRepo = await ref.read(manuscriptRepositoryProvider.future);
     final chapterRepo = await ref.read(chapterRepositoryProvider.future);
 
     final cutoff = DateTime.now().subtract(const Duration(days: 30));

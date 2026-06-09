@@ -41,9 +41,10 @@ class TokenAuditService {
     required String inputText,
     required String outputText,
   }) {
-    final inputTokens = usage?.promptTokens ??
-        _tokenBudgetCalculator.estimateTokens(inputText);
-    final outputTokens = usage?.completionTokens ??
+    final inputTokens =
+        usage?.promptTokens ?? _tokenBudgetCalculator.estimateTokens(inputText);
+    final outputTokens =
+        usage?.completionTokens ??
         _tokenBudgetCalculator.estimateTokens(outputText);
 
     final record = TokenAuditRecord(

@@ -78,8 +78,7 @@ class ProcessingResult {
 /// ```
 class AntiAIScentProcessor {
   /// The keys from the built-in synonym map, used to seed user's banned list.
-  static List<String> get synonymKeys =>
-      _synonymMap.keys.toList();
+  static List<String> get synonymKeys => _synonymMap.keys.toList();
 
   /// Fixed synonym map for auto-replacement per D-09.
   /// Empty string values mean "delete the phrase".
@@ -145,10 +144,7 @@ class AntiAIScentProcessor {
   }
 
   /// Applies auto-replacement from the fixed synonym map.
-  String _applyAutoReplacements(
-    String text,
-    List<TextHighlight> highlights,
-  ) {
+  String _applyAutoReplacements(String text, List<TextHighlight> highlights) {
     var result = text;
     for (final entry in _synonymMap.entries) {
       final phrase = entry.key;
@@ -213,15 +209,18 @@ class AntiAIScentProcessor {
       }
 
       // Record highlight before replacement shifts positions
-      highlights.add(TextHighlight(
-        start: index,
-        end: index + phrase.length,
-        originalText: phrase,
-        type: type,
-      ));
+      highlights.add(
+        TextHighlight(
+          start: index,
+          end: index + phrase.length,
+          originalText: phrase,
+          type: type,
+        ),
+      );
 
       // Perform replacement
-      result = result.substring(0, index) +
+      result =
+          result.substring(0, index) +
           replacement +
           result.substring(index + phrase.length);
 
@@ -249,11 +248,9 @@ class AntiAIScentProcessor {
   /// sides, so it's embedded. But "然而他" only has CJK after, so
   /// it's a valid standalone usage.
   bool _isAtValidBoundary(String text, int index, int phraseLength) {
-    final beforeIsCjk =
-        index > 0 && _isCjkChar(text[index - 1]);
+    final beforeIsCjk = index > 0 && _isCjkChar(text[index - 1]);
     final afterIndex = index + phraseLength;
-    final afterIsCjk =
-        afterIndex < text.length && _isCjkChar(text[afterIndex]);
+    final afterIsCjk = afterIndex < text.length && _isCjkChar(text[afterIndex]);
 
     // Only block when BOTH sides are CJK (phrase is embedded in a word)
     return !(beforeIsCjk && afterIsCjk);
@@ -279,16 +276,16 @@ class AntiAIScentProcessor {
 
         // Wrap with 【】 markers
         final marked = '【$matchedText】';
-        result = result.substring(0, start) +
-            marked +
-            result.substring(end);
+        result = result.substring(0, start) + marked + result.substring(end);
 
-        highlights.add(TextHighlight(
-          start: start,
-          end: start + marked.length,
-          originalText: matchedText,
-          type: HighlightType.structuralPattern,
-        ));
+        highlights.add(
+          TextHighlight(
+            start: start,
+            end: start + marked.length,
+            originalText: matchedText,
+            type: HighlightType.structuralPattern,
+          ),
+        );
 
         // Move offset past the marked text
         offset = start + marked.length;

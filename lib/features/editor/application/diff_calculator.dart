@@ -13,7 +13,6 @@ import 'package:museflow/features/editor/domain/diff_state.dart';
 /// them by index. For equal sentence counts, produces 1:1 modifications.
 /// For unequal counts, extra sentences become insertions or deletions.
 class DiffCalculator {
-
   /// Calculates a [DiffResult] comparing [originalText] with [aiText].
   ///
   /// Parameters:
@@ -47,38 +46,44 @@ class DiffCalculator {
         // Modification: both original and AI sentences exist
         final orig = originalSentences[i];
         final ai = aiSentences[i];
-        diffs.add(SentenceDiff(
-          originalText: orig,
-          newText: ai,
-          status: DiffStatus.pending,
-          nodeId: nodeId,
-          startOffset: offset,
-          endOffset: offset + orig.length,
-        ));
+        diffs.add(
+          SentenceDiff(
+            originalText: orig,
+            newText: ai,
+            status: DiffStatus.pending,
+            nodeId: nodeId,
+            startOffset: offset,
+            endOffset: offset + orig.length,
+          ),
+        );
         offset += orig.length;
       } else if (hasOriginal) {
         // Deletion: original sentence has no AI counterpart
         final orig = originalSentences[i];
-        diffs.add(SentenceDiff(
-          originalText: orig,
-          newText: null,
-          status: DiffStatus.pending,
-          nodeId: nodeId,
-          startOffset: offset,
-          endOffset: offset + orig.length,
-        ));
+        diffs.add(
+          SentenceDiff(
+            originalText: orig,
+            newText: null,
+            status: DiffStatus.pending,
+            nodeId: nodeId,
+            startOffset: offset,
+            endOffset: offset + orig.length,
+          ),
+        );
         offset += orig.length;
       } else {
         // Insertion: AI sentence has no original counterpart
         final ai = aiSentences[i];
-        diffs.add(SentenceDiff(
-          originalText: null,
-          newText: ai,
-          status: DiffStatus.pending,
-          nodeId: nodeId,
-          startOffset: offset,
-          endOffset: offset + ai.length,
-        ));
+        diffs.add(
+          SentenceDiff(
+            originalText: null,
+            newText: ai,
+            status: DiffStatus.pending,
+            nodeId: nodeId,
+            startOffset: offset,
+            endOffset: offset + ai.length,
+          ),
+        );
         offset += ai.length;
       }
     }

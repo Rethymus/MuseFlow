@@ -78,15 +78,19 @@ class EditorAINotifier extends Notifier<EditorAIState> {
     // Validate provider
     final provider = ref.read(activeProviderProvider);
     if (provider == null) {
-      state = state.copyWith(
-        isStreaming: false,
-        error: '未配置 AI 模型，请在设置中添加',
-      );
+      state = state.copyWith(isStreaming: false, error: '未配置 AI 模型，请在设置中添加');
       return;
     }
 
     // Kick off async streaming
-    _fetchKeyAndStream(provider, operation, selectedText, userInstruction, manuscriptId, chapterId);
+    _fetchKeyAndStream(
+      provider,
+      operation,
+      selectedText,
+      userInstruction,
+      manuscriptId,
+      chapterId,
+    );
   }
 
   /// Cancels the current streaming operation.
@@ -112,16 +116,12 @@ class EditorAINotifier extends Notifier<EditorAIState> {
     // Get API key
     final apiKey = ref.read(activeApiKeyProvider);
     if (apiKey == null || apiKey.isEmpty) {
-      state = state.copyWith(
-        isStreaming: false,
-        error: 'API Key 无效，请检查设置',
-      );
+      state = state.copyWith(isStreaming: false, error: 'API Key 无效，请检查设置');
       return;
     }
 
     // Build prompt via editor pipeline
-    final pipeline =
-        await ref.read(editorPromptPipelineProvider.future);
+    final pipeline = await ref.read(editorPromptPipelineProvider.future);
     final bannedPhrases = await _getBannedPhrases();
 
     // D-15: Inject active anchors into the prompt context
@@ -192,10 +192,7 @@ class EditorAINotifier extends Notifier<EditorAIState> {
       }
     } catch (e) {
       if (!_cancelled) {
-        state = state.copyWith(
-          isStreaming: false,
-          error: '生成中断，请重试',
-        );
+        state = state.copyWith(isStreaming: false, error: '生成中断，请重试');
       }
     }
   }
@@ -424,7 +421,9 @@ class EditorAINotifier extends Notifier<EditorAIState> {
     if (currentDiff == null) return;
 
     final updatedSentences = List<SentenceDiff>.from(currentDiff.sentences);
-    updatedSentences[index] = updatedSentences[index].copyWith(status: newStatus);
+    updatedSentences[index] = updatedSentences[index].copyWith(
+      status: newStatus,
+    );
 
     state = state.copyWith(
       diffResult: DiffResult(
@@ -447,10 +446,7 @@ class EditorAINotifier extends Notifier<EditorAIState> {
       errorMessage = '生成中断，请重试';
     }
 
-    state = state.copyWith(
-      isStreaming: false,
-      error: errorMessage,
-    );
+    state = state.copyWith(isStreaming: false, error: errorMessage);
   }
 
   /// Gets banned phrases from settings, or returns empty list.
@@ -462,6 +458,4 @@ class EditorAINotifier extends Notifier<EditorAIState> {
 
 /// Provider for the editor AI notifier.
 final editorAINotifierProvider =
-    NotifierProvider<EditorAINotifier, EditorAIState>(
-  EditorAINotifier.new,
-);
+    NotifierProvider<EditorAINotifier, EditorAIState>(EditorAINotifier.new);

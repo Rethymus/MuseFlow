@@ -47,7 +47,8 @@ class SynthesisRequest {
   }) {
     return SynthesisRequest(
       fragments: fragments ?? this.fragments,
-      additionalInstruction: additionalInstruction ?? this.additionalInstruction,
+      additionalInstruction:
+          additionalInstruction ?? this.additionalInstruction,
       maxOutputTokens: maxOutputTokens ?? this.maxOutputTokens,
       temperature: temperature ?? this.temperature,
     );
@@ -68,11 +69,11 @@ class SynthesisRequest {
 
   @override
   int get hashCode => Object.hash(
-        Object.hashAll(fragments),
-        additionalInstruction,
-        maxOutputTokens,
-        temperature,
-      );
+    Object.hashAll(fragments),
+    additionalInstruction,
+    maxOutputTokens,
+    temperature,
+  );
 
   @override
   String toString() =>

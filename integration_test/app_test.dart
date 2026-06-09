@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter_test/flutter_test.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive_ce/hive.dart';
 import 'package:integration_test/integration_test.dart';
 import 'package:museflow/app.dart';
@@ -40,7 +41,7 @@ Future<void> _initializeTestStorage() async {
 }
 
 Future<void> _pumpApp(WidgetTester tester) async {
-  await tester.pumpWidget(const MuseFlowApp());
+  await tester.pumpWidget(const ProviderScope(child: MuseFlowApp()));
   await tester.pumpAndSettle();
 }
 

@@ -116,46 +116,47 @@ void main() {
         expect(result.budgetTotal, equals(10000));
       });
 
-      test('should exclude fragments from end (LIFO) when over budget per D-13', () {
-        final fragments = [
-          Fragment(id: '1', text: '短碎片一', createdAt: DateTime.now()),
-          Fragment(id: '2', text: '短碎片二', createdAt: DateTime.now()),
-          Fragment(id: '3', text: '短碎片三', createdAt: DateTime.now()),
-          Fragment(id: '4', text: '这是一个比较长的碎片内容，会占用更多的token预算空间', createdAt: DateTime.now()),
-        ];
+      test(
+        'should exclude fragments from end (LIFO) when over budget per D-13',
+        () {
+          final fragments = [
+            Fragment(id: '1', text: '短碎片一', createdAt: DateTime.now()),
+            Fragment(id: '2', text: '短碎片二', createdAt: DateTime.now()),
+            Fragment(id: '3', text: '短碎片三', createdAt: DateTime.now()),
+            Fragment(
+              id: '4',
+              text: '这是一个比较长的碎片内容，会占用更多的token预算空间',
+              createdAt: DateTime.now(),
+            ),
+          ];
 
-        // Small budget that can only fit first 2-3 fragments
-        final result = calculator.selectFragmentsWithinBudget(
-          fragments,
-          30, // Very small budget
-        );
+          // Small budget that can only fit first 2-3 fragments
+          final result = calculator.selectFragmentsWithinBudget(
+            fragments,
+            30, // Very small budget
+          );
 
-        expect(result.included.length, lessThan(4));
-        expect(result.excludedCount, greaterThan(0));
-        expect(result.excludedCount, equals(4 - result.included.length));
-        // LIFO: first fragments should be included
-        expect(result.included.first.id, equals('1'));
-      });
+          expect(result.included.length, lessThan(4));
+          expect(result.excludedCount, greaterThan(0));
+          expect(result.excludedCount, equals(4 - result.included.length));
+          // LIFO: first fragments should be included
+          expect(result.included.first.id, equals('1'));
+        },
+      );
 
       test('should return empty list when budget is 0', () {
         final fragments = [
           Fragment(id: '1', text: '碎片', createdAt: DateTime.now()),
         ];
 
-        final result = calculator.selectFragmentsWithinBudget(
-          fragments,
-          0,
-        );
+        final result = calculator.selectFragmentsWithinBudget(fragments, 0);
 
         expect(result.included, isEmpty);
         expect(result.excludedCount, equals(1));
       });
 
       test('should return empty result when no fragments', () {
-        final result = calculator.selectFragmentsWithinBudget(
-          [],
-          10000,
-        );
+        final result = calculator.selectFragmentsWithinBudget([], 10000);
 
         expect(result.included, isEmpty);
         expect(result.excludedCount, equals(0));
@@ -167,10 +168,7 @@ void main() {
           Fragment(id: '1', text: '短碎片', createdAt: DateTime.now()),
         ];
 
-        final result = calculator.selectFragmentsWithinBudget(
-          fragments,
-          10000,
-        );
+        final result = calculator.selectFragmentsWithinBudget(fragments, 10000);
 
         expect(result.budgetUsed, greaterThan(0));
         expect(result.budgetUsed, lessThanOrEqualTo(10000));
@@ -183,10 +181,7 @@ void main() {
           Fragment(id: 'c', text: '第三个碎片内容', createdAt: DateTime.now()),
         ];
 
-        final result = calculator.selectFragmentsWithinBudget(
-          fragments,
-          10000,
-        );
+        final result = calculator.selectFragmentsWithinBudget(fragments, 10000);
 
         // Order should be preserved
         expect(result.included[0].id, equals('a'));
@@ -201,10 +196,7 @@ void main() {
           Fragment(id: '1', text: '碎片', createdAt: DateTime.now()),
         ];
 
-        final result = calculator.selectFragmentsWithinBudget(
-          fragments,
-          100,
-        );
+        final result = calculator.selectFragmentsWithinBudget(fragments, 100);
 
         expect(result.included, isNotEmpty);
         expect(result.excludedCount, greaterThanOrEqualTo(0));

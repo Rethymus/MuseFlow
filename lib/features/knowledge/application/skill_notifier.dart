@@ -33,7 +33,10 @@ class SkillGenerationNotifier extends AsyncNotifier<SkillGenerationState> {
   @override
   Future<SkillGenerationState> build() async => const SkillGenerationState();
 
-  Future<void> generateSkill(String conceptDescription, String skillName) async {
+  Future<void> generateSkill(
+    String conceptDescription,
+    String skillName,
+  ) async {
     _cancelled = false;
     state = const AsyncData(SkillGenerationState());
     try {
@@ -41,10 +44,14 @@ class SkillGenerationNotifier extends AsyncNotifier<SkillGenerationState> {
       final repository = await ref.read(skillRepositoryProvider.future);
       final buffer = StringBuffer();
 
-      await for (final token in service.generateSkillStream(conceptDescription)) {
+      await for (final token in service.generateSkillStream(
+        conceptDescription,
+      )) {
         if (_cancelled) return;
         buffer.write(token);
-        state = AsyncData(SkillGenerationState(progressText: buffer.toString()));
+        state = AsyncData(
+          SkillGenerationState(progressText: buffer.toString()),
+        );
       }
 
       final parsed = service.parseSkillDocument(
@@ -56,10 +63,7 @@ class SkillGenerationNotifier extends AsyncNotifier<SkillGenerationState> {
       ref.invalidate(skillListNotifierProvider);
       ref.invalidate(nameIndexServiceProvider);
       state = AsyncData(
-        SkillGenerationState(
-          progressText: buffer.toString(),
-          document: saved,
-        ),
+        SkillGenerationState(progressText: buffer.toString(), document: saved),
       );
     } catch (e, st) {
       state = AsyncError(e, st);

@@ -16,8 +16,8 @@ import 'package:museflow/features/ai/application/anti_ai_scent_processor.dart';
 /// The list is stored under the 'banned_phrases' key in SettingsRepository.
 final bannedPhrasesProvider =
     NotifierProvider<BannedPhrasesNotifier, AsyncValue<List<String>>>(
-  BannedPhrasesNotifier.new,
-);
+      BannedPhrasesNotifier.new,
+    );
 
 /// Notifier managing the banned phrase list lifecycle.
 class BannedPhrasesNotifier extends Notifier<AsyncValue<List<String>>> {
@@ -107,16 +107,10 @@ class BannedPhraseSettingsPage extends ConsumerWidget {
       body: phrasesAsync.when(
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (err, _) => Center(
-          child: Text('加载失败: $err',
-              style: TextStyle(color: colorScheme.error)),
+          child: Text('加载失败: $err', style: TextStyle(color: colorScheme.error)),
         ),
-        data: (phrases) => _buildPhraseList(
-          context,
-          ref,
-          phrases,
-          theme,
-          colorScheme,
-        ),
+        data: (phrases) =>
+            _buildPhraseList(context, ref, phrases, theme, colorScheme),
       ),
     );
   }
@@ -137,8 +131,11 @@ class BannedPhraseSettingsPage extends ConsumerWidget {
           color: colorScheme.surfaceContainerHighest,
           child: Row(
             children: [
-              Icon(Icons.info_outline,
-                  size: 18, color: colorScheme.onSurfaceVariant),
+              Icon(
+                Icons.info_outline,
+                size: 18,
+                color: colorScheme.onSurfaceVariant,
+              ),
               const SizedBox(width: 8),
               Expanded(
                 child: Text(
@@ -170,8 +167,11 @@ class BannedPhraseSettingsPage extends ConsumerWidget {
                       dense: true,
                       title: Text(phrase),
                       trailing: IconButton(
-                        icon: Icon(Icons.delete_outline,
-                            size: 20, color: colorScheme.error),
+                        icon: Icon(
+                          Icons.delete_outline,
+                          size: 20,
+                          color: colorScheme.error,
+                        ),
                         tooltip: '删除',
                         onPressed: () {
                           ref

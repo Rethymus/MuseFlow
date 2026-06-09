@@ -41,12 +41,8 @@ class ReportExportService {
     buffer.writeln();
     buffer.writeln('- 目标字数: ${report.projection.targetWordCount.toInt()}');
     buffer.writeln('- 倍率: ${report.projection.multiplier.toStringAsFixed(2)}');
-    buffer.writeln(
-      '- 预估输入 Token: ${report.projection.estimatedInputTokens}',
-    );
-    buffer.writeln(
-      '- 预估输出 Token: ${report.projection.estimatedOutputTokens}',
-    );
+    buffer.writeln('- 预估输入 Token: ${report.projection.estimatedInputTokens}');
+    buffer.writeln('- 预估输出 Token: ${report.projection.estimatedOutputTokens}');
     buffer.writeln('- 预估 API 调用: ${report.projection.estimatedCalls}');
     buffer.writeln(
       '- 估算范围: ${(report.projection.lowEstimateMultiplier * report.totalInputTokens).round()}'
@@ -78,8 +74,9 @@ class ReportExportService {
 
     final categories = ['功能缺陷', '体验摩擦', '缺失需求'];
     for (final category in categories) {
-      final categoryIssues =
-          report.issues.where((i) => i.category == category).toList();
+      final categoryIssues = report.issues
+          .where((i) => i.category == category)
+          .toList();
       if (categoryIssues.isNotEmpty) {
         buffer.writeln('## $category');
         buffer.writeln();
@@ -159,9 +156,7 @@ class ReportExportService {
           '### ${result.entityName} (${(result.consistencyScore * 100).toStringAsFixed(1)}%)',
         );
         buffer.writeln();
-        buffer.writeln(
-          '- 出现章节: ${result.chaptersWhereMentioned}',
-        );
+        buffer.writeln('- 出现章节: ${result.chaptersWhereMentioned}');
         buffer.writeln('- 一致性警报: ${result.flags.length}');
         if (result.flags.isNotEmpty) {
           buffer.writeln();

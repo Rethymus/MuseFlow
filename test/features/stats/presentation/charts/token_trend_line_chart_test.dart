@@ -6,19 +6,21 @@ import 'package:museflow/features/stats/presentation/charts/token_trend_line_cha
 
 void main() {
   group('TokenTrendLineChart', () {
-    testWidgets('renders empty state text when no records provided', (tester) async {
+    testWidgets('renders empty state text when no records provided', (
+      tester,
+    ) async {
       await tester.pumpWidget(
         const MaterialApp(
-          home: Scaffold(
-            body: TokenTrendLineChart(records: []),
-          ),
+          home: Scaffold(body: TokenTrendLineChart(records: [])),
         ),
       );
 
       expect(find.text('还没有 Token 消耗趋势'), findsOneWidget);
     });
 
-    testWidgets('plots cumulative totalTokens over timestamp as a line', (tester) async {
+    testWidgets('plots cumulative totalTokens over timestamp as a line', (
+      tester,
+    ) async {
       final baseTime = DateTime(2026, 6, 1, 10, 0);
       final records = [
         TokenAuditRecord(
@@ -52,9 +54,7 @@ void main() {
 
       await tester.pumpWidget(
         MaterialApp(
-          home: Scaffold(
-            body: TokenTrendLineChart(records: records),
-          ),
+          home: Scaffold(body: TokenTrendLineChart(records: records)),
         ),
       );
 

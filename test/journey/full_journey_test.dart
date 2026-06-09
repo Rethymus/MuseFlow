@@ -139,7 +139,9 @@ Future<void> _phaseAWorldBuilding(ProviderContainer container) async {
 }
 
 Future<String> _phaseBFragmentSynthesis(ProviderContainer container) async {
-  final fragmentRepository = await container.read(fragmentRepositoryProvider.future);
+  final fragmentRepository = await container.read(
+    fragmentRepositoryProvider.future,
+  );
   final fragments = <Fragment>[];
   for (final text in _fragmentTexts) {
     fragments.add(await fragmentRepository.addFragment(text));
@@ -177,12 +179,16 @@ Future<String> _phaseBFragmentSynthesis(ProviderContainer container) async {
 
   expect(output, isNotEmpty);
   expect(output.length, greaterThan(50));
-  debugPrint('[E2E] Phase B: Fragment synthesis complete (${output.length} chars)');
+  debugPrint(
+    '[E2E] Phase B: Fragment synthesis complete (${output.length} chars)',
+  );
   return output;
 }
 
 Future<Manuscript> _phaseCOpeningGuide(ProviderContainer container) async {
-  final manuscriptRepository = await container.read(manuscriptRepositoryProvider.future);
+  final manuscriptRepository = await container.read(
+    manuscriptRepositoryProvider.future,
+  );
   final manuscript = await manuscriptRepository.add(
     Manuscript(
       id: 'ms-full-journey',
@@ -217,7 +223,9 @@ Future<void> _phaseDSerialGeneration(
   Manuscript manuscript, {
   required bool useDelay,
 }) async {
-  final chapterRepository = await container.read(chapterRepositoryProvider.future);
+  final chapterRepository = await container.read(
+    chapterRepositoryProvider.future,
+  );
   final chapters = await _createChapters(chapterRepository, manuscript.id, 100);
   final pipeline = await container.read(promptPipelineProvider.future);
   final adapter = container.read(openaiAdapterProvider);
@@ -241,9 +249,13 @@ Future<void> _phaseDSerialGeneration(
         chapterRepository: chapterRepository,
       );
       expect(output.length, inInclusiveRange(300, 500));
-      debugPrint('[E2E] Chapter ${i + 1}/100 generated (${output.length} chars)');
+      debugPrint(
+        '[E2E] Chapter ${i + 1}/100 generated (${output.length} chars)',
+      );
     } catch (e) {
-      debugPrint('[E2E][ERROR] Chapter ${i + 1}/100 failed: ${_safeExceptionDiagnostic(e)}');
+      debugPrint(
+        '[E2E][ERROR] Chapter ${i + 1}/100 failed: ${_safeExceptionDiagnostic(e)}',
+      );
       rethrow;
     }
 
@@ -258,7 +270,9 @@ Future<void> _phaseDSerialGeneration(
 Future<dynamic> _phaseETokenAudit(ProviderContainer container) async {
   final auditService = await container.read(tokenAuditServiceProvider.future);
   await auditService.flush();
-  final auditRepository = await container.read(tokenAuditRepositoryProvider.future);
+  final auditRepository = await container.read(
+    tokenAuditRepositoryProvider.future,
+  );
   final snapshot = await auditRepository.buildSnapshot();
   expect(snapshot.totalCalls, greaterThanOrEqualTo(101));
   expect(snapshot.totalInputTokens, greaterThan(0));
@@ -267,7 +281,9 @@ Future<dynamic> _phaseETokenAudit(ProviderContainer container) async {
     '[E2E] Audit calls: ${snapshot.totalCalls}, '
     'input: ${snapshot.totalInputTokens}, output: ${snapshot.totalOutputTokens}',
   );
-  debugPrint('[E2E] Phase E: Token audit verified (${snapshot.totalCalls} calls)');
+  debugPrint(
+    '[E2E] Phase E: Token audit verified (${snapshot.totalCalls} calls)',
+  );
   return snapshot;
 }
 
@@ -390,7 +406,9 @@ class _DeterministicFullJourneyAdapter implements AIAdapter {
     int? maxTokens,
     void Function(Usage?)? onUsage,
   }) async* {
-    final promptText = messages.map((message) => message.toJson()['content']).join('\n');
+    final promptText = messages
+        .map((message) => message.toJson()['content'])
+        .join('\n');
     final String response;
     if (promptText.contains('返回格式') || promptText.contains('openings')) {
       response = _openingsJson;
@@ -421,9 +439,11 @@ class _DeterministicFullJourneyAdapter implements AIAdapter {
 
   String _chapterText(int index) {
     final chapterNo = index + 1;
-    final name = StoryOutline.characterNames[index % StoryOutline.characterNames.length];
+    final name =
+        StoryOutline.characterNames[index % StoryOutline.characterNames.length];
     final plot = StoryOutline.chapters[index];
-    final text = '第$chapterNo章，林风沿着青云宗山道前行，$name在旁提醒他莫忘清虚真人的告诫。$plot 他先整理灵气、核对门规、记录白灵的反应，再把今日所见写入随身玉简。夜色落下时，苏雪晴递来一盏灵茶，赵天磊的目光从演武场另一侧扫过，新的冲突已经埋下。这一章保持凡人少年稳步成长的节奏，既写修炼压力，也写宗门人情，让人物关系、境界限制和世界观禁忌自然进入叙事。林风只推进一个明确目标，不越过作者亲自打磨的边界。清虚真人要求他每晚复盘战斗细节，把白日的得失化成下一次行动的依据。苏雪晴则提醒他把每一次犹豫都写清楚。';
+    final text =
+        '第$chapterNo章，林风沿着青云宗山道前行，$name在旁提醒他莫忘清虚真人的告诫。$plot 他先整理灵气、核对门规、记录白灵的反应，再把今日所见写入随身玉简。夜色落下时，苏雪晴递来一盏灵茶，赵天磊的目光从演武场另一侧扫过，新的冲突已经埋下。这一章保持凡人少年稳步成长的节奏，既写修炼压力，也写宗门人情，让人物关系、境界限制和世界观禁忌自然进入叙事。林风只推进一个明确目标，不越过作者亲自打磨的边界。清虚真人要求他每晚复盘战斗细节，把白日的得失化成下一次行动的依据。苏雪晴则提醒他把每一次犹豫都写清楚。';
     return text.substring(0, min(420, text.length));
   }
 

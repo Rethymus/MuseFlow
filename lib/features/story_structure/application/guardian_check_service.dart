@@ -64,11 +64,11 @@ class GuardianCheckService {
     required String baseUrl,
     required String model,
   }) : this(
-          characterSource: RepositoryCharacterSource(characterRepository),
-          apiKey: apiKey,
-          baseUrl: baseUrl,
-          model: model,
-        );
+         characterSource: RepositoryCharacterSource(characterRepository),
+         apiKey: apiKey,
+         baseUrl: baseUrl,
+         model: model,
+       );
 
   /// Builds the guardian check prompt with relevant character context.
   ///
@@ -103,7 +103,9 @@ class GuardianCheckService {
     buffer.writeln('## 输出要求');
     buffer.writeln('请以 JSON 数组格式输出检查结果。每个元素包含：');
     buffer.writeln('- severity: "low" | "medium" | "high"（严重程度）');
-    buffer.writeln('- kind: "characterConsistency" | "timelineContradiction" | "worldRuleConflict" | "skillRuleConflict" | "unresolvedForeshadowing"（问题类型）');
+    buffer.writeln(
+      '- kind: "characterConsistency" | "timelineContradiction" | "worldRuleConflict" | "skillRuleConflict" | "unresolvedForeshadowing"（问题类型）',
+    );
     buffer.writeln('- message: 简短的问题描述');
     buffer.writeln('- reason: 详细的原因说明');
     buffer.writeln('- suggestedFix: 建议的修改（可选，无则为 null）');
@@ -155,17 +157,12 @@ class GuardianCheckService {
     try {
       final prompt = buildPrompt(text: text);
 
-      final client = OpenAIClient.withApiKey(
-        _apiKey,
-        baseUrl: _baseUrl,
-      );
+      final client = OpenAIClient.withApiKey(_apiKey, baseUrl: _baseUrl);
 
       final response = await client.chat.completions.create(
         ChatCompletionCreateRequest(
           model: _model,
-          messages: [
-            ChatMessage.user(prompt),
-          ],
+          messages: [ChatMessage.user(prompt)],
           temperature: 0.3,
         ),
       );
@@ -179,11 +176,13 @@ class GuardianCheckService {
 
       // Enrich annotations with location data if provided
       return annotations
-          .map((a) => a.copyWith(
-                nodeId: nodeId,
-                startOffset: startOffset,
-                endOffset: endOffset,
-              ))
+          .map(
+            (a) => a.copyWith(
+              nodeId: nodeId,
+              startOffset: startOffset,
+              endOffset: endOffset,
+            ),
+          )
           .toList();
     } catch (_) {
       // Errors are non-blocking; return empty result
@@ -199,8 +198,9 @@ class GuardianCheckService {
 
     return allCards.where((card) {
       if (lowerText.contains(card.name.toLowerCase())) return true;
-      return card.aliases
-          .any((alias) => lowerText.contains(alias.toLowerCase()));
+      return card.aliases.any(
+        (alias) => lowerText.contains(alias.toLowerCase()),
+      );
     }).toList();
   }
 
@@ -211,7 +211,10 @@ class GuardianCheckService {
     // Handle code block wrapping
     if (trimmed.startsWith('```')) {
       // Remove opening code fence
-      var withoutOpen = trimmed.replaceFirst(RegExp(r'^```(?:json)?\s*\n?'), '');
+      var withoutOpen = trimmed.replaceFirst(
+        RegExp(r'^```(?:json)?\s*\n?'),
+        '',
+      );
       // Remove closing code fence
       withoutOpen = withoutOpen.replaceFirst(RegExp(r'\n?```\s*$'), '');
       return withoutOpen.trim();

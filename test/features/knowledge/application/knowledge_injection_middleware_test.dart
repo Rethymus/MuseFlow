@@ -54,33 +54,36 @@ void main() {
       expect(result.messages, isEmpty);
     });
 
-    test('should inject matched character context into system message', () async {
-      await characterBox.put(
-        'char-1',
-        CharacterCard(
-          id: 'char-1',
-          name: '李白',
-          personality: '洒脱',
-          appearance: '白衣',
-          backstory: '诗仙',
-          createdAt: now,
-        ).toJson(),
-      );
-      nameIndex.addEntity('char-1', EntityType.character, ['李白']);
+    test(
+      'should inject matched character context into system message',
+      () async {
+        await characterBox.put(
+          'char-1',
+          CharacterCard(
+            id: 'char-1',
+            name: '李白',
+            personality: '洒脱',
+            appearance: '白衣',
+            backstory: '诗仙',
+            createdAt: now,
+          ).toJson(),
+        );
+        nameIndex.addEntity('char-1', EntityType.character, ['李白']);
 
-      final result = middleware.apply(
-        PromptContext(
-          fragments: [Fragment(id: 'f1', text: '李白举杯邀月', createdAt: now)],
-          tokenBudget: 4096,
-        ),
-      );
+        final result = middleware.apply(
+          PromptContext(
+            fragments: [Fragment(id: 'f1', text: '李白举杯邀月', createdAt: now)],
+            tokenBudget: 4096,
+          ),
+        );
 
-      expect(result.messages.length, equals(1));
-      final content = result.messages.first.toJson()['content'] as String;
-      expect(content, contains('以下是与当前内容相关的角色和设定信息'));
-      expect(content, contains('李白'));
-      expect(content, contains('洒脱'));
-    });
+        expect(result.messages.length, equals(1));
+        final content = result.messages.first.toJson()['content'] as String;
+        expect(content, contains('以下是与当前内容相关的角色和设定信息'));
+        expect(content, contains('李白'));
+        expect(content, contains('洒脱'));
+      },
+    );
 
     test('should append injection to existing system message', () async {
       await settingBox.put(

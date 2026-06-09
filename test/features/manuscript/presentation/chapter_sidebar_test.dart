@@ -80,131 +80,123 @@ void main() {
       },
     );
 
-    testWidgets(
-      'should call onChapterTap when a chapter row is tapped',
-      (tester) async {
-        String? tappedChapterId;
-        await tester.pumpWidget(
-          ProviderScope(
-            overrides: [
-              chapterNotifierProvider.overrideWith(
-                () => _PopulatedChapterNotifier(),
-              ),
-            ],
-            child: MaterialApp(
-              home: Scaffold(
-                body: ChapterSidebar(
-                  manuscriptId: 'm1',
-                  manuscriptTitle: '测试小说',
-                  activeChapterId: 'c1',
-                  onChapterTap: (id) => tappedChapterId = id,
-                  onNewChapter: _noopAction,
-                ),
+    testWidgets('should call onChapterTap when a chapter row is tapped', (
+      tester,
+    ) async {
+      String? tappedChapterId;
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            chapterNotifierProvider.overrideWith(
+              () => _PopulatedChapterNotifier(),
+            ),
+          ],
+          child: MaterialApp(
+            home: Scaffold(
+              body: ChapterSidebar(
+                manuscriptId: 'm1',
+                manuscriptTitle: '测试小说',
+                activeChapterId: 'c1',
+                onChapterTap: (id) => tappedChapterId = id,
+                onNewChapter: _noopAction,
               ),
             ),
           ),
-        );
-        await tester.pumpAndSettle();
+        ),
+      );
+      await tester.pumpAndSettle();
 
-        // Tap the second chapter
-        await tester.tap(find.text('第二章'));
-        expect(tappedChapterId, 'c2');
-      },
-    );
+      // Tap the second chapter
+      await tester.tap(find.text('第二章'));
+      expect(tappedChapterId, 'c2');
+    });
   });
 
   group('ChapterSidebarRow', () {
-    testWidgets(
-      'should render chapter title and word count',
-      (tester) async {
-        final chapter = Chapter(
-          id: 'c1',
-          manuscriptId: 'm1',
-          title: '测试章节',
-          sortOrder: 0,
-          documentContent: '一二三四五',
-          createdAt: DateTime(2026),
-          updatedAt: DateTime(2026),
-        );
+    testWidgets('should render chapter title and word count', (tester) async {
+      final chapter = Chapter(
+        id: 'c1',
+        manuscriptId: 'm1',
+        title: '测试章节',
+        sortOrder: 0,
+        documentContent: '一二三四五',
+        createdAt: DateTime(2026),
+        updatedAt: DateTime(2026),
+      );
 
-        await tester.pumpWidget(
-          MaterialApp(
-            home: Scaffold(
-              body: ChapterSidebarRow(
-                chapter: chapter,
-                isActive: false,
-                onTap: () {},
-              ),
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            body: ChapterSidebarRow(
+              chapter: chapter,
+              isActive: false,
+              onTap: () {},
             ),
           ),
-        );
+        ),
+      );
 
-        expect(find.text('测试章节'), findsOneWidget);
-        expect(find.text('5'), findsOneWidget); // 5 non-whitespace chars
-      },
-    );
+      expect(find.text('测试章节'), findsOneWidget);
+      expect(find.text('5'), findsOneWidget); // 5 non-whitespace chars
+    });
 
-    testWidgets(
-      'should show active highlight when isActive is true',
-      (tester) async {
-        final chapter = Chapter(
-          id: 'c1',
-          manuscriptId: 'm1',
-          title: '活跃章节',
-          sortOrder: 0,
-          documentContent: 'abc',
-          createdAt: DateTime(2026),
-          updatedAt: DateTime(2026),
-        );
+    testWidgets('should show active highlight when isActive is true', (
+      tester,
+    ) async {
+      final chapter = Chapter(
+        id: 'c1',
+        manuscriptId: 'm1',
+        title: '活跃章节',
+        sortOrder: 0,
+        documentContent: 'abc',
+        createdAt: DateTime(2026),
+        updatedAt: DateTime(2026),
+      );
 
-        await tester.pumpWidget(
-          MaterialApp(
-            home: Scaffold(
-              body: ChapterSidebarRow(
-                chapter: chapter,
-                isActive: true,
-                onTap: () {},
-              ),
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            body: ChapterSidebarRow(
+              chapter: chapter,
+              isActive: true,
+              onTap: () {},
             ),
           ),
-        );
+        ),
+      );
 
-        // Active chapter should have w600 title (bolder)
-        final titleFinder = find.text('活跃章节');
-        final textWidget = tester.widget<Text>(titleFinder);
-        expect(textWidget.style?.fontWeight, FontWeight.w600);
-      },
-    );
+      // Active chapter should have w600 title (bolder)
+      final titleFinder = find.text('活跃章节');
+      final textWidget = tester.widget<Text>(titleFinder);
+      expect(textWidget.style?.fontWeight, FontWeight.w600);
+    });
 
-    testWidgets(
-      'should call onTap when tapped',
-      (tester) async {
-        var tapped = false;
-        final chapter = Chapter(
-          id: 'c1',
-          manuscriptId: 'm1',
-          title: '点击测试',
-          sortOrder: 0,
-          createdAt: DateTime(2026),
-          updatedAt: DateTime(2026),
-        );
+    testWidgets('should call onTap when tapped', (tester) async {
+      var tapped = false;
+      final chapter = Chapter(
+        id: 'c1',
+        manuscriptId: 'm1',
+        title: '点击测试',
+        sortOrder: 0,
+        createdAt: DateTime(2026),
+        updatedAt: DateTime(2026),
+      );
 
-        await tester.pumpWidget(
-          MaterialApp(
-            home: Scaffold(
-              body: ChapterSidebarRow(
-                chapter: chapter,
-                isActive: false,
-                onTap: () => tapped = true,
-              ),
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            body: ChapterSidebarRow(
+              chapter: chapter,
+              isActive: false,
+              onTap: () => tapped = true,
             ),
           ),
-        );
+        ),
+      );
 
-        await tester.tap(find.text('点击测试'));
-        expect(tapped, true);
-      },
-    );
+      await tester.tap(find.text('点击测试'));
+      expect(tapped, true);
+    });
   });
 }
 

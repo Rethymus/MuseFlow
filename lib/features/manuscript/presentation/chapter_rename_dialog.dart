@@ -5,10 +5,7 @@ import 'package:flutter/services.dart';
 ///
 /// Per T-11-05 (mitigate): Title field validates non-empty and max 100 chars.
 class ChapterRenameDialog extends StatefulWidget {
-  const ChapterRenameDialog({
-    super.key,
-    required this.currentTitle,
-  });
+  const ChapterRenameDialog({super.key, required this.currentTitle});
 
   /// The current chapter title to pre-fill.
   final String currentTitle;
@@ -62,9 +59,7 @@ class _ChapterRenameDialogState extends State<ChapterRenameDialog> {
           errorText: _errorText,
           border: const OutlineInputBorder(),
         ),
-        inputFormatters: [
-          LengthLimitingTextInputFormatter(100),
-        ],
+        inputFormatters: [LengthLimitingTextInputFormatter(100)],
         onSubmitted: (_) => _submit(),
       ),
       actions: [
@@ -72,10 +67,7 @@ class _ChapterRenameDialogState extends State<ChapterRenameDialog> {
           onPressed: () => Navigator.of(context).pop(),
           child: const Text('取消'),
         ),
-        FilledButton(
-          onPressed: _submit,
-          child: const Text('保存'),
-        ),
+        FilledButton(onPressed: _submit, child: const Text('保存')),
       ],
     );
   }

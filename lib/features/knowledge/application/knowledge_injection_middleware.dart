@@ -51,13 +51,14 @@ class KnowledgeInjectionMiddleware extends PromptMiddleware {
     }
 
     if (entityTexts.isEmpty) return context;
-    final injection = StringBuffer(
-      '\n\n以下是与当前内容相关的角色和设定信息，请在创作时参考：',
-    )..writeAll(entityTexts);
+    final injection = StringBuffer('\n\n以下是与当前内容相关的角色和设定信息，请在创作时参考：')
+      ..writeAll(entityTexts);
 
     final systemIndex = _firstSystemMessageIndex(context.messages);
     if (systemIndex == null) {
-      return context.addMessage(ChatMessage.system(injection.toString().trim()));
+      return context.addMessage(
+        ChatMessage.system(injection.toString().trim()),
+      );
     }
 
     final existing = _messageContent(context.messages[systemIndex]);

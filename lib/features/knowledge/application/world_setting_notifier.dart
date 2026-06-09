@@ -10,31 +10,27 @@ import 'package:museflow/features/knowledge/domain/world_setting.dart';
 class WorldSettingNotifier extends AsyncNotifier<List<WorldSetting>> {
   @override
   Future<List<WorldSetting>> build() async {
-    final repository =
-        await ref.watch(worldSettingRepositoryProvider.future);
+    final repository = await ref.watch(worldSettingRepositoryProvider.future);
     return repository.getAll();
   }
 
   /// Adds a new world setting and refreshes the state.
   Future<void> add(WorldSetting setting) async {
-    final repository =
-        await ref.read(worldSettingRepositoryProvider.future);
+    final repository = await ref.read(worldSettingRepositoryProvider.future);
     await repository.add(setting);
     ref.invalidateSelf();
   }
 
   /// Updates an existing world setting and refreshes the state.
   Future<void> save(WorldSetting setting) async {
-    final repository =
-        await ref.read(worldSettingRepositoryProvider.future);
+    final repository = await ref.read(worldSettingRepositoryProvider.future);
     await repository.update(setting);
     ref.invalidateSelf();
   }
 
   /// Deletes a world setting by ID and refreshes the state.
   Future<void> delete(String id) async {
-    final repository =
-        await ref.read(worldSettingRepositoryProvider.future);
+    final repository = await ref.read(worldSettingRepositoryProvider.future);
     await repository.delete(id);
     ref.invalidateSelf();
   }
@@ -48,8 +44,9 @@ class WorldSettingNotifier extends AsyncNotifier<List<WorldSetting>> {
     final lowerQuery = query.toLowerCase();
     return settings.where((setting) {
       if (setting.name.toLowerCase().contains(lowerQuery)) return true;
-      return setting.aliases
-          .any((alias) => alias.toLowerCase().contains(lowerQuery));
+      return setting.aliases.any(
+        (alias) => alias.toLowerCase().contains(lowerQuery),
+      );
     }).toList();
   }
 }

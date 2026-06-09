@@ -49,7 +49,10 @@ class ManuscriptRepository {
   List<Manuscript> getAll() {
     try {
       return _box.values
-          .map((json) => Manuscript.fromJson(Map<String, dynamic>.from(json as Map)))
+          .map(
+            (json) =>
+                Manuscript.fromJson(Map<String, dynamic>.from(json as Map)),
+          )
           .where((manuscript) => manuscript.deletedAt == null)
           .toList();
     } catch (e) {
@@ -63,7 +66,10 @@ class ManuscriptRepository {
   List<Manuscript> getAllIncludingDeleted() {
     try {
       return _box.values
-          .map((json) => Manuscript.fromJson(Map<String, dynamic>.from(json as Map)))
+          .map(
+            (json) =>
+                Manuscript.fromJson(Map<String, dynamic>.from(json as Map)),
+          )
           .toList();
     } catch (e) {
       throw StateError('Failed to read manuscripts: $e');

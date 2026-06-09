@@ -38,7 +38,9 @@ class ManuscriptPurgeService {
   /// Default retention is 30 days per D-21.
   ///
   /// Returns the number of manuscripts purged (for logging/debugging).
-  Future<int> purgeExpired({Duration retention = const Duration(days: 30)}) async {
+  Future<int> purgeExpired({
+    Duration retention = const Duration(days: 30),
+  }) async {
     final cutoff = DateTime.now().subtract(retention);
     final manuscripts = _manuscriptRepository.getAllIncludingDeleted();
     var purgedCount = 0;

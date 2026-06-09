@@ -28,22 +28,28 @@ void main() {
       test('should load all cards from repository', () async {
         final box = await Hive.openBox<dynamic>('character_cards');
         final now = DateTime(2026, 1, 1);
-        await box.put('1', CharacterCard(
-          id: '1',
-          name: 'Card1',
-          personality: '',
-          appearance: '',
-          backstory: '',
-          createdAt: now,
-        ).toJson());
-        await box.put('2', CharacterCard(
-          id: '2',
-          name: 'Card2',
-          personality: '',
-          appearance: '',
-          backstory: '',
-          createdAt: now,
-        ).toJson());
+        await box.put(
+          '1',
+          CharacterCard(
+            id: '1',
+            name: 'Card1',
+            personality: '',
+            appearance: '',
+            backstory: '',
+            createdAt: now,
+          ).toJson(),
+        );
+        await box.put(
+          '2',
+          CharacterCard(
+            id: '2',
+            name: 'Card2',
+            personality: '',
+            appearance: '',
+            backstory: '',
+            createdAt: now,
+          ).toJson(),
+        );
 
         container = ProviderContainer();
         final notifier = container.read(characterCardNotifierProvider.notifier);
@@ -115,14 +121,17 @@ void main() {
       test('should delete card and refresh state', () async {
         final box = await Hive.openBox<dynamic>('character_cards');
         final now = DateTime(2026, 1, 1);
-        await box.put('1', CharacterCard(
-          id: '1',
-          name: 'ToDelete',
-          personality: '',
-          appearance: '',
-          backstory: '',
-          createdAt: now,
-        ).toJson());
+        await box.put(
+          '1',
+          CharacterCard(
+            id: '1',
+            name: 'ToDelete',
+            personality: '',
+            appearance: '',
+            backstory: '',
+            createdAt: now,
+          ).toJson(),
+        );
 
         container = ProviderContainer();
         final notifier = container.read(characterCardNotifierProvider.notifier);
@@ -141,22 +150,28 @@ void main() {
       test('should filter current state by query', () async {
         final box = await Hive.openBox<dynamic>('character_cards');
         final now = DateTime(2026, 1, 1);
-        await box.put('1', CharacterCard(
-          id: '1',
-          name: '李逍遥',
-          personality: '',
-          appearance: '',
-          backstory: '',
-          createdAt: now,
-        ).toJson());
-        await box.put('2', CharacterCard(
-          id: '2',
-          name: '赵灵儿',
-          personality: '',
-          appearance: '',
-          backstory: '',
-          createdAt: now,
-        ).toJson());
+        await box.put(
+          '1',
+          CharacterCard(
+            id: '1',
+            name: '李逍遥',
+            personality: '',
+            appearance: '',
+            backstory: '',
+            createdAt: now,
+          ).toJson(),
+        );
+        await box.put(
+          '2',
+          CharacterCard(
+            id: '2',
+            name: '赵灵儿',
+            personality: '',
+            appearance: '',
+            backstory: '',
+            createdAt: now,
+          ).toJson(),
+        );
 
         container = ProviderContainer();
         final notifier = container.read(characterCardNotifierProvider.notifier);

@@ -64,28 +64,30 @@ void main() {
   });
 
   group('Hive encrypted settings box', () {
-    test('should open encrypted settings box and put/get window size values',
-        () async {
-      // Use a proper 32-byte encryption key
-      final key = List.generate(32, (i) => i);
-      final encryptedBox = await Hive.openBox(
-        'settings',
-        encryptionCipher: HiveAesCipher(key),
-      );
+    test(
+      'should open encrypted settings box and put/get window size values',
+      () async {
+        // Use a proper 32-byte encryption key
+        final key = List.generate(32, (i) => i);
+        final encryptedBox = await Hive.openBox(
+          'settings',
+          encryptionCipher: HiveAesCipher(key),
+        );
 
-      // Store window size as a map
-      await encryptedBox.put('windowSize', {
-        'width': 1200.0,
-        'height': 800.0,
-      });
+        // Store window size as a map
+        await encryptedBox.put('windowSize', {
+          'width': 1200.0,
+          'height': 800.0,
+        });
 
-      final retrieved = encryptedBox.get('windowSize');
-      expect(retrieved, isNotNull);
-      expect(retrieved['width'], equals(1200.0));
-      expect(retrieved['height'], equals(800.0));
+        final retrieved = encryptedBox.get('windowSize');
+        expect(retrieved, isNotNull);
+        expect(retrieved['width'], equals(1200.0));
+        expect(retrieved['height'], equals(800.0));
 
-      await encryptedBox.close();
-    });
+        await encryptedBox.close();
+      },
+    );
 
     test('should persist and retrieve window position', () async {
       final key = List.generate(32, (i) => i + 100);
@@ -94,10 +96,7 @@ void main() {
         encryptionCipher: HiveAesCipher(key),
       );
 
-      await encryptedBox.put('windowPosition', {
-        'x': 100.0,
-        'y': 200.0,
-      });
+      await encryptedBox.put('windowPosition', {'x': 100.0, 'y': 200.0});
 
       final retrieved = encryptedBox.get('windowPosition');
       expect(retrieved, isNotNull);

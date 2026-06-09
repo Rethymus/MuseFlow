@@ -17,8 +17,9 @@ void main() {
 
     container = ProviderContainer(
       overrides: [
-        plotNodeRepositoryProvider
-            .overrideWith((ref) async => PlotNodeRepository(box)),
+        plotNodeRepositoryProvider.overrideWith(
+          (ref) async => PlotNodeRepository(box),
+        ),
       ],
     );
   });

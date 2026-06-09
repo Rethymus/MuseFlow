@@ -54,13 +54,13 @@ class UndoEntry {
 
   @override
   int get hashCode => Object.hash(
-        originalText,
-        replacementText,
-        nodeId,
-        startOffset,
-        endOffset,
-        timestamp,
-      );
+    originalText,
+    replacementText,
+    nodeId,
+    startOffset,
+    endOffset,
+    timestamp,
+  );
 
   @override
   String toString() =>

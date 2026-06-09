@@ -129,13 +129,13 @@ class PlotNode {
       summary: json['summary'] as String? ?? '',
       involvedCharacterIds:
           (json['involvedCharacterIds'] as List<dynamic>?)?.cast<String>() ??
-              const [],
+          const [],
       involvedCharacterNames:
           (json['involvedCharacterNames'] as List<dynamic>?)?.cast<String>() ??
-              const [],
+          const [],
       linkedForeshadowingIds:
           (json['linkedForeshadowingIds'] as List<dynamic>?)?.cast<String>() ??
-              const [],
+          const [],
       writingStatus: PlotNodeWritingStatus.fromJsonString(
         json['writingStatus'] as String? ?? 'notStarted',
       ),
@@ -146,10 +146,10 @@ class PlotNode {
           (json['causeNodeIds'] as List<dynamic>?)?.cast<String>() ?? const [],
       consequenceNodeIds:
           (json['consequenceNodeIds'] as List<dynamic>?)?.cast<String>() ??
-              const [],
+          const [],
       relatedNodeIds:
           (json['relatedNodeIds'] as List<dynamic>?)?.cast<String>() ??
-              const [],
+          const [],
       manualOrder: json['manualOrder'] as int? ?? 0,
       createdAt: DateTime.parse(json['createdAt'] as String),
       updatedAt: json['updatedAt'] != null
@@ -201,22 +201,22 @@ class PlotNode {
 
   @override
   int get hashCode => Object.hash(
-        id,
-        title,
-        chapter,
-        summary,
-        Object.hashAll(involvedCharacterIds),
-        Object.hashAll(involvedCharacterNames),
-        Object.hashAll(linkedForeshadowingIds),
-        writingStatus,
-        structuralRole,
-        Object.hashAll(causeNodeIds),
-        Object.hashAll(consequenceNodeIds),
-        Object.hashAll(relatedNodeIds),
-        manualOrder,
-        createdAt,
-        updatedAt,
-      );
+    id,
+    title,
+    chapter,
+    summary,
+    Object.hashAll(involvedCharacterIds),
+    Object.hashAll(involvedCharacterNames),
+    Object.hashAll(linkedForeshadowingIds),
+    writingStatus,
+    structuralRole,
+    Object.hashAll(causeNodeIds),
+    Object.hashAll(consequenceNodeIds),
+    Object.hashAll(relatedNodeIds),
+    manualOrder,
+    createdAt,
+    updatedAt,
+  );
 
   @override
   String toString() =>

@@ -33,8 +33,9 @@ class _PlotNodeFormState extends ConsumerState<PlotNodeForm> {
     final node = widget.node;
     _titleController = TextEditingController(text: node?.title ?? '');
     _summaryController = TextEditingController(text: node?.summary ?? '');
-    _chapterController =
-        TextEditingController(text: (node?.chapter ?? 1).toString());
+    _chapterController = TextEditingController(
+      text: (node?.chapter ?? 1).toString(),
+    );
     _status = node?.writingStatus ?? PlotNodeWritingStatus.notStarted;
     _role = node?.structuralRole ?? PlotNodeStructuralRole.setup;
   }
@@ -87,10 +88,12 @@ class _PlotNodeFormState extends ConsumerState<PlotNodeForm> {
                 initialValue: _role,
                 decoration: const InputDecoration(labelText: '结构角色'),
                 items: PlotNodeStructuralRole.values
-                    .map((r) => DropdownMenuItem(
-                          value: r,
-                          child: Text(_roleLabel(r)),
-                        ))
+                    .map(
+                      (r) => DropdownMenuItem(
+                        value: r,
+                        child: Text(_roleLabel(r)),
+                      ),
+                    )
                     .toList(),
                 onChanged: (value) {
                   if (value != null) setState(() => _role = value);
@@ -101,10 +104,12 @@ class _PlotNodeFormState extends ConsumerState<PlotNodeForm> {
                 initialValue: _status,
                 decoration: const InputDecoration(labelText: '写作状态'),
                 items: PlotNodeWritingStatus.values
-                    .map((s) => DropdownMenuItem(
-                          value: s,
-                          child: Text(_statusLabel(s)),
-                        ))
+                    .map(
+                      (s) => DropdownMenuItem(
+                        value: s,
+                        child: Text(_statusLabel(s)),
+                      ),
+                    )
                     .toList(),
                 onChanged: (value) {
                   if (value != null) setState(() => _status = value);
@@ -139,9 +144,9 @@ class _PlotNodeFormState extends ConsumerState<PlotNodeForm> {
     final chapter = int.tryParse(chapterText) ?? 1;
 
     if (title.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('请输入标题')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('请输入标题')));
       return;
     }
 
@@ -151,32 +156,36 @@ class _PlotNodeFormState extends ConsumerState<PlotNodeForm> {
       final notifier = ref.read(plotNodeNotifierProvider.notifier);
 
       if (_isEditing) {
-        await notifier.save(widget.node!.copyWith(
-          title: title,
-          chapter: chapter,
-          summary: _summaryController.text.trim(),
-          writingStatus: _status,
-          structuralRole: _role,
-        ));
+        await notifier.save(
+          widget.node!.copyWith(
+            title: title,
+            chapter: chapter,
+            summary: _summaryController.text.trim(),
+            writingStatus: _status,
+            structuralRole: _role,
+          ),
+        );
       } else {
-        await notifier.add(PlotNode(
-          id: '',
-          title: title,
-          chapter: chapter,
-          summary: _summaryController.text.trim(),
-          writingStatus: _status,
-          structuralRole: _role,
-          manualOrder: 0,
-          createdAt: DateTime.now(),
-        ));
+        await notifier.add(
+          PlotNode(
+            id: '',
+            title: title,
+            chapter: chapter,
+            summary: _summaryController.text.trim(),
+            writingStatus: _status,
+            structuralRole: _role,
+            manualOrder: 0,
+            createdAt: DateTime.now(),
+          ),
+        );
       }
 
       if (mounted) Navigator.of(context).pop();
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('保存失败: $e')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('保存失败: $e')));
       }
     } finally {
       if (mounted) setState(() => _isSaving = false);

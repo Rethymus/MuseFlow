@@ -35,8 +35,13 @@ class ConsistencyReportPage extends ConsumerWidget {
     );
   }
 
-  Future<void> _exportReport(BuildContext context, ConsistencyReport report) async {
-    final markdown = const ReportExportService().buildConsistencyMarkdown(report);
+  Future<void> _exportReport(
+    BuildContext context,
+    ConsistencyReport report,
+  ) async {
+    final markdown = const ReportExportService().buildConsistencyMarkdown(
+      report,
+    );
     const path = 'consistency-report.md';
     await ExportService.dartFileWriter(path, markdown);
     if (!context.mounted) return;
@@ -58,7 +63,8 @@ class _ConsistencyReportContent extends StatelessWidget {
       ...report.characterResults,
       ...report.settingResults,
     ].fold<int>(0, (sum, result) => sum + result.flags.length);
-    final isEmpty = report.characterResults.isEmpty && report.settingResults.isEmpty;
+    final isEmpty =
+        report.characterResults.isEmpty && report.settingResults.isEmpty;
 
     return ListView(
       padding: const EdgeInsets.all(16),
@@ -74,7 +80,8 @@ class _ConsistencyReportContent extends StatelessWidget {
             StatsSummaryCard(
               icon: Icons.verified_outlined,
               title: '整体一致性',
-              value: '${(report.overallConsistencyScore * 100).toStringAsFixed(0)}%',
+              value:
+                  '${(report.overallConsistencyScore * 100).toStringAsFixed(0)}%',
             ),
             StatsSummaryCard(
               icon: Icons.person_search_outlined,
@@ -138,9 +145,12 @@ class _EntitySection extends StatelessWidget {
                   ListTile(
                     title: Text(result.entityName),
                     subtitle: Text('出现章节：${result.chaptersWhereMentioned}'),
-                    trailing: Text('${(result.consistencyScore * 100).toStringAsFixed(0)}%'),
+                    trailing: Text(
+                      '${(result.consistencyScore * 100).toStringAsFixed(0)}%',
+                    ),
                   ),
-                  for (final flag in result.flags) ConsistencyFlagTile(flag: flag),
+                  for (final flag in result.flags)
+                    ConsistencyFlagTile(flag: flag),
                 ],
               ),
             ),

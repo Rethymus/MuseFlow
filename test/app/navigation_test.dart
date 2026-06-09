@@ -33,7 +33,8 @@ class _TestEditorPageState extends State<_TestEditorPage> {
           children: [
             Text(_editorText),
             TextButton(
-              onPressed: () => setState(() => _editorText = 'Modified editor text'),
+              onPressed: () =>
+                  setState(() => _editorText = 'Modified editor text'),
               child: const Text('MODIFY_TEXT'),
             ),
           ],
@@ -142,16 +143,15 @@ GoRouter _createTestRouter() {
 
 Widget _createTestApp() {
   return ProviderScope(
-    child: MaterialApp.router(
-      routerConfig: _createTestRouter(),
-    ),
+    child: MaterialApp.router(routerConfig: _createTestRouter()),
   );
 }
 
 void main() {
   group('Navigation Destinations', () {
-    testWidgets('should render destinations with correct Chinese labels',
-        (tester) async {
+    testWidgets('should render destinations with correct Chinese labels', (
+      tester,
+    ) async {
       tester.view.physicalSize = const Size(1200, 800);
       tester.view.devicePixelRatio = 1.0;
 
@@ -168,7 +168,9 @@ void main() {
       tester.view.resetDevicePixelRatio();
     });
 
-    testWidgets('should have editor as initial branch (index 1)', (tester) async {
+    testWidgets('should have editor as initial branch (index 1)', (
+      tester,
+    ) async {
       tester.view.physicalSize = const Size(1200, 800);
       tester.view.devicePixelRatio = 1.0;
 
@@ -188,8 +190,9 @@ void main() {
       tester.view.resetDevicePixelRatio();
     });
 
-    testWidgets('should switch branch when tapping capture destination',
-        (tester) async {
+    testWidgets('should switch branch when tapping capture destination', (
+      tester,
+    ) async {
       tester.view.physicalSize = const Size(1200, 800);
       tester.view.devicePixelRatio = 1.0;
 
@@ -213,8 +216,9 @@ void main() {
       tester.view.resetDevicePixelRatio();
     });
 
-    testWidgets('should switch branch when tapping settings destination',
-        (tester) async {
+    testWidgets('should switch branch when tapping settings destination', (
+      tester,
+    ) async {
       tester.view.physicalSize = const Size(1200, 800);
       tester.view.devicePixelRatio = 1.0;
 
@@ -238,8 +242,9 @@ void main() {
       tester.view.resetDevicePixelRatio();
     });
 
-    testWidgets('should preserve editor state when switching branches',
-        (tester) async {
+    testWidgets('should preserve editor state when switching branches', (
+      tester,
+    ) async {
       tester.view.physicalSize = const Size(1200, 800);
       tester.view.devicePixelRatio = 1.0;
 

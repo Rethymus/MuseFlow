@@ -200,8 +200,12 @@ Future<_JourneyResult> _generateHundredChapterJourney({
   required bool useDelay,
   required bool runDeviationDetection,
 }) async {
-  final manuscriptRepo = await container.read(manuscriptRepositoryProvider.future);
-  final chapterRepository = await container.read(chapterRepositoryProvider.future);
+  final manuscriptRepo = await container.read(
+    manuscriptRepositoryProvider.future,
+  );
+  final chapterRepository = await container.read(
+    chapterRepositoryProvider.future,
+  );
   final manuscript = await manuscriptRepo.add(
     Manuscript(
       id: manuscriptId,
@@ -230,8 +234,8 @@ Future<_JourneyResult> _generateHundredChapterJourney({
     final previousSummary = previousContent.isEmpty
         ? ''
         : previousContent.length > 100
-            ? '${previousContent.substring(0, 100)}...'
-            : previousContent;
+        ? '${previousContent.substring(0, 100)}...'
+        : previousContent;
     final fragmentText = [
       StagePrompts.forChapterIndex(index),
       if (previousSummary.isNotEmpty) '上一章概要：$previousSummary',
@@ -242,7 +246,10 @@ Future<_JourneyResult> _generateHundredChapterJourney({
       text: fragmentText,
       createdAt: DateTime.now(),
     );
-    final context = PromptContext(fragments: [fragment], bannedPhrases: const []);
+    final context = PromptContext(
+      fragments: [fragment],
+      bannedPhrases: const [],
+    );
     final messages = pipeline.build(context);
 
     Usage? capturedUsage;
@@ -267,14 +274,19 @@ Future<_JourneyResult> _generateHundredChapterJourney({
       inputText: fragmentText,
       outputText: boundedOutput,
     );
-    await chapterRepository.updateDocumentContent(chapters[index].id, boundedOutput);
+    await chapterRepository.updateDocumentContent(
+      chapters[index].id,
+      boundedOutput,
+    );
     return boundedOutput;
   }
 
   for (var i = 0; i < 100; i++) {
     try {
       final output = await generateChapter(i);
-      debugPrint('[JOURNEY] Chapter ${i + 1}/100 generated (${output.length} chars)');
+      debugPrint(
+        '[JOURNEY] Chapter ${i + 1}/100 generated (${output.length} chars)',
+      );
     } catch (e) {
       final diagnostic = _safeExceptionDiagnostic(e);
       debugPrint('[ERROR] Chapter ${i + 1}/100 failed: $diagnostic');
@@ -309,7 +321,11 @@ Future<_JourneyResult> _generateHundredChapterJourney({
     final matchedNames = StoryOutline.characterNames
         .where(content.contains)
         .toList(growable: false);
-    expect(matchedNames, isNotEmpty, reason: 'Chapter ${index + 1} should include a character name');
+    expect(
+      matchedNames,
+      isNotEmpty,
+      reason: 'Chapter ${index + 1} should include a character name',
+    );
     chaptersWithNames++;
     debugPrint('[KNOWLEDGE] Chapter ${index + 1} contains: $matchedNames');
   }
@@ -323,7 +339,9 @@ Future<_JourneyResult> _generateHundredChapterJourney({
       : 0;
 
   await auditService.flush();
-  final auditRepository = await container.read(tokenAuditRepositoryProvider.future);
+  final auditRepository = await container.read(
+    tokenAuditRepositoryProvider.future,
+  );
   final snapshot = await auditRepository.buildSnapshot();
 
   return _JourneyResult(
@@ -344,8 +362,12 @@ Future<_JourneyResult> _generateThirtyChapterJourney({
   required bool useDelay,
   required bool runDeviationDetection,
 }) async {
-  final manuscriptRepo = await container.read(manuscriptRepositoryProvider.future);
-  final chapterRepository = await container.read(chapterRepositoryProvider.future);
+  final manuscriptRepo = await container.read(
+    manuscriptRepositoryProvider.future,
+  );
+  final chapterRepository = await container.read(
+    chapterRepositoryProvider.future,
+  );
   final manuscript = await manuscriptRepo.add(
     Manuscript(
       id: manuscriptId,
@@ -371,7 +393,10 @@ Future<_JourneyResult> _generateThirtyChapterJourney({
       text: StoryOutline.chapters[index],
       createdAt: DateTime.now(),
     );
-    final context = PromptContext(fragments: [fragment], bannedPhrases: const []);
+    final context = PromptContext(
+      fragments: [fragment],
+      bannedPhrases: const [],
+    );
     final messages = pipeline.build(context);
 
     Usage? capturedUsage;
@@ -396,14 +421,19 @@ Future<_JourneyResult> _generateThirtyChapterJourney({
       inputText: StoryOutline.chapters[index],
       outputText: boundedOutput,
     );
-    await chapterRepository.updateDocumentContent(chapters[index].id, boundedOutput);
+    await chapterRepository.updateDocumentContent(
+      chapters[index].id,
+      boundedOutput,
+    );
     return boundedOutput;
   }
 
   for (var i = 0; i < 30; i++) {
     try {
       final output = await generateChapter(i);
-      debugPrint('[JOURNEY] Chapter ${i + 1}/30 generated (${output.length} chars)');
+      debugPrint(
+        '[JOURNEY] Chapter ${i + 1}/30 generated (${output.length} chars)',
+      );
     } catch (e) {
       final diagnostic = _safeExceptionDiagnostic(e);
       debugPrint('[ERROR] Chapter ${i + 1}/30 failed: $diagnostic');
@@ -451,7 +481,9 @@ Future<_JourneyResult> _generateThirtyChapterJourney({
       : 0;
 
   await auditService.flush();
-  final auditRepository = await container.read(tokenAuditRepositoryProvider.future);
+  final auditRepository = await container.read(
+    tokenAuditRepositoryProvider.future,
+  );
   final snapshot = await auditRepository.buildSnapshot();
 
   return _JourneyResult(
@@ -492,7 +524,9 @@ Future<void> _runGlmSmokeTest(ProviderContainer container) async {
         )
         .join();
     expect(output, isNotEmpty);
-    debugPrint('[SMOKE_TEST_PASSED] GLM API streaming compatible (${output.length} chars)');
+    debugPrint(
+      '[SMOKE_TEST_PASSED] GLM API streaming compatible (${output.length} chars)',
+    );
   } catch (e) {
     debugPrint('[SMOKE_TEST_FAILED] ${_safeExceptionDiagnostic(e)}');
     rethrow;
@@ -537,7 +571,9 @@ Future<void> _setupWorldBuilding(ProviderContainer container) async {
   expect(result.worldSetting!.name, contains('青冥'));
   expect(result.worldSetting!.description, contains('宗门'));
 
-  final characterRepo = await container.read(characterCardRepositoryProvider.future);
+  final characterRepo = await container.read(
+    characterCardRepositoryProvider.future,
+  );
   for (final card in [
     XianxiaFixtures.protagonist(),
     XianxiaFixtures.master(),
@@ -585,7 +621,9 @@ Future<int> _runDeviationDetectionForAllChapters({
   required Manuscript manuscript,
   required List<Chapter> chapters,
 }) async {
-  final deviationService = await container.read(deviationDetectionServiceProvider.future);
+  final deviationService = await container.read(
+    deviationDetectionServiceProvider.future,
+  );
   final skillRepo = await container.read(skillRepositoryProvider.future);
   final activeSkills = skillRepo.getAll().where((s) => s.isActive).toList();
   expect(activeSkills, isA<List<SkillDocument>>());
@@ -611,11 +649,15 @@ Future<int> _runDeviationDetectionForAllChapters({
         }
       }
     } catch (e) {
-      debugPrint('[ERROR] Deviation chapter ${i + 1}/${chapters.length} failed: ${_safeExceptionDiagnostic(e)}');
+      debugPrint(
+        '[ERROR] Deviation chapter ${i + 1}/${chapters.length} failed: ${_safeExceptionDiagnostic(e)}',
+      );
       rethrow;
     }
   }
-  debugPrint('[DEVIATION] Warnings: $totalWarnings across ${chapters.length} chapters');
+  debugPrint(
+    '[DEVIATION] Warnings: $totalWarnings across ${chapters.length} chapters',
+  );
   return chapters.length;
 }
 
@@ -636,7 +678,9 @@ class _DeterministicJourneyAdapter implements AIAdapter {
     int? maxTokens,
     void Function(Usage?)? onUsage,
   }) async* {
-    final promptText = messages.map((message) => message.toJson()['content']).join('\n');
+    final promptText = messages
+        .map((message) => message.toJson()['content'])
+        .join('\n');
     if (!promptText.contains('第') || !promptText.contains('林风')) {
       yield* _fallback.createStream(
         apiKey: apiKey,
@@ -661,9 +705,11 @@ class _DeterministicJourneyAdapter implements AIAdapter {
 
   String _chapterText(int index) {
     final chapterNo = index + 1;
-    final name = StoryOutline.characterNames[index % StoryOutline.characterNames.length];
+    final name =
+        StoryOutline.characterNames[index % StoryOutline.characterNames.length];
     final plot = StoryOutline.chapters[index];
-    final text = '第$chapterNo章，林风沿着青云宗山道前行，$name在旁提醒他莫忘清虚真人的告诫。$plot 他没有急着求成，而是先整理灵气、核对门规、记录白灵的反应，再把今日所见写入随身玉简。夜色落下时，苏雪晴递来一盏灵茶，赵天磊的目光从演武场另一侧扫过，新的冲突已经埋下。这一章保持凡人少年稳步成长的节奏，既写修炼压力，也写宗门人情，让知识库中的人物关系、境界限制和世界观禁忌自然进入叙事。林风明白每一次选择都会影响后续三十章的因果，因此他只推进一个明确目标，不越过作者亲自打磨的边界。清虚真人要求他每晚复盘战斗细节，把白日的得失化成下一次行动的依据。';
+    final text =
+        '第$chapterNo章，林风沿着青云宗山道前行，$name在旁提醒他莫忘清虚真人的告诫。$plot 他没有急着求成，而是先整理灵气、核对门规、记录白灵的反应，再把今日所见写入随身玉简。夜色落下时，苏雪晴递来一盏灵茶，赵天磊的目光从演武场另一侧扫过，新的冲突已经埋下。这一章保持凡人少年稳步成长的节奏，既写修炼压力，也写宗门人情，让知识库中的人物关系、境界限制和世界观禁忌自然进入叙事。林风明白每一次选择都会影响后续三十章的因果，因此他只推进一个明确目标，不越过作者亲自打磨的边界。清虚真人要求他每晚复盘战斗细节，把白日的得失化成下一次行动的依据。';
     return text.substring(0, min(420, text.length));
   }
 

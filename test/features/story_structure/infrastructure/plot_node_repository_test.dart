@@ -53,11 +53,9 @@ void main() {
 
     test('should return all plot nodes', () async {
       await repository.add(testNode);
-      await repository.add(testNode.copyWith(
-        id: 'pn-2',
-        title: 'Rising action',
-        chapter: 3,
-      ));
+      await repository.add(
+        testNode.copyWith(id: 'pn-2', title: 'Rising action', chapter: 3),
+      );
 
       final all = repository.getAll();
       expect(all, hasLength(2));
@@ -98,24 +96,30 @@ void main() {
     });
 
     test('should sort nodes by chapter then manualOrder', () async {
-      await repository.add(testNode.copyWith(
-        id: 'pn-b',
-        title: 'Second',
-        chapter: 1,
-        manualOrder: 1,
-      ));
-      await repository.add(testNode.copyWith(
-        id: 'pn-a',
-        title: 'First',
-        chapter: 1,
-        manualOrder: 0,
-      ));
-      await repository.add(testNode.copyWith(
-        id: 'pn-c',
-        title: 'Third chapter',
-        chapter: 2,
-        manualOrder: 0,
-      ));
+      await repository.add(
+        testNode.copyWith(
+          id: 'pn-b',
+          title: 'Second',
+          chapter: 1,
+          manualOrder: 1,
+        ),
+      );
+      await repository.add(
+        testNode.copyWith(
+          id: 'pn-a',
+          title: 'First',
+          chapter: 1,
+          manualOrder: 0,
+        ),
+      );
+      await repository.add(
+        testNode.copyWith(
+          id: 'pn-c',
+          title: 'Third chapter',
+          chapter: 2,
+          manualOrder: 0,
+        ),
+      );
 
       final sorted = repository.getAll();
       expect(sorted[0].title, 'First');
@@ -124,8 +128,12 @@ void main() {
     });
 
     test('should save order for a list of nodes', () async {
-      final n1 = await repository.add(testNode.copyWith(id: 'pn-1', manualOrder: 0));
-      final n2 = await repository.add(testNode.copyWith(id: 'pn-2', manualOrder: 1));
+      final n1 = await repository.add(
+        testNode.copyWith(id: 'pn-1', manualOrder: 0),
+      );
+      final n2 = await repository.add(
+        testNode.copyWith(id: 'pn-2', manualOrder: 1),
+      );
 
       await repository.saveOrder([n2.id, n1.id]);
 

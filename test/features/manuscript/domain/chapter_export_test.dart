@@ -34,16 +34,8 @@ void main() {
     });
 
     test('equality compares title, sortOrder, content', () {
-      const e1 = ChapterExport(
-        title: 'Chapter',
-        sortOrder: 1,
-        content: 'Text',
-      );
-      const e2 = ChapterExport(
-        title: 'Chapter',
-        sortOrder: 1,
-        content: 'Text',
-      );
+      const e1 = ChapterExport(title: 'Chapter', sortOrder: 1, content: 'Text');
+      const e2 = ChapterExport(title: 'Chapter', sortOrder: 1, content: 'Text');
 
       expect(e1, equals(e2));
       expect(e1.hashCode, equals(e2.hashCode));

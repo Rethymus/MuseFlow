@@ -51,7 +51,9 @@ class FragmentAdapter extends TypeAdapter<Fragment> {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is FragmentAdapter && runtimeType == other.runtimeType && typeId == other.typeId;
+      other is FragmentAdapter &&
+          runtimeType == other.runtimeType &&
+          typeId == other.typeId;
 }
 
 /// Manual Hive TypeAdapter for [AppSettings].

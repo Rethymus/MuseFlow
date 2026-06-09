@@ -8,7 +8,10 @@ void main() {
     });
 
     test('should merge with itself', () {
-      expect(aiProvenanceAttribution.canMergeWith(aiProvenanceAttribution), isTrue);
+      expect(
+        aiProvenanceAttribution.canMergeWith(aiProvenanceAttribution),
+        isTrue,
+      );
     });
   });
 

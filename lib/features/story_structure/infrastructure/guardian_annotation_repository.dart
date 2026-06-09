@@ -47,8 +47,9 @@ class GuardianAnnotationRepository {
   List<GuardianAnnotation> getAll() {
     try {
       return _box.values
-          .map((json) =>
-              GuardianAnnotation.fromJson(json as Map<String, dynamic>))
+          .map(
+            (json) => GuardianAnnotation.fromJson(json as Map<String, dynamic>),
+          )
           .toList();
     } catch (e) {
       throw StateError('Failed to read guardian annotations: $e');
@@ -77,7 +78,8 @@ class GuardianAnnotationRepository {
       await _box.put(annotation.id, annotation.toJson());
     } catch (e) {
       throw StateError(
-          'Failed to update guardian annotation ${annotation.id}: $e');
+        'Failed to update guardian annotation ${annotation.id}: $e',
+      );
     }
   }
 

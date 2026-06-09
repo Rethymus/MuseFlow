@@ -67,10 +67,9 @@ final blindReadServiceProvider = FutureProvider<BlindReadService>((ref) async {
   return BlindReadService(chapterRepository: chapterRepository);
 });
 
-final blindReadProvider =
-    NotifierProvider<BlindReadNotifier, BlindReadState>(
-      BlindReadNotifier.new,
-    );
+final blindReadProvider = NotifierProvider<BlindReadNotifier, BlindReadState>(
+  BlindReadNotifier.new,
+);
 
 class BlindReadState {
   const BlindReadState({
@@ -86,7 +85,9 @@ class BlindReadState {
   bool get hasStarted => excerpts.isNotEmpty;
   bool get isComplete => result != null;
   BlindReadExcerpt? get currentExcerpt =>
-      currentIndex >= 0 && currentIndex < excerpts.length ? excerpts[currentIndex] : null;
+      currentIndex >= 0 && currentIndex < excerpts.length
+      ? excerpts[currentIndex]
+      : null;
 
   BlindReadState copyWith({
     List<BlindReadExcerpt>? excerpts,
@@ -155,19 +156,25 @@ class BlindReadNotifier extends Notifier<BlindReadState> {
 
 final consistencyReportServiceProvider =
     FutureProvider<ConsistencyAnalysisService>((ref) async {
-  final characterRepository = await ref.watch(characterCardRepositoryProvider.future);
-  final worldSettingRepository = await ref.watch(worldSettingRepositoryProvider.future);
-  final skillRepository = await ref.watch(skillRepositoryProvider.future);
-  final chapterRepository = await ref.watch(chapterRepositoryProvider.future);
-  final nameIndex = ref.watch(nameIndexServiceProvider);
-  return ConsistencyAnalysisService(
-    characterCardRepository: characterRepository,
-    worldSettingRepository: worldSettingRepository,
-    skillRepository: skillRepository,
-    chapterRepository: chapterRepository,
-    nameIndex: nameIndex,
-  );
-});
+      final characterRepository = await ref.watch(
+        characterCardRepositoryProvider.future,
+      );
+      final worldSettingRepository = await ref.watch(
+        worldSettingRepositoryProvider.future,
+      );
+      final skillRepository = await ref.watch(skillRepositoryProvider.future);
+      final chapterRepository = await ref.watch(
+        chapterRepositoryProvider.future,
+      );
+      final nameIndex = ref.watch(nameIndexServiceProvider);
+      return ConsistencyAnalysisService(
+        characterCardRepository: characterRepository,
+        worldSettingRepository: worldSettingRepository,
+        skillRepository: skillRepository,
+        chapterRepository: chapterRepository,
+        nameIndex: nameIndex,
+      );
+    });
 
 final consistencyReportProvider =
     AsyncNotifierProvider<ConsistencyReportNotifier, ConsistencyReport>(

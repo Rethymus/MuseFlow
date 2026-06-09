@@ -14,24 +14,24 @@ import 'package:museflow/features/onboarding/infrastructure/onboarding_progress_
 /// registered for redirect guard access.
 final onboardingRepositoryProvider =
     FutureProvider<OnboardingProgressRepository>((ref) async {
-  final box = await Hive.openBox('settings');
-  return OnboardingProgressRepository(box);
-});
+      final box = await Hive.openBox('settings');
+      return OnboardingProgressRepository(box);
+    });
 
 /// Provides a [WorldSettingRepository] for entity creation during onboarding.
 ///
 /// Scoped to onboarding to avoid coupling to the broken providers.dart chain.
 final onboardingWorldSettingRepositoryProvider =
     FutureProvider<WorldSettingRepository>((ref) async {
-  final box = await Hive.openBox<dynamic>('world_settings');
-  return WorldSettingRepository(box);
-});
+      final box = await Hive.openBox<dynamic>('world_settings');
+      return WorldSettingRepository(box);
+    });
 
 /// Provides a [CharacterCardRepository] for entity creation during onboarding.
 ///
 /// Scoped to onboarding to avoid coupling to the broken providers.dart chain.
 final onboardingCharacterCardRepositoryProvider =
     FutureProvider<CharacterCardRepository>((ref) async {
-  final box = await Hive.openBox<dynamic>('character_cards');
-  return CharacterCardRepository(box);
-});
+      final box = await Hive.openBox<dynamic>('character_cards');
+      return CharacterCardRepository(box);
+    });

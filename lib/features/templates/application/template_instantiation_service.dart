@@ -65,16 +65,18 @@ class TemplateInstantiationService {
     final createdChapters = <Chapter>[];
     if (draft.manuscriptId != null && draft.chapterTitles.isNotEmpty) {
       for (var i = 0; i < draft.chapterTitles.length; i++) {
-        final chapter = await chapterRepository.add(Chapter(
-          id: '',
-          manuscriptId: draft.manuscriptId!,
-          title: draft.chapterTitles[i],
-          sortOrder: i,
-          status: '草稿',
-          documentContent: '',
-          createdAt: DateTime.now(),
-          updatedAt: DateTime.now(),
-        ));
+        final chapter = await chapterRepository.add(
+          Chapter(
+            id: '',
+            manuscriptId: draft.manuscriptId!,
+            title: draft.chapterTitles[i],
+            sortOrder: i,
+            status: '草稿',
+            documentContent: '',
+            createdAt: DateTime.now(),
+            updatedAt: DateTime.now(),
+          ),
+        );
         createdChapters.add(chapter);
       }
     }

@@ -1,4 +1,3 @@
-
 import 'package:flutter_test/flutter_test.dart';
 import 'package:hive_ce/hive.dart';
 import 'package:museflow/features/ai/application/token_budget_calculator.dart';
@@ -36,7 +35,11 @@ void main() {
   group('TokenAuditService', () {
     test('should buffer record and schedule flush', () async {
       service.recordAudit(
-        usage: const Usage(promptTokens: 100, completionTokens: 200, totalTokens: 100 + 200),
+        usage: const Usage(
+          promptTokens: 100,
+          completionTokens: 200,
+          totalTokens: 100 + 200,
+        ),
         modelName: 'gpt-4o-mini',
         operationType: AuditOperationType.synthesis,
         manuscriptId: 'manuscript-1',
@@ -63,7 +66,11 @@ void main() {
 
     test('should flush all buffered records to repository', () async {
       service.recordAudit(
-        usage: const Usage(promptTokens: 100, completionTokens: 200, totalTokens: 100 + 200),
+        usage: const Usage(
+          promptTokens: 100,
+          completionTokens: 200,
+          totalTokens: 100 + 200,
+        ),
         modelName: 'model-1',
         operationType: AuditOperationType.synthesis,
         manuscriptId: 'manuscript-1',
@@ -72,7 +79,11 @@ void main() {
       );
 
       service.recordAudit(
-        usage: const Usage(promptTokens: 150, completionTokens: 250, totalTokens: 150 + 250),
+        usage: const Usage(
+          promptTokens: 150,
+          completionTokens: 250,
+          totalTokens: 150 + 250,
+        ),
         modelName: 'model-2',
         operationType: AuditOperationType.polish,
         manuscriptId: 'manuscript-1',
@@ -92,7 +103,11 @@ void main() {
       // Add 12 records (exceeds maxRecords of 10)
       for (var i = 0; i < 12; i++) {
         service.recordAudit(
-          usage: Usage(promptTokens: 100, completionTokens: 200, totalTokens: 100 + 200),
+          usage: Usage(
+            promptTokens: 100,
+            completionTokens: 200,
+            totalTokens: 100 + 200,
+          ),
           modelName: 'model',
           operationType: AuditOperationType.synthesis,
           manuscriptId: 'manuscript',
@@ -107,22 +122,29 @@ void main() {
       expect(repository.count, 10);
     });
 
-    test('should use Usage promptTokens and completionTokens when provided', () async {
-      service.recordAudit(
-        usage: const Usage(promptTokens: 123, completionTokens: 456, totalTokens: 123 + 456),
-        modelName: 'model',
-        operationType: AuditOperationType.synthesis,
-        manuscriptId: 'manuscript',
-        inputText: 'This would estimate differently',
-        outputText: 'But we use the API usage',
-      );
+    test(
+      'should use Usage promptTokens and completionTokens when provided',
+      () async {
+        service.recordAudit(
+          usage: const Usage(
+            promptTokens: 123,
+            completionTokens: 456,
+            totalTokens: 123 + 456,
+          ),
+          modelName: 'model',
+          operationType: AuditOperationType.synthesis,
+          manuscriptId: 'manuscript',
+          inputText: 'This would estimate differently',
+          outputText: 'But we use the API usage',
+        );
 
-      await service.flush();
+        await service.flush();
 
-      final records = await repository.loadAll();
-      expect(records.first.inputTokens, 123);
-      expect(records.first.outputTokens, 456);
-    });
+        final records = await repository.loadAll();
+        expect(records.first.inputTokens, 123);
+        expect(records.first.outputTokens, 456);
+      },
+    );
 
     test('should fallback to TokenBudgetCalculator when usage is null', () async {
       service.recordAudit(
@@ -146,7 +168,11 @@ void main() {
 
     test('should cancel timer and flush on dispose', () async {
       service.recordAudit(
-        usage: const Usage(promptTokens: 100, completionTokens: 200, totalTokens: 100 + 200),
+        usage: const Usage(
+          promptTokens: 100,
+          completionTokens: 200,
+          totalTokens: 100 + 200,
+        ),
         modelName: 'model',
         operationType: AuditOperationType.synthesis,
         manuscriptId: 'manuscript',
@@ -165,7 +191,11 @@ void main() {
 
     test('should handle chapterId when provided', () async {
       service.recordAudit(
-        usage: const Usage(promptTokens: 100, completionTokens: 200, totalTokens: 100 + 200),
+        usage: const Usage(
+          promptTokens: 100,
+          completionTokens: 200,
+          totalTokens: 100 + 200,
+        ),
         modelName: 'model',
         operationType: AuditOperationType.polish,
         manuscriptId: 'manuscript-1',
@@ -182,7 +212,11 @@ void main() {
 
     test('should handle null chapterId', () async {
       service.recordAudit(
-        usage: const Usage(promptTokens: 100, completionTokens: 200, totalTokens: 100 + 200),
+        usage: const Usage(
+          promptTokens: 100,
+          completionTokens: 200,
+          totalTokens: 100 + 200,
+        ),
         modelName: 'model',
         operationType: AuditOperationType.opening,
         manuscriptId: 'manuscript-1',
@@ -200,7 +234,11 @@ void main() {
     test('should debounce multiple rapid records into single flush', () async {
       for (var i = 0; i < 5; i++) {
         service.recordAudit(
-          usage: Usage(promptTokens: 100, completionTokens: 200, totalTokens: 100 + 200),
+          usage: Usage(
+            promptTokens: 100,
+            completionTokens: 200,
+            totalTokens: 100 + 200,
+          ),
           modelName: 'model',
           operationType: AuditOperationType.synthesis,
           manuscriptId: 'manuscript',

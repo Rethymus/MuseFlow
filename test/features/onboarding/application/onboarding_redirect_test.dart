@@ -48,49 +48,59 @@ void main() {
       box = await Hive.openBox<dynamic>('test_settings');
     });
 
-    test('should redirect to /onboarding when completed=false and not on onboarding route',
-        () async {
-      final result = await handleRedirect(
-        matchedLocation: '/editor',
-        box: box,
-      );
+    test(
+      'should redirect to /onboarding when completed=false and not on onboarding route',
+      () async {
+        final result = await handleRedirect(
+          matchedLocation: '/editor',
+          box: box,
+        );
 
-      expect(result, AppConstants.onboarding);
-    });
+        expect(result, AppConstants.onboarding);
+      },
+    );
 
-    test('should return null when completed=true and not on onboarding route', () async {
-      await box.put('onboarding_completed', true);
+    test(
+      'should return null when completed=true and not on onboarding route',
+      () async {
+        await box.put('onboarding_completed', true);
 
-      final result = await handleRedirect(
-        matchedLocation: '/editor',
-        box: box,
-      );
+        final result = await handleRedirect(
+          matchedLocation: '/editor',
+          box: box,
+        );
 
-      expect(result, isNull);
-    });
+        expect(result, isNull);
+      },
+    );
 
-    test('should redirect to editor when completed=true and on onboarding route', () async {
-      await box.put('onboarding_completed', true);
+    test(
+      'should redirect to editor when completed=true and on onboarding route',
+      () async {
+        await box.put('onboarding_completed', true);
 
-      final result = await handleRedirect(
-        matchedLocation: AppConstants.onboarding,
-        box: box,
-      );
+        final result = await handleRedirect(
+          matchedLocation: AppConstants.onboarding,
+          box: box,
+        );
 
-      expect(result, AppConstants.editor);
-    });
+        expect(result, AppConstants.editor);
+      },
+    );
 
-    test('should return null when completed=false and already on /onboarding (prevents infinite loop)',
-        () async {
-      // onboarding_completed is not set (defaults to false)
+    test(
+      'should return null when completed=false and already on /onboarding (prevents infinite loop)',
+      () async {
+        // onboarding_completed is not set (defaults to false)
 
-      final result = await handleRedirect(
-        matchedLocation: AppConstants.onboarding,
-        box: box,
-      );
+        final result = await handleRedirect(
+          matchedLocation: AppConstants.onboarding,
+          box: box,
+        );
 
-      expect(result, isNull);
-    });
+        expect(result, isNull);
+      },
+    );
 
     test('should redirect from /capture when not completed', () async {
       final result = await handleRedirect(

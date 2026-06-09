@@ -28,26 +28,32 @@ void main() {
       test('should load all settings from repository', () async {
         final box = await Hive.openBox<dynamic>('world_settings');
         final now = DateTime(2026, 1, 1);
-        await box.put('1', WorldSetting(
-          id: '1',
-          name: 'Setting1',
-          description: '',
-          rules: '',
-          factions: '',
-          geography: '',
-          techLevel: '',
-          createdAt: now,
-        ).toJson());
-        await box.put('2', WorldSetting(
-          id: '2',
-          name: 'Setting2',
-          description: '',
-          rules: '',
-          factions: '',
-          geography: '',
-          techLevel: '',
-          createdAt: now,
-        ).toJson());
+        await box.put(
+          '1',
+          WorldSetting(
+            id: '1',
+            name: 'Setting1',
+            description: '',
+            rules: '',
+            factions: '',
+            geography: '',
+            techLevel: '',
+            createdAt: now,
+          ).toJson(),
+        );
+        await box.put(
+          '2',
+          WorldSetting(
+            id: '2',
+            name: 'Setting2',
+            description: '',
+            rules: '',
+            factions: '',
+            geography: '',
+            techLevel: '',
+            createdAt: now,
+          ).toJson(),
+        );
 
         container = ProviderContainer();
         final notifier = container.read(worldSettingNotifierProvider.notifier);
@@ -122,16 +128,19 @@ void main() {
       test('should delete setting and refresh state', () async {
         final box = await Hive.openBox<dynamic>('world_settings');
         final now = DateTime(2026, 1, 1);
-        await box.put('1', WorldSetting(
-          id: '1',
-          name: 'ToDelete',
-          description: '',
-          rules: '',
-          factions: '',
-          geography: '',
-          techLevel: '',
-          createdAt: now,
-        ).toJson());
+        await box.put(
+          '1',
+          WorldSetting(
+            id: '1',
+            name: 'ToDelete',
+            description: '',
+            rules: '',
+            factions: '',
+            geography: '',
+            techLevel: '',
+            createdAt: now,
+          ).toJson(),
+        );
 
         container = ProviderContainer();
         final notifier = container.read(worldSettingNotifierProvider.notifier);
@@ -150,26 +159,32 @@ void main() {
       test('should filter current state by query', () async {
         final box = await Hive.openBox<dynamic>('world_settings');
         final now = DateTime(2026, 1, 1);
-        await box.put('1', WorldSetting(
-          id: '1',
-          name: '修仙界',
-          description: '',
-          rules: '',
-          factions: '',
-          geography: '',
-          techLevel: '',
-          createdAt: now,
-        ).toJson());
-        await box.put('2', WorldSetting(
-          id: '2',
-          name: '赛博朋克',
-          description: '',
-          rules: '',
-          factions: '',
-          geography: '',
-          techLevel: '',
-          createdAt: now,
-        ).toJson());
+        await box.put(
+          '1',
+          WorldSetting(
+            id: '1',
+            name: '修仙界',
+            description: '',
+            rules: '',
+            factions: '',
+            geography: '',
+            techLevel: '',
+            createdAt: now,
+          ).toJson(),
+        );
+        await box.put(
+          '2',
+          WorldSetting(
+            id: '2',
+            name: '赛博朋克',
+            description: '',
+            rules: '',
+            factions: '',
+            geography: '',
+            techLevel: '',
+            createdAt: now,
+          ).toJson(),
+        );
 
         container = ProviderContainer();
         final notifier = container.read(worldSettingNotifierProvider.notifier);

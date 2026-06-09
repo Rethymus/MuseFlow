@@ -68,29 +68,32 @@ void main() {
       expect(content, isNot(contains('炼气')));
     });
 
-    test('should append skill constraints to existing system message', () async {
-      await repository.add(
-        SkillDocument(
-          id: 'skill-1',
-          name: '修仙体系',
-          description: '',
-          content: '',
-          sections: SkillSections(rules: '灵气守恒'),
-          isActive: true,
-          createdAt: now,
-        ),
-      );
+    test(
+      'should append skill constraints to existing system message',
+      () async {
+        await repository.add(
+          SkillDocument(
+            id: 'skill-1',
+            name: '修仙体系',
+            description: '',
+            content: '',
+            sections: SkillSections(rules: '灵气守恒'),
+            isActive: true,
+            createdAt: now,
+          ),
+        );
 
-      final result = middleware.apply(
-        PromptContext(
-          fragments: const [],
-          messages: [ChatMessage.system('原系统提示')],
-        ),
-      );
+        final result = middleware.apply(
+          PromptContext(
+            fragments: const [],
+            messages: [ChatMessage.system('原系统提示')],
+          ),
+        );
 
-      final content = result.messages.first.toJson()['content'] as String;
-      expect(content, startsWith('原系统提示'));
-      expect(content, contains('灵气守恒'));
-    });
+        final content = result.messages.first.toJson()['content'] as String;
+        expect(content, startsWith('原系统提示'));
+        expect(content, contains('灵气守恒'));
+      },
+    );
   });
 }

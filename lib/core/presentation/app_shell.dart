@@ -20,10 +20,7 @@ import 'package:window_manager/window_manager.dart';
 class AppShellScaffold extends ConsumerStatefulWidget {
   final StatefulNavigationShell navigationShell;
 
-  const AppShellScaffold({
-    super.key,
-    required this.navigationShell,
-  });
+  const AppShellScaffold({super.key, required this.navigationShell});
 
   @override
   ConsumerState<AppShellScaffold> createState() => _AppShellScaffoldState();

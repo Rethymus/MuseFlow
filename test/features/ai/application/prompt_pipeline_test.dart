@@ -18,11 +18,7 @@ void main() {
   group('SynthesisRequest', () {
     test('should create with required fragments and defaults', () {
       final fragments = [
-        Fragment(
-          id: 'f1',
-          text: '碎片1',
-          createdAt: DateTime.now(),
-        ),
+        Fragment(id: 'f1', text: '碎片1', createdAt: DateTime.now()),
       ];
 
       final request = SynthesisRequest(fragments: fragments);
@@ -233,15 +229,12 @@ void main() {
       final fragments = [
         Fragment(id: 'f1', text: '碎片1', createdAt: DateTime.now()),
       ];
-      var context = systemMiddleware.apply(
-        PromptContext(fragments: fragments),
-      );
+      var context = systemMiddleware.apply(PromptContext(fragments: fragments));
 
       final contentBefore =
           context.messages.first.toJson()['content'] as String;
       context = middleware.apply(context);
-      final contentAfter =
-          context.messages.first.toJson()['content'] as String;
+      final contentAfter = context.messages.first.toJson()['content'] as String;
 
       // Should not modify content when no banned phrases
       expect(contentAfter, equals(contentBefore));
@@ -283,10 +276,7 @@ void main() {
         Fragment(id: 'f1', text: '碎片1', createdAt: DateTime.now()),
       ];
       var context = systemMiddleware.apply(
-        PromptContext(
-          fragments: fragments,
-          additionalInstruction: '注意语气要自然',
-        ),
+        PromptContext(fragments: fragments, additionalInstruction: '注意语气要自然'),
       );
 
       context = middleware.apply(context);
@@ -296,23 +286,25 @@ void main() {
       expect(content, contains('注意语气要自然'));
     });
 
-    test('should not include instruction line when no additionalInstruction',
-        () {
-      final middleware = UserContentMiddleware();
-      final systemMiddleware = SystemPromptMiddleware();
-      final fragments = [
-        Fragment(id: 'f1', text: '碎片1', createdAt: DateTime.now()),
-      ];
-      var context = systemMiddleware.apply(
-        PromptContext(fragments: fragments),
-      );
+    test(
+      'should not include instruction line when no additionalInstruction',
+      () {
+        final middleware = UserContentMiddleware();
+        final systemMiddleware = SystemPromptMiddleware();
+        final fragments = [
+          Fragment(id: 'f1', text: '碎片1', createdAt: DateTime.now()),
+        ];
+        var context = systemMiddleware.apply(
+          PromptContext(fragments: fragments),
+        );
 
-      context = middleware.apply(context);
+        context = middleware.apply(context);
 
-      final userMsg = context.messages[1];
-      final content = userMsg.toJson()['content'] as String;
-      expect(content, isNot(contains('追加指令')));
-    });
+        final userMsg = context.messages[1];
+        final content = userMsg.toJson()['content'] as String;
+        expect(content, isNot(contains('追加指令')));
+      },
+    );
   });
 
   group('PromptPipeline', () {
@@ -356,9 +348,7 @@ void main() {
         Fragment(id: 'f1', text: '碎片1', createdAt: DateTime.now()),
       ];
 
-      final messages = pipeline.build(
-        PromptContext(fragments: fragments),
-      );
+      final messages = pipeline.build(PromptContext(fragments: fragments));
 
       expect(messages.length, equals(2));
       final systemContent = messages[0].toJson()['content'] as String;
@@ -373,9 +363,7 @@ void main() {
         Fragment(id: 'f1', text: '碎片1', createdAt: DateTime.now()),
       ];
 
-      final messages = pipeline.build(
-        PromptContext(fragments: fragments),
-      );
+      final messages = pipeline.build(PromptContext(fragments: fragments));
 
       final userContent = messages[1].toJson()['content'] as String;
       expect(userContent, contains('碎片1'));
@@ -408,18 +396,13 @@ void main() {
 
     test('should support custom middleware order', () {
       final pipeline = PromptPipeline(
-        middlewares: [
-          SystemPromptMiddleware(),
-          UserContentMiddleware(),
-        ],
+        middlewares: [SystemPromptMiddleware(), UserContentMiddleware()],
       );
       final fragments = [
         Fragment(id: 'f1', text: '碎片1', createdAt: DateTime.now()),
       ];
 
-      final messages = pipeline.build(
-        PromptContext(fragments: fragments),
-      );
+      final messages = pipeline.build(PromptContext(fragments: fragments));
 
       // Only 2 middlewares: system + user (no persona or banned list)
       expect(messages.length, equals(2));

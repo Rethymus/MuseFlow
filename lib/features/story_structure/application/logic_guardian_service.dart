@@ -45,7 +45,9 @@ class LogicGuardianService {
 
     buffer.writeln('## 输出要求');
     buffer.writeln('请以 JSON 数组格式输出检查结果。每个元素包含：');
-    buffer.writeln('- kind: "timelineContradiction" | "worldRuleConflict" | "skillRuleConflict" | "unresolvedForeshadowing"（问题类型）');
+    buffer.writeln(
+      '- kind: "timelineContradiction" | "worldRuleConflict" | "skillRuleConflict" | "unresolvedForeshadowing"（问题类型）',
+    );
     buffer.writeln('- severity: "low" | "medium" | "high"（严重程度）');
     buffer.writeln('- message: 简短的问题描述');
     buffer.writeln('- reason: 详细的原因说明');
@@ -99,17 +101,12 @@ class LogicGuardianService {
     try {
       final prompt = buildLogicPrompt(text: text, context: context);
 
-      final client = OpenAIClient.withApiKey(
-        _apiKey,
-        baseUrl: _baseUrl,
-      );
+      final client = OpenAIClient.withApiKey(_apiKey, baseUrl: _baseUrl);
 
       final response = await client.chat.completions.create(
         ChatCompletionCreateRequest(
           model: _model,
-          messages: [
-            ChatMessage.user(prompt),
-          ],
+          messages: [ChatMessage.user(prompt)],
           temperature: 0.3,
         ),
       );
@@ -123,11 +120,13 @@ class LogicGuardianService {
 
       // Enrich annotations with location data if provided
       return annotations
-          .map((a) => a.copyWith(
-                nodeId: nodeId,
-                startOffset: startOffset,
-                endOffset: endOffset,
-              ))
+          .map(
+            (a) => a.copyWith(
+              nodeId: nodeId,
+              startOffset: startOffset,
+              endOffset: endOffset,
+            ),
+          )
           .toList();
     } catch (_) {
       // Errors are non-blocking; return empty result
@@ -142,8 +141,10 @@ class LogicGuardianService {
 
     // Handle code block wrapping
     if (trimmed.startsWith('```')) {
-      var withoutOpen =
-          trimmed.replaceFirst(RegExp(r'^```(?:json)?\s*\n?'), '');
+      var withoutOpen = trimmed.replaceFirst(
+        RegExp(r'^```(?:json)?\s*\n?'),
+        '',
+      );
       withoutOpen = withoutOpen.replaceFirst(RegExp(r'\n?```\s*$'), '');
       return withoutOpen.trim();
     }

@@ -59,7 +59,8 @@ class _CapturePageState extends ConsumerState<CapturePage> {
     final colorScheme = theme.colorScheme;
 
     // Panel is visible when synthesis is active
-    final showPanel = synthesisState.isStreaming ||
+    final showPanel =
+        synthesisState.isStreaming ||
         synthesisState.isEditing ||
         synthesisState.error != null;
 
@@ -72,13 +73,18 @@ class _CapturePageState extends ConsumerState<CapturePage> {
             if (captureState.error != null)
               Container(
                 width: double.infinity,
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 8,
+                ),
                 color: colorScheme.errorContainer,
                 child: Row(
                   children: [
-                    Icon(Icons.error_outline,
-                        size: 16, color: colorScheme.error),
+                    Icon(
+                      Icons.error_outline,
+                      size: 16,
+                      color: colorScheme.error,
+                    ),
                     const SizedBox(width: 8),
                     Expanded(
                       child: Text(
@@ -87,8 +93,11 @@ class _CapturePageState extends ConsumerState<CapturePage> {
                       ),
                     ),
                     IconButton(
-                      icon: Icon(Icons.close,
-                          size: 16, color: colorScheme.onErrorContainer),
+                      icon: Icon(
+                        Icons.close,
+                        size: 16,
+                        color: colorScheme.onErrorContainer,
+                      ),
                       onPressed: () =>
                           ref.read(captureProvider.notifier).clearError(),
                       padding: EdgeInsets.zero,
@@ -139,11 +148,13 @@ class _CapturePageState extends ConsumerState<CapturePage> {
                           label: '全部',
                           isActive: captureState.activeFilter == '全部',
                         ),
-                        ...FragmentTags.defaults.map((tag) => _buildFilterChip(
-                              context: context,
-                              label: tag,
-                              isActive: captureState.activeFilter == tag,
-                            )),
+                        ...FragmentTags.defaults.map(
+                          (tag) => _buildFilterChip(
+                            context: context,
+                            label: tag,
+                            isActive: captureState.activeFilter == tag,
+                          ),
+                        ),
                       ],
                     ),
                   ),
@@ -153,15 +164,15 @@ class _CapturePageState extends ConsumerState<CapturePage> {
                       padding: const EdgeInsets.only(left: 8),
                       child: FilledButton.tonalIcon(
                         onPressed: () {
-                          ref
-                              .read(synthesisProvider.notifier)
-                              .startSynthesis();
+                          ref.read(synthesisProvider.notifier).startSynthesis();
                         },
                         icon: const Icon(Icons.auto_awesome, size: 18),
                         label: const Text('AI 整理'),
                         style: FilledButton.styleFrom(
                           padding: const EdgeInsets.symmetric(
-                              horizontal: 12, vertical: 8),
+                            horizontal: 12,
+                            vertical: 8,
+                          ),
                         ),
                       ),
                     ),
@@ -172,20 +183,13 @@ class _CapturePageState extends ConsumerState<CapturePage> {
             const Divider(height: 1),
 
             // Fragment list or empty state
-            Expanded(
-              child: _buildFragmentList(context, captureState),
-            ),
+            Expanded(child: _buildFragmentList(context, captureState)),
           ],
         ),
 
         // Overlay layer: synthesis panel slides out from right
         if (showPanel)
-          Positioned(
-            top: 0,
-            right: 0,
-            bottom: 0,
-            child: SynthesisPanel(),
-          ),
+          Positioned(top: 0, right: 0, bottom: 0, child: SynthesisPanel()),
       ],
     );
   }
@@ -210,10 +214,7 @@ class _CapturePageState extends ConsumerState<CapturePage> {
     );
   }
 
-  Widget _buildFragmentList(
-    BuildContext context,
-    CaptureState captureState,
-  ) {
+  Widget _buildFragmentList(BuildContext context, CaptureState captureState) {
     if (captureState.isLoading) {
       return const Center(child: CircularProgressIndicator());
     }

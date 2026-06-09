@@ -6,51 +6,60 @@ import 'fake_adapter.dart';
 
 void main() {
   group('FakeAdapter', () {
-    test('should returns deterministic synthesis text when fragments provided', () async {
-      final adapter = FakeAdapter();
+    test(
+      'should returns deterministic synthesis text when fragments provided',
+      () async {
+        final adapter = FakeAdapter();
 
-      final text = await adapter
-          .createStream(
-            apiKey: 'fake-key-for-testing',
-            baseUrl: 'http://localhost:11434/v1',
-            model: 'fake-model',
-            messages: [ChatMessage.user('碎片：主角在悬崖边缘发现一枚古老玉简')],
-          )
-          .join();
+        final text = await adapter
+            .createStream(
+              apiKey: 'fake-key-for-testing',
+              baseUrl: 'http://localhost:11434/v1',
+              model: 'fake-model',
+              messages: [ChatMessage.user('碎片：主角在悬崖边缘发现一枚古老玉简')],
+            )
+            .join();
 
-      expect(text, contains('林风'));
-      expect(text, contains('筑基'));
-    });
+        expect(text, contains('林风'));
+        expect(text, contains('筑基'));
+      },
+    );
 
-    test('should returns deterministic rewrite text when rewrite requested', () async {
-      final adapter = FakeAdapter();
+    test(
+      'should returns deterministic rewrite text when rewrite requested',
+      () async {
+        final adapter = FakeAdapter();
 
-      final text = await adapter
-          .createStream(
-            apiKey: 'fake-key-for-testing',
-            baseUrl: 'http://localhost:11434/v1',
-            model: 'fake-model',
-            messages: [ChatMessage.user('请改写这段文字的语气')],
-          )
-          .join();
+        final text = await adapter
+            .createStream(
+              apiKey: 'fake-key-for-testing',
+              baseUrl: 'http://localhost:11434/v1',
+              model: 'fake-model',
+              messages: [ChatMessage.user('请改写这段文字的语气')],
+            )
+            .join();
 
-      expect(text, contains('剑光'));
-    });
+        expect(text, contains('剑光'));
+      },
+    );
 
-    test('should returns deterministic polish text when polish requested', () async {
-      final adapter = FakeAdapter();
+    test(
+      'should returns deterministic polish text when polish requested',
+      () async {
+        final adapter = FakeAdapter();
 
-      final text = await adapter
-          .createStream(
-            apiKey: 'fake-key-for-testing',
-            baseUrl: 'http://localhost:11434/v1',
-            model: 'fake-model',
-            messages: [ChatMessage.user('请润色这段文段')],
-          )
-          .join();
+        final text = await adapter
+            .createStream(
+              apiKey: 'fake-key-for-testing',
+              baseUrl: 'http://localhost:11434/v1',
+              model: 'fake-model',
+              messages: [ChatMessage.user('请润色这段文段')],
+            )
+            .join();
 
-      expect(text.contains('灵力') || text.contains('月华'), isTrue);
-    });
+        expect(text.contains('灵力') || text.contains('月华'), isTrue);
+      },
+    );
 
     test('should calls onUsage after stream completes', () async {
       final adapter = FakeAdapter();

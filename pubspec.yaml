@@ -69,6 +69,13 @@ dev_dependencies:
   json_serializable: ^6.14.0
   riverpod_generator: ^4.0.3
 
+dependency_overrides:
+  # super_keyboard 0.4.0 hardcodes Android compileSdk 34, but current
+  # flutter_plugin_android_lifecycle requires compileSdk 36. Keep this local
+  # patch until upstream publishes a compatible release.
+  super_keyboard:
+    path: third_party/super_keyboard
+
 flutter:
   uses-material-design: true
   assets:

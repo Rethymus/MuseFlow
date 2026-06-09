@@ -15,11 +15,7 @@ class ExportDialog extends ConsumerStatefulWidget {
   /// Callback for performing the actual export.
   final Future<void> Function(ExportFormat format, String content) onExport;
 
-  const ExportDialog({
-    super.key,
-    required this.bundle,
-    required this.onExport,
-  });
+  const ExportDialog({super.key, required this.bundle, required this.onExport});
 
   @override
   ConsumerState<ExportDialog> createState() => _ExportDialogState();
@@ -32,9 +28,7 @@ class _ExportDialogState extends ConsumerState<ExportDialog> {
   String? _errorMessage;
   bool _exportSuccess = false;
 
-  static final _exportService = ExportService(
-    fileWriter: _noopWriter,
-  );
+  static final _exportService = ExportService(fileWriter: _noopWriter);
 
   // No-op writer for content building (actual writing happens via onExport)
   static Future<void> _noopWriter(String path, String content) async {}
@@ -115,16 +109,15 @@ class _ExportDialogState extends ConsumerState<ExportDialog> {
             const SizedBox(height: 16),
 
             // Format selector
-            const Text(
-              '导出格式',
-              style: TextStyle(fontWeight: FontWeight.w600),
-            ),
+            const Text('导出格式', style: TextStyle(fontWeight: FontWeight.w600)),
             const SizedBox(height: 8),
             SegmentedButton<ExportFormat>(
               segments: const [
                 ButtonSegment(value: ExportFormat.txt, label: Text('TXT')),
                 ButtonSegment(
-                    value: ExportFormat.markdown, label: Text('Markdown')),
+                  value: ExportFormat.markdown,
+                  label: Text('Markdown'),
+                ),
                 ButtonSegment(value: ExportFormat.json, label: Text('JSON')),
               ],
               selected: {_selectedFormat},
@@ -162,10 +155,7 @@ class _ExportDialogState extends ConsumerState<ExportDialog> {
             const SizedBox(height: 16),
 
             // Path picker
-            const Text(
-              '保存路径',
-              style: TextStyle(fontWeight: FontWeight.w600),
-            ),
+            const Text('保存路径', style: TextStyle(fontWeight: FontWeight.w600)),
             const SizedBox(height: 8),
             Row(
               children: [
@@ -181,10 +171,7 @@ class _ExportDialogState extends ConsumerState<ExportDialog> {
                   ),
                 ),
                 const SizedBox(width: 8),
-                OutlinedButton(
-                  onPressed: _pickPath,
-                  child: const Text('选择路径'),
-                ),
+                OutlinedButton(onPressed: _pickPath, child: const Text('选择路径')),
               ],
             ),
             const SizedBox(height: 16),
@@ -260,17 +247,21 @@ class _ExportDialogState extends ConsumerState<ExportDialog> {
                     const SizedBox(height: 4),
                     _summaryItem('稿件文本'),
                     _summaryItem(
-                        '伏笔条目 (${widget.bundle.foreshadowingEntries.length})'),
+                      '伏笔条目 (${widget.bundle.foreshadowingEntries.length})',
+                    ),
+                    _summaryItem('情节点 (${widget.bundle.plotNodes.length})'),
                     _summaryItem(
-                        '情节点 (${widget.bundle.plotNodes.length})'),
+                      '守护标注 (${widget.bundle.guardianAnnotations.length})',
+                    ),
                     _summaryItem(
-                        '守护标注 (${widget.bundle.guardianAnnotations.length})'),
+                      '角色卡 (${widget.bundle.characterCards.length})',
+                    ),
                     _summaryItem(
-                        '角色卡 (${widget.bundle.characterCards.length})'),
+                      '世界设定 (${widget.bundle.worldSettings.length})',
+                    ),
                     _summaryItem(
-                        '世界设定 (${widget.bundle.worldSettings.length})'),
-                    _summaryItem(
-                        '技能文档 (${widget.bundle.skillDocuments.length})'),
+                      '技能文档 (${widget.bundle.skillDocuments.length})',
+                    ),
                   ],
                 ),
               ),
@@ -285,8 +276,7 @@ class _ExportDialogState extends ConsumerState<ExportDialog> {
         ),
         ElevatedButton(
           key: const Key('export_button'),
-          onPressed:
-              _selectedPath != null && !_isExporting ? _doExport : null,
+          onPressed: _selectedPath != null && !_isExporting ? _doExport : null,
           child: const Text('导出'),
         ),
       ],
@@ -322,10 +312,7 @@ class _PathInputDialog extends StatefulWidget {
   final String? initialPath;
   final String defaultExtension;
 
-  const _PathInputDialog({
-    this.initialPath,
-    required this.defaultExtension,
-  });
+  const _PathInputDialog({this.initialPath, required this.defaultExtension});
 
   @override
   State<_PathInputDialog> createState() => _PathInputDialogState();
@@ -363,8 +350,7 @@ class _PathInputDialogState extends State<_PathInputDialog> {
           child: const Text('取消'),
         ),
         ElevatedButton(
-          onPressed: () =>
-              Navigator.of(context).pop(_controller.text),
+          onPressed: () => Navigator.of(context).pop(_controller.text),
           child: const Text('确定'),
         ),
       ],

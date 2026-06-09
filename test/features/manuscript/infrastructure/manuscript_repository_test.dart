@@ -36,19 +36,22 @@ void main() {
     );
   }
 
-  test('add creates manuscript with uuid if id empty, sets createdAt/updatedAt', () async {
-    final manuscript = createManuscript(id: '');
-    final result = await repository.add(manuscript);
+  test(
+    'add creates manuscript with uuid if id empty, sets createdAt/updatedAt',
+    () async {
+      final manuscript = createManuscript(id: '');
+      final result = await repository.add(manuscript);
 
-    expect(result.id, isNotEmpty);
-    expect(result.createdAt, isNotNull);
-    expect(result.updatedAt, isNotNull);
-    expect(result.title, equals('Test Manuscript'));
+      expect(result.id, isNotEmpty);
+      expect(result.createdAt, isNotNull);
+      expect(result.updatedAt, isNotNull);
+      expect(result.title, equals('Test Manuscript'));
 
-    // Verify stored in box
-    final stored = box.get(result.id);
-    expect(stored, isNotNull);
-  });
+      // Verify stored in box
+      final stored = box.get(result.id);
+      expect(stored, isNotNull);
+    },
+  );
 
   test('add preserves id if provided', () async {
     final manuscript = createManuscript(id: 'custom-id');
@@ -118,44 +121,50 @@ void main() {
     expect(result, isNull);
   });
 
-  test('softDelete sets deletedAt to DateTime.now() and updates entity', () async {
-    final manuscript = createManuscript(id: 'soft-delete');
-    await box.put('soft-delete', manuscript.toJson());
+  test(
+    'softDelete sets deletedAt to DateTime.now() and updates entity',
+    () async {
+      final manuscript = createManuscript(id: 'soft-delete');
+      await box.put('soft-delete', manuscript.toJson());
 
-    await repository.softDelete('soft-delete');
+      await repository.softDelete('soft-delete');
 
-    final stored = repository.getById('soft-delete');
-    expect(stored!.deletedAt, isNotNull);
+      final stored = repository.getById('soft-delete');
+      expect(stored!.deletedAt, isNotNull);
 
-    // Should be filtered from getAll
-    final all = repository.getAll();
-    expect(all.where((m) => m.id == 'soft-delete'), isEmpty);
-  });
+      // Should be filtered from getAll
+      final all = repository.getAll();
+      expect(all.where((m) => m.id == 'soft-delete'), isEmpty);
+    },
+  );
 
-  test('getAllIncludingDeleted returns all manuscripts including soft-deleted', () async {
-    final now = DateTime.now();
-    final active = Manuscript(
-      id: 'active',
-      title: 'Active',
-      genre: '玄幻',
-      createdAt: now,
-      updatedAt: now,
-    );
-    final deleted = Manuscript(
-      id: 'deleted',
-      title: 'Deleted',
-      genre: '科幻',
-      createdAt: now,
-      updatedAt: now,
-      deletedAt: now,
-    );
+  test(
+    'getAllIncludingDeleted returns all manuscripts including soft-deleted',
+    () async {
+      final now = DateTime.now();
+      final active = Manuscript(
+        id: 'active',
+        title: 'Active',
+        genre: '玄幻',
+        createdAt: now,
+        updatedAt: now,
+      );
+      final deleted = Manuscript(
+        id: 'deleted',
+        title: 'Deleted',
+        genre: '科幻',
+        createdAt: now,
+        updatedAt: now,
+        deletedAt: now,
+      );
 
-    await box.put('active', active.toJson());
-    await box.put('deleted', deleted.toJson());
+      await box.put('active', active.toJson());
+      await box.put('deleted', deleted.toJson());
 
-    final results = repository.getAllIncludingDeleted();
-    expect(results.length, equals(2));
-  });
+      final results = repository.getAllIncludingDeleted();
+      expect(results.length, equals(2));
+    },
+  );
 
   test('hardDelete permanently removes manuscript', () async {
     final manuscript = createManuscript(id: 'hard-delete');
@@ -167,37 +176,40 @@ void main() {
     expect(result, isNull);
   });
 
-  test('purgeOlderThan hard-deletes manuscripts with deletedAt older than cutoff', () async {
-    final now = DateTime.now();
-    final oldDate = now.subtract(const Duration(days: 31));
-    final recentDate = now.subtract(const Duration(days: 5));
+  test(
+    'purgeOlderThan hard-deletes manuscripts with deletedAt older than cutoff',
+    () async {
+      final now = DateTime.now();
+      final oldDate = now.subtract(const Duration(days: 31));
+      final recentDate = now.subtract(const Duration(days: 5));
 
-    final old = Manuscript(
-      id: 'old',
-      title: 'Old',
-      genre: '玄幻',
-      createdAt: now,
-      updatedAt: now,
-      deletedAt: oldDate,
-    );
-    final recent = Manuscript(
-      id: 'recent',
-      title: 'Recent',
-      genre: '科幻',
-      createdAt: now,
-      updatedAt: now,
-      deletedAt: recentDate,
-    );
+      final old = Manuscript(
+        id: 'old',
+        title: 'Old',
+        genre: '玄幻',
+        createdAt: now,
+        updatedAt: now,
+        deletedAt: oldDate,
+      );
+      final recent = Manuscript(
+        id: 'recent',
+        title: 'Recent',
+        genre: '科幻',
+        createdAt: now,
+        updatedAt: now,
+        deletedAt: recentDate,
+      );
 
-    await box.put('old', old.toJson());
-    await box.put('recent', recent.toJson());
+      await box.put('old', old.toJson());
+      await box.put('recent', recent.toJson());
 
-    await repository.purgeOlderThan(const Duration(days: 30));
+      await repository.purgeOlderThan(const Duration(days: 30));
 
-    // Old should be gone
-    expect(repository.getById('old'), isNull);
-    // Recent should still exist (in including-deleted list)
-    final allDeleted = repository.getAllIncludingDeleted();
-    expect(allDeleted.any((m) => m.id == 'recent'), isTrue);
-  });
+      // Old should be gone
+      expect(repository.getById('old'), isNull);
+      // Recent should still exist (in including-deleted list)
+      final allDeleted = repository.getAllIncludingDeleted();
+      expect(allDeleted.any((m) => m.id == 'recent'), isTrue);
+    },
+  );
 }

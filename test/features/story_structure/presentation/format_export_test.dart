@@ -10,8 +10,9 @@ import 'package:museflow/features/story_structure/presentation/export_dialog.dar
 
 void main() {
   group('FormatCleanPreviewDialog', () {
-    testWidgets('should disable Apply cleanup until preview is generated',
-        (tester) async {
+    testWidgets('should disable Apply cleanup until preview is generated', (
+      tester,
+    ) async {
       await tester.pumpWidget(
         ProviderScope(
           child: MaterialApp(
@@ -30,15 +31,15 @@ void main() {
       expect(applyButton, findsOneWidget);
 
       // Verify it is initially disabled
-      final applyWidget = tester.widget<ElevatedButton>(find.ancestor(
-        of: applyButton,
-        matching: find.byType(ElevatedButton),
-      ));
+      final applyWidget = tester.widget<ElevatedButton>(
+        find.ancestor(of: applyButton, matching: find.byType(ElevatedButton)),
+      );
       expect(applyWidget.enabled, isFalse);
     });
 
-    testWidgets('should show preview when Preview cleanup is pressed',
-        (tester) async {
+    testWidgets('should show preview when Preview cleanup is pressed', (
+      tester,
+    ) async {
       await tester.pumpWidget(
         ProviderScope(
           child: MaterialApp(
@@ -60,15 +61,15 @@ void main() {
 
       // After preview, the Apply button should be enabled
       final applyButton = find.text('确认应用');
-      final applyWidget = tester.widget<ElevatedButton>(find.ancestor(
-        of: applyButton,
-        matching: find.byType(ElevatedButton),
-      ));
+      final applyWidget = tester.widget<ElevatedButton>(
+        find.ancestor(of: applyButton, matching: find.byType(ElevatedButton)),
+      );
       expect(applyWidget.enabled, isTrue);
     });
 
-    testWidgets('closing/canceling leaves original text unchanged',
-        (tester) async {
+    testWidgets('closing/canceling leaves original text unchanged', (
+      tester,
+    ) async {
       String? appliedText;
 
       await tester.pumpWidget(
@@ -96,8 +97,9 @@ void main() {
       expect(appliedText, isNull);
     });
 
-    testWidgets('Apply cleanup calls onApply exactly once with cleaned text',
-        (tester) async {
+    testWidgets('Apply cleanup calls onApply exactly once with cleaned text', (
+      tester,
+    ) async {
       final appliedTexts = <String>[];
 
       await tester.pumpWidget(
@@ -179,8 +181,7 @@ void main() {
       );
     }
 
-    testWidgets('shows TXT, Markdown, and JSON format choices',
-        (tester) async {
+    testWidgets('shows TXT, Markdown, and JSON format choices', (tester) async {
       await tester.pumpWidget(
         ProviderScope(
           child: MaterialApp(

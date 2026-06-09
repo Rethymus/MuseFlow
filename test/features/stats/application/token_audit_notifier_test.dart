@@ -137,10 +137,7 @@ void main() {
         totalCalls: 1,
       );
 
-      final updated = snapshot.copyWith(
-        totalInputTokens: 150,
-        totalCalls: 2,
-      );
+      final updated = snapshot.copyWith(totalInputTokens: 150, totalCalls: 2);
 
       expect(updated.totalInputTokens, 150);
       expect(updated.totalOutputTokens, 200); // unchanged

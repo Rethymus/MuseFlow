@@ -9,14 +9,21 @@ import 'package:museflow/features/editor/domain/editor_ai_state.dart';
 
 void main() {
   group('EditorAIOperation', () {
-    test('should have three values: toneRewrite, paragraphPolish, freeInput',
-        () {
-      expect(EditorAIOperation.values, hasLength(3));
-      expect(EditorAIOperation.values, contains(EditorAIOperation.toneRewrite));
-      expect(EditorAIOperation.values,
-          contains(EditorAIOperation.paragraphPolish));
-      expect(EditorAIOperation.values, contains(EditorAIOperation.freeInput));
-    });
+    test(
+      'should have three values: toneRewrite, paragraphPolish, freeInput',
+      () {
+        expect(EditorAIOperation.values, hasLength(3));
+        expect(
+          EditorAIOperation.values,
+          contains(EditorAIOperation.toneRewrite),
+        );
+        expect(
+          EditorAIOperation.values,
+          contains(EditorAIOperation.paragraphPolish),
+        );
+        expect(EditorAIOperation.values, contains(EditorAIOperation.freeInput));
+      },
+    );
 
     test('toneRewrite label should be 语气改写', () {
       expect(EditorAIOperation.toneRewrite.label, '语气改写');

@@ -20,21 +20,23 @@ void main() {
       await tearDownHiveTest();
     });
 
-    testWidgets('should render TokenAuditPage when navigating to stats tokens', (
-      tester,
-    ) async {
-      await tester.pumpWidget(const ProviderScope(child: MuseFlowApp()));
-      await tester.pump();
+    testWidgets(
+      'should render TokenAuditPage when navigating to stats tokens',
+      (tester) async {
+        await tester.pumpWidget(const ProviderScope(child: MuseFlowApp()));
+        await tester.pump();
 
-      final context = tester.element(find.byType(Scaffold).first);
-      GoRouter.of(context).go(AppConstants.statsTokens);
-      await tester.pump();
-      await tester.pump(const Duration(milliseconds: 100));
+        final context = tester.element(find.byType(Scaffold).first);
+        GoRouter.of(context).go(AppConstants.statsTokens);
+        await tester.pump();
+        await tester.pump(const Duration(milliseconds: 100));
 
-      expect(find.text('Token 消耗总览'), findsWidgets);
-      const stalePlaceholder = 'Token Audit Page - Coming in '
-          'Plan 03';
-      expect(find.text(stalePlaceholder), findsNothing);
-    });
+        expect(find.text('Token 消耗总览'), findsWidgets);
+        const stalePlaceholder =
+            'Token Audit Page - Coming in '
+            'Plan 03';
+        expect(find.text(stalePlaceholder), findsNothing);
+      },
+    );
   });
 }

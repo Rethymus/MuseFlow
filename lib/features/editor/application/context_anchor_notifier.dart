@@ -48,5 +48,5 @@ class ContextAnchorNotifier extends Notifier<List<ContextAnchor>> {
 /// Provider for the context anchor notifier.
 final contextAnchorNotifierProvider =
     NotifierProvider<ContextAnchorNotifier, List<ContextAnchor>>(
-  ContextAnchorNotifier.new,
-);
+      ContextAnchorNotifier.new,
+    );

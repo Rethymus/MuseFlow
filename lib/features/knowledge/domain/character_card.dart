@@ -153,15 +153,15 @@ class CharacterCard implements KnowledgeEntity {
 
   @override
   int get hashCode => Object.hash(
-        id,
-        name,
-        personality,
-        appearance,
-        backstory,
-        Object.hashAll(aliases),
-        createdAt,
-        updatedAt,
-      );
+    id,
+    name,
+    personality,
+    appearance,
+    backstory,
+    Object.hashAll(aliases),
+    createdAt,
+    updatedAt,
+  );
 
   @override
   String toString() =>

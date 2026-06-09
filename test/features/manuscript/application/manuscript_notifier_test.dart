@@ -20,10 +20,12 @@ void main() {
     chapterBox = await Hive.openBox<dynamic>('test_mn_chapters');
     container = ProviderContainer(
       overrides: [
-        manuscriptRepositoryProvider
-            .overrideWithValue(AsyncData(ManuscriptRepository(manuscriptBox))),
-        chapterRepositoryProvider
-            .overrideWithValue(AsyncData(ChapterRepository(chapterBox))),
+        manuscriptRepositoryProvider.overrideWithValue(
+          AsyncData(ManuscriptRepository(manuscriptBox)),
+        ),
+        chapterRepositoryProvider.overrideWithValue(
+          AsyncData(ChapterRepository(chapterBox)),
+        ),
       ],
     );
   });

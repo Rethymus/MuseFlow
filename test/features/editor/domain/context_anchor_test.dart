@@ -38,22 +38,24 @@ void main() {
       expect(anchor.createdAt, now);
     });
 
-    test('label should be first 20 chars of text with ellipsis when longer',
-        () {
-      final anchor = ContextAnchor(
-        id: 'a1',
-        text: '这是一段超过二十个字符的锚点文本内容，用于测试标签截断功能',
-        nodeId: 'n1',
-        startOffset: 0,
-        endOffset: 30,
-        isPersistent: true,
-        createdAt: DateTime(2026, 6, 2),
-      );
+    test(
+      'label should be first 20 chars of text with ellipsis when longer',
+      () {
+        final anchor = ContextAnchor(
+          id: 'a1',
+          text: '这是一段超过二十个字符的锚点文本内容，用于测试标签截断功能',
+          nodeId: 'n1',
+          startOffset: 0,
+          endOffset: 30,
+          isPersistent: true,
+          createdAt: DateTime(2026, 6, 2),
+        );
 
-      expect(anchor.label.length, 23); // 20 chars + '...'
-      expect(anchor.label, endsWith('...'));
-      expect(anchor.label, startsWith('这是一段超过二十个字符的锚点文本内容'));
-    });
+        expect(anchor.label.length, 23); // 20 chars + '...'
+        expect(anchor.label, endsWith('...'));
+        expect(anchor.label, startsWith('这是一段超过二十个字符的锚点文本内容'));
+      },
+    );
 
     test('label should be full text when 20 chars or shorter', () {
       final anchor = ContextAnchor(

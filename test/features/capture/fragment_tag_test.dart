@@ -108,14 +108,26 @@ void main() {
       });
 
       test('should return filtered fragments for specific tag', () async {
-        await service.createFragment('story fragment', tags: [FragmentTags.story]);
-        await service.createFragment('chapter fragment', tags: [FragmentTags.chapter]);
-        await service.createFragment('both', tags: [FragmentTags.story, FragmentTags.chapter]);
+        await service.createFragment(
+          'story fragment',
+          tags: [FragmentTags.story],
+        );
+        await service.createFragment(
+          'chapter fragment',
+          tags: [FragmentTags.chapter],
+        );
+        await service.createFragment(
+          'both',
+          tags: [FragmentTags.story, FragmentTags.chapter],
+        );
 
         final fragments = service.listFragmentsByTag(FragmentTags.story);
 
         expect(fragments.length, equals(2));
-        expect(fragments.every((f) => f.tags.contains(FragmentTags.story)), isTrue);
+        expect(
+          fragments.every((f) => f.tags.contains(FragmentTags.story)),
+          isTrue,
+        );
       });
     });
 

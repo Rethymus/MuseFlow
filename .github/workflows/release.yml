@@ -1,0 +1,239 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*"
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Release tag, for example v0.1.0"
+        required: true
+        type: string
+      prerelease:
+        description: "Publish as prerelease"
+        required: true
+        default: true
+        type: boolean
+
+permissions:
+  contents: write
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  prepare:
+    name: Prepare Release Metadata
+    runs-on: ubuntu-latest
+    outputs:
+      tag: ${{ steps.meta.outputs.tag }}
+      version: ${{ steps.meta.outputs.version }}
+      prerelease: ${{ steps.meta.outputs.prerelease }}
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Read version
+        id: meta
+        shell: bash
+        run: |
+          version="$(grep '^version:' pubspec.yaml | awk '{print $2}')"
+          version_name="${version%%+*}"
+          if [[ "${GITHUB_EVENT_NAME}" == "workflow_dispatch" ]]; then
+            tag="${{ inputs.tag }}"
+            prerelease="${{ inputs.prerelease }}"
+          else
+            tag="${GITHUB_REF_NAME}"
+            prerelease="false"
+          fi
+          if [[ "$tag" != v* ]]; then
+            echo "Release tag must start with v: $tag" >&2
+            exit 1
+          fi
+          if [[ "$tag" != "v${version_name}" ]]; then
+            echo "Tag $tag does not match pubspec version $version_name" >&2
+            exit 1
+          fi
+          echo "tag=$tag" >> "$GITHUB_OUTPUT"
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+          echo "prerelease=$prerelease" >> "$GITHUB_OUTPUT"
+
+  android:
+    name: Android Artifact
+    needs: prepare
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - name: Resolve dependencies
+        run: flutter pub get
+
+      - name: Build unsigned Android APK
+        run: flutter build apk --release
+
+      - name: Package Android artifact
+        shell: bash
+        run: |
+          mkdir -p dist
+          cp build/app/outputs/flutter-apk/app-release.apk "dist/museflow-${{ needs.prepare.outputs.tag }}-android-unsigned.apk"
+          (cd dist && sha256sum * > SHA256SUMS-android.txt)
+
+      - name: Upload Android artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: android-release
+          path: dist/*
+
+  linux:
+    name: Linux Artifact
+    needs: prepare
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - name: Install Linux desktop dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y clang cmake curl git libgtk-3-dev ninja-build pkg-config unzip xz-utils zip
+
+      - name: Enable Linux desktop
+        run: flutter config --enable-linux-desktop
+
+      - name: Resolve dependencies
+        run: flutter pub get
+
+      - name: Build Linux release
+        run: flutter build linux --release
+
+      - name: Package Linux artifact
+        shell: bash
+        run: |
+          mkdir -p dist
+          tar -C build/linux/x64/release/bundle -czf "dist/museflow-${{ needs.prepare.outputs.tag }}-linux-x64.tar.gz" .
+          (cd dist && sha256sum * > SHA256SUMS-linux.txt)
+
+      - name: Upload Linux artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: linux-release
+          path: dist/*
+
+  windows:
+    name: Windows Artifact
+    needs: prepare
+    runs-on: windows-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - name: Enable Windows desktop
+        run: flutter config --enable-windows-desktop
+
+      - name: Resolve dependencies
+        run: flutter pub get
+
+      - name: Build Windows release
+        run: flutter build windows --release
+
+      - name: Package Windows artifact
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force -Path dist | Out-Null
+          Compress-Archive -Path build\windows\x64\runner\Release\* -DestinationPath "dist\museflow-${{ needs.prepare.outputs.tag }}-windows-x64.zip"
+          Get-FileHash dist\* -Algorithm SHA256 | ForEach-Object { "$($_.Hash.ToLower())  $(Split-Path $_.Path -Leaf)" } | Set-Content dist\SHA256SUMS-windows.txt
+
+      - name: Upload Windows artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: windows-release
+          path: dist/*
+
+  publish:
+    name: Publish GitHub Release
+    needs: [prepare, android, linux, windows]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Download artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: dist
+
+      - name: Flatten artifacts and build checksums
+        shell: bash
+        run: |
+          mkdir -p release
+          find dist -type f ! -name 'SHA256SUMS-*' -exec cp {} release/ \;
+          (cd release && sha256sum museflow-* > SHA256SUMS.txt)
+
+      - name: Write release notes
+        shell: bash
+        run: |
+          cat > RELEASE_NOTES.md <<'NOTES'
+          # MuseFlow Release
+
+          ## Platform Artifacts
+
+          - Android APK: unsigned/debug-signed release APK. Verify before sideloading.
+          - Linux x64: release bundle packaged as `tar.gz`.
+          - Windows x64: release bundle packaged as `zip`.
+
+          ## Signing Status
+
+          These artifacts are not production-signed. No Android upload key, Windows code-signing certificate, macOS signing identity, or notarization credentials are configured in this repository.
+
+          ## Storage Notes
+
+          API keys and Hive encryption keys use platform secure storage. Plaintext fallback storage is prohibited; if native secure storage is unavailable, the app should surface an error instead of writing secrets to files.
+
+          ## Verification
+
+          Download `SHA256SUMS.txt` and verify artifacts with:
+
+          ```bash
+          sha256sum -c SHA256SUMS.txt
+          ```
+
+          ## Known Limits
+
+          Web, macOS, and iOS runners are not included in this release. Windows artifacts are produced by GitHub Actions.
+          NOTES
+
+      - name: Publish release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ needs.prepare.outputs.tag }}
+          name: MuseFlow ${{ needs.prepare.outputs.tag }}
+          body_path: RELEASE_NOTES.md
+          prerelease: ${{ needs.prepare.outputs.prerelease }}
+          files: release/*

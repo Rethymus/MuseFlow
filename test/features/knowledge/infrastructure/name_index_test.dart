@@ -46,7 +46,10 @@ void main() {
 
       final matches = index.findMatches('青莲山下');
 
-      expect(matches.map((match) => match.entityId), containsAll(['char-1', 'setting-1']));
+      expect(
+        matches.map((match) => match.entityId),
+        containsAll(['char-1', 'setting-1']),
+      );
       expect(index.typeOf('setting-1'), equals(EntityType.setting));
     });
 

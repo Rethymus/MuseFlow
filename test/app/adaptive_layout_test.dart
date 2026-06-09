@@ -104,17 +104,15 @@ GoRouter _createTestRouter() {
 
 Widget _createTestApp() {
   return ProviderScope(
-    child: MaterialApp.router(
-      routerConfig: _createTestRouter(),
-    ),
+    child: MaterialApp.router(routerConfig: _createTestRouter()),
   );
 }
 
 void main() {
   group('Adaptive Layout Breakpoints', () {
-    testWidgets(
-        'should show extended NavigationRail at width >= 1000px',
-        (tester) async {
+    testWidgets('should show extended NavigationRail at width >= 1000px', (
+      tester,
+    ) async {
       tester.view.physicalSize = const Size(1200, 800);
       tester.view.devicePixelRatio = 1.0;
 
@@ -130,7 +128,7 @@ void main() {
       );
       expect(navRail.extended, isTrue);
 
-// Labels should be visible for all 6 destinations
+      // Labels should be visible for all 6 destinations
 
       expect(find.text('捕捉器'), findsOneWidget);
       expect(find.text('编辑器'), findsOneWidget);
@@ -142,9 +140,9 @@ void main() {
       tester.view.resetDevicePixelRatio();
     });
 
-    testWidgets(
-        'should show collapsed NavigationRail at width 600-999px',
-        (tester) async {
+    testWidgets('should show collapsed NavigationRail at width 600-999px', (
+      tester,
+    ) async {
       tester.view.physicalSize = const Size(800, 800);
       tester.view.devicePixelRatio = 1.0;
 
@@ -168,72 +166,67 @@ void main() {
     });
 
     testWidgets(
-        'should show NavigationBar at bottom and hide NavigationRail below 600px',
-        (tester) async {
-      tester.view.physicalSize = const Size(400, 800);
-      tester.view.devicePixelRatio = 1.0;
+      'should show NavigationBar at bottom and hide NavigationRail below 600px',
+      (tester) async {
+        tester.view.physicalSize = const Size(400, 800);
+        tester.view.devicePixelRatio = 1.0;
 
-      await tester.pumpWidget(_createTestApp());
-      await tester.pumpAndSettle();
+        await tester.pumpWidget(_createTestApp());
+        await tester.pumpAndSettle();
 
-      // NavigationBar should be present at bottom
-      expect(find.byType(NavigationBar), findsOneWidget);
+        // NavigationBar should be present at bottom
+        expect(find.byType(NavigationBar), findsOneWidget);
 
-      // NavigationRail should NOT be present
-      expect(find.byType(NavigationRail), findsNothing);
+        // NavigationRail should NOT be present
+        expect(find.byType(NavigationRail), findsNothing);
 
-// NavigationBar should have 6 destinations with Chinese labels
+        // NavigationBar should have 6 destinations with Chinese labels
 
-      final navBar = tester.widget<NavigationBar>(
-        find.byType(NavigationBar),
-      );
-expect(navBar.destinations.length, equals(6));
+        final navBar = tester.widget<NavigationBar>(find.byType(NavigationBar));
+        expect(navBar.destinations.length, equals(6));
 
+        // Labels should be visible in NavigationBar
+        expect(find.text('捕捉器'), findsOneWidget);
+        expect(find.text('编辑器'), findsOneWidget);
+        expect(find.text('设置'), findsOneWidget);
 
-      // Labels should be visible in NavigationBar
-      expect(find.text('捕捉器'), findsOneWidget);
-      expect(find.text('编辑器'), findsOneWidget);
-      expect(find.text('设置'), findsOneWidget);
-
-      tester.view.resetPhysicalSize();
-      tester.view.resetDevicePixelRatio();
-    });
+        tester.view.resetPhysicalSize();
+        tester.view.resetDevicePixelRatio();
+      },
+    );
 
     testWidgets(
-'should have exactly 6 destinations with matching icons in both modes',
+      'should have exactly 6 destinations with matching icons in both modes',
 
-        (tester) async {
-      // Test desktop mode
-      tester.view.physicalSize = const Size(1200, 800);
-      tester.view.devicePixelRatio = 1.0;
+      (tester) async {
+        // Test desktop mode
+        tester.view.physicalSize = const Size(1200, 800);
+        tester.view.devicePixelRatio = 1.0;
 
-      await tester.pumpWidget(_createTestApp());
-      await tester.pumpAndSettle();
+        await tester.pumpWidget(_createTestApp());
+        await tester.pumpAndSettle();
 
-      final navRail = tester.widget<NavigationRail>(
-        find.byType(NavigationRail),
-      );
-expect(navRail.destinations.length, equals(6));
+        final navRail = tester.widget<NavigationRail>(
+          find.byType(NavigationRail),
+        );
+        expect(navRail.destinations.length, equals(6));
 
+        tester.view.resetPhysicalSize();
+        tester.view.resetDevicePixelRatio();
 
-      tester.view.resetPhysicalSize();
-      tester.view.resetDevicePixelRatio();
+        // Test mobile mode
+        tester.view.physicalSize = const Size(400, 800);
+        tester.view.devicePixelRatio = 1.0;
 
-      // Test mobile mode
-      tester.view.physicalSize = const Size(400, 800);
-      tester.view.devicePixelRatio = 1.0;
+        await tester.pumpWidget(_createTestApp());
+        await tester.pumpAndSettle();
 
-      await tester.pumpWidget(_createTestApp());
-      await tester.pumpAndSettle();
+        final navBar = tester.widget<NavigationBar>(find.byType(NavigationBar));
+        expect(navBar.destinations.length, equals(6));
 
-      final navBar = tester.widget<NavigationBar>(
-        find.byType(NavigationBar),
-      );
-expect(navBar.destinations.length, equals(6));
-
-
-      tester.view.resetPhysicalSize();
-      tester.view.resetDevicePixelRatio();
-    });
+        tester.view.resetPhysicalSize();
+        tester.view.resetDevicePixelRatio();
+      },
+    );
   });
 }

@@ -87,31 +87,38 @@ void main() {
       });
 
       test('should return all added settings', () async {
-        await repository.add(WorldSetting(
-          id: '',
-          name: 'Setting1',
-          description: '',
-          rules: '',
-          factions: '',
-          geography: '',
-          techLevel: '',
-          createdAt: now,
-        ));
-        await repository.add(WorldSetting(
-          id: '',
-          name: 'Setting2',
-          description: '',
-          rules: '',
-          factions: '',
-          geography: '',
-          techLevel: '',
-          createdAt: now,
-        ));
+        await repository.add(
+          WorldSetting(
+            id: '',
+            name: 'Setting1',
+            description: '',
+            rules: '',
+            factions: '',
+            geography: '',
+            techLevel: '',
+            createdAt: now,
+          ),
+        );
+        await repository.add(
+          WorldSetting(
+            id: '',
+            name: 'Setting2',
+            description: '',
+            rules: '',
+            factions: '',
+            geography: '',
+            techLevel: '',
+            createdAt: now,
+          ),
+        );
 
         final result = repository.getAll();
 
         expect(result.length, equals(2));
-        expect(result.map((s) => s.name), containsAll(['Setting1', 'Setting2']));
+        expect(
+          result.map((s) => s.name),
+          containsAll(['Setting1', 'Setting2']),
+        );
       });
     });
 
@@ -123,16 +130,18 @@ void main() {
       });
 
       test('should return setting by ID', () async {
-        final added = await repository.add(WorldSetting(
-          id: '',
-          name: 'FindMe',
-          description: '',
-          rules: '',
-          factions: '',
-          geography: '',
-          techLevel: '',
-          createdAt: now,
-        ));
+        final added = await repository.add(
+          WorldSetting(
+            id: '',
+            name: 'FindMe',
+            description: '',
+            rules: '',
+            factions: '',
+            geography: '',
+            techLevel: '',
+            createdAt: now,
+          ),
+        );
 
         final result = repository.getById(added.id);
 
@@ -143,16 +152,18 @@ void main() {
 
     group('update', () {
       test('should update existing setting and set updatedAt', () async {
-        final added = await repository.add(WorldSetting(
-          id: '',
-          name: 'Original',
-          description: '',
-          rules: '',
-          factions: '',
-          geography: '',
-          techLevel: '',
-          createdAt: now,
-        ));
+        final added = await repository.add(
+          WorldSetting(
+            id: '',
+            name: 'Original',
+            description: '',
+            rules: '',
+            factions: '',
+            geography: '',
+            techLevel: '',
+            createdAt: now,
+          ),
+        );
 
         final updated = added.copyWith(name: 'Updated');
         await repository.update(updated);
@@ -165,16 +176,18 @@ void main() {
 
     group('delete', () {
       test('should remove setting from box', () async {
-        final added = await repository.add(WorldSetting(
-          id: '',
-          name: 'ToDelete',
-          description: '',
-          rules: '',
-          factions: '',
-          geography: '',
-          techLevel: '',
-          createdAt: now,
-        ));
+        final added = await repository.add(
+          WorldSetting(
+            id: '',
+            name: 'ToDelete',
+            description: '',
+            rules: '',
+            factions: '',
+            geography: '',
+            techLevel: '',
+            createdAt: now,
+          ),
+        );
 
         await repository.delete(added.id);
 
@@ -189,26 +202,30 @@ void main() {
 
     group('searchByName', () {
       test('should find settings by name substring', () async {
-        await repository.add(WorldSetting(
-          id: '',
-          name: '修仙界',
-          description: '',
-          rules: '',
-          factions: '',
-          geography: '',
-          techLevel: '',
-          createdAt: now,
-        ));
-        await repository.add(WorldSetting(
-          id: '',
-          name: '赛博朋克',
-          description: '',
-          rules: '',
-          factions: '',
-          geography: '',
-          techLevel: '',
-          createdAt: now,
-        ));
+        await repository.add(
+          WorldSetting(
+            id: '',
+            name: '修仙界',
+            description: '',
+            rules: '',
+            factions: '',
+            geography: '',
+            techLevel: '',
+            createdAt: now,
+          ),
+        );
+        await repository.add(
+          WorldSetting(
+            id: '',
+            name: '赛博朋克',
+            description: '',
+            rules: '',
+            factions: '',
+            geography: '',
+            techLevel: '',
+            createdAt: now,
+          ),
+        );
 
         final result = repository.searchByName('修仙');
 
@@ -217,17 +234,19 @@ void main() {
       });
 
       test('should find settings by alias substring', () async {
-        await repository.add(WorldSetting(
-          id: '',
-          name: '修仙界',
-          description: '',
-          rules: '',
-          factions: '',
-          geography: '',
-          techLevel: '',
-          aliases: ['仙界', '九天'],
-          createdAt: now,
-        ));
+        await repository.add(
+          WorldSetting(
+            id: '',
+            name: '修仙界',
+            description: '',
+            rules: '',
+            factions: '',
+            geography: '',
+            techLevel: '',
+            aliases: ['仙界', '九天'],
+            createdAt: now,
+          ),
+        );
 
         final result = repository.searchByName('九天');
 
@@ -236,16 +255,18 @@ void main() {
       });
 
       test('should return empty list when no match', () async {
-        await repository.add(WorldSetting(
-          id: '',
-          name: '修仙界',
-          description: '',
-          rules: '',
-          factions: '',
-          geography: '',
-          techLevel: '',
-          createdAt: now,
-        ));
+        await repository.add(
+          WorldSetting(
+            id: '',
+            name: '修仙界',
+            description: '',
+            rules: '',
+            factions: '',
+            geography: '',
+            techLevel: '',
+            createdAt: now,
+          ),
+        );
 
         final result = repository.searchByName('不存在');
 

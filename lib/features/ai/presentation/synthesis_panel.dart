@@ -111,11 +111,7 @@ class _SynthesisPanelState extends ConsumerState<SynthesisPanel> {
 
           // Error display per D-14
           if (synthesisState.error != null)
-            _buildErrorBanner(
-              context,
-              synthesisState.error!,
-              colorScheme,
-            ),
+            _buildErrorBanner(context, synthesisState.error!, colorScheme),
 
           // Bottom action bar
           _buildActionBar(context, synthesisState, colorScheme),
@@ -138,9 +134,9 @@ class _SynthesisPanelState extends ConsumerState<SynthesisPanel> {
           const SizedBox(width: 8),
           Text(
             'AI 整理',
-            style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.w600,
-                ),
+            style: Theme.of(
+              context,
+            ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600),
           ),
           const Spacer(),
           IconButton(
@@ -166,7 +162,11 @@ class _SynthesisPanelState extends ConsumerState<SynthesisPanel> {
       color: colorScheme.tertiaryContainer,
       child: Row(
         children: [
-          Icon(Icons.info_outline, size: 16, color: colorScheme.onTertiaryContainer),
+          Icon(
+            Icons.info_outline,
+            size: 16,
+            color: colorScheme.onTertiaryContainer,
+          ),
           const SizedBox(width: 8),
           Expanded(
             child: Text(
@@ -219,11 +219,7 @@ class _SynthesisPanelState extends ConsumerState<SynthesisPanel> {
       return Padding(
         padding: const EdgeInsets.all(16),
         child: SingleChildScrollView(
-          child: _buildStreamingText(
-            state.accumulatedText,
-            theme,
-            colorScheme,
-          ),
+          child: _buildStreamingText(state.accumulatedText, theme, colorScheme),
         ),
       );
     }
@@ -279,9 +275,7 @@ class _SynthesisPanelState extends ConsumerState<SynthesisPanel> {
             ),
           ),
           // Blinking cursor during streaming
-          WidgetSpan(
-            child: _BlinkingCursor(colorScheme: colorScheme),
-          ),
+          WidgetSpan(child: _BlinkingCursor(colorScheme: colorScheme)),
         ],
       ),
     );
@@ -366,8 +360,9 @@ class _SynthesisPanelState extends ConsumerState<SynthesisPanel> {
                 onPressed: state.isStreaming
                     ? null
                     : () {
-                        final instruction =
-                            _additionalInstructionController.text.trim();
+                        final instruction = _additionalInstructionController
+                            .text
+                            .trim();
                         ref
                             .read(synthesisProvider.notifier)
                             .regenerate(
@@ -387,7 +382,8 @@ class _SynthesisPanelState extends ConsumerState<SynthesisPanel> {
               const Spacer(),
               // Confirm insert button per D-07
               FilledButton.icon(
-                onPressed: (!state.isEditing && state.isStreaming) ||
+                onPressed:
+                    (!state.isEditing && state.isStreaming) ||
                         state.accumulatedText.isEmpty
                     ? null
                     : () {

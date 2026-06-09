@@ -17,7 +17,9 @@ final _testTokenAuditProvider = FutureProvider<TokenAuditSnapshot>((ref) async {
 
 void main() {
   group('TokenAuditPage', () {
-    testWidgets('renders loading state when snapshot is AsyncLoading', (tester) async {
+    testWidgets('renders loading state when snapshot is AsyncLoading', (
+      tester,
+    ) async {
       await tester.pumpWidget(
         ProviderScope(
           child: MaterialApp(
@@ -28,7 +30,8 @@ void main() {
                 return Scaffold(
                   appBar: AppBar(title: const Text('Token 消耗总览')),
                   body: asyncValue.when(
-                    loading: () => const Center(child: CircularProgressIndicator()),
+                    loading: () =>
+                        const Center(child: CircularProgressIndicator()),
                     error: (e, s) => Center(child: Text('Error: $e')),
                     data: (snapshot) => const Text('Data loaded'),
                   ),
@@ -43,14 +46,14 @@ void main() {
       expect(find.byType(CircularProgressIndicator), findsOneWidget);
     });
 
-    testWidgets('renders empty state Card when totalCalls is 0', (tester) async {
+    testWidgets('renders empty state Card when totalCalls is 0', (
+      tester,
+    ) async {
       final emptySnapshot = const TokenAuditSnapshot();
 
       await tester.pumpWidget(
         MaterialApp(
-          home: Scaffold(
-            body: TokenAuditPage.withSnapshot(emptySnapshot),
-          ),
+          home: Scaffold(body: TokenAuditPage.withSnapshot(emptySnapshot)),
         ),
       );
 
@@ -80,9 +83,7 @@ void main() {
 
       await tester.pumpWidget(
         MaterialApp(
-          home: Scaffold(
-            body: TokenAuditPage.withSnapshot(snapshot),
-          ),
+          home: Scaffold(body: TokenAuditPage.withSnapshot(snapshot)),
         ),
       );
 
@@ -117,9 +118,7 @@ void main() {
       );
 
       await tester.pumpWidget(
-        MaterialApp(
-          home: TokenAuditPage.withSnapshot(snapshot),
-        ),
+        MaterialApp(home: TokenAuditPage.withSnapshot(snapshot)),
       );
 
       await tester.pumpAndSettle();
@@ -140,9 +139,7 @@ void main() {
       const emptySnapshot = TokenAuditSnapshot();
 
       await tester.pumpWidget(
-        const MaterialApp(
-          home: TokenAuditPage.withSnapshot(emptySnapshot),
-        ),
+        const MaterialApp(home: TokenAuditPage.withSnapshot(emptySnapshot)),
       );
 
       await tester.pumpAndSettle();

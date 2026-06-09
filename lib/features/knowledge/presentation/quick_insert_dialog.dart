@@ -31,7 +31,8 @@ class _QuickInsertDialogState extends ConsumerState<QuickInsertDialog> {
 
     return CallbackShortcuts(
       bindings: {
-        const SingleActivator(LogicalKeyboardKey.escape): () => Navigator.of(context).pop(),
+        const SingleActivator(LogicalKeyboardKey.escape): () =>
+            Navigator.of(context).pop(),
         const SingleActivator(LogicalKeyboardKey.enter): () {
           if (filtered.isNotEmpty) _insert(filtered.first.entity);
         },
@@ -80,7 +81,10 @@ class _QuickInsertDialogState extends ConsumerState<QuickInsertDialog> {
                           return ListTile(
                             title: Text(entry.entity.displayName),
                             subtitle: Text(
-                              entry.entity.toContextString.replaceAll('\n', ' '),
+                              entry.entity.toContextString.replaceAll(
+                                '\n',
+                                ' ',
+                              ),
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
                             ),
@@ -99,12 +103,21 @@ class _QuickInsertDialogState extends ConsumerState<QuickInsertDialog> {
 
   List<_KnowledgeEntry> _loadEntries(WidgetRef ref) {
     final entries = <_KnowledgeEntry>[];
-    final characters = ref.watch(characterCardNotifierProvider).asData?.value ?? const [];
-    final settings = ref.watch(worldSettingNotifierProvider).asData?.value ?? const [];
-    final skills = ref.watch(skillListNotifierProvider).asData?.value ?? const [];
-    entries.addAll(characters.map((entity) => _KnowledgeEntry(entity, EntityType.character)));
-    entries.addAll(settings.map((entity) => _KnowledgeEntry(entity, EntityType.setting)));
-    entries.addAll(skills.map((entity) => _KnowledgeEntry(entity, EntityType.skill)));
+    final characters =
+        ref.watch(characterCardNotifierProvider).asData?.value ?? const [];
+    final settings =
+        ref.watch(worldSettingNotifierProvider).asData?.value ?? const [];
+    final skills =
+        ref.watch(skillListNotifierProvider).asData?.value ?? const [];
+    entries.addAll(
+      characters.map((entity) => _KnowledgeEntry(entity, EntityType.character)),
+    );
+    entries.addAll(
+      settings.map((entity) => _KnowledgeEntry(entity, EntityType.setting)),
+    );
+    entries.addAll(
+      skills.map((entity) => _KnowledgeEntry(entity, EntityType.skill)),
+    );
     return entries;
   }
 
@@ -113,12 +126,18 @@ class _QuickInsertDialogState extends ConsumerState<QuickInsertDialog> {
     final filtered = entries.where((entry) {
       if (_filterType != null && entry.type != _filterType) return false;
       if (query.isEmpty) return true;
-      return entry.entity.allNames.any((name) => name.toLowerCase().contains(query));
+      return entry.entity.allNames.any(
+        (name) => name.toLowerCase().contains(query),
+      );
     }).toList();
 
     filtered.sort((a, b) {
-      final aExact = a.entity.allNames.any((name) => name.toLowerCase() == query);
-      final bExact = b.entity.allNames.any((name) => name.toLowerCase() == query);
+      final aExact = a.entity.allNames.any(
+        (name) => name.toLowerCase() == query,
+      );
+      final bExact = b.entity.allNames.any(
+        (name) => name.toLowerCase() == query,
+      );
       if (aExact != bExact) return aExact ? -1 : 1;
       return a.entity.displayName.length.compareTo(b.entity.displayName.length);
     });

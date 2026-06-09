@@ -22,7 +22,10 @@ class SkillRepository {
   List<SkillDocument> getAll() {
     try {
       return _box.values
-          .map((json) => SkillDocument.fromJson(Map<String, dynamic>.from(json as Map)))
+          .map(
+            (json) =>
+                SkillDocument.fromJson(Map<String, dynamic>.from(json as Map)),
+          )
           .toList();
     } catch (e) {
       throw StateError('Failed to read skill documents: $e');

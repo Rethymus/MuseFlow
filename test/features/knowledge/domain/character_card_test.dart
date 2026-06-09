@@ -42,10 +42,7 @@ void main() {
 
     group('copyWith', () {
       test('should produce new instance with updated fields', () {
-        final updated = baseCard.copyWith(
-          name: '赵灵儿',
-          updatedAt: now,
-        );
+        final updated = baseCard.copyWith(name: '赵灵儿', updatedAt: now);
 
         expect(updated.name, equals('赵灵儿'));
         expect(updated.id, equals(baseCard.id));

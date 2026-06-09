@@ -8,8 +8,14 @@ class NameIndexService extends Notifier<NameIndex> {
   @override
   NameIndex build() {
     final index = NameIndex();
-    final characterRepository = ref.watch(characterCardRepositoryProvider).asData?.value;
-    final settingRepository = ref.watch(worldSettingRepositoryProvider).asData?.value;
+    final characterRepository = ref
+        .watch(characterCardRepositoryProvider)
+        .asData
+        ?.value;
+    final settingRepository = ref
+        .watch(worldSettingRepositoryProvider)
+        .asData
+        ?.value;
     final skillRepository = ref.watch(skillRepositoryProvider).asData?.value;
 
     if (characterRepository != null) {

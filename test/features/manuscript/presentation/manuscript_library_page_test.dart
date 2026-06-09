@@ -183,7 +183,10 @@ void main() {
 
 class _RecordingManuscriptNotifier extends AsyncNotifier<List<Manuscript>>
     implements ManuscriptNotifier {
-  _RecordingManuscriptNotifier({this.populated = false, this.customGenre = false});
+  _RecordingManuscriptNotifier({
+    this.populated = false,
+    this.customGenre = false,
+  });
 
   final bool populated;
   final bool customGenre;

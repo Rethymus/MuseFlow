@@ -98,27 +98,36 @@ void main() {
         expect(result.cleanedText, isNot(contains(',')));
       });
 
-      test('should convert half-width period to full-width in Chinese text', () {
-        // Chinese sentence ending with half-width period
-        const text = '这是一个故事.';
-        final result = cleaner.clean(text);
-        expect(result.cleanedText, contains('。'));
-        expect(result.cleanedText, isNot(contains('.')));
-      });
+      test(
+        'should convert half-width period to full-width in Chinese text',
+        () {
+          // Chinese sentence ending with half-width period
+          const text = '这是一个故事.';
+          final result = cleaner.clean(text);
+          expect(result.cleanedText, contains('。'));
+          expect(result.cleanedText, isNot(contains('.')));
+        },
+      );
 
-      test('should convert half-width question mark to full-width in Chinese text', () {
-        const text = '你好?';
-        final result = cleaner.clean(text);
-        expect(result.cleanedText, contains('？'));
-        expect(result.cleanedText, isNot(contains('?')));
-      });
+      test(
+        'should convert half-width question mark to full-width in Chinese text',
+        () {
+          const text = '你好?';
+          final result = cleaner.clean(text);
+          expect(result.cleanedText, contains('？'));
+          expect(result.cleanedText, isNot(contains('?')));
+        },
+      );
 
-      test('should convert half-width exclamation mark to full-width in Chinese text', () {
-        const text = '太好了!';
-        final result = cleaner.clean(text);
-        expect(result.cleanedText, contains('！'));
-        expect(result.cleanedText, isNot(contains('!')));
-      });
+      test(
+        'should convert half-width exclamation mark to full-width in Chinese text',
+        () {
+          const text = '太好了!';
+          final result = cleaner.clean(text);
+          expect(result.cleanedText, contains('！'));
+          expect(result.cleanedText, isNot(contains('!')));
+        },
+      );
 
       test('should convert half-width colon to full-width in Chinese text', () {
         const text = '原因:结果';
@@ -127,18 +136,24 @@ void main() {
         expect(result.cleanedText, isNot(contains(':')));
       });
 
-      test('should convert half-width semicolon to full-width in Chinese text', () {
-        const text = '前半句;后半句';
-        final result = cleaner.clean(text);
-        expect(result.cleanedText, contains('；'));
-        expect(result.cleanedText, isNot(contains(';')));
-      });
+      test(
+        'should convert half-width semicolon to full-width in Chinese text',
+        () {
+          const text = '前半句;后半句';
+          final result = cleaner.clean(text);
+          expect(result.cleanedText, contains('；'));
+          expect(result.cleanedText, isNot(contains(';')));
+        },
+      );
 
       test('should NOT corrupt URLs with half-width punctuation', () {
         const text = '访问 https://example.com/path?q=1&r=2 了解更多';
         final result = cleaner.clean(text);
         // URL punctuation must remain intact
-        expect(result.cleanedText, contains('https://example.com/path?q=1&r=2'));
+        expect(
+          result.cleanedText,
+          contains('https://example.com/path?q=1&r=2'),
+        );
       });
 
       test('should NOT corrupt decimal numbers', () {

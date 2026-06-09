@@ -60,48 +60,54 @@ void main() {
       },
     );
 
-    test('fromJson applies default status and documentContent when omitted', () {
-      final json = <String, dynamic>{
-        'id': 'ch-4',
-        'manuscriptId': 'ms-2',
-        'title': 'Default Chapter',
-        'sortOrder': 0,
-        'createdAt': '2026-01-01T00:00:00.000',
-        'updatedAt': '2026-01-01T00:00:00.000',
-        // status omitted -> '草稿'
-        // documentContent omitted -> ''
-      };
+    test(
+      'fromJson applies default status and documentContent when omitted',
+      () {
+        final json = <String, dynamic>{
+          'id': 'ch-4',
+          'manuscriptId': 'ms-2',
+          'title': 'Default Chapter',
+          'sortOrder': 0,
+          'createdAt': '2026-01-01T00:00:00.000',
+          'updatedAt': '2026-01-01T00:00:00.000',
+          // status omitted -> '草稿'
+          // documentContent omitted -> ''
+        };
 
-      final chapter = Chapter.fromJson(json);
+        final chapter = Chapter.fromJson(json);
 
-      expect(chapter.status, '草稿');
-      expect(chapter.documentContent, '');
-    });
+        expect(chapter.status, '草稿');
+        expect(chapter.documentContent, '');
+      },
+    );
 
-    test('equality compares all fields including manuscriptId and sortOrder', () {
-      final now = DateTime.now();
-      final c1 = Chapter(
-        id: 'ch-5',
-        manuscriptId: 'ms-1',
-        title: 'Same Title',
-        sortOrder: 3,
-        documentContent: 'content',
-        createdAt: now,
-        updatedAt: now,
-      );
-      final c2 = Chapter(
-        id: 'ch-5',
-        manuscriptId: 'ms-1',
-        title: 'Same Title',
-        sortOrder: 3,
-        documentContent: 'content',
-        createdAt: now,
-        updatedAt: now,
-      );
+    test(
+      'equality compares all fields including manuscriptId and sortOrder',
+      () {
+        final now = DateTime.now();
+        final c1 = Chapter(
+          id: 'ch-5',
+          manuscriptId: 'ms-1',
+          title: 'Same Title',
+          sortOrder: 3,
+          documentContent: 'content',
+          createdAt: now,
+          updatedAt: now,
+        );
+        final c2 = Chapter(
+          id: 'ch-5',
+          manuscriptId: 'ms-1',
+          title: 'Same Title',
+          sortOrder: 3,
+          documentContent: 'content',
+          createdAt: now,
+          updatedAt: now,
+        );
 
-      expect(c1, equals(c2));
-      expect(c1.hashCode, equals(c2.hashCode));
-    });
+        expect(c1, equals(c2));
+        expect(c1.hashCode, equals(c2.hashCode));
+      },
+    );
 
     test('inequality detects different sortOrder or manuscriptId', () {
       final now = DateTime.now();
@@ -160,66 +166,72 @@ void main() {
       expect(updated.documentContent, 'new content');
     });
 
-    test('fromJson throws domain FormatException for malformed required fields', () {
-      final valid = <String, dynamic>{
-        'id': 'ch-8',
-        'manuscriptId': 'ms-1',
-        'title': 'Safe Chapter',
-        'sortOrder': 0,
-        'createdAt': '2026-01-01T00:00:00.000',
-        'updatedAt': '2026-01-02T00:00:00.000',
-      };
+    test(
+      'fromJson throws domain FormatException for malformed required fields',
+      () {
+        final valid = <String, dynamic>{
+          'id': 'ch-8',
+          'manuscriptId': 'ms-1',
+          'title': 'Safe Chapter',
+          'sortOrder': 0,
+          'createdAt': '2026-01-01T00:00:00.000',
+          'updatedAt': '2026-01-02T00:00:00.000',
+        };
 
-      final malformedCases = <Map<String, dynamic>>[
-        {...valid, 'id': 42},
-        {...valid, 'manuscriptId': null},
-        {...valid, 'title': <String>[]},
-        {...valid, 'sortOrder': '1'},
-        {...valid, 'createdAt': 'not-a-date'},
-        {...valid, 'updatedAt': 123},
-      ];
+        final malformedCases = <Map<String, dynamic>>[
+          {...valid, 'id': 42},
+          {...valid, 'manuscriptId': null},
+          {...valid, 'title': <String>[]},
+          {...valid, 'sortOrder': '1'},
+          {...valid, 'createdAt': 'not-a-date'},
+          {...valid, 'updatedAt': 123},
+        ];
 
-      for (final json in malformedCases) {
-        expect(
-          () => Chapter.fromJson(json),
-          throwsA(
-            isA<FormatException>().having(
-              (e) => e.message,
-              'message',
-              contains('Invalid Chapter JSON'),
+        for (final json in malformedCases) {
+          expect(
+            () => Chapter.fromJson(json),
+            throwsA(
+              isA<FormatException>().having(
+                (e) => e.message,
+                'message',
+                contains('Invalid Chapter JSON'),
+              ),
             ),
-          ),
-        );
-      }
-    });
+          );
+        }
+      },
+    );
 
-    test('fromJson throws domain FormatException for malformed optional fields', () {
-      final valid = <String, dynamic>{
-        'id': 'ch-9',
-        'manuscriptId': 'ms-1',
-        'title': 'Safe Chapter',
-        'sortOrder': 0,
-        'createdAt': '2026-01-01T00:00:00.000',
-        'updatedAt': '2026-01-02T00:00:00.000',
-      };
+    test(
+      'fromJson throws domain FormatException for malformed optional fields',
+      () {
+        final valid = <String, dynamic>{
+          'id': 'ch-9',
+          'manuscriptId': 'ms-1',
+          'title': 'Safe Chapter',
+          'sortOrder': 0,
+          'createdAt': '2026-01-01T00:00:00.000',
+          'updatedAt': '2026-01-02T00:00:00.000',
+        };
 
-      final malformedCases = <Map<String, dynamic>>[
-        {...valid, 'status': false},
-        {...valid, 'documentContent': 9},
-      ];
+        final malformedCases = <Map<String, dynamic>>[
+          {...valid, 'status': false},
+          {...valid, 'documentContent': 9},
+        ];
 
-      for (final json in malformedCases) {
-        expect(
-          () => Chapter.fromJson(json),
-          throwsA(
-            isA<FormatException>().having(
-              (e) => e.message,
-              'message',
-              contains('Invalid Chapter JSON'),
+        for (final json in malformedCases) {
+          expect(
+            () => Chapter.fromJson(json),
+            throwsA(
+              isA<FormatException>().having(
+                (e) => e.message,
+                'message',
+                contains('Invalid Chapter JSON'),
+              ),
             ),
-          ),
-        );
-      }
-    });
+          );
+        }
+      },
+    );
   });
 }

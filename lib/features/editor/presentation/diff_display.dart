@@ -130,8 +130,7 @@ class _AcceptRejectBarState extends ConsumerState<AcceptRejectBar> {
     DiffResult diffResult,
   ) {
     final baseNodeId = selection.base.nodeId;
-    final baseOffset =
-        (selection.base.nodePosition as TextNodePosition).offset;
+    final baseOffset = (selection.base.nodePosition as TextNodePosition).offset;
     final extentOffset =
         (selection.extent.nodePosition as TextNodePosition).offset;
     final selStart = baseOffset < extentOffset ? baseOffset : extentOffset;
@@ -194,7 +193,10 @@ class DiffOverlayBuilder implements SuperEditorLayerBuilder {
   const DiffOverlayBuilder();
 
   @override
-  ContentLayerWidget build(BuildContext context, SuperEditorContext editContext) {
+  ContentLayerWidget build(
+    BuildContext context,
+    SuperEditorContext editContext,
+  ) {
     return ContentLayerProxyWidget(
       child: _DiffOverlay(editor: editContext.editor),
     );
@@ -217,10 +219,7 @@ class _DiffOverlay extends ConsumerWidget {
     }
 
     // Build overlays for each pending sentence
-    return _DiffHighlights(
-      editor: editor,
-      diffResult: diffResult,
-    );
+    return _DiffHighlights(editor: editor, diffResult: diffResult);
   }
 }
 
@@ -229,10 +228,7 @@ class _DiffOverlay extends ConsumerWidget {
 /// Uses the editor's document layout to calculate positions of sentence
 /// ranges and renders colored containers at those positions.
 class _DiffHighlights extends StatelessWidget {
-  const _DiffHighlights({
-    required this.editor,
-    required this.diffResult,
-  });
+  const _DiffHighlights({required this.editor, required this.diffResult});
 
   final Editor editor;
   final DiffResult diffResult;

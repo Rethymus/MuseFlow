@@ -32,16 +32,15 @@ class _ManuscriptLibraryPageState extends ConsumerState<ManuscriptLibraryPage> {
         title: Text(
           '文稿库',
           style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                fontWeight: FontWeight.w700,
-                fontSize: 28,
-              ),
+            fontWeight: FontWeight.w700,
+            fontSize: 28,
+          ),
         ),
         actions: [
           manuscriptsAsync.asData?.value.isNotEmpty == true
               ? _SortDropdown(
                   sortMode: _sortMode,
-                  onChanged: (mode) =>
-                      setState(() => _sortMode = mode),
+                  onChanged: (mode) => setState(() => _sortMode = mode),
                 )
               : const SizedBox.shrink(),
         ],
@@ -58,9 +57,7 @@ class _ManuscriptLibraryPageState extends ConsumerState<ManuscriptLibraryPage> {
           }
 
           final sorted = manuscripts.toList()
-            ..sort(
-              (a, b) => compareManuscripts(a, b, _sortMode),
-            );
+            ..sort((a, b) => compareManuscripts(a, b, _sortMode));
 
           return _ManuscriptGrid(manuscripts: sorted);
         },
@@ -98,11 +95,7 @@ class _EmptyState extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(
-              Icons.auto_stories,
-              size: 48,
-              color: colorScheme.outline,
-            ),
+            Icon(Icons.auto_stories, size: 48, color: colorScheme.outline),
             const SizedBox(height: 16),
             Text(
               '创建你的第一部作品',
@@ -215,9 +208,7 @@ class _ManuscriptCardWrapper extends ConsumerWidget {
               ),
               title: Text(
                 '删除',
-                style: TextStyle(
-                  color: Theme.of(context).colorScheme.error,
-                ),
+                style: TextStyle(color: Theme.of(context).colorScheme.error),
               ),
               onTap: () {
                 Navigator.of(ctx).pop();
@@ -235,9 +226,7 @@ class _ManuscriptCardWrapper extends ConsumerWidget {
       context: context,
       builder: (ctx) => AlertDialog(
         title: const Text('确认删除'),
-        content: Text(
-          "确定要删除文稿'${manuscript.title}'吗？文稿将在30天后永久删除，期间可恢复。",
-        ),
+        content: Text("确定要删除文稿'${manuscript.title}'吗？文稿将在30天后永久删除，期间可恢复。"),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(ctx).pop(),
@@ -263,10 +252,7 @@ class _ManuscriptCardWrapper extends ConsumerWidget {
 
 /// Sort mode dropdown button in the AppBar.
 class _SortDropdown extends StatelessWidget {
-  const _SortDropdown({
-    required this.sortMode,
-    required this.onChanged,
-  });
+  const _SortDropdown({required this.sortMode, required this.onChanged});
 
   final ManuscriptSortMode sortMode;
   final ValueChanged<ManuscriptSortMode> onChanged;

@@ -1117,12 +1117,11 @@ packages:
     source: hosted
     version: "0.2.0"
   super_keyboard:
-    dependency: transitive
+    dependency: "direct overridden"
     description:
-      name: super_keyboard
-      sha256: b5381ca46cf2cbc8cae79f8304e848f83363a8f47c1851125133c8af87d0f488
-      url: "https://pub.dev"
-    source: hosted
+      path: "third_party/super_keyboard"
+      relative: true
+    source: path
     version: "0.4.0"
   super_text_layout:
     dependency: transitive

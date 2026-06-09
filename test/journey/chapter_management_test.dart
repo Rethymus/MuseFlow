@@ -65,8 +65,7 @@ void main() {
 
       await create30Chapters(chapterRepo, manuscript.id);
 
-      final fetched =
-          chapterRepo.getByManuscriptId(manuscript.id);
+      final fetched = chapterRepo.getByManuscriptId(manuscript.id);
       expect(fetched, hasLength(30));
 
       // Verify sortOrders are 1 through 30
@@ -139,122 +138,137 @@ void main() {
   });
 
   group('Split', () {
-    test('should replace 1 chapter with 2, preserving content halves', () async {
-      final manuscriptRepo = await container.read(
-        manuscriptRepositoryProvider.future,
-      );
-      final chapterRepo = await container.read(
-        chapterRepositoryProvider.future,
-      );
+    test(
+      'should replace 1 chapter with 2, preserving content halves',
+      () async {
+        final manuscriptRepo = await container.read(
+          manuscriptRepositoryProvider.future,
+        );
+        final chapterRepo = await container.read(
+          chapterRepositoryProvider.future,
+        );
 
-      final manuscript = await manuscriptRepo.add(
-        Manuscript(
-          id: 'ms-split-test',
-          title: '剑道苍穹',
-          genre: '修仙',
-          createdAt: fixedDate,
-          updatedAt: fixedDate,
-        ),
-      );
+        final manuscript = await manuscriptRepo.add(
+          Manuscript(
+            id: 'ms-split-test',
+            title: '剑道苍穹',
+            genre: '修仙',
+            createdAt: fixedDate,
+            updatedAt: fixedDate,
+          ),
+        );
 
-      final chapters = await create30Chapters(chapterRepo, manuscript.id);
-      final notifier = container.read(chapterNotifierProvider.notifier);
-      await notifier.loadChapters(manuscript.id);
+        final chapters = await create30Chapters(chapterRepo, manuscript.id);
+        final notifier = container.read(chapterNotifierProvider.notifier);
+        await notifier.loadChapters(manuscript.id);
 
-      final ch15 = chapters.firstWhere((c) => c.sortOrder == 15);
-      await notifier.splitChapter(ch15.id, '第一段内容', '第二段内容');
+        final ch15 = chapters.firstWhere((c) => c.sortOrder == 15);
+        await notifier.splitChapter(ch15.id, '第一段内容', '第二段内容');
 
-      final fetched = chapterRepo.getByManuscriptId(manuscript.id);
-      expect(fetched.length, equals(31),
-          reason: '30 original chapters plus one inserted continuation');
-      expect(chapterRepo.getById(ch15.id)?.documentContent,
-          equals('第一段内容'));
-      expect(fetched[15].documentContent, equals('第二段内容'));
-      expect(fetched.map((c) => c.sortOrder), List.generate(31, (i) => i + 1));
-    });
+        final fetched = chapterRepo.getByManuscriptId(manuscript.id);
+        expect(
+          fetched.length,
+          equals(31),
+          reason: '30 original chapters plus one inserted continuation',
+        );
+        expect(chapterRepo.getById(ch15.id)?.documentContent, equals('第一段内容'));
+        expect(fetched[15].documentContent, equals('第二段内容'));
+        expect(
+          fetched.map((c) => c.sortOrder),
+          List.generate(31, (i) => i + 1),
+        );
+      },
+    );
   });
 
   group('Merge', () {
-    test('should combine 2 chapters into 1 with concatenated content', () async {
-      final manuscriptRepo = await container.read(
-        manuscriptRepositoryProvider.future,
-      );
-      final chapterRepo = await container.read(
-        chapterRepositoryProvider.future,
-      );
+    test(
+      'should combine 2 chapters into 1 with concatenated content',
+      () async {
+        final manuscriptRepo = await container.read(
+          manuscriptRepositoryProvider.future,
+        );
+        final chapterRepo = await container.read(
+          chapterRepositoryProvider.future,
+        );
 
-      final manuscript = await manuscriptRepo.add(
-        Manuscript(
-          id: 'ms-merge-test',
-          title: '剑道苍穹',
-          genre: '修仙',
-          createdAt: fixedDate,
-          updatedAt: fixedDate,
-        ),
-      );
+        final manuscript = await manuscriptRepo.add(
+          Manuscript(
+            id: 'ms-merge-test',
+            title: '剑道苍穹',
+            genre: '修仙',
+            createdAt: fixedDate,
+            updatedAt: fixedDate,
+          ),
+        );
 
-      final chapters = await create30Chapters(chapterRepo, manuscript.id);
-      final notifier = container.read(chapterNotifierProvider.notifier);
-      await notifier.loadChapters(manuscript.id);
+        final chapters = await create30Chapters(chapterRepo, manuscript.id);
+        final notifier = container.read(chapterNotifierProvider.notifier);
+        await notifier.loadChapters(manuscript.id);
 
-      final ch1 = chapters.firstWhere((c) => c.sortOrder == 1);
-      final ch2 = chapters.firstWhere((c) => c.sortOrder == 2);
-      await chapterRepo.updateDocumentContent(ch1.id, '第一章正文内容');
-      await chapterRepo.updateDocumentContent(ch2.id, '第二章正文内容');
+        final ch1 = chapters.firstWhere((c) => c.sortOrder == 1);
+        final ch2 = chapters.firstWhere((c) => c.sortOrder == 2);
+        await chapterRepo.updateDocumentContent(ch1.id, '第一章正文内容');
+        await chapterRepo.updateDocumentContent(ch2.id, '第二章正文内容');
 
-      await notifier.mergeChapters(ch1.id, ch2.id);
+        await notifier.mergeChapters(ch1.id, ch2.id);
 
-      final fetched = chapterRepo.getByManuscriptId(manuscript.id);
-      expect(fetched.length, equals(29),
-          reason: '30 chapters minus one merged-away chapter');
-      expect(chapterRepo.getById(ch2.id), isNull);
+        final fetched = chapterRepo.getByManuscriptId(manuscript.id);
+        expect(
+          fetched.length,
+          equals(29),
+          reason: '30 chapters minus one merged-away chapter',
+        );
+        expect(chapterRepo.getById(ch2.id), isNull);
 
-      final merged = chapterRepo.getById(ch1.id);
-      expect(merged, isNotNull);
-      expect(merged!.documentContent, equals('第一章正文内容\n\n第二章正文内容'));
-      expect(fetched.map((c) => c.sortOrder), List.generate(29, (i) => i));
-    });
+        final merged = chapterRepo.getById(ch1.id);
+        expect(merged, isNotNull);
+        expect(merged!.documentContent, equals('第一章正文内容\n\n第二章正文内容'));
+        expect(fetched.map((c) => c.sortOrder), List.generate(29, (i) => i));
+      },
+    );
   });
 
   group('Copy', () {
-    test('should create new chapter with identical content and （副本） suffix',
-        () async {
-      final manuscriptRepo = await container.read(
-        manuscriptRepositoryProvider.future,
-      );
-      final chapterRepo = await container.read(
-        chapterRepositoryProvider.future,
-      );
+    test(
+      'should create new chapter with identical content and （副本） suffix',
+      () async {
+        final manuscriptRepo = await container.read(
+          manuscriptRepositoryProvider.future,
+        );
+        final chapterRepo = await container.read(
+          chapterRepositoryProvider.future,
+        );
 
-      final manuscript = await manuscriptRepo.add(
-        Manuscript(
-          id: 'ms-copy-test',
-          title: '剑道苍穹',
-          genre: '修仙',
-          createdAt: fixedDate,
-          updatedAt: fixedDate,
-        ),
-      );
+        final manuscript = await manuscriptRepo.add(
+          Manuscript(
+            id: 'ms-copy-test',
+            title: '剑道苍穹',
+            genre: '修仙',
+            createdAt: fixedDate,
+            updatedAt: fixedDate,
+          ),
+        );
 
-      final chapters = await create30Chapters(chapterRepo, manuscript.id);
-      final notifier = container.read(chapterNotifierProvider.notifier);
-      await notifier.loadChapters(manuscript.id);
+        final chapters = await create30Chapters(chapterRepo, manuscript.id);
+        final notifier = container.read(chapterNotifierProvider.notifier);
+        await notifier.loadChapters(manuscript.id);
 
-      final ch3 = chapters.firstWhere((c) => c.sortOrder == 3);
-      await chapterRepo.updateDocumentContent(ch3.id, '第三章正文内容');
-      final updatedCh3 = chapterRepo.getById(ch3.id)!;
+        final ch3 = chapters.firstWhere((c) => c.sortOrder == 3);
+        await chapterRepo.updateDocumentContent(ch3.id, '第三章正文内容');
+        final updatedCh3 = chapterRepo.getById(ch3.id)!;
 
-      await notifier.duplicateChapter(updatedCh3.id);
+        await notifier.duplicateChapter(updatedCh3.id);
 
-      final fetched = chapterRepo.getByManuscriptId(manuscript.id);
-      expect(fetched.length, equals(31),
-          reason: '30 original + 1 copy = 31');
+        final fetched = chapterRepo.getByManuscriptId(manuscript.id);
+        expect(fetched.length, equals(31), reason: '30 original + 1 copy = 31');
 
-      final copied = fetched.last;
-      expect(copied.documentContent, equals('第三章正文内容'));
-      expect(copied.title, anyOf(contains('(副本)'), contains('（副本）')));
-      expect(copied.id, isNot(equals(ch3.id)));
-    });
+        final copied = fetched.last;
+        expect(copied.documentContent, equals('第三章正文内容'));
+        expect(copied.title, anyOf(contains('(副本)'), contains('（副本）')));
+        expect(copied.id, isNot(equals(ch3.id)));
+      },
+    );
   });
 
   group('Delete', () {
@@ -284,8 +298,7 @@ void main() {
       await notifier.delete(ch25.id);
 
       final fetched = chapterRepo.getByManuscriptId(manuscript.id);
-      expect(fetched.length, equals(29),
-          reason: '30 - 1 (deleted) = 29');
+      expect(fetched.length, equals(29), reason: '30 - 1 (deleted) = 29');
       expect(chapterRepo.getById(ch25.id), isNull);
       expect(fetched.map((c) => c.sortOrder), List.generate(29, (i) => i));
     });

@@ -8,7 +8,8 @@ class DeviationWarningWidget extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final warnings = ref.watch(deviationNotifierProvider).asData?.value.warnings ?? const [];
+    final warnings =
+        ref.watch(deviationNotifierProvider).asData?.value.warnings ?? const [];
     if (warnings.isEmpty) return const SizedBox.shrink();
 
     return Material(
@@ -24,7 +25,8 @@ class DeviationWarningWidget extends ConsumerWidget {
                 const SizedBox(width: 8),
                 Expanded(child: Text('检测到 ${warnings.length} 条设定偏离提醒')),
                 TextButton(
-                  onPressed: () => ref.read(deviationNotifierProvider.notifier).clearAll(),
+                  onPressed: () =>
+                      ref.read(deviationNotifierProvider.notifier).clearAll(),
                   child: const Text('全部忽略'),
                 ),
               ],
@@ -59,7 +61,9 @@ class _WarningTile extends ConsumerWidget {
             : Text('建议修复：${warning.suggestedFix}'),
         trailing: IconButton(
           icon: const Icon(Icons.close),
-          onPressed: () => ref.read(deviationNotifierProvider.notifier).dismissWarning(index),
+          onPressed: () => ref
+              .read(deviationNotifierProvider.notifier)
+              .dismissWarning(index),
         ),
       ),
     );

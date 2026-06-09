@@ -48,7 +48,9 @@ class _SkillTile extends ConsumerWidget {
         ),
         title: Text(skill.name),
         subtitle: Text(
-          skill.description.isNotEmpty ? skill.description : skill.sections.nonNullSections.join('、'),
+          skill.description.isNotEmpty
+              ? skill.description
+              : skill.sections.nonNullSections.join('、'),
           maxLines: 2,
           overflow: TextOverflow.ellipsis,
         ),
@@ -63,7 +65,8 @@ class _SkillTile extends ConsumerWidget {
             ),
             IconButton(
               icon: const Icon(Icons.delete_outline),
-              onPressed: () => ref.read(skillListNotifierProvider.notifier).delete(skill.id),
+              onPressed: () =>
+                  ref.read(skillListNotifierProvider.notifier).delete(skill.id),
             ),
           ],
         ),

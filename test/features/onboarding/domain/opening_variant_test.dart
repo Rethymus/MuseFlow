@@ -61,10 +61,7 @@ void main() {
 
       final json = variant.toJson();
 
-      expect(json, {
-        'style': 'character',
-        'text': '他缓缓睁开双眼',
-      });
+      expect(json, {'style': 'character', 'text': '他缓缓睁开双眼'});
     });
 
     test('should deserialize from JSON correctly', () {
@@ -91,18 +88,9 @@ void main() {
     });
 
     test('should support equality comparison', () {
-      const a = OpeningVariant(
-        style: OpeningVariantStyle.scene,
-        text: '相同的文本',
-      );
-      const b = OpeningVariant(
-        style: OpeningVariantStyle.scene,
-        text: '相同的文本',
-      );
-      const c = OpeningVariant(
-        style: OpeningVariantStyle.scene,
-        text: '不同的文本',
-      );
+      const a = OpeningVariant(style: OpeningVariantStyle.scene, text: '相同的文本');
+      const b = OpeningVariant(style: OpeningVariantStyle.scene, text: '相同的文本');
+      const c = OpeningVariant(style: OpeningVariantStyle.scene, text: '不同的文本');
 
       expect(a, equals(b));
       expect(a, isNot(equals(c)));

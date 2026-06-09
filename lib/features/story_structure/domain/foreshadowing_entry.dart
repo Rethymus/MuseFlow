@@ -216,12 +216,13 @@ class ForeshadowingEntry {
       sourceExcerpt: json['sourceExcerpt'] as String? ?? '',
       sourceLocation: json['sourceLocation'] != null
           ? SourceLocation.fromJson(
-              json['sourceLocation'] as Map<String, dynamic>)
+              json['sourceLocation'] as Map<String, dynamic>,
+            )
           : null,
       notes: json['notes'] as String? ?? '',
       linkedPlotNodeIds:
           (json['linkedPlotNodeIds'] as List<dynamic>?)?.cast<String>() ??
-              const [],
+          const [],
       createdAt: DateTime.parse(json['createdAt'] as String),
       updatedAt: json['updatedAt'] != null
           ? DateTime.parse(json['updatedAt'] as String)
@@ -268,20 +269,20 @@ class ForeshadowingEntry {
 
   @override
   int get hashCode => Object.hash(
-        id,
-        title,
-        mode,
-        status,
-        plantedChapter,
-        targetResolutionChapter,
-        resolvedChapter,
-        sourceExcerpt,
-        sourceLocation,
-        notes,
-        Object.hashAll(linkedPlotNodeIds),
-        createdAt,
-        updatedAt,
-      );
+    id,
+    title,
+    mode,
+    status,
+    plantedChapter,
+    targetResolutionChapter,
+    resolvedChapter,
+    sourceExcerpt,
+    sourceLocation,
+    notes,
+    Object.hashAll(linkedPlotNodeIds),
+    createdAt,
+    updatedAt,
+  );
 
   @override
   String toString() =>

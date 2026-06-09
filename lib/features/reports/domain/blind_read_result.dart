@@ -60,10 +60,7 @@ class BlindReadExcerpt {
 /// Score = correctCount / totalJudged. A lower score means better
 /// anti-AI-scent (harder for humans to identify AI-generated content).
 class BlindReadResult {
-  BlindReadResult({
-    required this.excerpts,
-    required this.correctCount,
-  });
+  BlindReadResult({required this.excerpts, required this.correctCount});
 
   /// All excerpts presented, with their verdicts.
   final List<BlindReadExcerpt> excerpts;
@@ -72,13 +69,11 @@ class BlindReadResult {
   final int correctCount;
 
   /// Number of excerpts that have been judged (humanVerdict != null).
-  int get totalJudged =>
-      excerpts.where((e) => e.humanVerdict != null).length;
+  int get totalJudged => excerpts.where((e) => e.humanVerdict != null).length;
 
   /// Score = correctCount / totalJudged (0.0 to 1.0).
   /// Returns 0.0 if no excerpts have been judged.
-  double get score =>
-      totalJudged == 0 ? 0.0 : correctCount / totalJudged;
+  double get score => totalJudged == 0 ? 0.0 : correctCount / totalJudged;
 
   BlindReadResult copyWith({
     List<BlindReadExcerpt>? excerpts,

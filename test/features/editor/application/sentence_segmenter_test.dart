@@ -54,8 +54,7 @@ void main() {
     });
 
     test('should handle multiple sentence types together', () {
-      final result =
-          SentenceSegmenter.segment('你好。世界！真的吗？嗯……好吧。');
+      final result = SentenceSegmenter.segment('你好。世界！真的吗？嗯……好吧。');
       // …… is grouped as one unit and acts as a sentence boundary
       expect(result, hasLength(5));
       expect(result[0], '你好。');

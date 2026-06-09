@@ -13,8 +13,7 @@ class QuickCaptureDialog extends ConsumerStatefulWidget {
   const QuickCaptureDialog({super.key});
 
   @override
-  ConsumerState<QuickCaptureDialog> createState() =>
-      _QuickCaptureDialogState();
+  ConsumerState<QuickCaptureDialog> createState() => _QuickCaptureDialogState();
 }
 
 class _QuickCaptureDialogState extends ConsumerState<QuickCaptureDialog> {
@@ -46,10 +45,7 @@ class _QuickCaptureDialogState extends ConsumerState<QuickCaptureDialog> {
 
     // Show success snackbar on the scaffold messenger
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('灵感已保存'),
-        duration: Duration(seconds: 2),
-      ),
+      const SnackBar(content: Text('灵感已保存'), duration: Duration(seconds: 2)),
     );
   }
 
@@ -78,14 +74,8 @@ class _QuickCaptureDialogState extends ConsumerState<QuickCaptureDialog> {
         ],
       ),
       actions: [
-        TextButton(
-          onPressed: _cancel,
-          child: const Text('取消'),
-        ),
-        ElevatedButton(
-          onPressed: _saveAndClose,
-          child: const Text('保存'),
-        ),
+        TextButton(onPressed: _cancel, child: const Text('取消')),
+        ElevatedButton(onPressed: _saveAndClose, child: const Text('保存')),
       ],
     );
   }

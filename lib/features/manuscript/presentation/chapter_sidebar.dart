@@ -38,7 +38,7 @@ class ChapterSidebar extends ConsumerWidget {
   /// Called when the user reorders chapters via drag-and-drop.
   /// Receives (manuscriptId, oldIndex, newIndex).
   final void Function(String manuscriptId, int oldIndex, int newIndex)?
-      onReorder;
+  onReorder;
 
   /// Called when the user long-presses a chapter row for context menu.
   /// Receives the chapter that was long-pressed.
@@ -60,10 +60,7 @@ class ChapterSidebar extends ConsumerWidget {
             padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
             child: Text(
               manuscriptTitle,
-              style: const TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.w600,
-              ),
+              style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
             ),
@@ -82,10 +79,7 @@ class ChapterSidebar extends ConsumerWidget {
               error: (error, _) => Center(
                 child: Text(
                   '加载失败',
-                  style: TextStyle(
-                    fontSize: 13,
-                    color: colorScheme.error,
-                  ),
+                  style: TextStyle(fontSize: 13, color: colorScheme.error),
                 ),
               ),
               data: (chapters) {
@@ -118,8 +112,7 @@ class ChapterSidebar extends ConsumerWidget {
                       chapter: chapter,
                       isActive: chapter.id == activeChapterId,
                       onTap: () => onChapterTap(chapter.id),
-                      onLongPress: () =>
-                          onChapterContextMenu?.call(chapter),
+                      onLongPress: () => onChapterContextMenu?.call(chapter),
                     );
                   },
                 );
@@ -180,8 +173,9 @@ class _ChapterRowWrapper extends StatelessWidget {
               child: Icon(
                 Icons.drag_handle,
                 size: 16,
-                color: Theme.of(context).colorScheme.onSurfaceVariant
-                    .withValues(alpha: 0.5),
+                color: Theme.of(
+                  context,
+                ).colorScheme.onSurfaceVariant.withValues(alpha: 0.5),
               ),
             ),
           ),
@@ -193,10 +187,7 @@ class _ChapterRowWrapper extends StatelessWidget {
 
 /// Drag proxy widget with Material elevation effect.
 class _DragProxy extends StatelessWidget {
-  const _DragProxy({
-    required this.child,
-    required this.animation,
-  });
+  const _DragProxy({required this.child, required this.animation});
 
   final Widget child;
   final Animation<double> animation;

@@ -4,13 +4,7 @@ import 'package:flutter/material.dart';
 typedef ChapterContextMenuCallback = void Function(ChapterAction action);
 
 /// Actions available in the chapter context menu.
-enum ChapterAction {
-  rename,
-  split,
-  merge,
-  duplicate,
-  delete,
-}
+enum ChapterAction { rename, split, merge, duplicate, delete }
 
 /// Shows a context menu for chapter operations.
 ///
@@ -31,12 +25,7 @@ void showChapterContextMenu({
   final colorScheme = Theme.of(context).colorScheme;
 
   // Default position: near the center-left of the screen
-  final defaultPosition = RelativeRect.fromLTRB(
-    32,
-    200,
-    0,
-    0,
-  );
+  final defaultPosition = RelativeRect.fromLTRB(32, 200, 0, 0);
 
   showMenu<ChapterAction>(
     context: context,

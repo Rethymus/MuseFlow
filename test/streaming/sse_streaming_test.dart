@@ -47,9 +47,7 @@ void main() {
         final stream = client.chat.completions.createStream(
           ChatCompletionCreateRequest(
             model: 'gpt-4o-mini',
-            messages: [
-              ChatMessage.user('请用三句话描述一个武侠场景'),
-            ],
+            messages: [ChatMessage.user('请用三句话描述一个武侠场景')],
             maxTokens: 200,
             temperature: 0.7,
           ),
@@ -78,7 +76,11 @@ void main() {
 
         // Verify stream completed with content
         expect(tokens, isNotEmpty, reason: 'Stream should produce tokens');
-        expect(buffer.toString(), isNotEmpty, reason: 'Buffer should contain text');
+        expect(
+          buffer.toString(),
+          isNotEmpty,
+          reason: 'Buffer should contain text',
+        );
 
         // Verify Chinese characters present (no garbled text)
         final chineseRegex = RegExp(r'[一-鿿]');
@@ -122,55 +124,51 @@ void main() {
       timeout: const Timeout(Duration(seconds: 30)),
     );
 
-    test(
-      'streaming buffer batches tokens correctly',
-      () async {
-        // Unit test for the StreamingBuffer pattern without real API
-        const batchSize = Duration(milliseconds: 100);
-        final receivedTokens = [
-          '剑', '光', '如', '水', '，',
-          '划', '破', '长', '空', '。',
-        ];
+    test('streaming buffer batches tokens correctly', () async {
+      // Unit test for the StreamingBuffer pattern without real API
+      const batchSize = Duration(milliseconds: 100);
+      final receivedTokens = ['剑', '光', '如', '水', '，', '划', '破', '长', '空', '。'];
 
-        final batches = <List<String>>[];
-        var currentBatch = <String>[];
-        var lastFlush = DateTime.now();
+      final batches = <List<String>>[];
+      var currentBatch = <String>[];
+      var lastFlush = DateTime.now();
 
-        for (final token in receivedTokens) {
-          currentBatch.add(token);
-          final now = DateTime.now();
-          if (now.difference(lastFlush) >= batchSize) {
-            if (currentBatch.isNotEmpty) {
-              batches.add(List.from(currentBatch));
-              currentBatch = [];
-              lastFlush = now;
-            }
+      for (final token in receivedTokens) {
+        currentBatch.add(token);
+        final now = DateTime.now();
+        if (now.difference(lastFlush) >= batchSize) {
+          if (currentBatch.isNotEmpty) {
+            batches.add(List.from(currentBatch));
+            currentBatch = [];
+            lastFlush = now;
           }
         }
-        // Flush remaining
-        if (currentBatch.isNotEmpty) {
-          batches.add(currentBatch);
-        }
+      }
+      // Flush remaining
+      if (currentBatch.isNotEmpty) {
+        batches.add(currentBatch);
+      }
 
-        // Verify batching occurred
-        expect(batches, isNotEmpty, reason: 'Should have at least one batch');
-        expect(
-          batches.expand((b) => b).join(),
-          equals(receivedTokens.join()),
-          reason: 'All tokens should be accounted for in batches',
+      // Verify batching occurred
+      expect(batches, isNotEmpty, reason: 'Should have at least one batch');
+      expect(
+        batches.expand((b) => b).join(),
+        equals(receivedTokens.join()),
+        reason: 'All tokens should be accounted for in batches',
+      );
+
+      // ignore: avoid_print
+      print('--- Batch Metrics ---');
+      // ignore: avoid_print
+      print('Total tokens: ${receivedTokens.length}');
+      // ignore: avoid_print
+      print('Number of batches: ${batches.length}');
+      for (var i = 0; i < batches.length; i++) {
+        // ignore: avoid_print
+        print(
+          'Batch ${i + 1}: ${batches[i].join()} (${batches[i].length} tokens)',
         );
-
-        // ignore: avoid_print
-        print('--- Batch Metrics ---');
-        // ignore: avoid_print
-        print('Total tokens: ${receivedTokens.length}');
-        // ignore: avoid_print
-        print('Number of batches: ${batches.length}');
-        for (var i = 0; i < batches.length; i++) {
-          // ignore: avoid_print
-          print('Batch ${i + 1}: ${batches[i].join()} (${batches[i].length} tokens)');
-        }
-      },
-    );
+      }
+    });
   });
 }

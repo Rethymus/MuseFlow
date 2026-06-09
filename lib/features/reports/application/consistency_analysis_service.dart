@@ -21,11 +21,11 @@ class ConsistencyAnalysisService {
     required SkillRepository skillRepository,
     required ChapterRepository chapterRepository,
     required NameIndex nameIndex,
-  })  : _characterCardRepository = characterCardRepository,
-        _worldSettingRepository = worldSettingRepository,
-        _skillRepository = skillRepository,
-        _chapterRepository = chapterRepository,
-        _nameIndex = nameIndex;
+  }) : _characterCardRepository = characterCardRepository,
+       _worldSettingRepository = worldSettingRepository,
+       _skillRepository = skillRepository,
+       _chapterRepository = chapterRepository,
+       _nameIndex = nameIndex;
 
   final CharacterCardRepository _characterCardRepository;
   final WorldSettingRepository _worldSettingRepository;
@@ -39,7 +39,8 @@ class ConsistencyAnalysisService {
     final settings = _worldSettingRepository.getAll();
     final skills = _skillRepository.getAll();
 
-    if (chapters.isEmpty || (characters.isEmpty && settings.isEmpty && skills.isEmpty)) {
+    if (chapters.isEmpty ||
+        (characters.isEmpty && settings.isEmpty && skills.isEmpty)) {
       return ConsistencyReport(
         characterResults: const [],
         settingResults: const [],
@@ -90,7 +91,10 @@ class ConsistencyAnalysisService {
     ];
     final overall = allResults.isEmpty
         ? 0.0
-        : allResults.map((result) => result.consistencyScore).reduce((a, b) => a + b) / allResults.length;
+        : allResults
+                  .map((result) => result.consistencyScore)
+                  .reduce((a, b) => a + b) /
+              allResults.length;
 
     return ConsistencyReport(
       characterResults: characterResults,
@@ -101,11 +105,12 @@ class ConsistencyAnalysisService {
   }
 
   List<Chapter> _loadChapters(String? manuscriptId) {
-    final chapters = (manuscriptId == null || manuscriptId.isEmpty
-            ? _chapterRepository.getAll()
-            : _chapterRepository.getByManuscriptId(manuscriptId))
-        .toList()
-      ..sort((a, b) => a.sortOrder.compareTo(b.sortOrder));
+    final chapters =
+        (manuscriptId == null || manuscriptId.isEmpty
+                ? _chapterRepository.getAll()
+                : _chapterRepository.getByManuscriptId(manuscriptId))
+            .toList()
+          ..sort((a, b) => a.sortOrder.compareTo(b.sortOrder));
     return chapters;
   }
 
@@ -116,7 +121,11 @@ class ConsistencyAnalysisService {
   ) {
     _nameIndex.clear();
     for (final character in characters) {
-      _nameIndex.addEntity(character.id, character.entityType, character.allNames);
+      _nameIndex.addEntity(
+        character.id,
+        character.entityType,
+        character.allNames,
+      );
     }
     for (final setting in settings) {
       _nameIndex.addEntity(setting.id, setting.entityType, setting.allNames);

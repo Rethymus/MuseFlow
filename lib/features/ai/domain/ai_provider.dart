@@ -151,17 +151,17 @@ class AIProvider {
 
   @override
   int get hashCode => Object.hash(
-        id,
-        name,
-        baseUrl,
-        type,
-        model,
-        isActive,
-        createdAt,
-        temperature,
-        topP,
-        maxTokens,
-      );
+    id,
+    name,
+    baseUrl,
+    type,
+    model,
+    isActive,
+    createdAt,
+    temperature,
+    topP,
+    maxTokens,
+  );
 
   @override
   String toString() =>

@@ -7,7 +7,10 @@ void main() {
       expect(PlotNodeWritingStatus.notStarted.toJsonString(), 'notStarted');
       expect(PlotNodeWritingStatus.drafting.toJsonString(), 'drafting');
       expect(PlotNodeWritingStatus.complete.toJsonString(), 'complete');
-      expect(PlotNodeWritingStatus.needsRevision.toJsonString(), 'needsRevision');
+      expect(
+        PlotNodeWritingStatus.needsRevision.toJsonString(),
+        'needsRevision',
+      );
     });
 
     test('should deserialize from JSON string', () {

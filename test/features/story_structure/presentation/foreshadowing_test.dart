@@ -22,10 +22,12 @@ void main() {
 
     container = ProviderContainer(
       overrides: [
-        foreshadowingRepositoryProvider
-            .overrideWith((ref) async => ForeshadowingRepository(box)),
-        foreshadowingReminderServiceProvider
-            .overrideWithValue(ForeshadowingReminderService()),
+        foreshadowingRepositoryProvider.overrideWith(
+          (ref) async => ForeshadowingRepository(box),
+        ),
+        foreshadowingReminderServiceProvider.overrideWithValue(
+          ForeshadowingReminderService(),
+        ),
       ],
     );
   });
@@ -42,9 +44,7 @@ void main() {
       await tester.pumpWidget(
         UncontrolledProviderScope(
           container: container,
-          child: const MaterialApp(
-            home: StoryStructurePage(),
-          ),
+          child: const MaterialApp(home: StoryStructurePage()),
         ),
       );
 
@@ -58,9 +58,7 @@ void main() {
       await tester.pumpWidget(
         UncontrolledProviderScope(
           container: container,
-          child: const MaterialApp(
-            home: StoryStructurePage(),
-          ),
+          child: const MaterialApp(home: StoryStructurePage()),
         ),
       );
       await tester.pump();
@@ -73,9 +71,7 @@ void main() {
       await tester.pumpWidget(
         UncontrolledProviderScope(
           container: container,
-          child: const MaterialApp(
-            home: StoryStructurePage(),
-          ),
+          child: const MaterialApp(home: StoryStructurePage()),
         ),
       );
       await tester.pump();
@@ -84,14 +80,13 @@ void main() {
       expect(find.byType(FloatingActionButton), findsOneWidget);
     });
 
-    testWidgets('should show real widgets for plot and guardian tabs',
-        (tester) async {
+    testWidgets('should show real widgets for plot and guardian tabs', (
+      tester,
+    ) async {
       await tester.pumpWidget(
         UncontrolledProviderScope(
           container: container,
-          child: const MaterialApp(
-            home: StoryStructurePage(),
-          ),
+          child: const MaterialApp(home: StoryStructurePage()),
         ),
       );
       await tester.pump();
@@ -106,8 +101,9 @@ void main() {
       expect(find.byType(PlotTimeline), findsOneWidget);
     });
 
-    testWidgets('should display foreshadowing entries when data loaded',
-        (tester) async {
+    testWidgets('should display foreshadowing entries when data loaded', (
+      tester,
+    ) async {
       // Verify entry rendering by checking that the foreshadowing section
       // shows entry list tiles when the provider resolves with data.
       // Full async-provider-to-widget integration is covered in
@@ -131,9 +127,7 @@ void main() {
       await tester.pumpWidget(
         UncontrolledProviderScope(
           container: container,
-          child: const MaterialApp(
-            home: StoryStructurePage(),
-          ),
+          child: const MaterialApp(home: StoryStructurePage()),
         ),
       );
       await tester.pump();
@@ -153,11 +147,7 @@ void main() {
       await tester.pumpWidget(
         UncontrolledProviderScope(
           container: container,
-          child: const MaterialApp(
-            home: Scaffold(
-              body: ForeshadowingForm(),
-            ),
-          ),
+          child: const MaterialApp(home: Scaffold(body: ForeshadowingForm())),
         ),
       );
 
@@ -172,11 +162,7 @@ void main() {
       await tester.pumpWidget(
         UncontrolledProviderScope(
           container: container,
-          child: const MaterialApp(
-            home: Scaffold(
-              body: ForeshadowingForm(),
-            ),
-          ),
+          child: const MaterialApp(home: Scaffold(body: ForeshadowingForm())),
         ),
       );
 
@@ -185,10 +171,7 @@ void main() {
         find.widgetWithText(TextFormField, '标题 *'),
         'New foreshadowing',
       );
-      await tester.enterText(
-        find.widgetWithText(TextFormField, '埋设章节 *'),
-        '3',
-      );
+      await tester.enterText(find.widgetWithText(TextFormField, '埋设章节 *'), '3');
 
       // Verify form fields accepted the input
       expect(find.text('New foreshadowing'), findsOneWidget);
@@ -234,9 +217,7 @@ void main() {
         UncontrolledProviderScope(
           container: container,
           child: MaterialApp(
-            home: Scaffold(
-              body: ForeshadowingForm(entry: entry),
-            ),
+            home: Scaffold(body: ForeshadowingForm(entry: entry)),
           ),
         ),
       );

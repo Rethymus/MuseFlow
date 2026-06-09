@@ -18,10 +18,7 @@ class QuickCaptureIntent extends Intent {
 class QuickCaptureShortcut extends ConsumerWidget {
   final Widget child;
 
-  const QuickCaptureShortcut({
-    super.key,
-    required this.child,
-  });
+  const QuickCaptureShortcut({super.key, required this.child});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -45,9 +42,6 @@ class QuickCaptureShortcut extends ConsumerWidget {
   }
 
   void _showQuickCapture(BuildContext context, WidgetRef ref) {
-    showDialog(
-      context: context,
-      builder: (_) => const QuickCaptureDialog(),
-    );
+    showDialog(context: context, builder: (_) => const QuickCaptureDialog());
   }
 }

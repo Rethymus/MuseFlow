@@ -70,15 +70,15 @@ void main() {
 
       final testProvider = hasActiveProvider
           ? (activeProvider ??
-              AIProvider(
-                id: 'test-provider',
-                name: 'Test',
-                baseUrl: 'https://api.openai.com/v1',
-                type: AiProviderType.openai,
-                model: 'gpt-4o-mini',
-                isActive: true,
-                createdAt: DateTime(2026, 1, 1),
-              ))
+                AIProvider(
+                  id: 'test-provider',
+                  name: 'Test',
+                  baseUrl: 'https://api.openai.com/v1',
+                  type: AiProviderType.openai,
+                  model: 'gpt-4o-mini',
+                  isActive: true,
+                  createdAt: DateTime(2026, 1, 1),
+                ))
           : null;
 
       final testApiKey = hasApiKey ? (apiKey ?? 'test-key') : null;
@@ -121,7 +121,10 @@ void main() {
         container.read(synthesisProvider.notifier).startSynthesis();
 
         await _pump();
-        expect(container.read(synthesisProvider).isStreaming, anyOf(true, false));
+        expect(
+          container.read(synthesisProvider).isStreaming,
+          anyOf(true, false),
+        );
       });
 
       test('should accumulate tokens and finish in editing state', () async {
@@ -191,31 +194,34 @@ void main() {
         expect(state.error, contains('API Key'));
       });
 
-      test('should record token audit after stream completes successfully', () async {
-        final service = _RecordingTokenAuditService();
-        container = createContainer(
-          selectedFragments: [
-            Fragment(id: 'f1', text: '月光', createdAt: DateTime(2026, 1, 1)),
-          ],
-          auditService: service,
-        );
-        fakeAdapter.streamOutput = Stream.fromIterable(['月光', '下']);
-        fakeAdapter.usage = const Usage(
-          promptTokens: 11,
-          completionTokens: 22,
-          totalTokens: 33,
-        );
+      test(
+        'should record token audit after stream completes successfully',
+        () async {
+          final service = _RecordingTokenAuditService();
+          container = createContainer(
+            selectedFragments: [
+              Fragment(id: 'f1', text: '月光', createdAt: DateTime(2026, 1, 1)),
+            ],
+            auditService: service,
+          );
+          fakeAdapter.streamOutput = Stream.fromIterable(['月光', '下']);
+          fakeAdapter.usage = const Usage(
+            promptTokens: 11,
+            completionTokens: 22,
+            totalTokens: 33,
+          );
 
-        container.read(synthesisProvider.notifier).startSynthesis();
-        await _pumpAndWait();
+          container.read(synthesisProvider.notifier).startSynthesis();
+          await _pumpAndWait();
 
-        expect(service.records, hasLength(1));
-        final record = service.records.single;
-        expect(record.inputTokens, 11);
-        expect(record.outputTokens, 22);
-        expect(record.operationType, AuditOperationType.synthesis);
-        expect(record.modelName, 'gpt-4o-mini');
-      });
+          expect(service.records, hasLength(1));
+          final record = service.records.single;
+          expect(record.inputTokens, 11);
+          expect(record.outputTokens, 22);
+          expect(record.operationType, AuditOperationType.synthesis);
+          expect(record.modelName, 'gpt-4o-mini');
+        },
+      );
 
       test('should not record token audit when stream errors', () async {
         final service = _RecordingTokenAuditService();

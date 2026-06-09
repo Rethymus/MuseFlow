@@ -55,10 +55,7 @@ void main() {
         optimizationSuggestions: [],
       );
 
-      final updated = report.copyWith(
-        totalInputTokens: 20000,
-        totalCalls: 100,
-      );
+      final updated = report.copyWith(totalInputTokens: 20000, totalCalls: 100);
 
       expect(updated.totalInputTokens, 20000);
       expect(updated.totalCalls, 100);

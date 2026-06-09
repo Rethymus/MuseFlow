@@ -33,8 +33,9 @@ class _GuardianAnnotationOverlayState
       loading: () => const SizedBox.shrink(),
       error: (_, _) => const SizedBox.shrink(),
       data: (result) {
-        final activeAnnotations =
-            result.annotations.where((a) => !a.isDismissed).toList();
+        final activeAnnotations = result.annotations
+            .where((a) => !a.isDismissed)
+            .toList();
 
         return AnimatedContainer(
           duration: const Duration(milliseconds: 200),
@@ -108,9 +109,7 @@ class _GuardianAnnotationOverlayState
           padding: const EdgeInsets.all(8),
           child: FilledButton.tonal(
             onPressed: annotations.isEmpty ? null : null, // Placeholder
-            style: FilledButton.styleFrom(
-              visualDensity: VisualDensity.compact,
-            ),
+            style: FilledButton.styleFrom(visualDensity: VisualDensity.compact),
             child: const Text('运行检查'),
           ),
         ),
@@ -167,9 +166,9 @@ class _CompactFindingTile extends StatelessWidget {
           ? null
           : Text(
               '未能精确定位',
-              style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                    color: colorScheme.outline,
-                  ),
+              style: Theme.of(
+                context,
+              ).textTheme.labelSmall?.copyWith(color: colorScheme.outline),
             ),
       trailing: IconButton(
         icon: const Icon(Icons.close, size: 14),

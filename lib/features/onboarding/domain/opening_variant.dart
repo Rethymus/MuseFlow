@@ -38,10 +38,10 @@ enum OpeningVariantStyle {
 
   /// Chinese display label for UI presentation.
   String get displayLabel => switch (this) {
-        OpeningVariantStyle.scene => '场景切入',
-        OpeningVariantStyle.character => '人物切入',
-        OpeningVariantStyle.suspense => '悬念切入',
-      };
+    OpeningVariantStyle.scene => '场景切入',
+    OpeningVariantStyle.character => '人物切入',
+    OpeningVariantStyle.suspense => '悬念切入',
+  };
 }
 
 /// Immutable value object representing a single AI-generated opening variant.
@@ -49,10 +49,7 @@ enum OpeningVariantStyle {
 /// Each variant pairs a narrative [style] with the opening paragraph [text].
 /// Instances are created by [OpeningGeneratorService] from AI streaming output.
 class OpeningVariant {
-  const OpeningVariant({
-    required this.style,
-    required this.text,
-  });
+  const OpeningVariant({required this.style, required this.text});
 
   /// The narrative style of this opening variant.
   final OpeningVariantStyle style;
@@ -71,20 +68,11 @@ class OpeningVariant {
   }
 
   /// Serializes this variant to a JSON-compatible map.
-  Map<String, dynamic> toJson() => {
-        'style': style.value,
-        'text': text,
-      };
+  Map<String, dynamic> toJson() => {'style': style.value, 'text': text};
 
   /// Creates a copy with optionally replaced fields.
-  OpeningVariant copyWith({
-    OpeningVariantStyle? style,
-    String? text,
-  }) {
-    return OpeningVariant(
-      style: style ?? this.style,
-      text: text ?? this.text,
-    );
+  OpeningVariant copyWith({OpeningVariantStyle? style, String? text}) {
+    return OpeningVariant(style: style ?? this.style, text: text ?? this.text);
   }
 
   @override
@@ -96,5 +84,6 @@ class OpeningVariant {
   int get hashCode => Object.hash(style, text);
 
   @override
-  String toString() => 'OpeningVariant(style: $style, text: ${text.length} chars)';
+  String toString() =>
+      'OpeningVariant(style: $style, text: ${text.length} chars)';
 }

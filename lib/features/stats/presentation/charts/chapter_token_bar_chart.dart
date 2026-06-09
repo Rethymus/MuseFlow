@@ -23,14 +23,17 @@ class ChapterTokenBarChart extends StatelessWidget {
     final chapterTotals = <String, int>{};
     for (final record in chapterRecords) {
       final chapterId = record.chapterId!;
-      chapterTotals[chapterId] = (chapterTotals[chapterId] ?? 0) + record.totalTokens;
+      chapterTotals[chapterId] =
+          (chapterTotals[chapterId] ?? 0) + record.totalTokens;
     }
 
     // Sort by chapterId
     final sortedChapters = chapterTotals.keys.toList()..sort();
 
     final colorScheme = Theme.of(context).colorScheme;
-    final maxY = chapterTotals.values.fold<int>(0, (max, v) => v > max ? v : max).toDouble();
+    final maxY = chapterTotals.values
+        .fold<int>(0, (max, v) => v > max ? v : max)
+        .toDouble();
 
     // Build bar groups
     final barGroups = <BarChartGroupData>[];
@@ -57,14 +60,21 @@ class ChapterTokenBarChart extends StatelessWidget {
         gridData: const FlGridData(show: false),
         borderData: FlBorderData(show: false),
         titlesData: FlTitlesData(
-          topTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
-          rightTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
-          leftTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+          topTitles: const AxisTitles(
+            sideTitles: SideTitles(showTitles: false),
+          ),
+          rightTitles: const AxisTitles(
+            sideTitles: SideTitles(showTitles: false),
+          ),
+          leftTitles: const AxisTitles(
+            sideTitles: SideTitles(showTitles: false),
+          ),
           bottomTitles: AxisTitles(
             sideTitles: SideTitles(
               showTitles: true,
               getTitlesWidget: (value, meta) {
-                if (value.toInt() >= 0 && value.toInt() < sortedChapters.length) {
+                if (value.toInt() >= 0 &&
+                    value.toInt() < sortedChapters.length) {
                   return Text('Ch${value.toInt() + 1}');
                 }
                 return const Text('');
@@ -88,9 +98,6 @@ class ChapterTokenBarChart extends StatelessWidget {
       );
     }
 
-    return SizedBox(
-      height: 220,
-      child: chart,
-    );
+    return SizedBox(height: 220, child: chart);
   }
 }

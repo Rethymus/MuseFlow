@@ -42,43 +42,42 @@ void main() {
       expect(adapter, isA<OpenAIAdapter>());
     });
 
-    test('openaiAdapterProvider should be overridable with AIAdapter subclass',
-        () {
-      final fakeAdapter = _TestAIAdapter();
-      final container = ProviderContainer(
-        overrides: [
-          openaiAdapterProvider.overrideWithValue(fakeAdapter),
-        ],
-      );
-      addTearDown(container.dispose);
+    test(
+      'openaiAdapterProvider should be overridable with AIAdapter subclass',
+      () {
+        final fakeAdapter = _TestAIAdapter();
+        final container = ProviderContainer(
+          overrides: [openaiAdapterProvider.overrideWithValue(fakeAdapter)],
+        );
+        addTearDown(container.dispose);
 
-      final adapter = container.read(openaiAdapterProvider);
-      expect(adapter, isA<AIAdapter>());
-      expect(adapter, isA<_TestAIAdapter>());
-    });
+        final adapter = container.read(openaiAdapterProvider);
+        expect(adapter, isA<AIAdapter>());
+        expect(adapter, isA<_TestAIAdapter>());
+      },
+    );
 
     test(
-        'existing consumers should work with openaiAdapterProvider returning AIAdapter',
-        () async {
-      // Verify that downstream services can use the provider without issue.
-      // The provider returns AIAdapter, which has createStream -- same as before.
-      final container = ProviderContainer();
-      addTearDown(container.dispose);
+      'existing consumers should work with openaiAdapterProvider returning AIAdapter',
+      () async {
+        // Verify that downstream services can use the provider without issue.
+        // The provider returns AIAdapter, which has createStream -- same as before.
+        final container = ProviderContainer();
+        addTearDown(container.dispose);
 
-      final adapter = container.read(openaiAdapterProvider);
-      // Verify the adapter has the createStream method with expected signature
-      expect(
-        adapter.createStream(
-          apiKey: 'test',
-          baseUrl: 'https://api.openai.com/v1',
-          model: 'gpt-4o-mini',
-          messages: [
-            ChatMessage.user('Hello'),
-          ],
-        ),
-        isA<Stream<String>>(),
-      );
-    });
+        final adapter = container.read(openaiAdapterProvider);
+        // Verify the adapter has the createStream method with expected signature
+        expect(
+          adapter.createStream(
+            apiKey: 'test',
+            baseUrl: 'https://api.openai.com/v1',
+            model: 'gpt-4o-mini',
+            messages: [ChatMessage.user('Hello')],
+          ),
+          isA<Stream<String>>(),
+        );
+      },
+    );
   });
 }
 

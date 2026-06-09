@@ -72,7 +72,11 @@ class CaptureNotifier extends Notifier<CaptureState> {
     if (_service == null) return;
     try {
       final fragments = _service!.listFragmentsByTag(state.activeFilter);
-      state = state.copyWith(fragments: fragments, isLoading: false, error: null);
+      state = state.copyWith(
+        fragments: fragments,
+        isLoading: false,
+        error: null,
+      );
     } catch (e) {
       state = state.copyWith(error: '刷新失败: $e');
     }
@@ -172,8 +176,7 @@ class CaptureInputNotifier extends Notifier<String> {
 }
 
 /// Controller for the fragment input TextField text.
-final captureInputProvider =
-    NotifierProvider<CaptureInputNotifier, String>(
+final captureInputProvider = NotifierProvider<CaptureInputNotifier, String>(
   CaptureInputNotifier.new,
 );
 

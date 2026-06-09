@@ -93,30 +93,33 @@ void main() {
   });
 
   group('buildBlindReadMarkdown', () {
-    test('should produce Anti-AI-scent report with verdict tally and score', () {
-      final result = BlindReadResult(
-        excerpts: [
-          const BlindReadExcerpt(
-            text: 'AI text',
-            chapterId: 'ch-1',
-            chapterIndex: 1,
-            humanVerdict: true,
-          ),
-          const BlindReadExcerpt(
-            text: 'Human text',
-            chapterId: 'ch-2',
-            chapterIndex: 2,
-            humanVerdict: false,
-          ),
-        ],
-        correctCount: 1,
-      );
+    test(
+      'should produce Anti-AI-scent report with verdict tally and score',
+      () {
+        final result = BlindReadResult(
+          excerpts: [
+            const BlindReadExcerpt(
+              text: 'AI text',
+              chapterId: 'ch-1',
+              chapterIndex: 1,
+              humanVerdict: true,
+            ),
+            const BlindReadExcerpt(
+              text: 'Human text',
+              chapterId: 'ch-2',
+              chapterIndex: 2,
+              humanVerdict: false,
+            ),
+          ],
+          correctCount: 1,
+        );
 
-      final md = service.buildBlindReadMarkdown(result);
+        final md = service.buildBlindReadMarkdown(result);
 
-      expect(md, contains('# 反AI味评估报告'));
-      expect(md, contains('1')); // correctCount
-    });
+        expect(md, contains('# 反AI味评估报告'));
+        expect(md, contains('1')); // correctCount
+      },
+    );
   });
 
   group('buildConsistencyMarkdown', () {

@@ -15,16 +15,19 @@ import 'package:museflow/features/reports/providers.dart';
 
 void main() {
   group('ConsistencyAnalysisService', () {
-    test('should return zero-value report when chapters and entities are empty', () {
-      final service = _service(chapters: const []);
+    test(
+      'should return zero-value report when chapters and entities are empty',
+      () {
+        final service = _service(chapters: const []);
 
-      final report = service.analyze();
+        final report = service.analyze();
 
-      expect(report.overallConsistencyScore, 0.0);
-      expect(report.characterResults, isEmpty);
-      expect(report.settingResults, isEmpty);
-      expect(report.driftPerSegment, List.filled(10, 0.0));
-    });
+        expect(report.overallConsistencyScore, 0.0);
+        expect(report.characterResults, isEmpty);
+        expect(report.settingResults, isEmpty);
+        expect(report.driftPerSegment, List.filled(10, 0.0));
+      },
+    );
 
     test('should detect character name presence in chapters', () {
       final service = _service(
@@ -32,7 +35,9 @@ void main() {
           _chapter('c1', 'm1', '林青玄踏入山门，灵气翻涌。'),
           _chapter('c2', 'm1', '青玄在石阶前回望故乡。'),
         ],
-        characters: [_character('林青玄', aliases: ['青玄'])],
+        characters: [
+          _character('林青玄', aliases: ['青玄']),
+        ],
       );
 
       final report = service.analyze('m1');
@@ -62,7 +67,12 @@ void main() {
       final service = _service(
         chapters: List.generate(
           100,
-          (index) => _chapter('c$index', 'm1', index < 50 ? '林青玄闭关修炼。' : '山风寂静。', sortOrder: index + 1),
+          (index) => _chapter(
+            'c$index',
+            'm1',
+            index < 50 ? '林青玄闭关修炼。' : '山风寂静。',
+            sortOrder: index + 1,
+          ),
         ),
         characters: [_character('林青玄')],
       );
@@ -74,20 +84,28 @@ void main() {
       expect(report.driftPerSegment.last, 0.0);
     });
 
-    test('should flag missing entities in later chapters as consistency drift', () {
-      final service = _service(
-        chapters: List.generate(
-          8,
-          (index) => _chapter('c$index', 'm1', index == 0 ? '林青玄出场。' : '无人提起他的名字。', sortOrder: index + 1),
-        ),
-        characters: [_character('林青玄')],
-      );
+    test(
+      'should flag missing entities in later chapters as consistency drift',
+      () {
+        final service = _service(
+          chapters: List.generate(
+            8,
+            (index) => _chapter(
+              'c$index',
+              'm1',
+              index == 0 ? '林青玄出场。' : '无人提起他的名字。',
+              sortOrder: index + 1,
+            ),
+          ),
+          characters: [_character('林青玄')],
+        );
 
-      final flags = service.analyze('m1').characterResults.single.flags;
+        final flags = service.analyze('m1').characterResults.single.flags;
 
-      expect(flags.first.severity, DeviationSeverity.medium);
-      expect(flags.last.severity, DeviationSeverity.clear);
-    });
+        expect(flags.first.severity, DeviationSeverity.medium);
+        expect(flags.last.severity, DeviationSeverity.clear);
+      },
+    );
 
     test('should check world setting keywords in chapter content', () {
       final service = _service(
@@ -105,18 +123,23 @@ void main() {
       expect(result.consistencyScore, 1.0);
     });
 
-    test('should expose blindReadProvider and consistencyReportProvider overrides', () {
-      final container = ProviderContainer(
-        overrides: [
-          blindReadProvider.overrideWith(BlindReadNotifier.new),
-          consistencyReportProvider.overrideWith(ConsistencyReportNotifier.new),
-        ],
-      );
-      addTearDown(container.dispose);
+    test(
+      'should expose blindReadProvider and consistencyReportProvider overrides',
+      () {
+        final container = ProviderContainer(
+          overrides: [
+            blindReadProvider.overrideWith(BlindReadNotifier.new),
+            consistencyReportProvider.overrideWith(
+              ConsistencyReportNotifier.new,
+            ),
+          ],
+        );
+        addTearDown(container.dispose);
 
-      expect(container.read(blindReadProvider), isA<BlindReadState>());
-      expect(container.read(consistencyReportProvider), isA<AsyncValue>());
-    });
+        expect(container.read(blindReadProvider), isA<BlindReadState>());
+        expect(container.read(consistencyReportProvider), isA<AsyncValue>());
+      },
+    );
   });
 }
 
@@ -161,11 +184,7 @@ CharacterCard _character(String name, {List<String> aliases = const []}) {
   );
 }
 
-WorldSetting _setting(
-  String name, {
-  String rules = '',
-  String factions = '',
-}) {
+WorldSetting _setting(String name, {String rules = '', String factions = ''}) {
   return WorldSetting(
     id: name,
     name: name,
@@ -185,7 +204,8 @@ class _FakeChapterRepository implements ChapterRepository {
   @override
   Chapter? getById(String id) => chapters.where((c) => c.id == id).firstOrNull;
   @override
-  List<Chapter> getByManuscriptId(String manuscriptId) => chapters.where((c) => c.manuscriptId == manuscriptId).toList();
+  List<Chapter> getByManuscriptId(String manuscriptId) =>
+      chapters.where((c) => c.manuscriptId == manuscriptId).toList();
   @override
   Future<void> update(Chapter chapter) async {}
   @override
@@ -204,9 +224,11 @@ class _FakeCharacterCardRepository implements CharacterCardRepository {
   @override
   Future<CharacterCard> add(CharacterCard card) async => card;
   @override
-  CharacterCard? getById(String id) => cards.where((c) => c.id == id).firstOrNull;
+  CharacterCard? getById(String id) =>
+      cards.where((c) => c.id == id).firstOrNull;
   @override
-  List<CharacterCard> searchByName(String query) => cards.where((c) => c.name.contains(query)).toList();
+  List<CharacterCard> searchByName(String query) =>
+      cards.where((c) => c.name.contains(query)).toList();
   @override
   Future<void> update(CharacterCard card) async {}
   @override
@@ -221,9 +243,11 @@ class _FakeWorldSettingRepository implements WorldSettingRepository {
   @override
   Future<WorldSetting> add(WorldSetting setting) async => setting;
   @override
-  WorldSetting? getById(String id) => settings.where((s) => s.id == id).firstOrNull;
+  WorldSetting? getById(String id) =>
+      settings.where((s) => s.id == id).firstOrNull;
   @override
-  List<WorldSetting> searchByName(String query) => settings.where((s) => s.name.contains(query)).toList();
+  List<WorldSetting> searchByName(String query) =>
+      settings.where((s) => s.name.contains(query)).toList();
   @override
   Future<void> update(WorldSetting setting) async {}
   @override
@@ -240,7 +264,8 @@ class _FakeSkillRepository implements SkillRepository {
   @override
   Future<SkillDocument> add(SkillDocument document) async => document;
   @override
-  SkillDocument? getById(String id) => skills.where((s) => s.id == id).firstOrNull;
+  SkillDocument? getById(String id) =>
+      skills.where((s) => s.id == id).firstOrNull;
   @override
   Future<void> update(SkillDocument document) async {}
   @override

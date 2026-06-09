@@ -19,13 +19,10 @@ import '../../../helpers/hive_test_helper.dart';
 
 void main() {
   group('OnboardingWizardPage', () {
-    testWidgets('should build wizard with PageView and progress UI',
-        (tester) async {
-      await tester.pumpWidget(
-        const MaterialApp(
-          home: OnboardingWizardPage(),
-        ),
-      );
+    testWidgets('should build wizard with PageView and progress UI', (
+      tester,
+    ) async {
+      await tester.pumpWidget(const MaterialApp(home: OnboardingWizardPage()));
       await tester.pumpAndSettle();
 
       // Should show the wizard page
@@ -34,13 +31,10 @@ void main() {
       expect(find.byType(PageView), findsOneWidget);
     });
 
-    testWidgets('should show progress dots and step title on step 1',
-        (tester) async {
-      await tester.pumpWidget(
-        const MaterialApp(
-          home: OnboardingWizardPage(),
-        ),
-      );
+    testWidgets('should show progress dots and step title on step 1', (
+      tester,
+    ) async {
+      await tester.pumpWidget(const MaterialApp(home: OnboardingWizardPage()));
       await tester.pumpAndSettle();
 
       // Should show step title for first step
@@ -49,13 +43,10 @@ void main() {
       expect(find.text('选择你感兴趣的故事类型'), findsOneWidget);
     });
 
-    testWidgets('should show next button but not previous on first step',
-        (tester) async {
-      await tester.pumpWidget(
-        const MaterialApp(
-          home: OnboardingWizardPage(),
-        ),
-      );
+    testWidgets('should show next button but not previous on first step', (
+      tester,
+    ) async {
+      await tester.pumpWidget(const MaterialApp(home: OnboardingWizardPage()));
       await tester.pumpAndSettle();
 
       // Should show "下一步" button
@@ -65,11 +56,7 @@ void main() {
     });
 
     testWidgets('should show close and skip buttons', (tester) async {
-      await tester.pumpWidget(
-        const MaterialApp(
-          home: OnboardingWizardPage(),
-        ),
-      );
+      await tester.pumpWidget(const MaterialApp(home: OnboardingWizardPage()));
       await tester.pumpAndSettle();
 
       // Should show close icon
@@ -78,13 +65,8 @@ void main() {
       expect(find.text('跳过'), findsOneWidget);
     });
 
-    testWidgets('should advance to step 2 on next button tap',
-        (tester) async {
-      await tester.pumpWidget(
-        const MaterialApp(
-          home: OnboardingWizardPage(),
-        ),
-      );
+    testWidgets('should advance to step 2 on next button tap', (tester) async {
+      await tester.pumpWidget(const MaterialApp(home: OnboardingWizardPage()));
       await tester.pumpAndSettle();
 
       // Tap next button
@@ -98,11 +80,7 @@ void main() {
     });
 
     testWidgets('should go back on previous button tap', (tester) async {
-      await tester.pumpWidget(
-        const MaterialApp(
-          home: OnboardingWizardPage(),
-        ),
-      );
+      await tester.pumpWidget(const MaterialApp(home: OnboardingWizardPage()));
       await tester.pumpAndSettle();
 
       // Go forward
@@ -118,13 +96,10 @@ void main() {
       expect(find.text('选择题材'), findsOneWidget);
     });
 
-    testWidgets('should advance through all steps and show start button',
-        (tester) async {
-      await tester.pumpWidget(
-        const MaterialApp(
-          home: OnboardingWizardPage(),
-        ),
-      );
+    testWidgets('should advance through all steps and show start button', (
+      tester,
+    ) async {
+      await tester.pumpWidget(const MaterialApp(home: OnboardingWizardPage()));
       await tester.pumpAndSettle();
 
       // Step 1 -> Step 2
@@ -147,11 +122,7 @@ void main() {
     });
 
     testWidgets('skip button advances without validation', (tester) async {
-      await tester.pumpWidget(
-        const MaterialApp(
-          home: OnboardingWizardPage(),
-        ),
-      );
+      await tester.pumpWidget(const MaterialApp(home: OnboardingWizardPage()));
       await tester.pumpAndSettle();
 
       // Tap skip
@@ -167,9 +138,7 @@ void main() {
     testWidgets('should display all 14 genre cards', (tester) async {
       await tester.pumpWidget(
         const MaterialApp(
-          home: Scaffold(
-            body: GenreStepPage(onSelected: _noop),
-          ),
+          home: Scaffold(body: GenreStepPage(onSelected: _noop)),
         ),
       );
       await tester.pumpAndSettle();
@@ -185,15 +154,14 @@ void main() {
       expect(find.text('现言'), findsOneWidget);
     });
 
-    testWidgets('should call onSelected with correct id when genre tapped',
-        (tester) async {
+    testWidgets('should call onSelected with correct id when genre tapped', (
+      tester,
+    ) async {
       String? selectedId;
       await tester.pumpWidget(
         MaterialApp(
           home: Scaffold(
-            body: GenreStepPage(
-              onSelected: (id) => selectedId = id,
-            ),
+            body: GenreStepPage(onSelected: (id) => selectedId = id),
           ),
         ),
       );
@@ -209,9 +177,7 @@ void main() {
     testWidgets('should display channel tags on cards', (tester) async {
       await tester.pumpWidget(
         const MaterialApp(
-          home: Scaffold(
-            body: GenreStepPage(onSelected: _noop),
-          ),
+          home: Scaffold(body: GenreStepPage(onSelected: _noop)),
         ),
       );
       await tester.pumpAndSettle();
@@ -224,9 +190,7 @@ void main() {
     testWidgets('should update selection highlight on tap', (tester) async {
       await tester.pumpWidget(
         const MaterialApp(
-          home: Scaffold(
-            body: GenreStepPage(onSelected: _noop),
-          ),
+          home: Scaffold(body: GenreStepPage(onSelected: _noop)),
         ),
       );
       await tester.pumpAndSettle();
@@ -250,14 +214,16 @@ void main() {
     });
 
     test('should have 8 male channel genres', () {
-      final maleCount =
-          GenreOption.builtIn.where((g) => g.channel == '男频').length;
+      final maleCount = GenreOption.builtIn
+          .where((g) => g.channel == '男频')
+          .length;
       expect(maleCount, 8);
     });
 
     test('should have 6 female channel genres', () {
-      final femaleCount =
-          GenreOption.builtIn.where((g) => g.channel == '女频').length;
+      final femaleCount = GenreOption.builtIn
+          .where((g) => g.channel == '女频')
+          .length;
       expect(femaleCount, 6);
     });
 
@@ -268,10 +234,16 @@ void main() {
 
     test('should have non-empty titles and descriptions', () {
       for (final genre in GenreOption.builtIn) {
-        expect(genre.title.isNotEmpty, isTrue,
-            reason: 'Genre ${genre.id} has empty title');
-        expect(genre.description.isNotEmpty, isTrue,
-            reason: 'Genre ${genre.id} has empty description');
+        expect(
+          genre.title.isNotEmpty,
+          isTrue,
+          reason: 'Genre ${genre.id} has empty title',
+        );
+        expect(
+          genre.description.isNotEmpty,
+          isTrue,
+          reason: 'Genre ${genre.id} has empty description',
+        );
       }
     });
   });
@@ -528,13 +500,9 @@ void main() {
   });
 
   group('Wizard entity creation integration', () {
-    testWidgets(
-        'should show world form fields when on step 2',
-        (tester) async {
+    testWidgets('should show world form fields when on step 2', (tester) async {
       await tester.pumpWidget(
-        const ProviderScope(
-          child: MaterialApp(home: OnboardingWizardPage()),
-        ),
+        const ProviderScope(child: MaterialApp(home: OnboardingWizardPage())),
       );
       await tester.pumpAndSettle();
 
@@ -547,13 +515,11 @@ void main() {
       expect(find.text('世界简介'), findsOneWidget);
     });
 
-    testWidgets(
-        'should show character form fields when on step 3',
-        (tester) async {
+    testWidgets('should show character form fields when on step 3', (
+      tester,
+    ) async {
       await tester.pumpWidget(
-        const ProviderScope(
-          child: MaterialApp(home: OnboardingWizardPage()),
-        ),
+        const ProviderScope(child: MaterialApp(home: OnboardingWizardPage())),
       );
       await tester.pumpAndSettle();
 
@@ -570,13 +536,11 @@ void main() {
       expect(find.text('角色简介'), findsOneWidget);
     });
 
-    testWidgets(
-        'should skip step without validation on skip button',
-        (tester) async {
+    testWidgets('should skip step without validation on skip button', (
+      tester,
+    ) async {
       await tester.pumpWidget(
-        const ProviderScope(
-          child: MaterialApp(home: OnboardingWizardPage()),
-        ),
+        const ProviderScope(child: MaterialApp(home: OnboardingWizardPage())),
       );
       await tester.pumpAndSettle();
 
@@ -651,24 +615,28 @@ void main() {
     });
 
     test(
-        'onboardingWorldSettingRepositoryProvider creates WorldSettingRepository',
-        () async {
-      final container = ProviderContainer();
-      final repository =
-          await container.read(onboardingWorldSettingRepositoryProvider.future);
-      expect(repository, isA<WorldSettingRepository>());
-      container.dispose();
-    });
+      'onboardingWorldSettingRepositoryProvider creates WorldSettingRepository',
+      () async {
+        final container = ProviderContainer();
+        final repository = await container.read(
+          onboardingWorldSettingRepositoryProvider.future,
+        );
+        expect(repository, isA<WorldSettingRepository>());
+        container.dispose();
+      },
+    );
 
     test(
-        'onboardingCharacterCardRepositoryProvider creates CharacterCardRepository',
-        () async {
-      final container = ProviderContainer();
-      final repository = await container
-          .read(onboardingCharacterCardRepositoryProvider.future);
-      expect(repository, isA<CharacterCardRepository>());
-      container.dispose();
-    });
+      'onboardingCharacterCardRepositoryProvider creates CharacterCardRepository',
+      () async {
+        final container = ProviderContainer();
+        final repository = await container.read(
+          onboardingCharacterCardRepositoryProvider.future,
+        );
+        expect(repository, isA<CharacterCardRepository>());
+        container.dispose();
+      },
+    );
   });
 }
 

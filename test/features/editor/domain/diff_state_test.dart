@@ -12,33 +12,39 @@ void main() {
   });
 
   group('SentenceDiff', () {
-    test('isDeletion should return true when originalText is not null and newText is null', () {
-      const diff = SentenceDiff(
-        originalText: '原文',
-        newText: null,
-        status: DiffStatus.pending,
-        nodeId: 'node1',
-        startOffset: 0,
-        endOffset: 2,
-      );
-      expect(diff.isDeletion, isTrue);
-      expect(diff.isInsertion, isFalse);
-      expect(diff.isModification, isFalse);
-    });
+    test(
+      'isDeletion should return true when originalText is not null and newText is null',
+      () {
+        const diff = SentenceDiff(
+          originalText: '原文',
+          newText: null,
+          status: DiffStatus.pending,
+          nodeId: 'node1',
+          startOffset: 0,
+          endOffset: 2,
+        );
+        expect(diff.isDeletion, isTrue);
+        expect(diff.isInsertion, isFalse);
+        expect(diff.isModification, isFalse);
+      },
+    );
 
-    test('isInsertion should return true when originalText is null and newText is not null', () {
-      const diff = SentenceDiff(
-        originalText: null,
-        newText: '新文',
-        status: DiffStatus.pending,
-        nodeId: 'node1',
-        startOffset: 0,
-        endOffset: 2,
-      );
-      expect(diff.isInsertion, isTrue);
-      expect(diff.isDeletion, isFalse);
-      expect(diff.isModification, isFalse);
-    });
+    test(
+      'isInsertion should return true when originalText is null and newText is not null',
+      () {
+        const diff = SentenceDiff(
+          originalText: null,
+          newText: '新文',
+          status: DiffStatus.pending,
+          nodeId: 'node1',
+          startOffset: 0,
+          endOffset: 2,
+        );
+        expect(diff.isInsertion, isTrue);
+        expect(diff.isDeletion, isFalse);
+        expect(diff.isModification, isFalse);
+      },
+    );
 
     test('isModification should return true when both texts are not null', () {
       const diff = SentenceDiff(
@@ -161,14 +167,8 @@ void main() {
     });
 
     test('equality should compare all fields', () {
-      const a = DiffResult(
-        sentences: [],
-        nodeId: 'n1',
-      );
-      const b = DiffResult(
-        sentences: [],
-        nodeId: 'n1',
-      );
+      const a = DiffResult(sentences: [], nodeId: 'n1');
+      const b = DiffResult(sentences: [], nodeId: 'n1');
       expect(a, equals(b));
     });
   });

@@ -27,3 +27,6 @@ flutter_*.log
 # Generated
 *.g.dart
 *.freezed.dart
+scripts/.generated/
+scripts/generated-readme-screenshots/
+test-results/

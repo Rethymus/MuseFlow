@@ -28,7 +28,10 @@ class ContextAnchorOverlayBuilder implements SuperEditorLayerBuilder {
   const ContextAnchorOverlayBuilder();
 
   @override
-  ContentLayerWidget build(BuildContext context, SuperEditorContext editContext) {
+  ContentLayerWidget build(
+    BuildContext context,
+    SuperEditorContext editContext,
+  ) {
     return ContentLayerProxyWidget(
       child: _AnchorOverlay(editor: editContext.editor),
     );
@@ -49,10 +52,7 @@ class _AnchorOverlay extends ConsumerWidget {
       return const SizedBox.shrink();
     }
 
-    return _AnchorIndicators(
-      editor: editor,
-      anchors: anchors,
-    );
+    return _AnchorIndicators(editor: editor, anchors: anchors);
   }
 }
 
@@ -61,10 +61,7 @@ class _AnchorOverlay extends ConsumerWidget {
 /// Uses [LayoutBuilder] to obtain the available size and renders each
 /// anchor as a [Positioned.fill] child so it gets a non-zero canvas.
 class _AnchorIndicators extends StatelessWidget {
-  const _AnchorIndicators({
-    required this.editor,
-    required this.anchors,
-  });
+  const _AnchorIndicators({required this.editor, required this.anchors});
 
   final Editor editor;
   final List<ContextAnchor> anchors;
@@ -77,10 +74,7 @@ class _AnchorIndicators extends StatelessWidget {
           return Stack(
             children: anchors.map((anchor) {
               return Positioned.fill(
-                child: _AnchorIndicator(
-                  anchor: anchor,
-                  editor: editor,
-                ),
+                child: _AnchorIndicator(anchor: anchor, editor: editor),
               );
             }).toList(),
           );
@@ -96,10 +90,7 @@ class _AnchorIndicators extends StatelessWidget {
 /// Persistent anchors use deeper gold (0x1AFFD700), one-time use
 /// lighter gold (0x0DFFD700). A pin icon appears in the top-left corner.
 class _AnchorIndicator extends StatelessWidget {
-  const _AnchorIndicator({
-    required this.anchor,
-    required this.editor,
-  });
+  const _AnchorIndicator({required this.anchor, required this.editor});
 
   final ContextAnchor anchor;
   final Editor editor;
@@ -110,8 +101,9 @@ class _AnchorIndicator extends StatelessWidget {
     final node = document.getNodeById(anchor.nodeId);
     if (node is! TextNode) return const SizedBox.shrink();
 
-    final color =
-        anchor.isPersistent ? _persistentAnchorColor : _oneTimeAnchorColor;
+    final color = anchor.isPersistent
+        ? _persistentAnchorColor
+        : _oneTimeAnchorColor;
 
     return ColoredBox(
       color: color,
@@ -119,14 +111,9 @@ class _AnchorIndicator extends StatelessWidget {
         alignment: Alignment.topLeft,
         child: Padding(
           padding: EdgeInsets.only(left: 2, top: 2),
-          child: Icon(
-            Icons.push_pin,
-            size: 14,
-            color: Color(0x99FFD700),
-          ),
+          child: Icon(Icons.push_pin, size: 14, color: Color(0x99FFD700)),
         ),
       ),
     );
   }
 }
-

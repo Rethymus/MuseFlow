@@ -50,56 +50,99 @@ void main() {
     expect(stored, isNotNull);
   });
 
-  test('getByManuscriptId returns chapters filtered and sorted by sortOrder', () async {
-    final msId = 'ms-filter';
-    await repository.add(createChapter(id: 'ch-1', manuscriptId: msId, sortOrder: 2, title: 'Second'));
-    await repository.add(createChapter(id: 'ch-2', manuscriptId: msId, sortOrder: 0, title: 'First'));
-    await repository.add(createChapter(id: 'ch-3', manuscriptId: 'other-ms', sortOrder: 1, title: 'Other'));
-    await repository.add(createChapter(id: 'ch-4', manuscriptId: msId, sortOrder: 1, title: 'Middle'));
+  test(
+    'getByManuscriptId returns chapters filtered and sorted by sortOrder',
+    () async {
+      final msId = 'ms-filter';
+      await repository.add(
+        createChapter(
+          id: 'ch-1',
+          manuscriptId: msId,
+          sortOrder: 2,
+          title: 'Second',
+        ),
+      );
+      await repository.add(
+        createChapter(
+          id: 'ch-2',
+          manuscriptId: msId,
+          sortOrder: 0,
+          title: 'First',
+        ),
+      );
+      await repository.add(
+        createChapter(
+          id: 'ch-3',
+          manuscriptId: 'other-ms',
+          sortOrder: 1,
+          title: 'Other',
+        ),
+      );
+      await repository.add(
+        createChapter(
+          id: 'ch-4',
+          manuscriptId: msId,
+          sortOrder: 1,
+          title: 'Middle',
+        ),
+      );
 
-    final results = repository.getByManuscriptId(msId);
+      final results = repository.getByManuscriptId(msId);
 
-    expect(results.length, equals(3));
-    expect(results[0].title, equals('First'));
-    expect(results[1].title, equals('Middle'));
-    expect(results[2].title, equals('Second'));
-  });
+      expect(results.length, equals(3));
+      expect(results[0].title, equals('First'));
+      expect(results[1].title, equals('Middle'));
+      expect(results[2].title, equals('Second'));
+    },
+  );
 
-  test('updateDocumentContent updates only documentContent and updatedAt', () async {
-    final now = DateTime.now();
-    final chapter = Chapter(
-      id: 'update-content',
-      manuscriptId: 'ms-1',
-      title: 'Original Title',
-      sortOrder: 0,
-      documentContent: 'old content',
-      createdAt: now,
-      updatedAt: now.subtract(const Duration(hours: 1)),
-    );
-    await box.put('update-content', chapter.toJson());
+  test(
+    'updateDocumentContent updates only documentContent and updatedAt',
+    () async {
+      final now = DateTime.now();
+      final chapter = Chapter(
+        id: 'update-content',
+        manuscriptId: 'ms-1',
+        title: 'Original Title',
+        sortOrder: 0,
+        documentContent: 'old content',
+        createdAt: now,
+        updatedAt: now.subtract(const Duration(hours: 1)),
+      );
+      await box.put('update-content', chapter.toJson());
 
-    await repository.updateDocumentContent('update-content', 'new markdown content');
+      await repository.updateDocumentContent(
+        'update-content',
+        'new markdown content',
+      );
 
-    final stored = repository.getById('update-content');
-    expect(stored!.documentContent, equals('new markdown content'));
-    expect(stored.title, equals('Original Title')); // unchanged
-    expect(stored.sortOrder, equals(0)); // unchanged
-    expect(stored.updatedAt.isAfter(now.subtract(const Duration(hours: 1))), isTrue);
-  });
+      final stored = repository.getById('update-content');
+      expect(stored!.documentContent, equals('new markdown content'));
+      expect(stored.title, equals('Original Title')); // unchanged
+      expect(stored.sortOrder, equals(0)); // unchanged
+      expect(
+        stored.updatedAt.isAfter(now.subtract(const Duration(hours: 1))),
+        isTrue,
+      );
+    },
+  );
 
-  test('deleteByManuscriptId deletes all chapters with matching manuscriptId', () async {
-    await repository.add(createChapter(id: 'ch-a', manuscriptId: 'ms-del'));
-    await repository.add(createChapter(id: 'ch-b', manuscriptId: 'ms-del'));
-    await repository.add(createChapter(id: 'ch-c', manuscriptId: 'ms-keep'));
+  test(
+    'deleteByManuscriptId deletes all chapters with matching manuscriptId',
+    () async {
+      await repository.add(createChapter(id: 'ch-a', manuscriptId: 'ms-del'));
+      await repository.add(createChapter(id: 'ch-b', manuscriptId: 'ms-del'));
+      await repository.add(createChapter(id: 'ch-c', manuscriptId: 'ms-keep'));
 
-    await repository.deleteByManuscriptId('ms-del');
+      await repository.deleteByManuscriptId('ms-del');
 
-    final keepResults = repository.getByManuscriptId('ms-keep');
-    expect(keepResults.length, equals(1));
+      final keepResults = repository.getByManuscriptId('ms-keep');
+      expect(keepResults.length, equals(1));
 
-    final delResults = repository.getByManuscriptId('ms-del');
-    expect(delResults, isEmpty);
-  });
+      final delResults = repository.getByManuscriptId('ms-del');
+      expect(delResults, isEmpty);
+    },
+  );
 
   test('getById returns chapter when found', () async {
     final chapter = createChapter(id: 'find-me');

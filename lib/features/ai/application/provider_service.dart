@@ -112,10 +112,7 @@ class ProviderService {
     String model = 'gpt-4o-mini',
   }) async {
     try {
-      final client = OpenAIClient.withApiKey(
-        apiKey,
-        baseUrl: baseUrl,
-      );
+      final client = OpenAIClient.withApiKey(apiKey, baseUrl: baseUrl);
 
       await client.chat.completions.create(
         ChatCompletionCreateRequest(

@@ -70,7 +70,8 @@ class Fragment {
   }
 
   @override
-  int get hashCode => Object.hash(id, text, Object.hashAll(tags), createdAt, updatedAt);
+  int get hashCode =>
+      Object.hash(id, text, Object.hashAll(tags), createdAt, updatedAt);
 
   @override
   String toString() =>

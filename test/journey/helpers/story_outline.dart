@@ -147,10 +147,5 @@ class StoryOutline {
   ];
 
   /// Core character names referenced throughout the story outline.
-  static const List<String> characterNames = [
-    '林风',
-    '清虚真人',
-    '苏雪晴',
-    '赵天磊',
-  ];
+  static const List<String> characterNames = ['林风', '清虚真人', '苏雪晴', '赵天磊'];
 }

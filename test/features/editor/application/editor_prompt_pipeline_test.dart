@@ -13,19 +13,13 @@ import 'package:openai_dart/openai_dart.dart';
 void main() {
   group('PromptContext extensions', () {
     test('should support selectedText field', () {
-      const context = PromptContext(
-        fragments: [],
-        selectedText: '选中的文字',
-      );
+      const context = PromptContext(fragments: [], selectedText: '选中的文字');
       expect(context.selectedText, '选中的文字');
     });
 
     test('should support anchors field', () {
       final anchor = _TestAnchor(text: '角色介绍', label: '角色卡');
-      final context = PromptContext(
-        fragments: [],
-        anchors: [anchor],
-      );
+      final context = PromptContext(fragments: [], anchors: [anchor]);
       expect(context.anchors, hasLength(1));
       expect(context.anchors![0].text, '角色介绍');
       expect(context.anchors![0].label, '角色卡');
@@ -48,9 +42,7 @@ void main() {
         selectedText: '原文',
         anchors: [anchor],
       );
-      final updated = context.addMessage(
-        ChatMessage.system('test'),
-      );
+      final updated = context.addMessage(ChatMessage.system('test'));
       expect(updated.selectedText, '原文');
       expect(updated.anchors, hasLength(1));
     });
@@ -61,9 +53,7 @@ void main() {
         selectedText: '原文',
         anchors: [],
       );
-      final updated = context.withMessages([
-        ChatMessage.system('test'),
-      ]);
+      final updated = context.withMessages([ChatMessage.system('test')]);
       expect(updated.selectedText, '原文');
       expect(updated.anchors, isEmpty);
     });

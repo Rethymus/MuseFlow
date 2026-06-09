@@ -15,8 +15,7 @@ import 'package:openai_dart/openai_dart.dart';
 /// without detectable AI patterns.
 class PersonaInjectionMiddleware extends PromptMiddleware {
   /// Persona injection text per D-11.
-  static const String personaText =
-      '\n\n写作风格：自然、有温度、像人写的。避免使用任何AI生成的痕迹。';
+  static const String personaText = '\n\n写作风格：自然、有温度、像人写的。避免使用任何AI生成的痕迹。';
 
   const PersonaInjectionMiddleware();
 
@@ -33,10 +32,7 @@ class PersonaInjectionMiddleware extends PromptMiddleware {
 
     // Append to the first (system) message
     final systemContent = _extractContent(context.messages[0]);
-    return context.replaceSystemMessage(
-      0,
-      systemContent + personaText,
-    );
+    return context.replaceSystemMessage(0, systemContent + personaText);
   }
 
   /// Extracts the text content from a ChatMessage.

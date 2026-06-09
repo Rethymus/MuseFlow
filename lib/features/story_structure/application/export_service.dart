@@ -21,17 +21,17 @@ enum ExportFormat {
 
   /// Human-readable label for the format.
   String get label => switch (this) {
-        ExportFormat.txt => 'TXT',
-        ExportFormat.markdown => 'Markdown',
-        ExportFormat.json => 'JSON',
-      };
+    ExportFormat.txt => 'TXT',
+    ExportFormat.markdown => 'Markdown',
+    ExportFormat.json => 'JSON',
+  };
 
   /// Expected file extension.
   String get extension => switch (this) {
-        ExportFormat.txt => '.txt',
-        ExportFormat.markdown => '.md',
-        ExportFormat.json => '.json',
-      };
+    ExportFormat.txt => '.txt',
+    ExportFormat.markdown => '.md',
+    ExportFormat.json => '.json',
+  };
 }
 
 /// File writer function signature for testability.
@@ -97,7 +97,9 @@ class ExportService {
       }
       return buffer.toString().replaceAll('\r\n', '\n').replaceAll('\r', '\n');
     }
-    return bundle.manuscriptText.replaceAll('\r\n', '\n').replaceAll('\r', '\n');
+    return bundle.manuscriptText
+        .replaceAll('\r\n', '\n')
+        .replaceAll('\r', '\n');
   }
 
   /// Builds Markdown content from the export bundle.
@@ -118,7 +120,9 @@ class ExportService {
       }
       return buffer.toString().replaceAll('\r\n', '\n').replaceAll('\r', '\n');
     }
-    return bundle.manuscriptText.replaceAll('\r\n', '\n').replaceAll('\r', '\n');
+    return bundle.manuscriptText
+        .replaceAll('\r\n', '\n')
+        .replaceAll('\r', '\n');
   }
 
   /// Builds JSON content from the export bundle.

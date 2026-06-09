@@ -9,8 +9,8 @@ class BlindReadService {
   BlindReadService({
     required ChapterRepository chapterRepository,
     int? randomSeed,
-  })  : _chapterRepository = chapterRepository,
-        _randomSeed = randomSeed;
+  }) : _chapterRepository = chapterRepository,
+       _randomSeed = randomSeed;
 
   final ChapterRepository _chapterRepository;
   final int? _randomSeed;
@@ -22,11 +22,12 @@ class BlindReadService {
   }) {
     if (count <= 0 || minParagraphLength < 0) return const [];
 
-    final chapters = (manuscriptId == null || manuscriptId.isEmpty
-            ? _chapterRepository.getAll()
-            : _chapterRepository.getByManuscriptId(manuscriptId))
-        .toList()
-      ..sort((a, b) => a.sortOrder.compareTo(b.sortOrder));
+    final chapters =
+        (manuscriptId == null || manuscriptId.isEmpty
+                ? _chapterRepository.getAll()
+                : _chapterRepository.getByManuscriptId(manuscriptId))
+            .toList()
+          ..sort((a, b) => a.sortOrder.compareTo(b.sortOrder));
 
     final excerpts = <BlindReadExcerpt>[];
     for (final chapter in chapters) {
@@ -52,7 +53,9 @@ class BlindReadService {
 
   BlindReadResult computeResult(List<BlindReadExcerpt> excerpts) {
     final judged = excerpts.where((excerpt) => excerpt.humanVerdict != null);
-    final correctCount = judged.where((excerpt) => excerpt.humanVerdict == true).length;
+    final correctCount = judged
+        .where((excerpt) => excerpt.humanVerdict == true)
+        .length;
     return BlindReadResult(
       excerpts: List.unmodifiable(excerpts),
       correctCount: correctCount,

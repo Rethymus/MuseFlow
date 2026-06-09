@@ -74,7 +74,9 @@ void main() {
       expect(find.text('draft:male-xuanhuan-bloodline:少年不想修仙'), findsOneWidget);
     });
 
-    testWidgets('shows safe not-found state for missing template id', (tester) async {
+    testWidgets('shows safe not-found state for missing template id', (
+      tester,
+    ) async {
       await tester.pumpWidget(
         ProviderScope(
           overrides: [
@@ -95,7 +97,9 @@ void main() {
       expect(find.text('使用模板'), findsNothing);
     });
 
-    testWidgets('expanding opening samples shows all three styles', (tester) async {
+    testWidgets('expanding opening samples shows all three styles', (
+      tester,
+    ) async {
       await _pumpPreview(tester);
       await _pumpUntilFound(tester, find.text('开篇示例'));
 

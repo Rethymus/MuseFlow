@@ -1,7 +1,10 @@
+import 'dart:io';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:museflow/core/infrastructure/secure_storage_service.dart';
+import 'package:path/path.dart' as p;
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -62,6 +65,33 @@ void main() {
       } on PlatformException catch (_) {
         debugPrint('Skipping: secure storage platform exception');
       }
+    });
+
+    test('does not create plaintext Linux fallback files', () async {
+      if (!Platform.isLinux) return;
+
+      final fallbackDir = Directory(
+        p.join(
+          Platform.environment['HOME'] ?? '/tmp',
+          '.local',
+          'share',
+          'museflow',
+          'secrets',
+        ),
+      );
+      if (fallbackDir.existsSync()) {
+        fallbackDir.deleteSync(recursive: true);
+      }
+
+      try {
+        await service.saveApiKey('plaintext-regression', 'sk-no-plaintext');
+      } on MissingPluginException catch (_) {
+        debugPrint('Skipping: secure storage not available on this platform');
+      } on PlatformException catch (_) {
+        debugPrint('Skipping: secure storage platform exception');
+      }
+
+      expect(fallbackDir.existsSync(), isFalse);
     });
   });
 }

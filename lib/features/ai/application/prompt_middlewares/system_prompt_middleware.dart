@@ -20,8 +20,6 @@ class SystemPromptMiddleware extends PromptMiddleware {
 
   @override
   PromptContext apply(PromptContext context) {
-    return context.addMessage(
-      ChatMessage.system(baseInstruction),
-    );
+    return context.addMessage(ChatMessage.system(baseInstruction));
   }
 }

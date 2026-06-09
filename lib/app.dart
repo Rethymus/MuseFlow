@@ -211,7 +211,8 @@ class MuseFlowApp extends ConsumerWidget {
                         ),
                         GoRoute(
                           path: 'consistency',
-                          builder: (context, state) => const ConsistencyReportPage(),
+                          builder: (context, state) =>
+                              const ConsistencyReportPage(),
                         ),
                       ],
                     ),

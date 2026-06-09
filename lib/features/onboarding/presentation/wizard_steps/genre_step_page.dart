@@ -6,10 +6,7 @@ import 'package:museflow/features/onboarding/domain/genre_option.dart';
 /// Displays a grid of genre cards from the built-in [GenreOption] list.
 /// The user taps a card to select a genre, which highlights the border.
 class GenreStepPage extends StatefulWidget {
-  const GenreStepPage({
-    super.key,
-    required this.onSelected,
-  });
+  const GenreStepPage({super.key, required this.onSelected});
 
   /// Called when a genre card is tapped.
   /// Passes the selected [GenreOption.id].
@@ -187,10 +184,7 @@ class _PassiveTag extends StatelessWidget {
       ),
       child: Text(
         label,
-        style: TextStyle(
-          fontSize: 10,
-          color: colorScheme.onSurfaceVariant,
-        ),
+        style: TextStyle(fontSize: 10, color: colorScheme.onSurfaceVariant),
       ),
     );
   }

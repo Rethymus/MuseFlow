@@ -24,11 +24,7 @@ class ChapterExport {
 
   /// Serializes this chapter export to a JSON map.
   Map<String, dynamic> toJson() {
-    return {
-      'title': title,
-      'sortOrder': sortOrder,
-      'content': content,
-    };
+    return {'title': title, 'sortOrder': sortOrder, 'content': content};
   }
 
   @override

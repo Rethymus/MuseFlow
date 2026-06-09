@@ -5,9 +5,7 @@ void main() {
   testWidgets('smoke test renders a Flutter widget', (tester) async {
     await tester.pumpWidget(
       const MaterialApp(
-        home: Scaffold(
-          body: Center(child: Text('MuseFlow 灵韵')),
-        ),
+        home: Scaffold(body: Center(child: Text('MuseFlow 灵韵'))),
       ),
     );
 

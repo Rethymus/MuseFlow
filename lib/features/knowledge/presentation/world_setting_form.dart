@@ -57,8 +57,7 @@ class _WorldSettingFormState extends ConsumerState<WorldSettingForm> {
   }
 
   void _seedFromExisting() {
-    final settings =
-        ref.read(worldSettingNotifierProvider).asData?.value ?? [];
+    final settings = ref.read(worldSettingNotifierProvider).asData?.value ?? [];
     final setting = _findSetting(settings);
     if (setting != null) {
       _nameController.text = setting.name;
@@ -87,9 +86,7 @@ class _WorldSettingFormState extends ConsumerState<WorldSettingForm> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text(_isEditing ? '编辑世界观' : '新建世界观'),
-      ),
+      appBar: AppBar(title: Text(_isEditing ? '编辑世界观' : '新建世界观')),
       body: Form(
         key: _formKey,
         child: ListView(
@@ -250,17 +247,15 @@ class _WorldSettingFormState extends ConsumerState<WorldSettingForm> {
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(_isEditing ? '世界观已更新' : '世界观已创建'),
-          ),
+          SnackBar(content: Text(_isEditing ? '世界观已更新' : '世界观已创建')),
         );
         context.go('/knowledge');
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('保存失败: $e')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('保存失败: $e')));
       }
     } finally {
       if (mounted) {

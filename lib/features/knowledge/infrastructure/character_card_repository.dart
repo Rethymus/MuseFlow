@@ -92,8 +92,9 @@ class CharacterCardRepository {
       final lowerQuery = query.toLowerCase();
       return getAll().where((card) {
         if (card.name.toLowerCase().contains(lowerQuery)) return true;
-        return card.aliases
-            .any((alias) => alias.toLowerCase().contains(lowerQuery));
+        return card.aliases.any(
+          (alias) => alias.toLowerCase().contains(lowerQuery),
+        );
       }).toList();
     } catch (e) {
       throw StateError('Failed to search character cards: $e');

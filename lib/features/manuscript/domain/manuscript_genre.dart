@@ -59,6 +59,5 @@ class ManuscriptGenre {
   /// Returns the color value for the given [genre].
   ///
   /// Returns [_defaultColor] (gray) for genres not in the preset list.
-  static int genreColor(String genre) =>
-      _genreColors[genre] ?? _defaultColor;
+  static int genreColor(String genre) => _genreColors[genre] ?? _defaultColor;
 }

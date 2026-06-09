@@ -4,7 +4,6 @@
 /// sentence-level inline diffs between original and AI-modified text.
 library;
 
-
 /// Status of a single sentence diff after AI modification.
 enum DiffStatus {
   /// Awaiting user decision.
@@ -94,8 +93,14 @@ class SentenceDiff {
   }
 
   @override
-  int get hashCode =>
-      Object.hash(originalText, newText, status, nodeId, startOffset, endOffset);
+  int get hashCode => Object.hash(
+    originalText,
+    newText,
+    status,
+    nodeId,
+    startOffset,
+    endOffset,
+  );
 
   @override
   String toString() =>
@@ -115,10 +120,7 @@ class DiffResult {
   /// The document node ID for the original text range.
   final String nodeId;
 
-  const DiffResult({
-    required this.sentences,
-    required this.nodeId,
-  });
+  const DiffResult({required this.sentences, required this.nodeId});
 
   /// Number of sentences still awaiting user decision.
   int get pendingCount =>

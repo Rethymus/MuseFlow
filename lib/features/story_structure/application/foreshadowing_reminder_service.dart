@@ -61,12 +61,14 @@ class ForeshadowingReminderService {
 
     // Unresolved count reminder
     if (openEntries.isNotEmpty) {
-      reminders.add(ForeshadowingReminder(
-        kind: ForeshadowingReminderKind.unresolvedCount,
-        entryIds: openEntries.map((e) => e.id).toList(),
-        message: '有 ${openEntries.length} 条未解决的伏笔',
-        count: openEntries.length,
-      ));
+      reminders.add(
+        ForeshadowingReminder(
+          kind: ForeshadowingReminderKind.unresolvedCount,
+          entryIds: openEntries.map((e) => e.id).toList(),
+          message: '有 ${openEntries.length} 条未解决的伏笔',
+          count: openEntries.length,
+        ),
+      );
     }
 
     // Threshold overdue
@@ -74,27 +76,34 @@ class ForeshadowingReminderService {
         .where((e) => currentChapter - e.plantedChapter >= defaultThreshold)
         .toList();
     if (thresholdOverdueEntries.isNotEmpty) {
-      reminders.add(ForeshadowingReminder(
-        kind: ForeshadowingReminderKind.thresholdOverdue,
-        entryIds: thresholdOverdueEntries.map((e) => e.id).toList(),
-        message: '有 ${thresholdOverdueEntries.length} 条伏笔已超过默认提醒阈值（$defaultThreshold 章）',
-        count: thresholdOverdueEntries.length,
-      ));
+      reminders.add(
+        ForeshadowingReminder(
+          kind: ForeshadowingReminderKind.thresholdOverdue,
+          entryIds: thresholdOverdueEntries.map((e) => e.id).toList(),
+          message:
+              '有 ${thresholdOverdueEntries.length} 条伏笔已超过默认提醒阈值（$defaultThreshold 章）',
+          count: thresholdOverdueEntries.length,
+        ),
+      );
     }
 
     // Target overdue
     final targetOverdueEntries = openEntries
-        .where((e) =>
-            e.targetResolutionChapter != null &&
-            currentChapter > e.targetResolutionChapter!)
+        .where(
+          (e) =>
+              e.targetResolutionChapter != null &&
+              currentChapter > e.targetResolutionChapter!,
+        )
         .toList();
     if (targetOverdueEntries.isNotEmpty) {
-      reminders.add(ForeshadowingReminder(
-        kind: ForeshadowingReminderKind.targetOverdue,
-        entryIds: targetOverdueEntries.map((e) => e.id).toList(),
-        message: '有 ${targetOverdueEntries.length} 条伏笔已超过计划解决章节',
-        count: targetOverdueEntries.length,
-      ));
+      reminders.add(
+        ForeshadowingReminder(
+          kind: ForeshadowingReminderKind.targetOverdue,
+          entryIds: targetOverdueEntries.map((e) => e.id).toList(),
+          message: '有 ${targetOverdueEntries.length} 条伏笔已超过计划解决章节',
+          count: targetOverdueEntries.length,
+        ),
+      );
     }
 
     return reminders;

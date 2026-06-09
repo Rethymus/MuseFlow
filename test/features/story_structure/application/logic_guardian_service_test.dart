@@ -40,7 +40,10 @@ void main() {
     group('buildLogicPrompt', () {
       test('should include context bundle prompt text', () {
         final bundle = makeBundle(excerpt: 'Alice traveled back in time.');
-        final prompt = service.buildLogicPrompt(text: 'Alice traveled back in time.', context: bundle);
+        final prompt = service.buildLogicPrompt(
+          text: 'Alice traveled back in time.',
+          context: bundle,
+        );
 
         expect(prompt, contains('Alice traveled back in time.'));
         expect(prompt, contains('时间线'));
@@ -48,8 +51,13 @@ void main() {
       });
 
       test('should include skill constraints in prompt', () {
-        final bundle = makeBundle(skillConstraints: ['No teleportation allowed.']);
-        final prompt = service.buildLogicPrompt(text: 'She teleported away.', context: bundle);
+        final bundle = makeBundle(
+          skillConstraints: ['No teleportation allowed.'],
+        );
+        final prompt = service.buildLogicPrompt(
+          text: 'She teleported away.',
+          context: bundle,
+        );
 
         expect(prompt, contains('No teleportation allowed.'));
       });
@@ -142,7 +150,10 @@ void main() {
         final annotations = service.parseLogicResponse(response);
 
         expect(annotations.length, 1);
-        expect(annotations[0].kind, GuardianFindingKind.unresolvedForeshadowing);
+        expect(
+          annotations[0].kind,
+          GuardianFindingKind.unresolvedForeshadowing,
+        );
       });
 
       test('should parse multiple findings from a single response', () {

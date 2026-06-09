@@ -78,9 +78,7 @@ class _CharacterCardFormState extends ConsumerState<CharacterCardForm> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text(_isEditing ? '编辑角色卡' : '新建角色卡'),
-      ),
+      appBar: AppBar(title: Text(_isEditing ? '编辑角色卡' : '新建角色卡')),
       body: Form(
         key: _formKey,
         child: ListView(
@@ -215,17 +213,15 @@ class _CharacterCardFormState extends ConsumerState<CharacterCardForm> {
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(_isEditing ? '角色卡已更新' : '角色卡已创建'),
-          ),
+          SnackBar(content: Text(_isEditing ? '角色卡已更新' : '角色卡已创建')),
         );
         context.go('/knowledge');
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('保存失败: $e')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('保存失败: $e')));
       }
     } finally {
       if (mounted) {

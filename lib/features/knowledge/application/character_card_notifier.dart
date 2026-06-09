@@ -44,8 +44,9 @@ class CharacterCardNotifier extends AsyncNotifier<List<CharacterCard>> {
     final lowerQuery = query.toLowerCase();
     return cards.where((card) {
       if (card.name.toLowerCase().contains(lowerQuery)) return true;
-      return card.aliases
-          .any((alias) => alias.toLowerCase().contains(lowerQuery));
+      return card.aliases.any(
+        (alias) => alias.toLowerCase().contains(lowerQuery),
+      );
     }).toList();
   }
 }

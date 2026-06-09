@@ -76,13 +76,13 @@ class FormatChange {
 
   @override
   int get hashCode => Object.hash(
-        category,
-        original,
-        replacement,
-        startOffset,
-        endOffset,
-        explanation,
-      );
+    category,
+    original,
+    replacement,
+    startOffset,
+    endOffset,
+    explanation,
+  );
 
   @override
   String toString() =>
@@ -136,11 +136,8 @@ class FormatCleanResult {
   }
 
   @override
-  int get hashCode => Object.hash(
-        originalText,
-        cleanedText,
-        Object.hashAll(changes),
-      );
+  int get hashCode =>
+      Object.hash(originalText, cleanedText, Object.hashAll(changes));
 
   static bool _listEquals<T>(List<T> a, List<T> b) {
     if (a.length != b.length) return false;

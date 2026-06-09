@@ -62,10 +62,7 @@ void main() {
     });
 
     test('copyWith should replace only specified fields', () {
-      final copied = provider.copyWith(
-        name: 'Updated',
-        isActive: true,
-      );
+      final copied = provider.copyWith(name: 'Updated', isActive: true);
       expect(copied.id, provider.id);
       expect(copied.name, 'Updated');
       expect(copied.baseUrl, provider.baseUrl);
@@ -129,19 +126,22 @@ void main() {
   group('AIProvider nullable parameters', () {
     final now = DateTime(2026, 6, 2, 12, 0, 0);
 
-    test('should accept nullable temperature, topP, maxTokens with default null', () {
-      final p = AIProvider(
-        id: 'test-id',
-        name: 'Test',
-        baseUrl: 'https://api.test.com/v1',
-        type: AiProviderType.openai,
-        model: 'gpt-4o-mini',
-        createdAt: now,
-      );
-      expect(p.temperature, isNull);
-      expect(p.topP, isNull);
-      expect(p.maxTokens, isNull);
-    });
+    test(
+      'should accept nullable temperature, topP, maxTokens with default null',
+      () {
+        final p = AIProvider(
+          id: 'test-id',
+          name: 'Test',
+          baseUrl: 'https://api.test.com/v1',
+          type: AiProviderType.openai,
+          model: 'gpt-4o-mini',
+          createdAt: now,
+        );
+        expect(p.temperature, isNull);
+        expect(p.topP, isNull);
+        expect(p.maxTokens, isNull);
+      },
+    );
 
     test('should accept non-null temperature, topP, maxTokens values', () {
       final p = AIProvider(
@@ -160,42 +160,44 @@ void main() {
       expect(p.maxTokens, 4096);
     });
 
-    test('copyWith preserves existing nullable values when no override given', () {
-      final p = AIProvider(
-        id: 'test-id',
-        name: 'Test',
-        baseUrl: 'https://api.test.com/v1',
-        type: AiProviderType.openai,
-        model: 'gpt-4o-mini',
-        temperature: 1.2,
-        topP: 0.8,
-        maxTokens: 2048,
-        createdAt: now,
-      );
-      final copied = p.copyWith(name: 'Updated');
-      expect(copied.temperature, 1.2);
-      expect(copied.topP, 0.8);
-      expect(copied.maxTokens, 2048);
-    });
+    test(
+      'copyWith preserves existing nullable values when no override given',
+      () {
+        final p = AIProvider(
+          id: 'test-id',
+          name: 'Test',
+          baseUrl: 'https://api.test.com/v1',
+          type: AiProviderType.openai,
+          model: 'gpt-4o-mini',
+          temperature: 1.2,
+          topP: 0.8,
+          maxTokens: 2048,
+          createdAt: now,
+        );
+        final copied = p.copyWith(name: 'Updated');
+        expect(copied.temperature, 1.2);
+        expect(copied.topP, 0.8);
+        expect(copied.maxTokens, 2048);
+      },
+    );
 
-    test('copyWith can set temperature/topP/maxTokens to specific non-null values', () {
-      final p = AIProvider(
-        id: 'test-id',
-        name: 'Test',
-        baseUrl: 'https://api.test.com/v1',
-        type: AiProviderType.openai,
-        model: 'gpt-4o-mini',
-        createdAt: now,
-      );
-      final copied = p.copyWith(
-        temperature: 0.7,
-        topP: 0.5,
-        maxTokens: 1024,
-      );
-      expect(copied.temperature, 0.7);
-      expect(copied.topP, 0.5);
-      expect(copied.maxTokens, 1024);
-    });
+    test(
+      'copyWith can set temperature/topP/maxTokens to specific non-null values',
+      () {
+        final p = AIProvider(
+          id: 'test-id',
+          name: 'Test',
+          baseUrl: 'https://api.test.com/v1',
+          type: AiProviderType.openai,
+          model: 'gpt-4o-mini',
+          createdAt: now,
+        );
+        final copied = p.copyWith(temperature: 0.7, topP: 0.5, maxTokens: 1024);
+        expect(copied.temperature, 0.7);
+        expect(copied.topP, 0.5);
+        expect(copied.maxTokens, 1024);
+      },
+    );
 
     test('copyWith can set temperature/topP/maxTokens back to null', () {
       final p = AIProvider(
@@ -209,11 +211,7 @@ void main() {
         maxTokens: 2048,
         createdAt: now,
       );
-      final copied = p.copyWith(
-        temperature: null,
-        topP: null,
-        maxTokens: null,
-      );
+      final copied = p.copyWith(temperature: null, topP: null, maxTokens: null);
       expect(copied.temperature, isNull);
       expect(copied.topP, isNull);
       expect(copied.maxTokens, isNull);

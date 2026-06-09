@@ -15,10 +15,7 @@ const _customGenreMaxLength = 20;
 /// dropdown populated from [ManuscriptGenre.presets]. On confirm,
 /// creates the manuscript via [ManuscriptNotifier.create] and dismisses.
 class ManuscriptCreateDialog extends ConsumerStatefulWidget {
-  const ManuscriptCreateDialog({
-    super.key,
-    this.initialCustomGenre = false,
-  });
+  const ManuscriptCreateDialog({super.key, this.initialCustomGenre = false});
 
   final bool initialCustomGenre;
 

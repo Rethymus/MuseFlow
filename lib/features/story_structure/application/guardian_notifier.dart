@@ -56,8 +56,9 @@ class GuardianCheckResult {
 class GuardianNotifier extends AsyncNotifier<GuardianCheckResult> {
   @override
   Future<GuardianCheckResult> build() async {
-    final repository =
-        await ref.watch(guardianAnnotationRepositoryProvider.future);
+    final repository = await ref.watch(
+      guardianAnnotationRepositoryProvider.future,
+    );
     final annotations = repository.getActive();
     return GuardianCheckResult(
       state: GuardianCheckState.idle,
@@ -75,40 +76,42 @@ class GuardianNotifier extends AsyncNotifier<GuardianCheckResult> {
   ///
   /// Persists new annotations to the repository and updates state.
   Future<void> setResults(List<GuardianAnnotation> annotations) async {
-    final repository =
-        await ref.read(guardianAnnotationRepositoryProvider.future);
+    final repository = await ref.read(
+      guardianAnnotationRepositoryProvider.future,
+    );
     for (final annotation in annotations) {
       await repository.add(annotation);
     }
     final current = state.asData?.value ?? const GuardianCheckResult();
-    state = AsyncData(current.copyWith(
-      state: GuardianCheckState.results,
-      annotations: annotations,
-    ));
+    state = AsyncData(
+      current.copyWith(
+        state: GuardianCheckState.results,
+        annotations: annotations,
+      ),
+    );
   }
 
   /// Sets an error state with a message.
   void setError(String message) {
     final current = state.asData?.value ?? const GuardianCheckResult();
-    state = AsyncData(current.copyWith(
-      state: GuardianCheckState.error,
-      errorMessage: message,
-    ));
+    state = AsyncData(
+      current.copyWith(state: GuardianCheckState.error, errorMessage: message),
+    );
   }
 
   /// Resets to idle state.
   void resetToIdle() {
     final current = state.asData?.value ?? const GuardianCheckResult();
-    state = AsyncData(current.copyWith(
-      state: GuardianCheckState.idle,
-      errorMessage: null,
-    ));
+    state = AsyncData(
+      current.copyWith(state: GuardianCheckState.idle, errorMessage: null),
+    );
   }
 
   /// Dismisses an annotation by ID.
   Future<void> dismiss(String id) async {
-    final repository =
-        await ref.read(guardianAnnotationRepositoryProvider.future);
+    final repository = await ref.read(
+      guardianAnnotationRepositoryProvider.future,
+    );
     await repository.dismiss(id);
     ref.invalidateSelf();
   }
@@ -162,8 +165,9 @@ class GuardianNotifier extends AsyncNotifier<GuardianCheckResult> {
 
       // Character consistency check
       try {
-        final characterService =
-            await ref.read(guardianCheckServiceProvider.future);
+        final characterService = await ref.read(
+          guardianCheckServiceProvider.future,
+        );
         final charResults = await characterService.checkCharacterConsistency(
           text: text,
           nodeId: nodeId,
@@ -177,7 +181,9 @@ class GuardianNotifier extends AsyncNotifier<GuardianCheckResult> {
 
       // Logic consistency check
       try {
-        final logicService = await ref.read(logicGuardianServiceProvider.future);
+        final logicService = await ref.read(
+          logicGuardianServiceProvider.future,
+        );
         final context = _buildContext(
           checkedText: text,
           currentChapter: currentChapter,
@@ -208,7 +214,8 @@ class GuardianNotifier extends AsyncNotifier<GuardianCheckResult> {
     final builder = ref.read(guardianContextBuilderProvider);
 
     // Gather characters from notifier
-    final characters = ref
+    final characters =
+        ref
             .read(characterCardNotifierProvider)
             .asData
             ?.value
@@ -216,7 +223,8 @@ class GuardianNotifier extends AsyncNotifier<GuardianCheckResult> {
         [];
 
     // Gather world settings from notifier
-    final worldSettings = ref
+    final worldSettings =
+        ref
             .read(worldSettingNotifierProvider)
             .asData
             ?.value
@@ -225,11 +233,11 @@ class GuardianNotifier extends AsyncNotifier<GuardianCheckResult> {
 
     // Gather plot nodes
     final plotNodes =
-        ref.read(plotNodeNotifierProvider).asData?.value.cast<PlotNode>() ??
-            [];
+        ref.read(plotNodeNotifierProvider).asData?.value.cast<PlotNode>() ?? [];
 
     // Gather foreshadowing entries
-    final foreshadowing = ref
+    final foreshadowing =
+        ref
             .read(foreshadowingNotifierProvider)
             .asData
             ?.value

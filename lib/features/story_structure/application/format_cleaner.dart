@@ -81,14 +81,16 @@ class FormatCleaner {
     }
 
     if (result != text) {
-      changes.add(FormatChange(
-        category: FormatChangeCategory.whitespace,
-        original: text,
-        replacement: result,
-        startOffset: 0,
-        endOffset: text.length,
-        explanation: '统一换行符为 LF',
-      ));
+      changes.add(
+        FormatChange(
+          category: FormatChangeCategory.whitespace,
+          original: text,
+          replacement: result,
+          startOffset: 0,
+          endOffset: text.length,
+          explanation: '统一换行符为 LF',
+        ),
+      );
     }
 
     return result;
@@ -106,14 +108,16 @@ class FormatCleaner {
       final trimmed = line.trimRight();
       if (trimmed.length != line.length) {
         modified = true;
-        changes.add(FormatChange(
-          category: FormatChangeCategory.whitespace,
-          original: line.substring(trimmed.length),
-          replacement: '',
-          startOffset: offset + trimmed.length,
-          endOffset: offset + line.length,
-          explanation: '去除行末空白',
-        ));
+        changes.add(
+          FormatChange(
+            category: FormatChangeCategory.whitespace,
+            original: line.substring(trimmed.length),
+            replacement: '',
+            startOffset: offset + trimmed.length,
+            endOffset: offset + line.length,
+            explanation: '去除行末空白',
+          ),
+        );
       }
       newLines.add(trimmed);
       offset += line.length + 1; // +1 for the \n
@@ -213,14 +217,16 @@ class FormatCleaner {
         }
 
         result.write(replacement);
-        changes.add(FormatChange(
-          category: category,
-          original: target,
-          replacement: replacement,
-          startOffset: i,
-          endOffset: i + 1,
-          explanation: explanation,
-        ));
+        changes.add(
+          FormatChange(
+            category: category,
+            original: target,
+            replacement: replacement,
+            startOffset: i,
+            endOffset: i + 1,
+            explanation: explanation,
+          ),
+        );
         modified = true;
       } else {
         result.write(char);
@@ -232,7 +238,11 @@ class FormatCleaner {
   }
 
   /// Determines if a punctuation mark at [index] should NOT be replaced.
-  bool _shouldSkipPunctuationReplacement(String text, int index, String target) {
+  bool _shouldSkipPunctuationReplacement(
+    String text,
+    int index,
+    String target,
+  ) {
     // URL context: preceded by protocol or query/fragment markers
     if (_isInUrl(text, index, target)) return true;
 
@@ -279,7 +289,9 @@ class FormatCleaner {
       final lastSpace = before.lastIndexOf(' ');
       final lastNewline = before.lastIndexOf('\n');
       final lastBreak = lastSpace > lastNewline ? lastSpace : lastNewline;
-      final sinceBreak = lastBreak >= 0 ? before.substring(lastBreak + 1) : before;
+      final sinceBreak = lastBreak >= 0
+          ? before.substring(lastBreak + 1)
+          : before;
       if (sinceBreak.contains(RegExp(r'https?://')) ||
           sinceBreak.contains(RegExp(r'www\.'))) {
         return true;
@@ -327,7 +339,11 @@ class FormatCleaner {
     if (target == '.') {
       final after = index + 1 < text.length ? text.substring(index + 1) : '';
       // Common file extensions
-      if (after.startsWith(RegExp(r'(txt|md|json|dart|yaml|xml|html|css|js|py|java|log|csv|doc|pdf|png|jpg|gif|svg)\b'))) {
+      if (after.startsWith(
+        RegExp(
+          r'(txt|md|json|dart|yaml|xml|html|css|js|py|java|log|csv|doc|pdf|png|jpg|gif|svg)\b',
+        ),
+      )) {
         return true;
       }
       // Windows path with backslash
@@ -374,14 +390,16 @@ class FormatCleaner {
         final headingMarkers = '${match.group(1)!} ';
         final content = match.group(2)!;
         newLines.add(content);
-        changes.add(FormatChange(
-          category: FormatChangeCategory.markdown,
-          original: headingMarkers,
-          replacement: '',
-          startOffset: offset,
-          endOffset: offset + headingMarkers.length,
-          explanation: '移除 Markdown 标题标记',
-        ));
+        changes.add(
+          FormatChange(
+            category: FormatChangeCategory.markdown,
+            original: headingMarkers,
+            replacement: '',
+            startOffset: offset,
+            endOffset: offset + headingMarkers.length,
+            explanation: '移除 Markdown 标题标记',
+          ),
+        );
         modified = true;
       } else {
         newLines.add(line);
@@ -407,14 +425,16 @@ class FormatCleaner {
         final bullet = '${match.group(1)!} ';
         final content = match.group(2)!;
         newLines.add(content);
-        changes.add(FormatChange(
-          category: FormatChangeCategory.markdown,
-          original: bullet,
-          replacement: '',
-          startOffset: offset,
-          endOffset: offset + bullet.length,
-          explanation: '移除 Markdown 列表标记',
-        ));
+        changes.add(
+          FormatChange(
+            category: FormatChangeCategory.markdown,
+            original: bullet,
+            replacement: '',
+            startOffset: offset,
+            endOffset: offset + bullet.length,
+            explanation: '移除 Markdown 列表标记',
+          ),
+        );
         modified = true;
       } else {
         newLines.add(line);
@@ -439,14 +459,16 @@ class FormatCleaner {
       final inner = match.group(1) ?? '';
       result.write(inner);
 
-      changes.add(FormatChange(
-        category: FormatChangeCategory.markdown,
-        original: match.group(0)!,
-        replacement: inner,
-        startOffset: match.start,
-        endOffset: match.end,
-        explanation: '移除 Markdown 代码围栏',
-      ));
+      changes.add(
+        FormatChange(
+          category: FormatChangeCategory.markdown,
+          original: match.group(0)!,
+          replacement: inner,
+          startOffset: match.start,
+          endOffset: match.end,
+          explanation: '移除 Markdown 代码围栏',
+        ),
+      );
 
       lastEnd = match.end;
       modified = true;
@@ -458,14 +480,16 @@ class FormatCleaner {
     }
 
     return text.replaceAllMapped('```', (match) {
-      changes.add(FormatChange(
-        category: FormatChangeCategory.markdown,
-        original: '```',
-        replacement: '',
-        startOffset: match.start,
-        endOffset: match.end,
-        explanation: '移除 Markdown 代码围栏',
-      ));
+      changes.add(
+        FormatChange(
+          category: FormatChangeCategory.markdown,
+          original: '```',
+          replacement: '',
+          startOffset: match.start,
+          endOffset: match.end,
+          explanation: '移除 Markdown 代码围栏',
+        ),
+      );
       return '';
     });
   }
@@ -478,16 +502,40 @@ class FormatCleaner {
     var result = text;
 
     // Strip **bold** pairs
-    result = _stripPairedMarkers(result, '**', FormatChangeCategory.markdown, '移除加粗标记', changes);
+    result = _stripPairedMarkers(
+      result,
+      '**',
+      FormatChangeCategory.markdown,
+      '移除加粗标记',
+      changes,
+    );
 
     // Strip __bold__ pairs
-    result = _stripPairedMarkers(result, '__', FormatChangeCategory.markdown, '移除加粗标记', changes);
+    result = _stripPairedMarkers(
+      result,
+      '__',
+      FormatChangeCategory.markdown,
+      '移除加粗标记',
+      changes,
+    );
 
     // Strip *italic* pairs (after bold so we don't match half of **)
-    result = _stripPairedMarkers(result, '*', FormatChangeCategory.markdown, '移除斜体标记', changes);
+    result = _stripPairedMarkers(
+      result,
+      '*',
+      FormatChangeCategory.markdown,
+      '移除斜体标记',
+      changes,
+    );
 
     // Strip _italic_ pairs
-    result = _stripPairedMarkers(result, '_', FormatChangeCategory.markdown, '移除斜体标记', changes);
+    result = _stripPairedMarkers(
+      result,
+      '_',
+      FormatChangeCategory.markdown,
+      '移除斜体标记',
+      changes,
+    );
 
     return result;
   }
@@ -521,24 +569,28 @@ class FormatCleaner {
       result.write(inner);
 
       // Record opening marker removal
-      changes.add(FormatChange(
-        category: category,
-        original: marker,
-        replacement: '',
-        startOffset: match.start,
-        endOffset: match.start + marker.length,
-        explanation: explanation,
-      ));
+      changes.add(
+        FormatChange(
+          category: category,
+          original: marker,
+          replacement: '',
+          startOffset: match.start,
+          endOffset: match.start + marker.length,
+          explanation: explanation,
+        ),
+      );
 
       // Record closing marker removal
-      changes.add(FormatChange(
-        category: category,
-        original: marker,
-        replacement: '',
-        startOffset: match.end - marker.length,
-        endOffset: match.end,
-        explanation: explanation,
-      ));
+      changes.add(
+        FormatChange(
+          category: category,
+          original: marker,
+          replacement: '',
+          startOffset: match.end - marker.length,
+          endOffset: match.end,
+          explanation: explanation,
+        ),
+      );
 
       lastEnd = match.end;
       modified = true;
@@ -573,14 +625,16 @@ class FormatCleaner {
     for (final match in tagPattern.allMatches(text)) {
       result.write(text.substring(lastEnd, match.start));
 
-      changes.add(FormatChange(
-        category: FormatChangeCategory.markdown,
-        original: match.group(0)!,
-        replacement: '',
-        startOffset: match.start,
-        endOffset: match.end,
-        explanation: '移除 HTML 标签',
-      ));
+      changes.add(
+        FormatChange(
+          category: FormatChangeCategory.markdown,
+          original: match.group(0)!,
+          replacement: '',
+          startOffset: match.start,
+          endOffset: match.end,
+          explanation: '移除 HTML 标签',
+        ),
+      );
 
       lastEnd = match.end;
       modified = true;
@@ -609,14 +663,16 @@ class FormatCleaner {
     final result = text.replaceAll(pattern, '\n\n');
 
     if (result != text) {
-      changes.add(FormatChange(
-        category: FormatChangeCategory.paragraph,
-        original: text,
-        replacement: result,
-        startOffset: 0,
-        endOffset: text.length,
-        explanation: '合并多余空行',
-      ));
+      changes.add(
+        FormatChange(
+          category: FormatChangeCategory.paragraph,
+          original: text,
+          replacement: result,
+          startOffset: 0,
+          endOffset: text.length,
+          explanation: '合并多余空行',
+        ),
+      );
     }
 
     return result;

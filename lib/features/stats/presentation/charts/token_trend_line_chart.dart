@@ -17,7 +17,8 @@ class TokenTrendLineChart extends StatelessWidget {
     }
 
     // Sort records by timestamp
-    final sortedRecords = records.toList()..sort((a, b) => a.timestamp.compareTo(b.timestamp));
+    final sortedRecords = records.toList()
+      ..sort((a, b) => a.timestamp.compareTo(b.timestamp));
 
     // Calculate cumulative totals
     var cumulative = 0;
@@ -28,7 +29,10 @@ class TokenTrendLineChart extends StatelessWidget {
     }
 
     final colorScheme = Theme.of(context).colorScheme;
-    final maxY = spots.fold<double>(0, (max, spot) => spot.y > max ? spot.y : max);
+    final maxY = spots.fold<double>(
+      0,
+      (max, spot) => spot.y > max ? spot.y : max,
+    );
 
     return SizedBox(
       height: 220,
@@ -39,9 +43,15 @@ class TokenTrendLineChart extends StatelessWidget {
           gridData: const FlGridData(show: false),
           borderData: FlBorderData(show: false),
           titlesData: FlTitlesData(
-            topTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
-            rightTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
-            leftTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+            topTitles: const AxisTitles(
+              sideTitles: SideTitles(showTitles: false),
+            ),
+            rightTitles: const AxisTitles(
+              sideTitles: SideTitles(showTitles: false),
+            ),
+            leftTitles: const AxisTitles(
+              sideTitles: SideTitles(showTitles: false),
+            ),
             bottomTitles: AxisTitles(
               sideTitles: SideTitles(
                 showTitles: true,

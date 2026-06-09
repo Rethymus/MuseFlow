@@ -15,10 +15,7 @@ class JourneyTestContainer {
   final ProviderContainer container;
   final Directory tempDir;
 
-  const JourneyTestContainer({
-    required this.container,
-    required this.tempDir,
-  });
+  const JourneyTestContainer({required this.container, required this.tempDir});
 }
 
 final _ownedTempDirs = Expando<Directory>('journeyTestTempDir');
@@ -84,7 +81,9 @@ Future<JourneyTestContainer> createJourneyTestContainer({
     overrides: [
       openaiAdapterProvider.overrideWithValue(aiAdapter ?? OpenAIAdapter()),
       worldTemplateRepositoryProvider.overrideWithValue(
-        WorldTemplateRepository(assetLoader: (_) => File(_templateAssetPath).readAsString()),
+        WorldTemplateRepository(
+          assetLoader: (_) => File(_templateAssetPath).readAsString(),
+        ),
       ),
       activeProviderProvider.overrideWithValue(glmProvider),
       activeApiKeyProvider.overrideWithValue(apiKey),

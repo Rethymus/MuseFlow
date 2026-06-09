@@ -28,18 +28,12 @@ void main() {
     });
 
     test('should default chapters to empty list', () {
-      const bundle = ExportBundle(
-        schemaVersion: '1.0',
-        manuscriptText: 'text',
-      );
+      const bundle = ExportBundle(schemaVersion: '1.0', manuscriptText: 'text');
       expect(bundle.chapters, isEmpty);
     });
 
     test('should be backward compatible with JSON without chapters key', () {
-      final json = {
-        'schemaVersion': '1.0',
-        'manuscriptText': 'legacy text',
-      };
+      final json = {'schemaVersion': '1.0', 'manuscriptText': 'legacy text'};
       final restored = ExportBundle.fromJson(json);
       expect(restored.chapters, isEmpty);
       expect(restored.manuscriptText, 'legacy text');
@@ -74,41 +68,49 @@ void main() {
   });
 
   group('Chapter-aware ExportService', () {
-    final service = ExportService(
-      fileWriter: (_, _) async {},
+    final service = ExportService(fileWriter: (_, _) async {});
+
+    test(
+      'should produce chapter headers in Markdown when chapters non-empty',
+      () {
+        final bundle = ExportBundle(
+          schemaVersion: '1.0',
+          manuscriptText: 'flat text',
+          chapters: [
+            const ChapterExport(
+              title: '世界观铺垫',
+              sortOrder: 1,
+              content: '世界设定内容',
+            ),
+            const ChapterExport(title: '角色登场', sortOrder: 0, content: '角色介绍内容'),
+          ],
+        );
+
+        final md = service.buildMarkdown(bundle);
+
+        // Should be sorted by sortOrder
+        expect(md, contains('## 角色登场'));
+        expect(md, contains('角色介绍内容'));
+        expect(md, contains('## 世界观铺垫'));
+        expect(md, contains('世界设定内容'));
+
+        // Order: sortOrder 0 comes first
+        expect(md.indexOf('角色登场'), lessThan(md.indexOf('世界观铺垫')));
+      },
     );
 
-    test('should produce chapter headers in Markdown when chapters non-empty', () {
-      final bundle = ExportBundle(
-        schemaVersion: '1.0',
-        manuscriptText: 'flat text',
-        chapters: [
-          const ChapterExport(title: '世界观铺垫', sortOrder: 1, content: '世界设定内容'),
-          const ChapterExport(title: '角色登场', sortOrder: 0, content: '角色介绍内容'),
-        ],
-      );
+    test(
+      'should fall back to manuscriptText when chapters empty for Markdown',
+      () {
+        final bundle = ExportBundle(
+          schemaVersion: '1.0',
+          manuscriptText: '这是一段纯文本稿件。',
+        );
 
-      final md = service.buildMarkdown(bundle);
-
-      // Should be sorted by sortOrder
-      expect(md, contains('## 角色登场'));
-      expect(md, contains('角色介绍内容'));
-      expect(md, contains('## 世界观铺垫'));
-      expect(md, contains('世界设定内容'));
-
-      // Order: sortOrder 0 comes first
-      expect(md.indexOf('角色登场'), lessThan(md.indexOf('世界观铺垫')));
-    });
-
-    test('should fall back to manuscriptText when chapters empty for Markdown', () {
-      final bundle = ExportBundle(
-        schemaVersion: '1.0',
-        manuscriptText: '这是一段纯文本稿件。',
-      );
-
-      final md = service.buildMarkdown(bundle);
-      expect(md, '这是一段纯文本稿件。');
-    });
+        final md = service.buildMarkdown(bundle);
+        expect(md, '这是一段纯文本稿件。');
+      },
+    );
 
     test('should produce chapter-aware TXT with plain separators', () {
       final bundle = ExportBundle(

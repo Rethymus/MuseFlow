@@ -127,15 +127,15 @@ class GuardianAnnotation {
       severity: severity ?? this.severity,
       message: message ?? this.message,
       reason: reason ?? this.reason,
-      suggestedFix:
-          clearSuggestedFix ? null : (suggestedFix ?? this.suggestedFix),
+      suggestedFix: clearSuggestedFix
+          ? null
+          : (suggestedFix ?? this.suggestedFix),
       nodeId: clearNodeId ? null : (nodeId ?? this.nodeId),
       startOffset: clearStartOffset ? null : (startOffset ?? this.startOffset),
       endOffset: clearEndOffset ? null : (endOffset ?? this.endOffset),
       sourceText: clearSourceText ? null : (sourceText ?? this.sourceText),
       createdAt: createdAt ?? this.createdAt,
-      dismissedAt:
-          clearDismissedAt ? null : (dismissedAt ?? this.dismissedAt),
+      dismissedAt: clearDismissedAt ? null : (dismissedAt ?? this.dismissedAt),
       characterIds: characterIds ?? this.characterIds,
       worldSettingIds: worldSettingIds ?? this.worldSettingIds,
       skillIds: skillIds ?? this.skillIds,
@@ -168,14 +168,14 @@ class GuardianAnnotation {
           (json['characterIds'] as List<dynamic>?)?.cast<String>() ?? const [],
       worldSettingIds:
           (json['worldSettingIds'] as List<dynamic>?)?.cast<String>() ??
-              const [],
+          const [],
       skillIds:
           (json['skillIds'] as List<dynamic>?)?.cast<String>() ?? const [],
       plotNodeIds:
           (json['plotNodeIds'] as List<dynamic>?)?.cast<String>() ?? const [],
       foreshadowingIds:
           (json['foreshadowingIds'] as List<dynamic>?)?.cast<String>() ??
-              const [],
+          const [],
     );
   }
 
@@ -226,24 +226,24 @@ class GuardianAnnotation {
 
   @override
   int get hashCode => Object.hash(
-        id,
-        kind,
-        severity,
-        message,
-        reason,
-        suggestedFix,
-        nodeId,
-        startOffset,
-        endOffset,
-        sourceText,
-        createdAt,
-        dismissedAt,
-        Object.hashAll(characterIds),
-        Object.hashAll(worldSettingIds),
-        Object.hashAll(skillIds),
-        Object.hashAll(plotNodeIds),
-        Object.hashAll(foreshadowingIds),
-      );
+    id,
+    kind,
+    severity,
+    message,
+    reason,
+    suggestedFix,
+    nodeId,
+    startOffset,
+    endOffset,
+    sourceText,
+    createdAt,
+    dismissedAt,
+    Object.hashAll(characterIds),
+    Object.hashAll(worldSettingIds),
+    Object.hashAll(skillIds),
+    Object.hashAll(plotNodeIds),
+    Object.hashAll(foreshadowingIds),
+  );
 
   @override
   String toString() =>

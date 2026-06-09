@@ -34,21 +34,24 @@ class ConsistencyDriftChart extends StatelessWidget {
             show: true,
             drawVerticalLine: false,
             horizontalInterval: 0.25,
-            getDrawingHorizontalLine: (value) => FlLine(
-              color: colorScheme.outlineVariant,
-              strokeWidth: 1,
-            ),
+            getDrawingHorizontalLine: (value) =>
+                FlLine(color: colorScheme.outlineVariant, strokeWidth: 1),
           ),
           borderData: FlBorderData(show: false),
           titlesData: FlTitlesData(
-            topTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
-            rightTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+            topTitles: const AxisTitles(
+              sideTitles: SideTitles(showTitles: false),
+            ),
+            rightTitles: const AxisTitles(
+              sideTitles: SideTitles(showTitles: false),
+            ),
             leftTitles: AxisTitles(
               sideTitles: SideTitles(
                 showTitles: true,
                 interval: 0.25,
                 reservedSize: 44,
-                getTitlesWidget: (value, meta) => Text('${(value * 100).round()}%'),
+                getTitlesWidget: (value, meta) =>
+                    Text('${(value * 100).round()}%'),
               ),
             ),
             bottomTitles: AxisTitles(
@@ -58,7 +61,9 @@ class ConsistencyDriftChart extends StatelessWidget {
                 reservedSize: 32,
                 getTitlesWidget: (value, meta) {
                   final index = value.round();
-                  if (index < 0 || index > 9 || value != index) return const Text('');
+                  if (index < 0 || index > 9 || value != index) {
+                    return const Text('');
+                  }
                   final start = index * 10 + 1;
                   final end = start + 9;
                   return Padding(

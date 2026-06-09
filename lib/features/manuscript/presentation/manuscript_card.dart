@@ -57,8 +57,9 @@ class ManuscriptCard extends StatelessWidget {
                     // Title
                     Text(
                       manuscript.title,
-                      style: theme.textTheme.bodyMedium
-                          ?.copyWith(fontWeight: FontWeight.w400),
+                      style: theme.textTheme.bodyMedium?.copyWith(
+                        fontWeight: FontWeight.w400,
+                      ),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                     ),
@@ -150,9 +151,9 @@ class ManuscriptCard extends StatelessWidget {
 
   String _formatNumber(int value) {
     return value.toString().replaceAllMapped(
-          RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'),
-          (Match m) => '${m[1]},',
-        );
+      RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'),
+      (Match m) => '${m[1]},',
+    );
   }
 
   String _relativeTime(DateTime dateTime) {
@@ -200,14 +201,8 @@ class _StatusBadge extends StatelessWidget {
   (Color, Color) _statusColors(ColorScheme colorScheme) {
     return switch (status) {
       '构思中' => (colorScheme.surfaceContainerLow, colorScheme.onSurfaceVariant),
-      '写作中' => (
-          colorScheme.primaryContainer,
-          colorScheme.onPrimaryContainer,
-        ),
-      '已完成' => (
-          colorScheme.tertiaryContainer,
-          colorScheme.onTertiaryContainer,
-        ),
+      '写作中' => (colorScheme.primaryContainer, colorScheme.onPrimaryContainer),
+      '已完成' => (colorScheme.tertiaryContainer, colorScheme.onTertiaryContainer),
       _ => (colorScheme.surfaceContainerLow, colorScheme.onSurfaceVariant),
     };
   }

@@ -67,8 +67,7 @@ void main() {
       await tester.pumpAndSettle();
     }
 
-    testWidgets(
-        'should render warning tiles with skillName and description '
+    testWidgets('should render warning tiles with skillName and description '
         'when warnings are present', (tester) async {
       final warnings = [
         const DeviationWarning(
@@ -99,8 +98,7 @@ void main() {
       expect(find.textContaining('检测到 2 条设定偏离提醒'), findsOneWidget);
     });
 
-    testWidgets(
-        'should render suggestedFix when non-null', (tester) async {
+    testWidgets('should render suggestedFix when non-null', (tester) async {
       final warnings = [
         const DeviationWarning(
           severity: DeviationSeverity.clear,
@@ -117,8 +115,9 @@ void main() {
       expect(find.textContaining('将法术改为练气期级别'), findsOneWidget);
     });
 
-    testWidgets(
-        'should show error-colored icon for clear severity', (tester) async {
+    testWidgets('should show error-colored icon for clear severity', (
+      tester,
+    ) async {
       final warnings = [
         const DeviationWarning(
           severity: DeviationSeverity.clear,
@@ -142,13 +141,10 @@ void main() {
       expect(icon.color, isNotNull);
     });
 
-    testWidgets(
-        'should render SizedBox.shrink when warnings list is empty',
-        (tester) async {
-      await pumpWithResult(
-        tester,
-        const DeviationResult(warnings: []),
-      );
+    testWidgets('should render SizedBox.shrink when warnings list is empty', (
+      tester,
+    ) async {
+      await pumpWithResult(tester, const DeviationResult(warnings: []));
 
       // With no warnings, the widget returns SizedBox.shrink().
       // Verify no warning-related text is present.
@@ -157,8 +153,9 @@ void main() {
       expect(find.byType(ListTile), findsNothing);
     });
 
-    testWidgets(
-        'should call clearAll when 全部忽略 button is tapped', (tester) async {
+    testWidgets('should call clearAll when 全部忽略 button is tapped', (
+      tester,
+    ) async {
       final warnings = [
         const DeviationWarning(
           severity: DeviationSeverity.medium,

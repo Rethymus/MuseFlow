@@ -135,69 +135,78 @@ void main() {
       expect(m.worldSettingId, isNull);
     });
 
-    test('fromJson throws domain FormatException for malformed required fields', () {
-      final valid = <String, dynamic>{
-        'id': 'id-x',
-        'title': 'Title X',
-        'genre': '都市',
-        'createdAt': '2026-01-01T00:00:00.000',
-        'updatedAt': '2026-01-02T00:00:00.000',
-      };
+    test(
+      'fromJson throws domain FormatException for malformed required fields',
+      () {
+        final valid = <String, dynamic>{
+          'id': 'id-x',
+          'title': 'Title X',
+          'genre': '都市',
+          'createdAt': '2026-01-01T00:00:00.000',
+          'updatedAt': '2026-01-02T00:00:00.000',
+        };
 
-      final malformedCases = <Map<String, dynamic>>[
-        {...valid, 'id': 42},
-        {...valid, 'title': null},
-        {...valid, 'genre': <String>[]},
-        {...valid, 'createdAt': 'not-a-date'},
-        {...valid, 'updatedAt': 123},
-      ];
+        final malformedCases = <Map<String, dynamic>>[
+          {...valid, 'id': 42},
+          {...valid, 'title': null},
+          {...valid, 'genre': <String>[]},
+          {...valid, 'createdAt': 'not-a-date'},
+          {...valid, 'updatedAt': 123},
+        ];
 
-      for (final json in malformedCases) {
-        expect(
-          () => Manuscript.fromJson(json),
-          throwsA(
-            isA<FormatException>().having(
-              (e) => e.message,
-              'message',
-              contains('Invalid Manuscript JSON'),
+        for (final json in malformedCases) {
+          expect(
+            () => Manuscript.fromJson(json),
+            throwsA(
+              isA<FormatException>().having(
+                (e) => e.message,
+                'message',
+                contains('Invalid Manuscript JSON'),
+              ),
             ),
-          ),
-        );
-      }
-    });
+          );
+        }
+      },
+    );
 
-    test('fromJson throws domain FormatException for malformed optional fields', () {
-      final valid = <String, dynamic>{
-        'id': 'id-x',
-        'title': 'Title X',
-        'genre': '都市',
-        'createdAt': '2026-01-01T00:00:00.000',
-        'updatedAt': '2026-01-02T00:00:00.000',
-      };
+    test(
+      'fromJson throws domain FormatException for malformed optional fields',
+      () {
+        final valid = <String, dynamic>{
+          'id': 'id-x',
+          'title': 'Title X',
+          'genre': '都市',
+          'createdAt': '2026-01-01T00:00:00.000',
+          'updatedAt': '2026-01-02T00:00:00.000',
+        };
 
-      final malformedCases = <Map<String, dynamic>>[
-        {...valid, 'description': 42},
-        {...valid, 'targetWordCount': '50000'},
-        {...valid, 'status': false},
-        {...valid, 'worldSettingId': 7},
-        {...valid, 'characterCardIds': 'card-1'},
-        {...valid, 'characterCardIds': ['card-1', 2]},
-        {...valid, 'deletedAt': 'not-a-date'},
-        {...valid, 'coverLetter': 9},
-      ];
+        final malformedCases = <Map<String, dynamic>>[
+          {...valid, 'description': 42},
+          {...valid, 'targetWordCount': '50000'},
+          {...valid, 'status': false},
+          {...valid, 'worldSettingId': 7},
+          {...valid, 'characterCardIds': 'card-1'},
+          {
+            ...valid,
+            'characterCardIds': ['card-1', 2],
+          },
+          {...valid, 'deletedAt': 'not-a-date'},
+          {...valid, 'coverLetter': 9},
+        ];
 
-      for (final json in malformedCases) {
-        expect(
-          () => Manuscript.fromJson(json),
-          throwsA(
-            isA<FormatException>().having(
-              (e) => e.message,
-              'message',
-              contains('Invalid Manuscript JSON'),
+        for (final json in malformedCases) {
+          expect(
+            () => Manuscript.fromJson(json),
+            throwsA(
+              isA<FormatException>().having(
+                (e) => e.message,
+                'message',
+                contains('Invalid Manuscript JSON'),
+              ),
             ),
-          ),
-        );
-      }
-    });
+          );
+        }
+      },
+    );
   });
 }

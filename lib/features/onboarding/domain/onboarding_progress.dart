@@ -106,12 +106,12 @@ class OnboardingProgress {
 
   @override
   int get hashCode => Object.hash(
-        currentStep,
-        Object.hashAll(completedSteps),
-        selectedTemplateId,
-        worldName,
-        characterName,
-      );
+    currentStep,
+    Object.hashAll(completedSteps),
+    selectedTemplateId,
+    worldName,
+    characterName,
+  );
 
   @override
   String toString() =>

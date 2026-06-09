@@ -88,9 +88,7 @@ void main() {
 
       expect(annotation.isDismissed, isFalse);
 
-      final dismissed = annotation.copyWith(
-        dismissedAt: DateTime(2026, 1, 2),
-      );
+      final dismissed = annotation.copyWith(dismissedAt: DateTime(2026, 1, 2));
 
       expect(dismissed.isDismissed, isTrue);
       // Original is unchanged (immutability)

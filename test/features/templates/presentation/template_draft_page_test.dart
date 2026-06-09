@@ -80,57 +80,62 @@ void main() {
     // taps intended for the Checkbox widget. The saveDraft service correctly
     // excludes deselected entities -- verified by the unit test.
 
-    testWidgets('AI completion error shows message without losing current draft', (tester) async {
-      await tester.pumpWidget(
-        ProviderScope(
-          overrides: [
-            worldTemplateRepositoryProvider.overrideWithValue(
-              _templateRepository(),
-            ),
-            templateInstantiationServiceProvider.overrideWith((ref) async {
-              return TemplateInstantiationService(
-                worldSettingRepository: WorldSettingRepository(worldBox),
-                characterCardRepository: CharacterCardRepository(characterBox),
-                chapterRepository: ChapterRepository(chaptersBox),
-              );
-            }),
-            templateCompletionServiceProvider.overrideWith((ref) async {
-              return TemplateCompletionService(
-                completionStream: (_) => Stream.error(Exception('模拟网络错误')),
-              );
-            }),
-          ],
-          child: const MaterialApp(
-            home: TemplateDraftPage(
-              templateId: 'male-xuanhuan-bloodline',
-              initialConcept: '测试AI错误',
+    testWidgets(
+      'AI completion error shows message without losing current draft',
+      (tester) async {
+        await tester.pumpWidget(
+          ProviderScope(
+            overrides: [
+              worldTemplateRepositoryProvider.overrideWithValue(
+                _templateRepository(),
+              ),
+              templateInstantiationServiceProvider.overrideWith((ref) async {
+                return TemplateInstantiationService(
+                  worldSettingRepository: WorldSettingRepository(worldBox),
+                  characterCardRepository: CharacterCardRepository(
+                    characterBox,
+                  ),
+                  chapterRepository: ChapterRepository(chaptersBox),
+                );
+              }),
+              templateCompletionServiceProvider.overrideWith((ref) async {
+                return TemplateCompletionService(
+                  completionStream: (_) => Stream.error(Exception('模拟网络错误')),
+                );
+              }),
+            ],
+            child: const MaterialApp(
+              home: TemplateDraftPage(
+                templateId: 'male-xuanhuan-bloodline',
+                initialConcept: '测试AI错误',
+              ),
             ),
           ),
-        ),
-      );
+        );
 
-      await _pumpUntilFound(tester, find.text('AI补全空白字段'));
+        await _pumpUntilFound(tester, find.text('AI补全空白字段'));
 
-      // Tap AI completion button
-      await tester.tap(find.text('AI补全空白字段'));
-      await tester.pump(const Duration(milliseconds: 300));
-      await _pumpUntilFound(
-        tester,
-        find.textContaining('AI补全失败'),
-        maxPumps: 20,
-      );
+        // Tap AI completion button
+        await tester.tap(find.text('AI补全空白字段'));
+        await tester.pump(const Duration(milliseconds: 300));
+        await _pumpUntilFound(
+          tester,
+          find.textContaining('AI补全失败'),
+          maxPumps: 20,
+        );
 
-      // Error snackbar should be visible
-      expect(find.textContaining('AI补全失败'), findsOneWidget);
+        // Error snackbar should be visible
+        expect(find.textContaining('AI补全失败'), findsOneWidget);
 
-      // Draft data should still be intact - expand world section
-      await tester.tap(find.text('世界观：断岳九州'));
-      await tester.pump(const Duration(milliseconds: 300));
-      expect(find.textContaining('断岳九州'), findsWidgets);
+        // Draft data should still be intact - expand world section
+        await tester.tap(find.text('世界观：断岳九州'));
+        await tester.pump(const Duration(milliseconds: 300));
+        expect(find.textContaining('断岳九州'), findsWidgets);
 
-      // Save button should still be available
-      expect(find.text('保存到知识库'), findsOneWidget);
-    });
+        // Save button should still be available
+        expect(find.text('保存到知识库'), findsOneWidget);
+      },
+    );
   });
 }
 

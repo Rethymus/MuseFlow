@@ -4,21 +4,24 @@ import 'package:museflow/features/story_structure/domain/foreshadowing_entry.dar
 void main() {
   group('ForeshadowingMode', () {
     test('should have simple and detailed values', () {
-      expect(ForeshadowingMode.values,
-          containsAll([ForeshadowingMode.simple, ForeshadowingMode.detailed]));
+      expect(
+        ForeshadowingMode.values,
+        containsAll([ForeshadowingMode.simple, ForeshadowingMode.detailed]),
+      );
     });
   });
 
   group('ForeshadowingStatus', () {
     test('should have planted, developing, resolved, abandoned values', () {
       expect(
-          ForeshadowingStatus.values,
-          containsAll([
-            ForeshadowingStatus.planted,
-            ForeshadowingStatus.developing,
-            ForeshadowingStatus.resolved,
-            ForeshadowingStatus.abandoned,
-          ]));
+        ForeshadowingStatus.values,
+        containsAll([
+          ForeshadowingStatus.planted,
+          ForeshadowingStatus.developing,
+          ForeshadowingStatus.resolved,
+          ForeshadowingStatus.abandoned,
+        ]),
+      );
     });
   });
 
@@ -99,48 +102,52 @@ void main() {
 
     test('isOpen should be true for planted and developing status', () {
       expect(
-          ForeshadowingEntry(
-            id: 'a',
-            title: 't',
-            mode: ForeshadowingMode.simple,
-            status: ForeshadowingStatus.planted,
-            plantedChapter: 1,
-            createdAt: DateTime(2026),
-          ).isOpen,
-          isTrue);
+        ForeshadowingEntry(
+          id: 'a',
+          title: 't',
+          mode: ForeshadowingMode.simple,
+          status: ForeshadowingStatus.planted,
+          plantedChapter: 1,
+          createdAt: DateTime(2026),
+        ).isOpen,
+        isTrue,
+      );
       expect(
-          ForeshadowingEntry(
-            id: 'a',
-            title: 't',
-            mode: ForeshadowingMode.simple,
-            status: ForeshadowingStatus.developing,
-            plantedChapter: 1,
-            createdAt: DateTime(2026),
-          ).isOpen,
-          isTrue);
+        ForeshadowingEntry(
+          id: 'a',
+          title: 't',
+          mode: ForeshadowingMode.simple,
+          status: ForeshadowingStatus.developing,
+          plantedChapter: 1,
+          createdAt: DateTime(2026),
+        ).isOpen,
+        isTrue,
+      );
     });
 
     test('isOpen should be false for resolved and abandoned status', () {
       expect(
-          ForeshadowingEntry(
-            id: 'a',
-            title: 't',
-            mode: ForeshadowingMode.simple,
-            status: ForeshadowingStatus.resolved,
-            plantedChapter: 1,
-            createdAt: DateTime(2026),
-          ).isOpen,
-          isFalse);
+        ForeshadowingEntry(
+          id: 'a',
+          title: 't',
+          mode: ForeshadowingMode.simple,
+          status: ForeshadowingStatus.resolved,
+          plantedChapter: 1,
+          createdAt: DateTime(2026),
+        ).isOpen,
+        isFalse,
+      );
       expect(
-          ForeshadowingEntry(
-            id: 'a',
-            title: 't',
-            mode: ForeshadowingMode.simple,
-            status: ForeshadowingStatus.abandoned,
-            plantedChapter: 1,
-            createdAt: DateTime(2026),
-          ).isOpen,
-          isFalse);
+        ForeshadowingEntry(
+          id: 'a',
+          title: 't',
+          mode: ForeshadowingMode.simple,
+          status: ForeshadowingStatus.abandoned,
+          plantedChapter: 1,
+          createdAt: DateTime(2026),
+        ).isOpen,
+        isFalse,
+      );
     });
 
     test('isResolved should be true only for resolved status', () {
@@ -153,7 +160,10 @@ void main() {
           plantedChapter: 1,
           createdAt: DateTime(2026),
         );
-        expect(entry.isResolved, equals(status == ForeshadowingStatus.resolved));
+        expect(
+          entry.isResolved,
+          equals(status == ForeshadowingStatus.resolved),
+        );
       }
     });
 
@@ -197,7 +207,10 @@ void main() {
     });
 
     test('isOverdue should be false for resolved or abandoned entries', () {
-      for (final status in [ForeshadowingStatus.resolved, ForeshadowingStatus.abandoned]) {
+      for (final status in [
+        ForeshadowingStatus.resolved,
+        ForeshadowingStatus.abandoned,
+      ]) {
         final entry = ForeshadowingEntry(
           id: 'a',
           title: 't',
@@ -206,7 +219,10 @@ void main() {
           plantedChapter: 1,
           createdAt: DateTime(2026),
         );
-        expect(entry.isOverdue(currentChapter: 999, defaultThreshold: 1), isFalse);
+        expect(
+          entry.isOverdue(currentChapter: 999, defaultThreshold: 1),
+          isFalse,
+        );
       }
     });
 

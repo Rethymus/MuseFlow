@@ -51,10 +51,7 @@ class FragmentService {
       (f) => f.id == id,
       orElse: () => throw StateError('Fragment not found: $id'),
     );
-    final updated = fragment.copyWith(
-      tags: tags,
-      updatedAt: DateTime.now(),
-    );
+    final updated = fragment.copyWith(tags: tags, updatedAt: DateTime.now());
     await _repository.updateFragment(updated);
   }
 

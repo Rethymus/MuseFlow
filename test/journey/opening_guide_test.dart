@@ -10,7 +10,8 @@ import 'helpers/journey_container.dart';
 
 void main() {
   final apiKey = Platform.environment['GLM_API_KEY'];
-  final baseUrl = Platform.environment['GLM_BASE_URL'] ??
+  final baseUrl =
+      Platform.environment['GLM_BASE_URL'] ??
       'https://open.bigmodel.cn/api/paas/v4';
   final model = Platform.environment['GLM_MODEL'] ?? 'glm-4-flash';
 
@@ -76,12 +77,18 @@ void main() {
         );
 
         expect(variants, isA<List>());
-        expect(variants.length, equals(3),
-            reason: 'Should generate exactly 3 opening variants');
+        expect(
+          variants.length,
+          equals(3),
+          reason: 'Should generate exactly 3 opening variants',
+        );
 
         for (final variant in variants) {
-          expect(variant.text, isNotEmpty,
-              reason: 'Each variant text should be non-empty');
+          expect(
+            variant.text,
+            isNotEmpty,
+            reason: 'Each variant text should be non-empty',
+          );
         }
 
         // Print variant previews for manual review
@@ -91,9 +98,7 @@ void main() {
             min(80, variant.text.length),
           );
           // ignore: avoid_print
-          print(
-            '[OPENING] Style=${variant.style.displayLabel}: $preview',
-          );
+          print('[OPENING] Style=${variant.style.displayLabel}: $preview');
         }
       },
       skip: apiKey == null ? 'GLM_API_KEY not set' : null,
@@ -139,17 +144,22 @@ void main() {
 
         // Assert the 3 variants are NOT all identical in text content
         final texts = variants.map((v) => v.text).toList();
-        final allIdentical =
-            texts[0] == texts[1] && texts[1] == texts[2];
-        expect(allIdentical, isFalse,
-            reason:
-                'The 3 opening variants should not all be identical (style differentiation)');
+        final allIdentical = texts[0] == texts[1] && texts[1] == texts[2];
+        expect(
+          allIdentical,
+          isFalse,
+          reason:
+              'The 3 opening variants should not all be identical (style differentiation)',
+        );
 
         // Also check styles differ (scene, character, suspense)
         final styleValues = styles.map((s) => s.value).toSet();
-        expect(styleValues.length, greaterThanOrEqualTo(2),
-            reason:
-                'At least 2 distinct styles should be present among 3 variants');
+        expect(
+          styleValues.length,
+          greaterThanOrEqualTo(2),
+          reason:
+              'At least 2 distinct styles should be present among 3 variants',
+        );
       },
       skip: apiKey == null ? 'GLM_API_KEY not set' : null,
       timeout: const Timeout(Duration(seconds: 120)),

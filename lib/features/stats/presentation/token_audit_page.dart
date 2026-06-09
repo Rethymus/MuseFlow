@@ -14,7 +14,7 @@ class TokenAuditPage extends ConsumerWidget {
 
   /// Factory constructor for testing with a snapshot
   const TokenAuditPage.withSnapshot(TokenAuditSnapshot snapshot, {super.key})
-      : debugSnapshot = snapshot;
+    : debugSnapshot = snapshot;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -28,9 +28,7 @@ class TokenAuditPage extends ConsumerWidget {
     final snapshotAsync = ref.watch(tokenAuditNotifierProvider);
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Token 消耗总览'),
-      ),
+      appBar: AppBar(title: const Text('Token 消耗总览')),
       body: snapshotAsync.when(
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (error, _) => Center(
@@ -67,10 +65,7 @@ class _TokenAuditContent extends StatelessWidget {
       children: [
         Text('Token 消耗总览', style: theme.textTheme.headlineMedium),
         const SizedBox(height: 8),
-        Text(
-          '追踪每次 AI 调用的 Token 用量与成本分布。',
-          style: theme.textTheme.bodyMedium,
-        ),
+        Text('追踪每次 AI 调用的 Token 用量与成本分布。', style: theme.textTheme.bodyMedium),
         const SizedBox(height: 24),
         if (snapshot.totalCalls == 0)
           const Card(

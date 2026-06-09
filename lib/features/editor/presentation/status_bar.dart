@@ -17,11 +17,7 @@ import 'package:museflow/core/presentation/providers.dart';
 /// manuscript progress. When there are pending AI diffs, shows the count.
 /// Hidden when neither condition is met.
 class StatusBar extends ConsumerWidget {
-  const StatusBar({
-    super.key,
-    this.currentWordCount,
-    this.targetWordCount,
-  });
+  const StatusBar({super.key, this.currentWordCount, this.targetWordCount});
 
   /// Total word count across all chapters in the current manuscript.
   /// When null, manuscript progress is not displayed.
@@ -35,8 +31,7 @@ class StatusBar extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final aiState = ref.watch(editorAINotifierProvider);
     final diffResult = aiState.diffResult;
-    final hasPendingDiffs =
-        diffResult != null && !diffResult.allResolved;
+    final hasPendingDiffs = diffResult != null && !diffResult.allResolved;
     final hasManuscriptContext =
         currentWordCount != null && targetWordCount != null;
 

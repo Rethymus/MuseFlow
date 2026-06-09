@@ -189,7 +189,9 @@ class _EditorPageState extends ConsumerState<EditorPage> {
                           autofocus: true,
                           stylesheet: _buildThemedStylesheet(context),
                           selectionStyle: SelectionStyles(
-                            selectionColor: colorScheme.primary.withValues(alpha: 0.3),
+                            selectionColor: colorScheme.primary.withValues(
+                              alpha: 0.3,
+                            ),
                           ),
                           selectionLayerLinks: _selectionLinks,
                           documentOverlayBuilders: [

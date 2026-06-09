@@ -148,7 +148,11 @@ void main() {
           final json = record.toJson();
           final restored = TokenAuditRecord.fromJson(json);
 
-          expect(restored.operationType, type, reason: 'Failed for ${type.name}');
+          expect(
+            restored.operationType,
+            type,
+            reason: 'Failed for ${type.name}',
+          );
         }
       });
 
@@ -162,7 +166,10 @@ void main() {
           'timestamp': DateTime.now().toIso8601String(),
         };
 
-        expect(() => TokenAuditRecord.fromJson(json), throwsA(isA<TypeError>()));
+        expect(
+          () => TokenAuditRecord.fromJson(json),
+          throwsA(isA<TypeError>()),
+        );
       });
 
       test('should throw on missing required field: inputTokens', () {
@@ -175,7 +182,10 @@ void main() {
           'timestamp': DateTime.now().toIso8601String(),
         };
 
-        expect(() => TokenAuditRecord.fromJson(json), throwsA(isA<TypeError>()));
+        expect(
+          () => TokenAuditRecord.fromJson(json),
+          throwsA(isA<TypeError>()),
+        );
       });
 
       test('should throw on missing required field: outputTokens', () {
@@ -188,7 +198,10 @@ void main() {
           'timestamp': DateTime.now().toIso8601String(),
         };
 
-        expect(() => TokenAuditRecord.fromJson(json), throwsA(isA<TypeError>()));
+        expect(
+          () => TokenAuditRecord.fromJson(json),
+          throwsA(isA<TypeError>()),
+        );
       });
 
       test('should throw on missing required field: modelName', () {
@@ -201,7 +214,10 @@ void main() {
           'timestamp': DateTime.now().toIso8601String(),
         };
 
-        expect(() => TokenAuditRecord.fromJson(json), throwsA(isA<TypeError>()));
+        expect(
+          () => TokenAuditRecord.fromJson(json),
+          throwsA(isA<TypeError>()),
+        );
       });
 
       test('should throw on missing required field: operationTypeIndex', () {
@@ -214,7 +230,10 @@ void main() {
           'timestamp': DateTime.now().toIso8601String(),
         };
 
-        expect(() => TokenAuditRecord.fromJson(json), throwsA(isA<TypeError>()));
+        expect(
+          () => TokenAuditRecord.fromJson(json),
+          throwsA(isA<TypeError>()),
+        );
       });
 
       test('should throw on missing required field: manuscriptId', () {
@@ -227,7 +246,10 @@ void main() {
           'timestamp': DateTime.now().toIso8601String(),
         };
 
-        expect(() => TokenAuditRecord.fromJson(json), throwsA(isA<TypeError>()));
+        expect(
+          () => TokenAuditRecord.fromJson(json),
+          throwsA(isA<TypeError>()),
+        );
       });
 
       test('should throw on missing required field: timestamp', () {
@@ -240,17 +262,17 @@ void main() {
           'manuscriptId': 'manuscript',
         };
 
-        expect(() => TokenAuditRecord.fromJson(json), throwsA(isA<TypeError>()));
+        expect(
+          () => TokenAuditRecord.fromJson(json),
+          throwsA(isA<TypeError>()),
+        );
       });
     });
 
     group('copyWith', () {
       test('should copy with new values', () {
         final original = createRecord();
-        final copied = original.copyWith(
-          inputTokens: 200,
-          outputTokens: 100,
-        );
+        final copied = original.copyWith(inputTokens: 200, outputTokens: 100);
 
         expect(copied.inputTokens, 200);
         expect(copied.outputTokens, 100);

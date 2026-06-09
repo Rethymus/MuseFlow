@@ -48,10 +48,7 @@ void main() {
 
     group('copyWith', () {
       test('should produce new instance with updated fields', () {
-        final updated = baseSetting.copyWith(
-          name: '新世界',
-          updatedAt: now,
-        );
+        final updated = baseSetting.copyWith(name: '新世界', updatedAt: now);
 
         expect(updated.name, equals('新世界'));
         expect(updated.id, equals(baseSetting.id));

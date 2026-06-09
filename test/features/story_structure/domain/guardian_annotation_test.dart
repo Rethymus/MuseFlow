@@ -57,10 +57,7 @@ void main() {
     });
 
     test('should default to low for unknown value', () {
-      expect(
-        GuardianSeverity.fromJsonString('critical'),
-        GuardianSeverity.low,
-      );
+      expect(GuardianSeverity.fromJsonString('critical'), GuardianSeverity.low);
     });
   });
 
@@ -97,34 +94,36 @@ void main() {
       expect(dismissed.isDismissed, isTrue);
     });
 
-    test('should have exact location when nodeId, startOffset, endOffset all set',
-        () {
-      // All three present
-      expect(testAnnotation.hasExactLocation, isTrue);
+    test(
+      'should have exact location when nodeId, startOffset, endOffset all set',
+      () {
+        // All three present
+        expect(testAnnotation.hasExactLocation, isTrue);
 
-      // Missing nodeId
-      final noNode = testAnnotation.copyWith(clearNodeId: true);
-      expect(noNode.hasExactLocation, isFalse);
+        // Missing nodeId
+        final noNode = testAnnotation.copyWith(clearNodeId: true);
+        expect(noNode.hasExactLocation, isFalse);
 
-      // Missing startOffset
-      final noStart = testAnnotation.copyWith(clearStartOffset: true);
-      expect(noStart.hasExactLocation, isFalse);
+        // Missing startOffset
+        final noStart = testAnnotation.copyWith(clearStartOffset: true);
+        expect(noStart.hasExactLocation, isFalse);
 
-      // Missing endOffset
-      final noEnd = testAnnotation.copyWith(clearEndOffset: true);
-      expect(noEnd.hasExactLocation, isFalse);
+        // Missing endOffset
+        final noEnd = testAnnotation.copyWith(clearEndOffset: true);
+        expect(noEnd.hasExactLocation, isFalse);
 
-      // All null
-      final noLocation = GuardianAnnotation(
-        id: 'ga-no-loc',
-        kind: GuardianFindingKind.timelineContradiction,
-        severity: GuardianSeverity.high,
-        message: 'Timeline issue',
-        reason: 'Event ordering contradiction',
-        createdAt: DateTime(2026, 1, 1),
-      );
-      expect(noLocation.hasExactLocation, isFalse);
-    });
+        // All null
+        final noLocation = GuardianAnnotation(
+          id: 'ga-no-loc',
+          kind: GuardianFindingKind.timelineContradiction,
+          severity: GuardianSeverity.high,
+          message: 'Timeline issue',
+          reason: 'Event ordering contradiction',
+          createdAt: DateTime(2026, 1, 1),
+        );
+        expect(noLocation.hasExactLocation, isFalse);
+      },
+    );
 
     test('should support copyWith', () {
       final copy = testAnnotation.copyWith(
@@ -176,8 +175,14 @@ void main() {
       expect(restored.kind, GuardianFindingKind.characterConsistency);
       expect(restored.severity, GuardianSeverity.medium);
       expect(restored.message, 'Character speaks out of character');
-      expect(restored.reason, 'Alice is described as shy but speaks boldly here');
-      expect(restored.suggestedFix, 'Consider rewriting as a hesitant question');
+      expect(
+        restored.reason,
+        'Alice is described as shy but speaks boldly here',
+      );
+      expect(
+        restored.suggestedFix,
+        'Consider rewriting as a hesitant question',
+      );
       expect(restored.nodeId, 'node-1');
       expect(restored.startOffset, 10);
       expect(restored.endOffset, 50);
@@ -253,7 +258,11 @@ void main() {
           createdAt: DateTime(2026, 1, 1),
         );
         final restored = GuardianAnnotation.fromJson(ann.toJson());
-        expect(restored.severity, severity, reason: 'Failed for severity: $severity');
+        expect(
+          restored.severity,
+          severity,
+          reason: 'Failed for severity: $severity',
+        );
       }
     });
 
