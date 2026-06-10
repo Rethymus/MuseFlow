@@ -72,31 +72,31 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| STYLE-01 | TBD | Pending |
-| STYLE-02 | TBD | Pending |
-| STYLE-03 | TBD | Pending |
-| STYLE-04 | TBD | Pending |
-| AISC-01 | TBD | Pending |
-| AISC-02 | TBD | Pending |
-| AISC-03 | TBD | Pending |
-| AISC-04 | TBD | Pending |
-| KNOW-01 | TBD | Pending |
-| KNOW-02 | TBD | Pending |
-| KNOW-03 | TBD | Pending |
-| KNOW-04 | TBD | Pending |
-| LFIN-01 | TBD | Pending |
-| LFIN-02 | TBD | Pending |
-| LFIN-03 | TBD | Pending |
-| EDIT-01 | TBD | Pending |
-| EDIT-02 | TBD | Pending |
-| EDIT-03 | TBD | Pending |
-| EDIT-04 | TBD | Pending |
+| STYLE-01 | Phase 17 | Pending |
+| STYLE-02 | Phase 17 | Pending |
+| STYLE-03 | Phase 17 | Pending |
+| STYLE-04 | Phase 19 | Pending |
+| AISC-01 | Phase 18 | Pending |
+| AISC-02 | Phase 19 | Pending |
+| AISC-03 | Phase 19 | Pending |
+| AISC-04 | Phase 18 | Pending |
+| KNOW-01 | Phase 20 | Pending |
+| KNOW-02 | Phase 21 | Pending |
+| KNOW-03 | Phase 20 | Pending |
+| KNOW-04 | Phase 21 | Pending |
+| LFIN-01 | Phase 22 | Pending |
+| LFIN-02 | Phase 22 | Pending |
+| LFIN-03 | Phase 22 | Pending |
+| EDIT-01 | Phase 23 | Pending |
+| EDIT-02 | Phase 23 | Pending |
+| EDIT-03 | Phase 24 | Pending |
+| EDIT-04 | Phase 24 | Pending |
 
 **Coverage:**
 - v1.4 requirements: 18 total
-- Mapped to phases: 0 (pending roadmap)
-- Unmapped: 18 ⚠️
+- Mapped to phases: 18
+- Unmapped: 0
 
 ---
 *Requirements defined: 2026-06-11*
-*Last updated: 2026-06-11 after v1.4 milestone initialization*
+*Last updated: 2026-06-11 after v1.4 roadmap creation*

@@ -6,6 +6,7 @@
 - ✅ **v1.1 创作体验升级** — Phases 7–10 (shipped 2026-06-05)
 - ✅ **v1.2 多文稿架构** — Phase 11 (shipped 2026-06-06)
 - ✅ **v1.3 用户视角全流程验证 — 百章修仙小说** — Phases 12–16 (shipped 2026-06-09)
+- 🚧 **v1.4 AI辅助创作体验深度优化** — Phases 17–24 (in progress)
 
 ## Phases
 
@@ -39,17 +40,34 @@
 
 </details>
 
-### ✅ v1.3 用户视角全流程验证 — 百章修仙小说 (SHIPPED 2026-06-09)
+<details>
+<summary>✅ v1.3 用户视角全流程验证 — 百章修仙小说 (Phases 12–16) — SHIPPED 2026-06-09</summary>
 
-**Milestone Goal:** 代入核心用户视角，用 MuseFlow 真实写一篇100章修仙超短篇小说，在创作过程中走完所有功能、验证可靠性、发掘痛点。
+- [x] Phase 12: Token Audit Infrastructure (3/3 plans) — completed 2026-06-06
+- [x] Phase 13: Automation Test Harness (4/4 plans) — completed 2026-06-07
+- [x] Phase 14: World-Building & First 30 Chapters (10/10 plans) — completed 2026-06-08
+- [x] Phase 15: Full Manuscript & Story Structure (7/7 plans) — completed 2026-06-08
+- [x] Phase 16: Analysis & Reports (3/3 plans) — completed 2026-06-08
 
-- [x] **Phase 12: Token Audit Infrastructure** — 每次 AI 调用自动记录 token 用量，可查看消耗总览 (completed 2026-06-06)
-- [x] **Phase 13: Automation Test Harness** — FakeAdapter + 测试脚本，无需真实 API 即可验证核心流程 (completed 2026-06-07)
-- [x] **Phase 14: World-Building & First 30 Chapters** — 修仙世界观搭建 + 碎片捕捉 + 开篇引导 + 前30章创作验证 (completed 2026-06-07)
-- [x] **Phase 15: Full Manuscript & Story Structure** — 31-100章创作 + 故事结构验证 + 格式清洗 + 导出验证 (completed 2026-06-08)
-- [x] **Phase 16: Analysis & Reports** — Token成本分析 + 痛点报告 + 反AI味评估 + 知识库一致性分析 (completed 2026-06-08)
+</details>
+
+### 🚧 v1.4 AI辅助创作体验深度优化 (In Progress)
+
+**Milestone Goal:** 以真实作者的创作体验为中心，从"能用"到"好用"——强化作者风格学习、反AI味深度优化、知识库智能化，让AI真正成为作者的磨刀石。
+
+- [ ] **Phase 17: Author Style Fingerprint + Dynamic Prompt** — Author style analysis, dynamic prompt adaptation, and few-shot sample injection
+- [ ] **Phase 18: Anti-AI-Scent Deepening** — Expanded banned phrase library and enhanced post-processing pipeline
+- [ ] **Phase 19: Style Deviation Detection + Style Thermometer** — Style deviation highlighting, semantic AI-scent detection, and style thermometer dashboard
+- [ ] **Phase 20: Smart Knowledge Injection** — Fuzzy matching, alias extraction, pronoun resolution, and context-aware priority injection
+- [ ] **Phase 21: Relationship Graph + Foreshadowing Reminders** — Character relationship management and real-time foreshadowing reminders
+- [ ] **Phase 22: Long-form Context + Guided Writing** — Chapter context chain, multi-turn AI dialog, and guided continuation suggestions
+- [ ] **Phase 23: Editor AI Operations + Undo History** — Expanded AI toolbar operations and 20-step undo history
+- [ ] **Phase 24: Web Responsive + Progress Dashboard** — Web responsive layout and writing progress visualization
 
 ## Phase Details
+
+<details>
+<summary>v1.0–v1.3 Phase Details (shipped)</summary>
 
 ### Phase 12: Token Audit Infrastructure
 
@@ -162,12 +180,6 @@ Plans:
 
 **Wave 2** *(depends on Wave 1)*
 
-- [x] 16-02-PLAN.md — REPORT-01 Token cost analysis + REPORT-02 Pain point report
-
-**Wave 3** *(depends on Wave 2)*
-
-- [x] 16-03-PLAN.md — REPORT-03 Anti-AI-scent blind read + REPORT-04 KB consistency analysis
-
 - [x] 15-02-PLAN.md — Deterministic adapter fix, 100-chapter generation with stage prompts + previous-chapter summary injection (JOURNEY-07)
 - [x] 15-03-PLAN.md — Foreshadowing lifecycle test: 4 threads planted/resolved + deviation detection at 100-chapter scale (JOURNEY-07)
 - [x] 15-04-PLAN.md — Format cleaning validation (100 chapters, 3 assertion categories + idempotent) + three-format export validation (JOURNEY-08, JOURNEY-09)
@@ -206,11 +218,100 @@ Plans:
 
 - [x] 16-03-PLAN.md — REPORT-03 Anti-AI-scent blind read + REPORT-04 KB consistency analysis
 
+</details>
+
+### Phase 17: Author Style Fingerprint + Dynamic Prompt
+
+**Goal**: AI learns the author's writing style from existing chapters and adapts its output to match, instead of using a fixed one-line persona instruction
+**Depends on**: Phase 16 (v1.3 shipped)
+**Requirements**: STYLE-01, STYLE-02, STYLE-03
+**Success Criteria** (what must be TRUE):
+  1. User can view an AuthorStyleProfile page showing their analyzed style across 5 dimensions (sentence length, rhythm, vocabulary, rhetoric, emotional tone) with concrete metrics
+  2. AI-generated text (synthesis, rewrite, polish) reflects the author's measured style dimensions in the prompt, replacing the previous fixed "natural, warm, human-like" instruction
+  3. AI prompts automatically include 3-5 high-quality paragraphs extracted from the author's own chapters as few-shot style examples, visible in the prompt preview
+**Plans**: TBD
+
+### Phase 18: Anti-AI-Scent Deepening
+
+**Goal**: The banned phrase library expands from 15 to 200+ entries with categories, and the post-processing pipeline catches 20+ structural patterns that betray AI authorship
+**Depends on**: Phase 16 (v1.3 shipped)
+**Requirements**: AISC-01, AISC-04
+**Success Criteria** (what must be TRUE):
+  1. User can browse and manage a categorized banned phrase library with 200+ entries across categories (transitions, modifiers, summaries, genre cliches), and add custom entries
+  2. Post-processing pipeline detects and highlights 20+ structural patterns including repetitive sentence structures, modifier overload, passive voice frequency, and monotonous declarative patterns
+**Plans**: TBD
+
+### Phase 19: Style Deviation Detection + Style Thermometer
+
+**Goal**: Users can quantitatively measure how "AI-scented" their text is and see style deviations highlighted, making anti-AI-scent an observable, trackable metric
+**Depends on**: Phase 17 (AuthorStyleProfile), Phase 18 (enhanced detection)
+**Requirements**: STYLE-04, AISC-02, AISC-03
+**Success Criteria** (what must be TRUE):
+  1. AI-generated text is compared against the author's AuthorStyleProfile and style deviations are highlighted in the diff review view with specific dimension breakdowns
+  2. System detects AI semantic patterns beyond keyword matching: information density uniformity, emotion curve flatness, over-balanced descriptions, and unnaturally perfect logic
+  3. User can view a style thermometer dashboard showing AI-scent score (0-100), style consistency with their profile, literary quality score, and readability metrics
+**Plans**: TBD
+**UI hint**: yes
+
+### Phase 20: Smart Knowledge Injection
+
+**Goal**: Knowledge injection matches characters and settings even with typos, aliases, and pronouns, and prioritizes chapter-relevant knowledge over global knowledge within token budget
+**Depends on**: Phase 16 (v1.3 shipped)
+**Requirements**: KNOW-01, KNOW-03
+**Success Criteria** (what must be TRUE):
+  1. Knowledge injection matches character names with edit distance <=2 (handles typos like "林锋" matching "林风"), extracts aliases from character descriptions ("小风" matches "林风"), and resolves pronoun coreferences ("他" in context maps to the active character)
+  2. Knowledge injection prioritizes chapter-active characters above related characters above global characters, with adaptive token budget allocation that prefers relevant over exhaustive
+**Plans**: TBD
+
+### Phase 21: Relationship Graph + Foreshadowing Reminders
+
+**Goal**: Users can define character relationships and receive real-time reminders about unresolved foreshadowing tied to the characters and locations in their current chapter
+**Depends on**: Phase 20 (improved matching)
+**Requirements**: KNOW-02, KNOW-04
+**Success Criteria** (what must be TRUE):
+  1. User can define and manage character relationships (mentor, enemy, family, lover, etc.) in a relationship graph, and related character info is injected into AI prompts when those characters appear
+  2. User sees real-time foreshadowing reminders in the editor sidebar when writing chapters involving characters or locations associated with unresolved foreshadowing entries
+**Plans**: TBD
+**UI hint**: yes
+
+### Phase 22: Long-form Context + Guided Writing
+
+**Goal**: AI understands long-form story position with multi-chapter context, supports iterative refinement through multi-turn conversation, and offers directional plot suggestions that keep the author in control
+**Depends on**: Phase 16 (v1.3 shipped)
+**Requirements**: LFIN-01, LFIN-02, LFIN-03
+**Success Criteria** (what must be TRUE):
+  1. AI context chain includes previous 3 chapter summaries (with decreasing detail), current chapter outline/goal, and story arc position (rising/falling/climax), providing long-form narrative awareness
+  2. User can engage in multi-turn AI conversations (e.g., "polish this" -> "too flowery" -> "better") with conversation history managed within token budget
+  3. System offers 3 directional plot continuation suggestions based on current story context; user selects a direction before AI generates expanded content
+**Plans**: TBD
+**UI hint**: yes
+
+### Phase 23: Editor AI Operations + Undo History
+
+**Goal**: The floating toolbar offers rich AI operations beyond rewrite and polish, and every AI operation is undoable with a 20-step history
+**Depends on**: Phase 17 (style-aware prompts for new operations)
+**Requirements**: EDIT-01, EDIT-02
+**Success Criteria** (what must be TRUE):
+  1. User can select text and choose from expanded AI operations: expand (detail enhancement), compress (text condensation), dialogue generation, and scene description, in addition to existing tone rewrite and polish
+  2. User can undo up to 20 AI operations and compare versions side by side (view versions A/B/C) to pick the best result
+**Plans**: TBD
+**UI hint**: yes
+
+### Phase 24: Web Responsive + Progress Dashboard
+
+**Goal**: MuseFlow Web renders correctly on narrow viewports, and users can visualize their writing progress with a rich dashboard
+**Depends on**: Phase 16 (v1.3 shipped)
+**Requirements**: EDIT-03, EDIT-04
+**Success Criteria** (what must be TRUE):
+  1. Web build renders correctly on narrow viewports (mobile web testing) with responsive layout adaptations for navigation, editor, and side panels
+  2. User can view a writing progress dashboard showing daily creation rhythm heatmap, AI-assisted vs manual ratio visualization, chapter completion tracking, and estimated completion time
+**Plans**: TBD
+**UI hint**: yes
 
 ## Progress
 
 **Execution Order:**
-Phases execute in numeric order: 12 → 13 → 14 → 15 → 16
+Phases execute in numeric order: 17 -> 18 -> 19 -> 20 -> 21 -> 22 -> 23 -> 24
 
 | Phase | Milestone | Plans Complete | Status | Completed |
 |-------|-----------|----------------|--------|-----------|
@@ -226,8 +327,16 @@ Phases execute in numeric order: 12 → 13 → 14 → 15 → 16
 | 9. 写作数据统计 | v1.1 | 5/5 | Complete | 2026-06-05 |
 | 10. 故事弧可视化 | v1.1 | 4/4 | Complete | 2026-06-05 |
 | 11. 文稿库与章节管理 | v1.2 | 6/6 | Complete | 2026-06-06 |
-| 12. Token Audit Infrastructure | v1.3 | 3/3 | Complete   | 2026-06-06 |
-| 13. Automation Test Harness | v1.3 | 4/4 | Complete    | 2026-06-07 |
-| 14. World-Building & First 30 Chapters | v1.3 | 10/10 | Complete (with 1 deferred)   | 2026-06-08 |
-| 15. Full Manuscript & Story Structure | v1.3 | 7/7 | Complete   | 2026-06-08 |
-| 16. Analysis & Reports | v1.3 | 3/3 | Complete    | 2026-06-08 |
+| 12. Token Audit Infrastructure | v1.3 | 3/3 | Complete | 2026-06-06 |
+| 13. Automation Test Harness | v1.3 | 4/4 | Complete | 2026-06-07 |
+| 14. World-Building & First 30 Chapters | v1.3 | 10/10 | Complete | 2026-06-08 |
+| 15. Full Manuscript & Story Structure | v1.3 | 7/7 | Complete | 2026-06-08 |
+| 16. Analysis & Reports | v1.3 | 3/3 | Complete | 2026-06-08 |
+| 17. Author Style Fingerprint + Dynamic Prompt | v1.4 | 0/? | Not started | - |
+| 18. Anti-AI-Scent Deepening | v1.4 | 0/? | Not started | - |
+| 19. Style Deviation Detection + Style Thermometer | v1.4 | 0/? | Not started | - |
+| 20. Smart Knowledge Injection | v1.4 | 0/? | Not started | - |
+| 21. Relationship Graph + Foreshadowing Reminders | v1.4 | 0/? | Not started | - |
+| 22. Long-form Context + Guided Writing | v1.4 | 0/? | Not started | - |
+| 23. Editor AI Operations + Undo History | v1.4 | 0/? | Not started | - |
+| 24. Web Responsive + Progress Dashboard | v1.4 | 0/? | Not started | - |
