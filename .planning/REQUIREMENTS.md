@@ -1,64 +1,70 @@
-# Requirements: MuseFlow 灵韵
+# Requirements: MuseFlow 灵韵 v1.4
 
-**Defined:** 2026-06-06
+**Defined:** 2026-06-11
 **Core Value:** 让AI帮你写好故事，但让读者看不出AI的痕迹。
 
-## v1.3 Requirements
+## v1.4 Requirements
 
-Requirements for 用户视角全流程验证 — 百章修仙小说 milestone. Each maps to roadmap phases.
+Requirements for AI辅助创作体验深度优化 milestone. Each maps to roadmap phases.
 
-### Token 审计基础设施
+### Author Style Learning
 
-- [x] **AUDIT-01**: 每次 AI API 调用记录 token 用量（输入 token、输出 token、模型名称、操作类型、关联章节ID、时间戳）
-- [x] **AUDIT-02**: Token 审计数据持久化到独立 Hive box（TokenAuditRecord 实体），不侵入现有 Chapter/Manuscript domain 层
-- [x] **AUDIT-03**: 可查看 token 消耗总览页面（总成本、每章分布、按操作类型分布）
+- [ ] **STYLE-01**: User can view their AuthorStyleProfile showing analysis across 5+ dimensions (sentence length distribution, rhythm patterns, vocabulary preferences, rhetoric habits, emotional tone)
+- [ ] **STYLE-02**: AI prompts dynamically adapt to match author's writing style instead of using a fixed one-line persona instruction
+- [ ] **STYLE-03**: System automatically extracts 3-5 high-quality paragraphs from author's existing chapters as few-shot style samples injected into AI prompts
+- [ ] **STYLE-04**: AI-generated text is compared against author's AuthorStyleProfile and style deviations are highlighted in the diff review view
 
-### 自动化测试
+### Anti-AI-Scent Enhancement
 
-- [x] **TEST-01**: Dart 自动化脚本走完核心流程（创建文稿→创建100章→调用AI生成内容→导出），不依赖 UI
-- [x] **TEST-02**: Flutter 集成测试覆盖关键 UI 节点（文稿创建→章节管理→AI生成→编辑→导出）
-- [x] **TEST-03**: 测试脚本使用 FakeAdapter 支持可复现验证，无需真实 API 即可跑通
+- [ ] **AISC-01**: User can manage a categorized banned phrase library with 200+ entries across categories (transitions, modifiers, summaries, genre clichés)
+- [ ] **AISC-02**: System detects AI semantic patterns beyond keyword matching (info density uniformity, emotion curve flatness, over-balanced descriptions, unnaturally perfect logic)
+- [ ] **AISC-03**: User can view a style thermometer dashboard showing AI-scent score (0-100), style consistency with author profile, literary quality score, and readability metrics
+- [ ] **AISC-04**: Post-processing pipeline detects and highlights 20+ structural patterns, repetition structures, modifier overload, passive voice frequency, and monotonous declarative sentences
 
-### 创作准备验证
+### Knowledge Base Intelligence
 
-- [ ] **JOURNEY-01**: 用修仙模板搭建世界观（角色卡创建、设定集创建、Skill 设定守护配置）
-- [ ] **JOURNEY-02**: 碎片捕捉→AI整理流程验证（子弹笔记模式输入灵感碎片→AI整理成逻辑通畅的故事段落）
-- [ ] **JOURNEY-03**: 开篇引导生成第一章（验证3种风格开篇：场景切入/人物切入/悬念切入）
+- [ ] **KNOW-01**: Knowledge injection supports fuzzy matching (edit distance ≤2), automatic alias extraction from character descriptions, and pronoun coreference resolution
+- [ ] **KNOW-02**: User can define and manage character relationships (mentor, enemy, family, lover, etc.) in a relationship graph, and related info is injected into AI prompts
+- [ ] **KNOW-03**: Knowledge injection prioritizes chapter-active characters over related characters over global characters, with adaptive token budget allocation
+- [ ] **KNOW-04**: User receives real-time foreshadowing reminders in the editor sidebar when writing chapters involving characters or locations associated with unresolved foreshadowing entries
 
-### 核心创作验证
+### Long-form Intelligence
 
-- [ ] **JOURNEY-04**: 100章创建和管理（CRUD操作、章节排序、拆分、合并、复制、删除），验证多文稿架构可靠性
-- [ ] **JOURNEY-05**: 逐章 AI 内容生成（每章~100字修仙/玄幻内容），验证知识库自动注入和 Skill 设定守护的连续性
-- [ ] **JOURNEY-06**: 编辑器浮窗操作验证（选中文本→语气改写、段落润色、自由输入编辑），验证反AI味效果
+- [ ] **LFIN-01**: AI context chain includes previous 3 chapter summaries (decreasing detail), current chapter outline/goal, and story arc position (rising/falling/climax)
+- [ ] **LFIN-02**: User can engage in multi-turn AI conversations (e.g., "polish this" → "too flowery" → "better") with conversation history managed within token budget
+- [ ] **LFIN-03**: System offers 3 directional plot continuation suggestions based on current story context; user selects a direction before AI generates expanded content
 
-### 精修打磨验证
+### Editor & UX Enhancement
 
-- [ ] **JOURNEY-07**: 故事结构验证（伏笔埋设→跨章跟踪→填坑解决），验证逻辑闭环检测和一致性守护
-- [ ] **JOURNEY-08**: 格式清洗验证（标点修复、排版美化、Markdown残留清理）
+- [ ] **EDIT-01**: AI floating toolbar adds expand (detail enhancement), compress (text condensation), dialogue generation, and scene description operations alongside existing tone rewrite and polish
+- [ ] **EDIT-02**: AI operation history maintains up to 20 undo steps with cross-operation comparison (view versions A/B/C side by side)
+- [ ] **EDIT-03**: Web build renders correctly on narrow viewports with responsive layout adaptations for mobile web testing
+- [ ] **EDIT-04**: Writing progress dashboard shows daily creation rhythm heatmap, AI-assisted vs manual ratio visualization, chapter completion tracking, and estimated completion time
 
-### 输出验证
+## v1.5 Requirements (Deferred)
 
-- [ ] **JOURNEY-09**: 三格式导出验证（Markdown 带章节标题结构、TXT 纯文本、JSON 含完整元数据）
-- [ ] **JOURNEY-10**: 写作统计数据验证（字数统计、AI使用率、写作速度）
+### Multi-turn Dialog Persistence
+- **LFIN-05**: AI conversation history persists across editor sessions within a chapter
 
-### 分析与报告
+### Collaborative Editing
+- **COLLAB-01**: Multiple users can edit the same manuscript simultaneously
 
-- [x] **REPORT-01**: Token 消耗分析报告（万字短篇实际成本 + 传统长篇50万字消耗推算 + 优化建议）
-- [x] **REPORT-02**: 用户痛点报告（功能缺陷列表 + 体验摩擦点 + 缺失需求建议，按严重程度分类）
-- [x] **REPORT-03**: 反AI味效果评估（盲读测试：选取若干段落由人判断是否AI生成）
-- [x] **REPORT-04**: 知识库一致性衰减分析（100章后角色卡和设定集与实际内容的一致性对比）
+### Cloud Sync
+- **SYNC-01**: Manuscripts and settings sync across devices via cloud storage
+
+### iOS/macOS Support
+- **PLATFORM-01**: MuseFlow runs natively on iOS and macOS
 
 ## Out of Scope
 
 | Feature | Reason |
 |---------|--------|
-| 多 Provider 并行测试 | 复杂度过高，先用单一 GLM API 完成验证 |
-| 真机物理设备测试 (IME/启动/生命周期) | 已在 v1.0 延迟，本里程碑聚焦功能验证 |
-| 无障碍性审计 (Accessibility) | 独立主题，不在本里程碑范围 |
-| 1000+ 章压力测试 | 100章验证已足够发现架构问题 |
-| 章节摘要自动更新机制 | 研究发现该功能不存在，构建属于新功能开发 |
-| Deviation Detection 范围扩展 | 当前仅检查 Skill 文档，扩展到角色卡/设定集属于新功能 |
-| Token 精确计数 (stream_options) | 需要修改 OpenAI adapter，估算值对本里程碑足够 |
+| 一键生成全书 | Violates core principle — author must remain in control |
+| 云端同步/账户系统 | Local-first privacy is a product constraint; defer to v1.5+ |
+| iOS/macOS平台 | Focus remains on Windows/Android/Web |
+| 实时协作/多人编辑 | Single-author creative tool |
+| 多模型微调/训练 | Beyond product positioning |
+| 通用AI聊天 | Must remain a focused creative writing tool |
 
 ## Traceability
 
@@ -66,32 +72,31 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| AUDIT-01 | Phase 12 | Complete |
-| AUDIT-02 | Phase 12 | Complete |
-| AUDIT-03 | Phase 12 | Complete |
-| TEST-01 | Phase 13 | Complete |
-| TEST-02 | Phase 13 | Complete |
-| TEST-03 | Phase 13 | Complete |
-| JOURNEY-01 | Phase 14 | Pending |
-| JOURNEY-02 | Phase 14 | Pending |
-| JOURNEY-03 | Phase 14 | Pending |
-| JOURNEY-04 | Phase 14 | Pending |
-| JOURNEY-05 | Phase 14 | Pending |
-| JOURNEY-06 | Phase 14 | Pending |
-| JOURNEY-07 | Phase 15 | Pending |
-| JOURNEY-08 | Phase 15 | Pending |
-| JOURNEY-09 | Phase 15 | Pending |
-| JOURNEY-10 | Phase 15 | Pending |
-| REPORT-01 | Phase 16 | Complete |
-| REPORT-02 | Phase 16 | Complete |
-| REPORT-03 | Phase 16 | Complete |
-| REPORT-04 | Phase 16 | Complete |
+| STYLE-01 | TBD | Pending |
+| STYLE-02 | TBD | Pending |
+| STYLE-03 | TBD | Pending |
+| STYLE-04 | TBD | Pending |
+| AISC-01 | TBD | Pending |
+| AISC-02 | TBD | Pending |
+| AISC-03 | TBD | Pending |
+| AISC-04 | TBD | Pending |
+| KNOW-01 | TBD | Pending |
+| KNOW-02 | TBD | Pending |
+| KNOW-03 | TBD | Pending |
+| KNOW-04 | TBD | Pending |
+| LFIN-01 | TBD | Pending |
+| LFIN-02 | TBD | Pending |
+| LFIN-03 | TBD | Pending |
+| EDIT-01 | TBD | Pending |
+| EDIT-02 | TBD | Pending |
+| EDIT-03 | TBD | Pending |
+| EDIT-04 | TBD | Pending |
 
 **Coverage:**
-- v1.3 requirements: 20 total
-- Mapped to phases: 20
-- Unmapped: 0
+- v1.4 requirements: 18 total
+- Mapped to phases: 0 (pending roadmap)
+- Unmapped: 18 ⚠️
 
 ---
-*Requirements defined: 2026-06-06*
-*Last updated: 2026-06-06 after roadmap creation*
+*Requirements defined: 2026-06-11*
+*Last updated: 2026-06-11 after v1.4 milestone initialization*
