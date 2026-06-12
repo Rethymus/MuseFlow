@@ -167,5 +167,92 @@ void main() {
     test('popLast should return null when stack is empty', () {
       expect(service.popLast(), isNull);
     });
+
+    test('should enforce maxEntries limit of 20', () {
+      for (var i = 0; i < 25; i++) {
+        service.record(
+          originalText: '原文$i',
+          replacementText: 'AI$i',
+          nodeId: 'node-$i',
+          startOffset: 0,
+          endOffset: 3,
+        );
+      }
+
+      expect(service.stackLength, 20);
+      expect(service.canUndo, true);
+    });
+
+    test('should evict oldest entry when exceeding max limit', () {
+      for (var i = 0; i < 20; i++) {
+        service.record(
+          originalText: '原文$i',
+          replacementText: 'AI$i',
+          nodeId: 'node-$i',
+          startOffset: 0,
+          endOffset: 3,
+        );
+      }
+
+      // Stack is exactly at limit
+      expect(service.stackLength, 20);
+
+      // Add one more — oldest should be evicted
+      service.record(
+        originalText: '最新',
+        replacementText: 'AI最新',
+        nodeId: 'node-new',
+        startOffset: 0,
+        endOffset: 2,
+      );
+
+      expect(service.stackLength, 20);
+
+      // The oldest entry (原文0) should be gone
+      final all = service.entries;
+      expect(all.any((e) => e.originalText == '原文0'), false);
+
+      // The newest entry should be present
+      expect(all.last.originalText, '最新');
+    });
+
+    test('entries should return all entries in order for version comparison', () {
+      service.record(
+        originalText: '第一版',
+        replacementText: 'AI改一',
+        nodeId: 'n1',
+        startOffset: 0,
+        endOffset: 3,
+      );
+      service.record(
+        originalText: '第二版',
+        replacementText: 'AI改二',
+        nodeId: 'n2',
+        startOffset: 0,
+        endOffset: 3,
+      );
+
+      final entries = service.entries;
+      expect(entries.length, 2);
+      expect(entries[0].originalText, '第一版');
+      expect(entries[1].originalText, '第二版');
+    });
+
+    test('maxLimit should be configurable', () {
+      final customService = SelectiveUndoService(maxLimit: 5);
+
+      for (var i = 0; i < 8; i++) {
+        customService.record(
+          originalText: '原文$i',
+          replacementText: 'AI$i',
+          nodeId: 'node-$i',
+          startOffset: 0,
+          endOffset: 3,
+        );
+      }
+
+      expect(customService.stackLength, 5);
+      expect(customService.maxLimit, 5);
+    });
   });
 }

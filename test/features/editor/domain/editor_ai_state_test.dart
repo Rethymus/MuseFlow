@@ -11,9 +11,9 @@ import 'package:museflow/features/editor/domain/editor_ai_state.dart';
 void main() {
   group('EditorAIOperation', () {
     test(
-      'should have three values: toneRewrite, paragraphPolish, freeInput',
+      'should have seven values: toneRewrite, paragraphPolish, freeInput, expand, compress, dialogue, scene',
       () {
-        expect(EditorAIOperation.values, hasLength(3));
+        expect(EditorAIOperation.values, hasLength(7));
         expect(
           EditorAIOperation.values,
           contains(EditorAIOperation.toneRewrite),
@@ -23,6 +23,10 @@ void main() {
           contains(EditorAIOperation.paragraphPolish),
         );
         expect(EditorAIOperation.values, contains(EditorAIOperation.freeInput));
+        expect(EditorAIOperation.values, contains(EditorAIOperation.expand));
+        expect(EditorAIOperation.values, contains(EditorAIOperation.compress));
+        expect(EditorAIOperation.values, contains(EditorAIOperation.dialogue));
+        expect(EditorAIOperation.values, contains(EditorAIOperation.scene));
       },
     );
 
@@ -36,6 +40,22 @@ void main() {
 
     test('freeInput label should be 自由输入', () {
       expect(EditorAIOperation.freeInput.label, '自由输入');
+    });
+
+    test('expand label should be 扩写', () {
+      expect(EditorAIOperation.expand.label, '扩写');
+    });
+
+    test('compress label should be 缩写', () {
+      expect(EditorAIOperation.compress.label, '缩写');
+    });
+
+    test('dialogue label should be 对话生成', () {
+      expect(EditorAIOperation.dialogue.label, '对话生成');
+    });
+
+    test('scene label should be 场景描写', () {
+      expect(EditorAIOperation.scene.label, '场景描写');
     });
   });
 
@@ -120,6 +140,71 @@ void main() {
       final copy = original.copyWith(selectedText: '修改后');
       expect(original.selectedText, '原文');
       expect(copy.selectedText, '修改后');
+    });
+
+    test('conversationHistory should default to empty list', () {
+      const state = EditorAIState();
+      expect(state.conversationHistory, isEmpty);
+    });
+
+    test('copyWith should allow setting conversationHistory', () {
+      const state = EditorAIState();
+      final turn = ConversationTurn(
+        userInstruction: '太平淡了',
+        aiResponse: '他猛地推开门。',
+        operation: EditorAIOperation.toneRewrite,
+      );
+      final updated = state.copyWith(conversationHistory: [turn]);
+      expect(updated.conversationHistory, hasLength(1));
+      expect(updated.conversationHistory.first.userInstruction, '太平淡了');
+      expect(state.conversationHistory, isEmpty);
+    });
+  });
+
+  group('ConversationTurn', () {
+    test('should store user instruction and AI response', () {
+      const turn = ConversationTurn(
+        userInstruction: '太华丽了，朴素一点',
+        aiResponse: '他走了。',
+        operation: EditorAIOperation.toneRewrite,
+      );
+      expect(turn.userInstruction, '太华丽了，朴素一点');
+      expect(turn.aiResponse, '他走了。');
+      expect(turn.operation, EditorAIOperation.toneRewrite);
+    });
+
+    test('should convert to chat messages', () {
+      const turn = ConversationTurn(
+        userInstruction: '请润色',
+        aiResponse: '月光洒落。',
+        operation: EditorAIOperation.paragraphPolish,
+      );
+      final messages = turn.toChatMessages();
+      expect(messages, hasLength(2));
+      expect(messages[0].toJson()['role'], 'user');
+      expect(messages[0].toJson()['content'], '请润色');
+      expect(messages[1].toJson()['role'], 'assistant');
+      expect(messages[1].toJson()['content'], '月光洒落。');
+    });
+
+    test('should support equality comparison', () {
+      const turn1 = ConversationTurn(
+        userInstruction: '改',
+        aiResponse: '他走了。',
+        operation: EditorAIOperation.toneRewrite,
+      );
+      const turn2 = ConversationTurn(
+        userInstruction: '改',
+        aiResponse: '他走了。',
+        operation: EditorAIOperation.toneRewrite,
+      );
+      expect(turn1, equals(turn2));
+    });
+  });
+
+  group('EditorAIState maxConversationTurns', () {
+    test('should be 5', () {
+      expect(EditorAIState.maxConversationTurns, 5);
     });
   });
 }

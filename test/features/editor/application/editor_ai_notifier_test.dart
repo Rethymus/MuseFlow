@@ -510,6 +510,114 @@ void main() {
         await controller.close();
       });
     });
+
+    group('multi-turn conversation history', () {
+      test('should save conversation turn after successful operation', () async {
+        container = createContainer();
+        fakeAdapter.streamOutput = Stream.fromIterable(['润色后']);
+
+        container
+            .read(editorAINotifierProvider.notifier)
+            .startOperation(
+              EditorAIOperation.paragraphPolish,
+              '原文',
+              'node-1',
+              0,
+              2,
+              userInstruction: '请润色',
+            );
+        await _pumpAndWait();
+
+        final state = container.read(editorAINotifierProvider);
+        expect(state.conversationHistory, hasLength(1));
+        expect(state.conversationHistory.first.userInstruction, '请润色');
+        expect(state.conversationHistory.first.operation, EditorAIOperation.paragraphPolish);
+      });
+
+      test('should include history messages in subsequent requests', () async {
+        container = createContainer();
+        // First turn
+        fakeAdapter.streamOutput = Stream.fromIterable(['第一版']);
+        container
+            .read(editorAINotifierProvider.notifier)
+            .startOperation(
+              EditorAIOperation.toneRewrite,
+              '原文',
+              'node-1',
+              0,
+              2,
+            );
+        await _pumpAndWait();
+
+        // Second turn — should include history
+        fakeAdapter.streamOutput = Stream.fromIterable(['第二版']);
+        container
+            .read(editorAINotifierProvider.notifier)
+            .startOperation(
+              EditorAIOperation.toneRewrite,
+              '原文',
+              'node-1',
+              0,
+              2,
+              userInstruction: '太平淡了',
+            );
+        await _pumpAndWait();
+
+        // Verify the adapter received messages with history
+        expect(fakeAdapter.lastMessages.length, greaterThan(2));
+        // System message + history (user + assistant) + current user message
+        final roles = fakeAdapter.lastMessages.map((m) => m.toJson()['role']).toList();
+        expect(roles.first, 'system');
+        // History messages from first turn
+        expect(roles, contains('assistant'));
+      });
+
+      test('should trim history to maxConversationTurns', () async {
+        container = createContainer();
+
+        // Run 6 operations to exceed max of 5
+        for (var i = 0; i < 6; i++) {
+          fakeAdapter.streamOutput = Stream.fromIterable(['版本$i']);
+          container
+              .read(editorAINotifierProvider.notifier)
+              .startOperation(
+                EditorAIOperation.paragraphPolish,
+                '原文',
+                'node-1',
+                0,
+                2,
+              );
+          await _pumpAndWait();
+        }
+
+        final state = container.read(editorAINotifierProvider);
+        expect(state.conversationHistory.length, EditorAIState.maxConversationTurns);
+        // Oldest turn should be trimmed (turn 0 is gone)
+        expect(state.conversationHistory.first.userInstruction, '文段润色');
+      });
+
+      test('should clear conversation history on reset', () async {
+        container = createContainer();
+        fakeAdapter.streamOutput = Stream.fromIterable(['结果']);
+
+        container
+            .read(editorAINotifierProvider.notifier)
+            .startOperation(
+              EditorAIOperation.paragraphPolish,
+              '原文',
+              'node-1',
+              0,
+              2,
+            );
+        await _pumpAndWait();
+
+        expect(container.read(editorAINotifierProvider).conversationHistory, hasLength(1));
+
+        container.read(editorAINotifierProvider.notifier).reset();
+
+        expect(container.read(editorAINotifierProvider).conversationHistory, isEmpty);
+      });
+    });
   });
 }
 

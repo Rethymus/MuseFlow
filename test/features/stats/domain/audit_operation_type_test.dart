@@ -3,8 +3,8 @@ import 'package:museflow/features/stats/domain/audit_operation_type.dart';
 
 void main() {
   group('AuditOperationType', () {
-    test('should have exactly 8 operation types', () {
-      expect(AuditOperationType.values.length, 8);
+    test('should have exactly 12 operation types', () {
+      expect(AuditOperationType.values.length, 12);
     });
 
     test('should contain all expected operation types', () {
@@ -15,6 +15,10 @@ void main() {
           'rewrite',
           'polish',
           'freeInput',
+          'expand',
+          'compress',
+          'dialogue',
+          'scene',
           'skillGen',
           'opening',
           'deviationDetect',
@@ -41,6 +45,26 @@ void main() {
     test('should have freeInput operation with edit group', () {
       expect(AuditOperationType.freeInput.label, '自由输入');
       expect(AuditOperationType.freeInput.group, 'edit');
+    });
+
+    test('should have expand operation with edit group', () {
+      expect(AuditOperationType.expand.label, '扩写');
+      expect(AuditOperationType.expand.group, 'edit');
+    });
+
+    test('should have compress operation with edit group', () {
+      expect(AuditOperationType.compress.label, '缩写');
+      expect(AuditOperationType.compress.group, 'edit');
+    });
+
+    test('should have dialogue operation with edit group', () {
+      expect(AuditOperationType.dialogue.label, '对话生成');
+      expect(AuditOperationType.dialogue.group, 'edit');
+    });
+
+    test('should have scene operation with edit group', () {
+      expect(AuditOperationType.scene.label, '场景描写');
+      expect(AuditOperationType.scene.group, 'edit');
     });
 
     test('should have skillGen operation with worldview group', () {
@@ -72,10 +96,14 @@ void main() {
       );
     });
 
-    test('should map rewrite, polish, freeInput to edit group', () {
+    test('should map rewrite, polish, freeInput, expand, compress, dialogue, scene to edit group', () {
       expect(AuditOperationType.rewrite.group, 'edit');
       expect(AuditOperationType.polish.group, 'edit');
       expect(AuditOperationType.freeInput.group, 'edit');
+      expect(AuditOperationType.expand.group, 'edit');
+      expect(AuditOperationType.compress.group, 'edit');
+      expect(AuditOperationType.dialogue.group, 'edit');
+      expect(AuditOperationType.scene.group, 'edit');
     });
 
     test(

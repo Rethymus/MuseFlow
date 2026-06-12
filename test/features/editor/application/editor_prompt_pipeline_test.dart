@@ -142,6 +142,107 @@ void main() {
       expect(systemContent, contains('然而'));
       expect(systemContent, contains('综上所述'));
     });
+
+    group('new operations', () {
+      test('should produce expand-specific system instruction', () {
+        final context = PromptContext(
+          fragments: [],
+          selectedText: '他走了。',
+          selectedOperation: EditorAIOperation.expand,
+        );
+        final messages = pipeline.build(context);
+        final systemContent = _extractContent(messages[0]);
+        expect(systemContent, contains('扩写'));
+        expect(systemContent, contains('丰富细节'));
+      });
+
+      test('should produce compress-specific system instruction', () {
+        final context = PromptContext(
+          fragments: [],
+          selectedText: '他走了。她看着他离开的背影，心中五味杂陈。',
+          selectedOperation: EditorAIOperation.compress,
+        );
+        final messages = pipeline.build(context);
+        final systemContent = _extractContent(messages[0]);
+        expect(systemContent, contains('缩写'));
+        expect(systemContent, contains('精简'));
+      });
+
+      test('should produce dialogue-specific system instruction', () {
+        final context = PromptContext(
+          fragments: [],
+          selectedText: '两人发生了争执。',
+          selectedOperation: EditorAIOperation.dialogue,
+        );
+        final messages = pipeline.build(context);
+        final systemContent = _extractContent(messages[0]);
+        expect(systemContent, contains('对话'));
+      });
+
+      test('should produce scene-specific system instruction', () {
+        final context = PromptContext(
+          fragments: [],
+          selectedText: '战场一片狼藉。',
+          selectedOperation: EditorAIOperation.scene,
+        );
+        final messages = pipeline.build(context);
+        final systemContent = _extractContent(messages[0]);
+        expect(systemContent, contains('场景'));
+        expect(systemContent, contains('感官'));
+      });
+    });
+
+    group('chapter context chain (LFIN-01)', () {
+      test('should inject chapterContextChain before adjacent summaries', () {
+        final context = PromptContext(
+          fragments: [],
+          selectedText: '当前文字',
+          selectedOperation: EditorAIOperation.toneRewrite,
+          chapterContextChain: '紧邻前章摘要：林风雨夜守山。\n前2章摘要：苏雪晴入门。',
+          previousChapterSummary: '上一章摘要',
+          nextChapterSummary: '下一章摘要',
+        );
+
+        final messages = pipeline.build(context);
+
+        // Find the chapter context system message
+        final chapterMsg = messages.firstWhere(
+          (m) {
+            final content = _extractContent(m);
+            return content.contains('前序章节脉络');
+          },
+          orElse: () => messages.last,
+        );
+        final content = _extractContent(chapterMsg);
+
+        // Chain should appear first, then adjacent summaries
+        expect(content, contains('前序章节脉络'));
+        expect(content, contains('紧邻前章摘要'));
+        expect(content, contains('上一章节摘要'));
+        expect(content, contains('下一章节摘要'));
+      });
+
+      test('should work with only chain and no adjacent summaries', () {
+        final context = PromptContext(
+          fragments: [],
+          selectedText: '当前文字',
+          selectedOperation: EditorAIOperation.paragraphPolish,
+          chapterContextChain: '紧邻前章摘要：第三章内容。',
+        );
+
+        final messages = pipeline.build(context);
+
+        final chapterMsg = messages.firstWhere(
+          (m) => _extractContent(m).contains('前序章节脉络'),
+          orElse: () => messages.last,
+        );
+        final content = _extractContent(chapterMsg);
+
+        expect(content, contains('前序章节脉络'));
+        expect(content, contains('紧邻前章摘要'));
+        expect(content, isNot(contains('上一章节摘要')));
+      });
+    });
   });
 }
 

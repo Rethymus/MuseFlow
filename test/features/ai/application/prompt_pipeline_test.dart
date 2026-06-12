@@ -12,6 +12,9 @@ import 'package:museflow/features/ai/application/prompt_middlewares/persona_inje
 import 'package:museflow/features/ai/application/prompt_middlewares/system_prompt_middleware.dart';
 import 'package:museflow/features/ai/application/prompt_middlewares/user_content_middleware.dart';
 import 'package:museflow/features/ai/domain/synthesis_request.dart';
+import 'package:museflow/features/editor/domain/author_style_profile.dart';
+import 'package:museflow/features/editor/domain/style_dimension.dart';
+import 'package:museflow/features/editor/domain/style_sample.dart';
 import 'package:openai_dart/openai_dart.dart';
 
 void main() {
@@ -138,6 +141,7 @@ void main() {
         messages: [ChatMessage.system('old')],
         previousChapterMemoryWarning: '上一章摘要可能过期',
         nextChapterMemoryWarning: '下一章摘要可能过期',
+        chapterContextChain: '前序章节脉络内容',
       );
 
       final added = context.addMessage(ChatMessage.user('content'));
@@ -147,6 +151,7 @@ void main() {
       for (final updated in [added, replaced, withMessages]) {
         expect(updated.previousChapterMemoryWarning, '上一章摘要可能过期');
         expect(updated.nextChapterMemoryWarning, '下一章摘要可能过期');
+        expect(updated.chapterContextChain, '前序章节脉络内容');
       }
     });
   });
@@ -436,6 +441,123 @@ void main() {
       final systemContent = messages[0].toJson()['content'] as String;
       // Should NOT contain persona injection
       expect(systemContent, isNot(contains('像人写的')));
+    });
+  });
+
+  group('PromptPipeline with AuthorStyleProfile', () {
+    AuthorStyleProfile createTestProfile({List<StyleSample>? samples}) {
+      return AuthorStyleProfile(
+        manuscriptId: 'test-ms',
+        sentenceLengthStats: const SentenceLengthStats(avg: 18, stdDev: 8, median: 16),
+        rhythmScore: 0.4,
+        vocabularyRichness: 0.6,
+        rhetoricHabits: const RhetoricHabits(
+          metaphorFrequency: 0.08,
+          dialogueRatio: 0.35,
+          descriptionRatio: 0.4,
+          actionRatio: 0.17,
+        ),
+        emotionalTone: const EmotionalTone(
+          overall: '温暖克制',
+          warmth: 0.6,
+          intensity: 0.4,
+        ),
+        analyzedChapterCount: 5,
+        analyzedCharCount: 12000,
+        sampleParagraphs: samples ?? [],
+      );
+    }
+
+    test('should remove default persona when style profile is provided', () {
+      final pipeline = PromptPipeline.withDefaultMiddlewares();
+      final fragments = [
+        Fragment(id: 'f1', text: '月光如水', createdAt: DateTime.now()),
+      ];
+      final profile = createTestProfile();
+
+      final messages = pipeline.build(
+        PromptContext(fragments: fragments, styleProfile: profile),
+      );
+
+      final systemContent = messages[0].toJson()['content'] as String;
+      // Dynamic persona should replace the generic "像人写的" text
+      expect(systemContent, isNot(contains('像人写的')));
+      // Should contain the dynamic persona header
+      expect(systemContent, contains('写作风格指令'));
+      expect(systemContent, contains('基于作者风格分析'));
+    });
+
+    test('should include dynamic persona dimensions', () {
+      final pipeline = PromptPipeline.withDefaultMiddlewares();
+      final fragments = [
+        Fragment(id: 'f1', text: '碎片', createdAt: DateTime.now()),
+      ];
+      final profile = createTestProfile();
+
+      final messages = pipeline.build(
+        PromptContext(fragments: fragments, styleProfile: profile),
+      );
+
+      final systemContent = messages[0].toJson()['content'] as String;
+      // Should contain sentence length guidance
+      expect(systemContent, contains('句式'));
+      // Should contain rhythm guidance
+      expect(systemContent, contains('节奏'));
+      // Should contain vocabulary guidance
+      expect(systemContent, contains('词汇'));
+      // Should contain rhetoric guidance
+      expect(systemContent, contains('修辞'));
+      // Should contain emotional tone
+      expect(systemContent, contains('情感基调'));
+      expect(systemContent, contains('温暖克制'));
+    });
+
+    test('should inject few-shot samples when profile has samples', () {
+      final pipeline = PromptPipeline.withDefaultMiddlewares();
+      final fragments = [
+        Fragment(id: 'f1', text: '碎片', createdAt: DateTime.now()),
+      ];
+      final samples = [
+        StyleSample(
+          chapterId: 'ch1',
+          paragraphIndex: 0,
+          text: '月光从云层间漏下来，把庭院里的石板照得泛白。他站在廊下，听着远处传来的笛声，那是隔了一条河的邻村有人在练晚曲。',
+          qualityScore: 0.85,
+          dimensionScores: {
+            StyleDimension.sentenceLength: 0.7,
+            StyleDimension.rhythm: 0.6,
+          },
+        ),
+      ];
+      final profile = createTestProfile(samples: samples);
+
+      final messages = pipeline.build(
+        PromptContext(fragments: fragments, styleProfile: profile),
+      );
+
+      final systemContent = messages[0].toJson()['content'] as String;
+      // Should contain few-shot section
+      expect(systemContent, contains('作者写作风格参考'));
+      expect(systemContent, contains('范例1'));
+      expect(systemContent, contains('月光从云层间漏下来'));
+    });
+
+    test('should gracefully pass through when no style profile', () {
+      final pipeline = PromptPipeline.withDefaultMiddlewares();
+      final fragments = [
+        Fragment(id: 'f1', text: '碎片', createdAt: DateTime.now()),
+      ];
+
+      final messages = pipeline.build(
+        PromptContext(fragments: fragments),
+      );
+
+      final systemContent = messages[0].toJson()['content'] as String;
+      // Default persona should be present when no profile
+      expect(systemContent, contains('像人写的'));
+      // Should NOT contain dynamic persona sections
+      expect(systemContent, isNot(contains('写作风格指令')));
+      expect(systemContent, isNot(contains('作者写作风格参考')));
     });
   });
 }

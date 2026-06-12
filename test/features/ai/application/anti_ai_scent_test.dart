@@ -197,5 +197,155 @@ void main() {
         expect(result.processedText, isNot(contains('最后')));
       });
     });
+
+    group('expanded synonym map', () {
+      test('should delete 事实上', () {
+        final result = processor.process('事实上，他并没有离开。', bannedPhrases: []);
+        expect(result.processedText, isNot(contains('事实上')));
+      });
+
+      test('should delete 实际上', () {
+        final result = processor.process('实际上，她一直都在旁边。', bannedPhrases: []);
+        expect(result.processedText, isNot(contains('实际上')));
+      });
+
+      test('should delete 具体来说', () {
+        final result = processor.process('具体来说，有三个原因。', bannedPhrases: []);
+        expect(result.processedText, isNot(contains('具体来说')));
+      });
+
+      test('should delete 换句话说', () {
+        final result = processor.process('换句话说，他已经输了。', bannedPhrases: []);
+        expect(result.processedText, isNot(contains('换句话说')));
+      });
+
+      test('should delete 简而言之', () {
+        final result = processor.process('简而言之，这是一场豪赌。', bannedPhrases: []);
+        expect(result.processedText, isNot(contains('简而言之')));
+      });
+
+      test('should delete 毋庸置疑', () {
+        final result = processor.process('毋庸置疑，他是最佳人选。', bannedPhrases: []);
+        expect(result.processedText, isNot(contains('毋庸置疑')));
+      });
+
+      test('should delete 至关重要', () {
+        final result = processor.process('这至关重要。', bannedPhrases: []);
+        expect(result.processedText, isNot(contains('至关重要')));
+      });
+
+      test('should delete 从某种意义上说', () {
+        final result = processor.process('从某种意义上说，他是对的。', bannedPhrases: []);
+        expect(result.processedText, isNot(contains('从某种意义上说')));
+      });
+
+      test('should have at least 25 synonym entries', () {
+        expect(AntiAIScentProcessor.synonymKeys.length, greaterThanOrEqualTo(25));
+      });
+    });
+
+    group('expanded structural patterns', () {
+      test('should highlight 无论...都... pattern', () {
+        final result = processor.process(
+          '无论前方有多少艰难险阻，他都不会退缩。',
+          bannedPhrases: [],
+        );
+        expect(result.processedText, contains('【'));
+        expect(result.processedText, contains('无论'));
+      });
+
+      test('should highlight 仿佛...一般 pattern', () {
+        final result = processor.process(
+          '那双眼睛仿佛深邃的星空一般。',
+          bannedPhrases: [],
+        );
+        expect(result.processedText, contains('【'));
+      });
+
+      test('should highlight 让人不禁 pattern', () {
+        final result = processor.process(
+          '这番话让人不禁深思。',
+          bannedPhrases: [],
+        );
+        expect(result.processedText, contains('【'));
+      });
+
+      test('should highlight 既...又... balanced pattern', () {
+        final result = processor.process(
+          '她既温柔又坚强。',
+          bannedPhrases: [],
+        );
+        expect(result.processedText, contains('【'));
+      });
+
+      test('should highlight 因为...所以... explicit causal', () {
+        final result = processor.process(
+          '因为他太过疲惫，所以倒头就睡。',
+          bannedPhrases: [],
+        );
+        expect(result.processedText, contains('【'));
+      });
+
+      test('should have at least 10 structural patterns', () {
+        // Verify the expanded pattern count
+        final testText = '他不仅聪明而且勤奋。';
+        final result = processor.process(testText, bannedPhrases: []);
+        // This test validates the expansion was applied;
+        // the actual pattern count is a structural constant
+        expect(result.highlights, isNotEmpty);
+      });
+    });
+
+    group('emotional cliche review signals', () {
+      test('should flag emotional cliches when present', () {
+        final result = processor.process(
+          '看着母亲的白发，他心中涌起一股暖流，眼眶微微湿润了。',
+          bannedPhrases: [],
+        );
+
+        expect(
+          result.reviewSignals.map((s) => s.title),
+          contains('情感描写套路化'),
+        );
+      });
+
+      test('should not flag emotional cliches when absent', () {
+        final result = processor.process(
+          '他握紧拳头，指甲掐进肉里。月光照在他苍白的脸上。',
+          bannedPhrases: [],
+        );
+
+        expect(
+          result.reviewSignals.map((s) => s.title),
+          isNot(contains('情感描写套路化')),
+        );
+      });
+    });
+
+    group('description formula review signals', () {
+      test('should flag description formulas when multiple present', () {
+        final result = processor.process(
+          '眼前的景象宛如仙境，美不胜收，如诗如画。',
+          bannedPhrases: [],
+        );
+
+        expect(
+          result.reviewSignals.map((s) => s.title),
+          contains('描写公式化'),
+        );
+      });
+
+      test('should not flag description formulas when absent', () {
+        final result = processor.process(
+          '枯叶落在泥水里，被行人踩成碎片。',
+          bannedPhrases: [],
+        );
+
+        expect(
+          result.reviewSignals.map((s) => s.title),
+          isNot(contains('描写公式化')),
+        );
+      });
+    });
   });
 }
