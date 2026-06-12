@@ -122,7 +122,7 @@ class ContinuationSuggestionNotifier
     String chapterText,
     String? contextChain,
   ) async {
-    final adapter = ref.read(openaiAdapterProvider);
+    final adapter = ref.read(activeAdapterProvider);
 
     final messages = _buildMessages(chapterText, contextChain);
 

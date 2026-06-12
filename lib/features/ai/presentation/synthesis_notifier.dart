@@ -215,8 +215,8 @@ class SynthesisNotifier extends Notifier<SynthesisState> {
     // Get audit service
     final auditService = await ref.read(tokenAuditServiceProvider.future);
 
-    // Start streaming
-    final adapter = ref.read(openaiAdapterProvider);
+    // Start streaming with adapter routed by active provider type
+    final adapter = ref.read(activeAdapterProvider);
     try {
       final stream = adapter.createStream(
         apiKey: apiKey,

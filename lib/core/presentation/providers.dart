@@ -15,6 +15,7 @@ import 'package:museflow/features/ai/application/provider_service.dart';
 import 'package:museflow/features/ai/application/token_budget_calculator.dart';
 import 'package:museflow/features/ai/domain/ai_adapter.dart';
 import 'package:museflow/features/ai/domain/ai_provider.dart';
+import 'package:museflow/features/ai/infrastructure/claude_adapter.dart';
 import 'package:museflow/features/ai/infrastructure/openai_adapter.dart';
 import 'package:museflow/features/ai/infrastructure/provider_repository.dart';
 import 'package:museflow/features/editor/application/diff_calculator.dart';
@@ -189,6 +190,30 @@ final activeApiKeyProvider = Provider<String?>((ref) {
 /// override with FakeAdapter.
 final openaiAdapterProvider = Provider<AIAdapter>((ref) {
   return OpenAIAdapter();
+});
+
+/// Provides a singleton [ClaudeAdapter] for Claude/Anthropic API streaming.
+///
+/// Uses anthropic_sdk_dart for native Claude Messages API with streaming.
+/// Messages are converted from OpenAI format to Anthropic format internally.
+final claudeAdapterProvider = Provider<AIAdapter>((ref) {
+  return ClaudeAdapter();
+});
+
+/// Routes to the correct AI adapter based on the active provider type.
+///
+/// - [AiProviderType.claude] → [ClaudeAdapter] (Anthropic Messages API)
+/// - All other types (openai, deepseek, ollama, custom) → [OpenAIAdapter]
+///   (OpenAI-compatible API)
+///
+/// This is the single point of dispatch; all callers should use this
+/// provider rather than referencing a specific adapter directly.
+final activeAdapterProvider = Provider<AIAdapter>((ref) {
+  final provider = ref.watch(activeProviderProvider);
+  if (provider?.type == AiProviderType.claude) {
+    return ref.watch(claudeAdapterProvider);
+  }
+  return ref.watch(openaiAdapterProvider);
 });
 
 /// Provides a [PromptPipeline] with default middleware ordering per AI-04.

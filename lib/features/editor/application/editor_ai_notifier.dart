@@ -176,8 +176,8 @@ class EditorAINotifier extends Notifier<EditorAIState> {
       EditorAIOperation.scene => AuditOperationType.scene,
     };
 
-    // Start streaming
-    final adapter = ref.read(openaiAdapterProvider);
+    // Start streaming with adapter routed by active provider type
+    final adapter = ref.read(activeAdapterProvider);
     try {
       final stream = adapter.createStream(
         apiKey: apiKey,
