@@ -24,6 +24,14 @@ class ChapterContextMiddleware extends PromptMiddleware {
   PromptContext apply(PromptContext context) {
     final buffer = StringBuffer();
 
+    // Inject multi-chapter context chain if available (LFIN-01)
+    if (context.chapterContextChain != null &&
+        context.chapterContextChain!.isNotEmpty) {
+      buffer.writeln('前序章节脉络：');
+      buffer.writeln(context.chapterContextChain);
+      buffer.writeln();
+    }
+
     if (context.previousChapterSummary != null &&
         context.previousChapterSummary!.isNotEmpty) {
       buffer.writeln('上一章节摘要：');

@@ -10,10 +10,13 @@ library;
 
 import 'package:museflow/core/domain/fragment.dart';
 import 'package:museflow/features/ai/application/prompt_middlewares/banned_list_middleware.dart';
+import 'package:museflow/features/ai/application/prompt_middlewares/dynamic_persona_middleware.dart';
+import 'package:museflow/features/ai/application/prompt_middlewares/few_shot_middleware.dart';
 import 'package:museflow/features/ai/application/prompt_middlewares/persona_injection_middleware.dart';
 import 'package:museflow/features/ai/application/prompt_middlewares/system_prompt_middleware.dart';
 import 'package:museflow/features/ai/application/prompt_middlewares/user_content_middleware.dart';
 import 'package:museflow/features/editor/domain/editor_ai_state.dart';
+import 'package:museflow/features/editor/domain/author_style_profile.dart';
 import 'package:museflow/features/knowledge/application/knowledge_injection_middleware.dart';
 import 'package:museflow/features/knowledge/application/skill_enforcement_middleware.dart';
 import 'package:openai_dart/openai_dart.dart';
@@ -81,6 +84,29 @@ class PromptContext {
   /// Author-facing warning about the next chapter summary freshness.
   final String? nextChapterMemoryWarning;
 
+  /// Pre-formatted multi-chapter context chain with decreasing detail.
+  ///
+  /// Per LFIN-01: Up to 3 previous chapter summaries, each with less detail
+  /// the further back they are:
+  /// - N-1: up to 220 chars (full context)
+  /// - N-2: up to 150 chars (reduced context)
+  /// - N-3: up to 80 chars (brief mention)
+  final String? chapterContextChain;
+
+  /// Author style profile for dynamic persona and few-shot injection.
+  ///
+  /// When present, [DynamicPersonaMiddleware] replaces the fixed persona
+  /// text with style-aware instructions, and [FewShotMiddleware] injects
+  /// author paragraph samples.
+  final AuthorStyleProfile? styleProfile;
+
+  /// Character gender mapping for pronoun coreference resolution.
+  ///
+  /// Per Phase 20 (KNOW-01): Maps character names to their gender so
+  /// [KnowledgeInjectionMiddleware] can resolve 他/她 pronouns to the
+  /// correct character when building knowledge context.
+  final Map<String, dynamic> characterGenders;
+
   const PromptContext({
     required this.fragments,
     this.additionalInstruction,
@@ -95,6 +121,9 @@ class PromptContext {
     this.nextChapterSummary,
     this.previousChapterMemoryWarning,
     this.nextChapterMemoryWarning,
+    this.chapterContextChain,
+    this.styleProfile,
+    this.characterGenders = const {},
   });
 
   /// Creates a copy with an additional message appended.
@@ -113,6 +142,9 @@ class PromptContext {
       nextChapterSummary: nextChapterSummary,
       previousChapterMemoryWarning: previousChapterMemoryWarning,
       nextChapterMemoryWarning: nextChapterMemoryWarning,
+      chapterContextChain: chapterContextChain,
+      styleProfile: styleProfile,
+      characterGenders: characterGenders,
     );
   }
 
@@ -132,6 +164,9 @@ class PromptContext {
       nextChapterSummary: nextChapterSummary,
       previousChapterMemoryWarning: previousChapterMemoryWarning,
       nextChapterMemoryWarning: nextChapterMemoryWarning,
+      chapterContextChain: chapterContextChain,
+      styleProfile: styleProfile,
+      characterGenders: characterGenders,
     );
   }
 
@@ -153,6 +188,9 @@ class PromptContext {
       nextChapterSummary: nextChapterSummary,
       previousChapterMemoryWarning: previousChapterMemoryWarning,
       nextChapterMemoryWarning: nextChapterMemoryWarning,
+      chapterContextChain: chapterContextChain,
+      styleProfile: styleProfile,
+      characterGenders: characterGenders,
     );
   }
 }
@@ -190,6 +228,11 @@ class PromptPipeline {
   const PromptPipeline({required this.middlewares});
 
   /// Creates a pipeline with the default middleware ordering per AI-04.
+  ///
+  /// When a style profile is present in the [PromptContext], the
+  /// [DynamicPersonaMiddleware] replaces the fixed persona text with
+  /// style-aware instructions, and [FewShotMiddleware] injects author
+  /// paragraph samples. Both are no-ops when no profile is available.
   factory PromptPipeline.withDefaultMiddlewares({
     KnowledgeInjectionMiddleware? knowledgeInjectionMiddleware,
     SkillEnforcementMiddleware? skillEnforcementMiddleware,
@@ -198,6 +241,8 @@ class PromptPipeline {
       middlewares: [
         SystemPromptMiddleware(),
         PersonaInjectionMiddleware(),
+        const DynamicPersonaMiddleware(),
+        const FewShotMiddleware(),
         BannedListMiddleware(),
         ?knowledgeInjectionMiddleware,
         ?skillEnforcementMiddleware,

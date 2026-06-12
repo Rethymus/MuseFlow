@@ -10,7 +10,9 @@ import 'package:museflow/features/editor/presentation/editor_provider.dart';
 import 'package:museflow/features/editor/presentation/editor_toolbar.dart';
 import 'package:museflow/features/editor/presentation/floating_toolbar.dart';
 import 'package:museflow/features/editor/presentation/status_bar.dart';
+import 'package:museflow/features/editor/presentation/style_thermometer_card.dart';
 import 'package:museflow/features/knowledge/presentation/deviation_warning_widget.dart';
+import 'package:museflow/features/story_structure/presentation/foreshadowing_reminder_widget.dart';
 import 'package:museflow/features/manuscript/application/chapter_auto_save.dart';
 import 'package:museflow/features/manuscript/domain/chapter.dart';
 import 'package:museflow/features/manuscript/presentation/chapter_context_menu.dart';
@@ -489,8 +491,6 @@ class _EditorWithSidebarState extends ConsumerState<EditorWithSidebar>
     final manuscriptTitle = manuscript?.title ?? '文稿';
     final targetWordCount = manuscript?.targetWordCount ?? 0;
 
-    final isLastChapter =
-        chapters.isEmpty || chapters.last.id == _currentChapterId;
     final hasSelection = _editor?.composer.selection != null;
 
     return Shortcuts(
@@ -560,57 +560,154 @@ class _EditorWithSidebarState extends ConsumerState<EditorWithSidebar>
               title: Text(manuscriptTitle),
               actions: [
                 IconButton(
+                  tooltip: '风格档案',
+                  icon: const Icon(Icons.style_outlined),
+                  onPressed: () => context.go(
+                    AppConstants.manuscriptStyleProfile
+                        .replaceFirst(':id', widget.manuscriptId),
+                  ),
+                ),
+                IconButton(
                   tooltip: '文稿设置',
                   icon: const Icon(Icons.settings_outlined),
                   onPressed: _openSettings,
                 ),
               ],
             ),
-            body: Row(
-              children: [
-                // Chapter sidebar
-                ChapterSidebar(
-                  manuscriptId: widget.manuscriptId,
+            body: LayoutBuilder(
+              builder: (context, constraints) {
+                // Per EDIT-03: responsive layout — sidebar collapses
+                // to drawer on narrow viewports.
+                if (constraints.maxWidth <
+                    AppConstants.editorSidebarBreakpoint) {
+                  return _buildMobileLayout(
+                    context: context,
+                    colorScheme: colorScheme,
+                    manuscriptTitle: manuscriptTitle,
+                    chapters: chapters,
+                    currentWordCount: currentWordCount,
+                    targetWordCount: targetWordCount,
+                    hasSelection: hasSelection,
+                  );
+                }
+                return _buildDesktopLayout(
+                  colorScheme: colorScheme,
                   manuscriptTitle: manuscriptTitle,
-                  activeChapterId: _currentChapterId,
-                  onChapterTap: _switchChapter,
-                  onNewChapter: _showCreateChapterDialog,
-                  onReorder: (manuscriptId, oldIndex, newIndex) {
-                    ref
-                        .read(chapterNotifierProvider.notifier)
-                        .reorder(manuscriptId, oldIndex, newIndex);
-                  },
-                  onChapterContextMenu: (chapter) {
-                    final isCurrent = chapter.id == _currentChapterId;
-                    showChapterContextMenu(
-                      context: context,
-                      position: _getMenuPosition(chapter),
-                      isSplitEnabled: isCurrent && hasSelection,
-                      isMergeEnabled:
-                          !isLastChapter || chapter.id != chapters.last.id,
-                      onAction: (action) =>
-                          _handleContextMenuAction(chapter, action),
-                    );
-                  },
-                ),
-                // Divider between sidebar and editor
-                VerticalDivider(
-                  width: 1,
-                  thickness: 1,
-                  color: colorScheme.outline,
-                ),
-                // Editor area
-                Expanded(
-                  child: _buildEditorArea(
-                    colorScheme,
-                    currentWordCount,
-                    targetWordCount,
-                  ),
-                ),
-              ],
+                  chapters: chapters,
+                  currentWordCount: currentWordCount,
+                  targetWordCount: targetWordCount,
+                  hasSelection: hasSelection,
+                );
+              },
             ),
           ),
         ),
+      ),
+    );
+  }
+
+  /// Desktop layout: sidebar + divider + editor in a Row.
+  Widget _buildDesktopLayout({
+    required ColorScheme colorScheme,
+    required String manuscriptTitle,
+    required List<Chapter> chapters,
+    required int currentWordCount,
+    required int targetWordCount,
+    required bool hasSelection,
+  }) {
+    final isLastChapter = chapters.isEmpty ||
+        _currentChapterId == chapters.last.id;
+    return Row(
+      children: [
+        ChapterSidebar(
+          manuscriptId: widget.manuscriptId,
+          manuscriptTitle: manuscriptTitle,
+          activeChapterId: _currentChapterId,
+          onChapterTap: _switchChapter,
+          onNewChapter: _showCreateChapterDialog,
+          onReorder: (manuscriptId, oldIndex, newIndex) {
+            ref
+                .read(chapterNotifierProvider.notifier)
+                .reorder(manuscriptId, oldIndex, newIndex);
+          },
+          onChapterContextMenu: (chapter) {
+            final isCurrent = chapter.id == _currentChapterId;
+            showChapterContextMenu(
+              context: context,
+              position: _getMenuPosition(chapter),
+              isSplitEnabled: isCurrent && hasSelection,
+              isMergeEnabled:
+                  !isLastChapter || chapter.id != chapters.last.id,
+              onAction: (action) =>
+                  _handleContextMenuAction(chapter, action),
+            );
+          },
+        ),
+        VerticalDivider(
+          width: 1,
+          thickness: 1,
+          color: colorScheme.outline,
+        ),
+        Expanded(
+          child: _buildEditorArea(
+            colorScheme,
+            currentWordCount,
+            targetWordCount,
+          ),
+        ),
+      ],
+    );
+  }
+
+  /// Mobile layout: editor with drawer for chapter navigation.
+  Widget _buildMobileLayout({
+    required BuildContext context,
+    required ColorScheme colorScheme,
+    required String manuscriptTitle,
+    required List<Chapter> chapters,
+    required int currentWordCount,
+    required int targetWordCount,
+    required bool hasSelection,
+  }) {
+    final isLastChapter = chapters.isEmpty ||
+        _currentChapterId == chapters.last.id;
+    return Scaffold(
+      drawer: Drawer(
+        child: ChapterSidebar(
+          manuscriptId: widget.manuscriptId,
+          manuscriptTitle: manuscriptTitle,
+          activeChapterId: _currentChapterId,
+          onChapterTap: (chapter) {
+            _switchChapter(chapter);
+            Navigator.of(context).pop(); // close drawer
+          },
+          onNewChapter: () {
+            Navigator.of(context).pop();
+            _showCreateChapterDialog();
+          },
+          onReorder: (manuscriptId, oldIndex, newIndex) {
+            ref
+                .read(chapterNotifierProvider.notifier)
+                .reorder(manuscriptId, oldIndex, newIndex);
+          },
+          onChapterContextMenu: (chapter) {
+            final isCurrent = chapter.id == _currentChapterId;
+            showChapterContextMenu(
+              context: context,
+              position: _getMenuPosition(chapter),
+              isSplitEnabled: isCurrent && hasSelection,
+              isMergeEnabled:
+                  !isLastChapter || chapter.id != chapters.last.id,
+              onAction: (action) =>
+                  _handleContextMenuAction(chapter, action),
+            );
+          },
+        ),
+      ),
+      body: _buildEditorArea(
+        colorScheme,
+        currentWordCount,
+        targetWordCount,
       ),
     );
   }
@@ -639,6 +736,8 @@ class _EditorWithSidebarState extends ConsumerState<EditorWithSidebar>
         // Editor toolbar
         EditorToolbar(editor: _editor!),
         const DeviationWarningWidget(),
+        const StyleThermometerCard(),
+        const ForeshadowingReminderWidget(),
         Divider(height: 1, thickness: 1, color: colorScheme.outline),
         // Editor content
         Expanded(

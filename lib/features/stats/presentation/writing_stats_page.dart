@@ -40,6 +40,11 @@ class WritingStatsPage extends ConsumerWidget {
             label: const Text('Token 消耗'),
           ),
           TextButton.icon(
+            onPressed: () => context.go(AppConstants.statsProgress),
+            icon: const Icon(Icons.dashboard_outlined),
+            label: const Text('进度'),
+          ),
+          TextButton.icon(
             onPressed: () => context.go(AppConstants.statsReports),
             icon: const Icon(Icons.assessment_outlined),
             label: const Text('分析报告'),

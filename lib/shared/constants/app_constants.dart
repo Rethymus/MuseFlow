@@ -9,6 +9,12 @@ abstract class AppConstants {
   /// Window width below which sidebar switches to bottom NavigationBar.
   static const double sidebarCollapsedBreakpoint = 600.0;
 
+  /// Width below which stats cards switch to single-column layout.
+  static const double cardGridBreakpoint = 720.0;
+
+  /// Width below which the editor chapter sidebar collapses to a drawer.
+  static const double editorSidebarBreakpoint = 700.0;
+
   // --- Editor layout ---
   /// Maximum width for centered editor content area.
   static const double editorMaxWidth = 800.0;
@@ -39,9 +45,11 @@ abstract class AppConstants {
   static const String statsReportsPainPoints = '/stats/reports/pain-points';
   static const String statsReportsAntiAiScent = '/stats/reports/anti-ai-scent';
   static const String statsReportsConsistency = '/stats/reports/consistency';
+  static const String statsProgress = '/stats/progress';
   static const String onboarding = '/onboarding';
 
   // --- Manuscript routes ---
   static const String manuscriptEditor = '/manuscript/:id/editor';
   static const String manuscriptSettings = '/manuscript/:id/settings';
+  static const String manuscriptStyleProfile = '/manuscript/:id/style-profile';
 }

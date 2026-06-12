@@ -22,10 +22,13 @@ import 'package:museflow/features/ai/presentation/banned_phrase_settings.dart';
 import 'package:museflow/features/editor/application/diff_calculator.dart';
 import 'package:museflow/features/editor/application/editor_chapter_memory_context_builder.dart';
 import 'package:museflow/features/editor/application/intent_preservation_analyzer.dart';
+import 'package:museflow/features/editor/application/style_deviation_notifier.dart';
+import 'package:museflow/features/editor/application/style_profile_notifier.dart';
 import 'package:museflow/features/editor/domain/diff_state.dart';
 import 'package:museflow/features/editor/domain/editor_ai_state.dart';
 import 'package:museflow/features/editor/infrastructure/provenance_attribution.dart';
 import 'package:museflow/features/stats/domain/audit_operation_type.dart';
+import 'package:openai_dart/openai_dart.dart';
 import 'package:super_editor/super_editor.dart';
 
 /// Notifier managing editor AI operations with streaming state.
@@ -66,7 +69,7 @@ class EditorAINotifier extends Notifier<EditorAIState> {
     // Reset cancel flag
     _cancelled = false;
 
-    // Set state to streaming
+    // Set state to streaming (preserve conversation history)
     state = EditorAIState(
       isStreaming: true,
       operation: operation,
@@ -75,6 +78,7 @@ class EditorAINotifier extends Notifier<EditorAIState> {
       selectionStartOffset: selectionStartOffset,
       selectionEndOffset: selectionEndOffset,
       userInstruction: userInstruction,
+      conversationHistory: state.conversationHistory,
     );
 
     // Validate provider
@@ -101,7 +105,7 @@ class EditorAINotifier extends Notifier<EditorAIState> {
     state = state.copyWith(isStreaming: false);
   }
 
-  /// Resets state to idle.
+  /// Resets state to idle and clears conversation history.
   void reset() {
     _cancelled = false;
     state = const EditorAIState();
@@ -144,8 +148,16 @@ class EditorAINotifier extends Notifier<EditorAIState> {
       nextChapterSummary: chapterMemory.nextChapterSummary,
       previousChapterMemoryWarning: chapterMemory.previousChapterMemoryWarning,
       nextChapterMemoryWarning: chapterMemory.nextChapterMemoryWarning,
+      chapterContextChain: chapterMemory.chapterContextChain,
+      styleProfile: ref.read(styleProfileNotifierProvider).profile,
     );
-    final messages = pipeline.build(context);
+    var messages = pipeline.build(context);
+
+    // Inject multi-turn conversation history if available
+    final history = state.conversationHistory;
+    if (history.isNotEmpty) {
+      messages = _injectConversationHistory(messages, history);
+    }
 
     // Capture input text for audit (use selected text)
     final inputText = selectedText;
@@ -158,6 +170,10 @@ class EditorAINotifier extends Notifier<EditorAIState> {
       EditorAIOperation.toneRewrite => AuditOperationType.rewrite,
       EditorAIOperation.paragraphPolish => AuditOperationType.polish,
       EditorAIOperation.freeInput => AuditOperationType.freeInput,
+      EditorAIOperation.expand => AuditOperationType.expand,
+      EditorAIOperation.compress => AuditOperationType.compress,
+      EditorAIOperation.dialogue => AuditOperationType.dialogue,
+      EditorAIOperation.scene => AuditOperationType.scene,
     };
 
     // Start streaming
@@ -258,6 +274,12 @@ class EditorAINotifier extends Notifier<EditorAIState> {
       reviewSignals: [...result.reviewSignals, ...intentSignals],
     );
 
+    // Save conversation turn for multi-turn refinement
+    final currentOp = state.operation;
+    if (currentOp != null) {
+      _saveConversationTurn(currentOp, result.processedText);
+    }
+
     // D-12: Clear one-time anchors after AI operation completes
     ref.read(contextAnchorNotifierProvider.notifier).clearOneTime();
 
@@ -267,6 +289,11 @@ class EditorAINotifier extends Notifier<EditorAIState> {
           .read(deviationNotifierProvider.notifier)
           .checkDeviations(result.processedText)
           .catchError((_) {}),
+    );
+
+    // Phase 19: analyze AI output against author style profile for thermometer.
+    ref.read(styleDeviationNotifierProvider.notifier).analyzeText(
+      result.processedText,
     );
   }
 
@@ -435,6 +462,52 @@ class EditorAINotifier extends Notifier<EditorAIState> {
         nodeId: currentDiff.nodeId,
       ),
     );
+  }
+
+  /// Saves the current operation as a conversation turn for multi-turn context.
+  void _saveConversationTurn(EditorAIOperation operation, String aiResponse) {
+    final instruction = state.userInstruction ?? operation.label;
+    final turn = ConversationTurn(
+      userInstruction: instruction,
+      aiResponse: aiResponse,
+      operation: operation,
+    );
+
+    final updatedHistory = [
+      ...state.conversationHistory,
+      turn,
+    ];
+
+    // Trim to max conversation turns for token budget
+    final trimmedHistory = updatedHistory.length > EditorAIState.maxConversationTurns
+        ? updatedHistory.sublist(
+            updatedHistory.length - EditorAIState.maxConversationTurns,
+          )
+        : updatedHistory;
+
+    state = state.copyWith(conversationHistory: trimmedHistory);
+  }
+
+  /// Injects multi-turn conversation history into the message list.
+  ///
+  /// History messages are inserted after the system message and before
+  /// the current user message, giving the AI context of the refinement chain.
+  List<ChatMessage> _injectConversationHistory(
+    List<ChatMessage> messages,
+    List<ConversationTurn> history,
+  ) {
+    if (messages.isEmpty) return messages;
+
+    final systemMessage = messages.first;
+    final remaining = messages.skip(1).toList();
+
+    // Flatten all history turns into chat messages
+    final historyMessages = <ChatMessage>[];
+    for (final turn in history) {
+      historyMessages.addAll(turn.toChatMessages());
+    }
+
+    return [systemMessage, ...historyMessages, ...remaining];
   }
 
   /// Handles stream errors with Chinese messages per D-14.

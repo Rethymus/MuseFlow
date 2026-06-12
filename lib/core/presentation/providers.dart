@@ -22,6 +22,7 @@ import 'package:museflow/features/editor/application/editor_chapter_memory_conte
 import 'package:museflow/features/editor/application/editor_prompt_pipeline.dart';
 import 'package:museflow/features/editor/application/selective_undo.dart';
 import 'package:museflow/features/knowledge/application/character_card_notifier.dart';
+import 'package:museflow/features/knowledge/application/character_relationship_notifier.dart';
 import 'package:museflow/features/knowledge/application/deviation_detection_service.dart';
 import 'package:museflow/features/knowledge/application/knowledge_injection_middleware.dart';
 import 'package:museflow/features/knowledge/application/name_index_service.dart';
@@ -30,9 +31,11 @@ import 'package:museflow/features/knowledge/application/skill_generation_service
 import 'package:museflow/features/knowledge/application/skill_notifier.dart';
 import 'package:museflow/features/knowledge/application/world_setting_notifier.dart';
 import 'package:museflow/features/knowledge/domain/character_card.dart';
+import 'package:museflow/features/knowledge/domain/character_relationship.dart';
 import 'package:museflow/features/knowledge/domain/skill_document.dart';
 import 'package:museflow/features/knowledge/domain/world_setting.dart';
 import 'package:museflow/features/knowledge/infrastructure/character_card_repository.dart';
+import 'package:museflow/features/knowledge/infrastructure/character_relationship_repository.dart';
 import 'package:museflow/features/knowledge/infrastructure/name_index.dart';
 import 'package:museflow/features/knowledge/infrastructure/skill_repository.dart';
 import 'package:museflow/features/knowledge/infrastructure/world_setting_repository.dart';
@@ -74,6 +77,7 @@ import 'package:museflow/features/story_structure/infrastructure/plot_node_repos
 import 'package:museflow/features/templates/application/template_completion_service.dart';
 import 'package:museflow/features/templates/application/template_instantiation_service.dart';
 import 'package:museflow/features/templates/infrastructure/world_template_repository.dart';
+import 'package:museflow/features/editor/infrastructure/style_profile_repository.dart';
 export 'package:museflow/features/editor/application/context_anchor_notifier.dart'
     show contextAnchorNotifierProvider, ContextAnchorNotifier;
 export 'package:museflow/features/editor/presentation/editor_page.dart'
@@ -347,11 +351,23 @@ final knowledgeInjectionMiddlewareProvider =
         worldSettingRepositoryProvider.future,
       );
       final tokenBudgetCalculator = ref.watch(tokenBudgetCalculatorProvider);
+
+      // Phase 21 (KNOW-02): Include relationship repository when available
+      CharacterRelationshipRepository? relationshipRepository;
+      try {
+        relationshipRepository = await ref.watch(
+          characterRelationshipRepositoryProvider.future,
+        );
+      } catch (_) {
+        relationshipRepository = null;
+      }
+
       return KnowledgeInjectionMiddleware(
         nameIndex: nameIndex,
         characterRepository: characterRepository,
         worldSettingRepository: worldSettingRepository,
         tokenBudgetCalculator: tokenBudgetCalculator,
+        relationshipRepository: relationshipRepository,
       );
     });
 
@@ -546,6 +562,25 @@ final foreshadowingNotifierProvider =
       ForeshadowingNotifier.new,
     );
 
+/// Provides a [CharacterRelationshipRepository] backed by a Hive
+/// 'character_relationships' box.
+///
+/// Opens the box asynchronously, so consumers must await this provider.
+final characterRelationshipRepositoryProvider =
+    FutureProvider<CharacterRelationshipRepository>((ref) async {
+      final box = await Hive.openBox<dynamic>('character_relationships');
+      return CharacterRelationshipRepository(box);
+    });
+
+/// Provides a [CharacterRelationshipNotifier] for relationship CRUD operations.
+///
+/// Per Phase 21 (KNOW-02): Presentation layer uses this (not the repository
+/// directly) per Clean Architecture compliance.
+final characterRelationshipNotifierProvider = AsyncNotifierProvider<
+    CharacterRelationshipNotifier, List<CharacterRelationship>>(
+  CharacterRelationshipNotifier.new,
+);
+
 /// Provides a [PlotNodeRepository] backed by a Hive 'plot_nodes' box.
 ///
 /// Opens the box asynchronously, so consumers must await this provider.
@@ -703,4 +738,14 @@ final manuscriptPurgeServiceProvider = FutureProvider<ManuscriptPurgeService>((
     manuscriptRepository: manuscriptRepo,
     chapterRepository: chapterRepo,
   );
+});
+
+/// Provides a [StyleProfileRepository] for author style profile persistence.
+///
+/// Uses the 'style_profiles' Hive box.
+final styleProfileRepositoryProvider = FutureProvider<StyleProfileRepository>((
+  ref,
+) async {
+  final box = await Hive.openBox<dynamic>('style_profiles');
+  return StyleProfileRepository(box);
 });

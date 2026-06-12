@@ -11,6 +11,8 @@ library;
 
 import 'package:museflow/features/ai/application/prompt_pipeline.dart';
 import 'package:museflow/features/ai/application/prompt_middlewares/banned_list_middleware.dart';
+import 'package:museflow/features/ai/application/prompt_middlewares/dynamic_persona_middleware.dart';
+import 'package:museflow/features/ai/application/prompt_middlewares/few_shot_middleware.dart';
 import 'package:museflow/features/ai/application/prompt_middlewares/persona_injection_middleware.dart';
 import 'package:museflow/features/ai/application/prompt_middlewares/system_prompt_middleware.dart';
 import 'package:museflow/features/editor/application/chapter_context_middleware.dart';
@@ -34,6 +36,8 @@ class EditorPromptPipeline extends PromptPipeline {
          middlewares: [
            SystemPromptMiddleware(),
            PersonaInjectionMiddleware(),
+           const DynamicPersonaMiddleware(),
+           const FewShotMiddleware(),
            BannedListMiddleware(),
            ?knowledgeInjectionMiddleware,
            ?skillEnforcementMiddleware,
@@ -64,6 +68,14 @@ class EditorOperationMiddleware extends PromptMiddleware {
       EditorAIOperation.paragraphPolish => '请润色以下文段，提升文字质量和文学性。',
       EditorAIOperation.freeInput =>
         '请根据以下指令修改选中的文字：${context.userInstruction ?? ""}',
+      EditorAIOperation.expand =>
+        '请扩写以下文字，丰富细节、感官描写和情感层次，保持原有风格不变。不要简单地堆砌形容词，而是通过具体的动作、对话和环境来拓展画面。',
+      EditorAIOperation.compress =>
+        '请精简缩写以下文字，保留核心情节和关键信息，删减冗余描写和重复表达，保持行文流畅。',
+      EditorAIOperation.dialogue =>
+        '请将以下叙述转换为角色之间的对话形式，保持人物性格和语气特点，对话要自然、有个性、符合角色关系。',
+      EditorAIOperation.scene =>
+        '请将以下简短描述扩展为有画面感的场景描写，运用视觉、听觉、触觉、嗅觉等多感官细节，营造氛围感，避免空洞的形容词堆砌。',
     };
 
     if (context.messages.isEmpty) {

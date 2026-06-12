@@ -6,6 +6,7 @@ library;
 
 import 'package:museflow/features/editor/domain/diff_state.dart';
 import 'package:museflow/features/ai/application/anti_ai_scent_processor.dart';
+import 'package:openai_dart/openai_dart.dart';
 
 /// Types of AI operations available in the editor floating toolbar.
 ///
@@ -18,7 +19,19 @@ enum EditorAIOperation {
   paragraphPolish('文段润色'),
 
   /// Free-input -- user provides custom editing instructions.
-  freeInput('自由输入');
+  freeInput('自由输入'),
+
+  /// Expand -- enrich text with more details, sensory descriptions, and depth.
+  expand('扩写'),
+
+  /// Compress -- condense text while preserving core meaning.
+  compress('缩写'),
+
+  /// Dialogue generation -- convert narrative description into character dialogue.
+  dialogue('对话生成'),
+
+  /// Scene description -- enrich with vivid sensory and atmospheric details.
+  scene('场景描写');
 
   /// Chinese display label for this operation.
   final String label;
@@ -71,6 +84,16 @@ class EditorAIState {
   /// Author-facing anti-AI-scent review signals for the latest AI output.
   final List<ReviewSignal> reviewSignals;
 
+  /// Multi-turn conversation history for iterative refinement.
+  ///
+  /// Each entry represents one turn: the user's instruction and the AI's
+  /// output. When non-empty, subsequent operations include this history
+  /// in the prompt so the AI can refine based on previous feedback.
+  final List<ConversationTurn> conversationHistory;
+
+  /// Maximum number of conversation turns to retain for token budget.
+  static const maxConversationTurns = 5;
+
   /// Creates an [EditorAIState] with sensible defaults (idle state).
   const EditorAIState({
     this.isStreaming = false,
@@ -84,6 +107,7 @@ class EditorAIState {
     this.userInstruction,
     this.diffResult,
     this.reviewSignals = const [],
+    this.conversationHistory = const [],
   });
 
   /// Creates a copy with the given fields replaced.
@@ -103,6 +127,7 @@ class EditorAIState {
     Object? userInstruction = _sentinel,
     Object? diffResult = _sentinel,
     List<ReviewSignal>? reviewSignals,
+    List<ConversationTurn>? conversationHistory,
   }) {
     return EditorAIState(
       isStreaming: isStreaming ?? this.isStreaming,
@@ -122,6 +147,46 @@ class EditorAIState {
           ? this.diffResult
           : diffResult as DiffResult?,
       reviewSignals: reviewSignals ?? this.reviewSignals,
+      conversationHistory: conversationHistory ?? this.conversationHistory,
     );
   }
+}
+
+/// A single turn in a multi-turn AI conversation for iterative refinement.
+///
+/// Stores the user's feedback instruction and the AI's response text
+/// so that subsequent turns can reference the full conversation context.
+class ConversationTurn {
+  /// The user's instruction for this turn (e.g., "太华丽了，朴素一点").
+  final String userInstruction;
+
+  /// The AI's response text for this turn.
+  final String aiResponse;
+
+  /// The operation type used in this turn.
+  final EditorAIOperation operation;
+
+  const ConversationTurn({
+    required this.userInstruction,
+    required this.aiResponse,
+    required this.operation,
+  });
+
+  /// Converts this turn to chat messages for the AI API.
+  List<ChatMessage> toChatMessages() {
+    return [
+      ChatMessage.user(userInstruction),
+      ChatMessage.assistant(content: aiResponse),
+    ];
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is ConversationTurn &&
+        other.userInstruction == userInstruction &&
+        other.aiResponse == aiResponse;
+  }
+
+  @override
+  int get hashCode => Object.hash(userInstruction, aiResponse);
 }

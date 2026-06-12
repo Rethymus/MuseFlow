@@ -9,6 +9,7 @@ import 'package:museflow/features/capture/presentation/capture_page.dart';
 import 'package:museflow/features/manuscript/presentation/editor_with_sidebar.dart';
 import 'package:museflow/features/manuscript/presentation/manuscript_library_page.dart';
 import 'package:museflow/features/manuscript/presentation/manuscript_settings_page.dart';
+import 'package:museflow/features/editor/presentation/author_style_profile_page.dart';
 import 'package:museflow/features/knowledge/presentation/character_card_form.dart';
 import 'package:museflow/features/knowledge/presentation/knowledge_base_page.dart';
 import 'package:museflow/features/knowledge/presentation/skill_generation_wizard.dart';
@@ -19,6 +20,7 @@ import 'package:museflow/features/settings/presentation/settings_page.dart';
 import 'package:museflow/features/stats/presentation/project_stats_page.dart';
 import 'package:museflow/features/stats/presentation/token_audit_page.dart';
 import 'package:museflow/features/stats/presentation/writing_stats_page.dart';
+import 'package:museflow/features/stats/presentation/progress_dashboard_page.dart';
 import 'package:museflow/features/reports/presentation/blind_read_page.dart';
 import 'package:museflow/features/reports/presentation/consistency_report_page.dart';
 import 'package:museflow/features/reports/presentation/pain_point_report_page.dart';
@@ -77,6 +79,13 @@ class MuseFlowApp extends ConsumerWidget {
           builder: (context, state) {
             final id = state.pathParameters['id']!;
             return ManuscriptSettingsPage(manuscriptId: id);
+          },
+        ),
+        GoRoute(
+          path: AppConstants.manuscriptStyleProfile,
+          builder: (context, state) {
+            final id = state.pathParameters['id'] ?? '';
+            return AuthorStyleProfilePage(manuscriptId: id);
           },
         ),
         StatefulShellRoute.indexedStack(
@@ -190,6 +199,11 @@ class MuseFlowApp extends ConsumerWidget {
                     GoRoute(
                       path: 'tokens',
                       builder: (context, state) => const TokenAuditPage(),
+                    ),
+                    GoRoute(
+                      path: 'progress',
+                      builder: (context, state) =>
+                          const ProgressDashboardPage(),
                     ),
                     GoRoute(
                       path: 'reports',

@@ -23,6 +23,7 @@ import 'package:museflow/features/ai/domain/ai_provider.dart';
 import 'package:museflow/features/ai/presentation/banned_phrase_settings.dart';
 import 'package:museflow/features/capture/presentation/capture_provider.dart';
 import 'package:museflow/core/presentation/providers.dart';
+import 'package:museflow/features/editor/application/style_profile_notifier.dart';
 import 'package:museflow/features/stats/domain/audit_operation_type.dart';
 import 'package:super_editor/super_editor.dart';
 
@@ -204,6 +205,7 @@ class SynthesisNotifier extends Notifier<SynthesisState> {
       fragments: budgetResult.included,
       additionalInstruction: additionalInstruction,
       bannedPhrases: bannedPhrases,
+      styleProfile: ref.read(styleProfileNotifierProvider).profile,
     );
     final messages = pipeline.build(context);
 

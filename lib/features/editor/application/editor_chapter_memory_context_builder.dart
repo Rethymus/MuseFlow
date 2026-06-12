@@ -9,6 +9,7 @@ class EditorChapterMemoryContext {
     this.nextChapterSummary,
     this.previousChapterMemoryWarning,
     this.nextChapterMemoryWarning,
+    this.chapterContextChain,
   });
 
   final String? previousChapterSummary;
@@ -16,11 +17,21 @@ class EditorChapterMemoryContext {
   final String? previousChapterMemoryWarning;
   final String? nextChapterMemoryWarning;
 
+  /// Pre-formatted multi-chapter context chain with decreasing detail.
+  ///
+  /// Per LFIN-01: Up to 3 previous chapter summaries, each with less detail
+  /// the further back they are:
+  /// - N-1: up to 220 chars (full context)
+  /// - N-2: up to 150 chars (reduced context)
+  /// - N-3: up to 80 chars (brief mention)
+  final String? chapterContextChain;
+
   bool get isEmpty =>
       previousChapterSummary == null &&
       nextChapterSummary == null &&
       previousChapterMemoryWarning == null &&
-      nextChapterMemoryWarning == null;
+      nextChapterMemoryWarning == null &&
+      chapterContextChain == null;
 }
 
 /// Builds adjacent chapter context for real editor AI calls.
@@ -67,6 +78,7 @@ class EditorChapterMemoryContextBuilder {
         ChapterMemoryDirection.previous,
       ),
       nextChapterMemoryWarning: _warning(next, ChapterMemoryDirection.next),
+      chapterContextChain: _buildContextChain(chapters, currentIndex),
     );
   }
 
@@ -138,6 +150,34 @@ class EditorChapterMemoryContextBuilder {
 
   String _compactWhitespace(String text) =>
       text.replaceAll(RegExp(r'\s+'), ' ').trim();
+
+  /// Builds a multi-chapter context chain from up to 3 previous chapters.
+  ///
+  /// Per LFIN-01: Each chapter gets progressively less detail:
+  /// - N-1 (immediate previous): up to 220 chars
+  /// - N-2: up to 150 chars
+  /// - N-3: up to 80 chars (brief mention)
+  String? _buildContextChain(List<Chapter> chapters, int currentIndex) {
+    if (currentIndex < 1) return null;
+
+    final limits = [220, 150, 80];
+    final buffer = StringBuffer();
+    var chainIndex = 0;
+
+    for (var i = currentIndex - 1; i >= 0 && chainIndex < 3; i--, chainIndex++) {
+      final chapter = chapters[i];
+      final text = _compactWhitespace(chapter.documentContent);
+      if (text.isEmpty) continue;
+
+      final limit = limits[chainIndex];
+      final label = chainIndex == 0 ? '紧邻前章' : '前${chainIndex + 1}章';
+      final summary = text.length <= limit ? text : '${text.substring(0, limit)}...';
+      buffer.writeln('$label摘要：$summary');
+    }
+
+    if (buffer.isEmpty) return null;
+    return buffer.toString().trimRight();
+  }
 
   static const Set<String> _memoryStopTerms = {
     '一个',
