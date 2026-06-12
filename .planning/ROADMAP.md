@@ -6,7 +6,7 @@
 - ✅ **v1.1 创作体验升级** — Phases 7–10 (shipped 2026-06-05)
 - ✅ **v1.2 多文稿架构** — Phase 11 (shipped 2026-06-06)
 - ✅ **v1.3 用户视角全流程验证 — 百章修仙小说** — Phases 12–16 (shipped 2026-06-09)
-- 🚧 **v1.4 AI辅助创作体验深度优化** — Phases 17–24 (in progress)
+- ✅ **v1.4 AI辅助创作体验深度优化** — Phases 17–24 (shipped 2026-06-12)
 
 ## Phases
 
@@ -51,18 +51,18 @@
 
 </details>
 
-### 🚧 v1.4 AI辅助创作体验深度优化 (In Progress)
+### ✅ v1.4 AI辅助创作体验深度优化 (Shipped 2026-06-12)
 
 **Milestone Goal:** 以真实作者的创作体验为中心，从"能用"到"好用"——强化作者风格学习、反AI味深度优化、知识库智能化，让AI真正成为作者的磨刀石。
 
-- [ ] **Phase 17: Author Style Fingerprint + Dynamic Prompt** — Author style analysis, dynamic prompt adaptation, and few-shot sample injection
-- [ ] **Phase 18: Anti-AI-Scent Deepening** — Expanded banned phrase library and enhanced post-processing pipeline
-- [ ] **Phase 19: Style Deviation Detection + Style Thermometer** — Style deviation highlighting, semantic AI-scent detection, and style thermometer dashboard
-- [ ] **Phase 20: Smart Knowledge Injection** — Fuzzy matching, alias extraction, pronoun resolution, and context-aware priority injection
-- [ ] **Phase 21: Relationship Graph + Foreshadowing Reminders** — Character relationship management and real-time foreshadowing reminders
-- [ ] **Phase 22: Long-form Context + Guided Writing** — Chapter context chain, multi-turn AI dialog, and guided continuation suggestions
-- [ ] **Phase 23: Editor AI Operations + Undo History** — Expanded AI toolbar operations and 20-step undo history
-- [ ] **Phase 24: Web Responsive + Progress Dashboard** — Web responsive layout and writing progress visualization
+- [x] **Phase 17: Author Style Fingerprint + Dynamic Prompt** — Author style analysis, dynamic prompt adaptation, and few-shot sample injection
+- [x] **Phase 18: Anti-AI-Scent Deepening** — Expanded banned phrase library and enhanced post-processing pipeline
+- [x] **Phase 19: Style Deviation Detection + Style Thermometer** — Style deviation highlighting, semantic AI-scent detection, and style thermometer dashboard
+- [x] **Phase 20: Smart Knowledge Injection** — Fuzzy matching, alias extraction, pronoun resolution, and context-aware priority injection
+- [x] **Phase 21: Relationship Graph + Foreshadowing Reminders** — Character relationship management and real-time foreshadowing reminders
+- [x] **Phase 22: Long-form Context + Guided Writing** — Chapter context chain, multi-turn AI dialog, and guided continuation suggestions
+- [x] **Phase 23: Editor AI Operations + Undo History** — Expanded AI toolbar operations and 20-step undo history
+- [x] **Phase 24: Web Responsive + Progress Dashboard** — Web responsive layout and writing progress visualization
 
 ## Phase Details
 
@@ -332,11 +332,11 @@ Phases execute in numeric order: 17 -> 18 -> 19 -> 20 -> 21 -> 22 -> 23 -> 24
 | 14. World-Building & First 30 Chapters | v1.3 | 10/10 | Complete | 2026-06-08 |
 | 15. Full Manuscript & Story Structure | v1.3 | 7/7 | Complete | 2026-06-08 |
 | 16. Analysis & Reports | v1.3 | 3/3 | Complete | 2026-06-08 |
-| 17. Author Style Fingerprint + Dynamic Prompt | v1.4 | 0/? | Not started | - |
-| 18. Anti-AI-Scent Deepening | v1.4 | 0/? | Not started | - |
-| 19. Style Deviation Detection + Style Thermometer | v1.4 | 0/? | Not started | - |
-| 20. Smart Knowledge Injection | v1.4 | 0/? | Not started | - |
-| 21. Relationship Graph + Foreshadowing Reminders | v1.4 | 0/? | Not started | - |
-| 22. Long-form Context + Guided Writing | v1.4 | 0/? | Not started | - |
-| 23. Editor AI Operations + Undo History | v1.4 | 0/? | Not started | - |
-| 24. Web Responsive + Progress Dashboard | v1.4 | 0/? | Not started | - |
+| 17. Author Style Fingerprint + Dynamic Prompt | v1.4 | 1/1 | Complete | 2026-06-12 |
+| 18. Anti-AI-Scent Deepening | v1.4 | 1/1 | Complete | 2026-06-12 |
+| 19. Style Deviation Detection + Style Thermometer | v1.4 | 1/1 | Complete | 2026-06-12 |
+| 20. Smart Knowledge Injection | v1.4 | 1/1 | Complete | 2026-06-12 |
+| 21. Relationship Graph + Foreshadowing Reminders | v1.4 | 1/1 | Complete | 2026-06-12 |
+| 22. Long-form Context + Guided Writing | v1.4 | 1/1 | Complete | 2026-06-12 |
+| 23. Editor AI Operations + Undo History | v1.4 | 1/1 | Complete | 2026-06-12 |
+| 24. Web Responsive + Progress Dashboard | v1.4 | 1/1 | Complete | 2026-06-12 |

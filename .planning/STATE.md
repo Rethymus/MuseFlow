@@ -2,34 +2,46 @@
 gsd_state_version: 1.0
 milestone: v1.4
 milestone_name: AI辅助创作体验深度优化
-status: planning
-last_updated: "2026-06-11T00:00:00.000Z"
-last_activity: 2026-06-11
+status: complete
+last_updated: "2026-06-12T12:00:00.000Z"
+last_activity: 2026-06-12
 progress:
   total_phases: 8
-  completed_phases: 0
-  total_plans: 0
-  completed_plans: 0
-  percent: 0
+  completed_phases: 8
+  total_plans: 8
+  completed_plans: 8
+  percent: 100
 ---
 
 # Project State
 
 ## Project Reference
 
-See: .planning/PROJECT.md (updated 2026-06-11)
+See: .planning/PROJECT.md (updated 2026-06-12)
 
 **Core value:** 让AI帮你写好故事，但让读者看不出AI的痕迹。
-**Current focus:** Phase 17 — Author Style Fingerprint + Dynamic Prompt
+**Current focus:** v1.4 shipped → v1.5 前沿研究改进规划
 
 ## Current Position
 
-Phase: 17 of 24 (Author Style Fingerprint + Dynamic Prompt)
-Plan: 0 of ? (not yet planned)
-Status: Ready to plan
-Last activity: 2026-06-11 — v1.4 roadmap created, 8 phases defined
+Phase: 17-24 of 24 (v1.4 — AI辅助创作体验深度优化) ✅ SHIPPED
+Status: All 8 phases complete, 1451 tests passing, Web build verified
+Last activity: 2026-06-12 — v1.4 里程碑完成，ROADMAP/REQUIREMENTS同步更新
 
-Progress: [░░░░░░░░░░░░░░░░░░░░] 0%
+Progress: [████████████████████████] 100%
+
+## v1.4 Implementation Status
+
+| Phase | Status | Implemented | Missing |
+|-------|--------|-------------|---------|
+| 17. Author Style Fingerprint | ✅ Complete | All 10 files + 2 tests + routing + AI integration | — |
+| 18. Anti-AI-Scent Deepening | ✅ Complete | 258 synonyms, 20 categories, review signals on original text | Management UI, validation with real prose samples |
+| 19. Style Deviation + Thermometer | ✅ Complete | 5-dimension deviation detector (13 tests), AI-scent score 0-100, thermometer dashboard + inline card in editor | — |
+| 20. Smart Knowledge Injection | ✅ Complete | FuzzyMatcher (28 tests), AliasExtractor (15 tests), PronounResolver (13 tests), 3-phase middleware (5 tests) | — |
+| 21. Relationship Graph + Foreshadowing | ✅ Complete | Relationship domain (8 types, 8 tests), repository (16 tests), notifier (5 tests), foreshadowing reminder widget, editor sidebar integration, relationship management UI, knowledge injection with relationship context | — |
+| 22. Long-form Context + Guided Writing | ✅ Complete | 3-chapter context chain (220/150/80), multi-turn (5 turns), 3 plot directions | — |
+| 23. Editor AI Operations + Undo | ✅ Complete | 7 operations, operation prompts, 20-step undo, entries accessor, version comparison A/B dialog with side-by-side text, reverse-chronological order | — |
+| 24. Web Responsive + Dashboard | ✅ Complete | Responsive editor (LayoutBuilder, drawer for narrow), writing heatmap, progress dashboard (word count progress, AI ratio, streak, pace, consistency), `/stats/progress` route | — |
 
 ## Performance Metrics
 
@@ -82,6 +94,6 @@ Items acknowledged and deferred from v1.3:
 
 ## Session Continuity
 
-Last session: 2026-06-11
-Stopped at: v1.4 roadmap created (8 phases, 18 requirements mapped), ready to plan Phase 17
-Next step: `/gsd:plan-phase 17` to create plans for Author Style Fingerprint + Dynamic Prompt
+Last session: 2026-06-12
+Stopped at: v1.4 shipped (all 8 phases, 18 requirements validated), ROADMAP/REQUIREMENTS synced, 1451 tests passing, Web build verified
+Next step: v1.5 改进路线图制定 — 基于前沿研究（35+论文）的深度功能优化
