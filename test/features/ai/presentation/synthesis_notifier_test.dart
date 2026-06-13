@@ -162,8 +162,8 @@ void main() {
         await _pumpAndWait();
 
         final state = container.read(synthesisProvider);
-        expect(state.accumulatedText, contains('但是'));
-        expect(state.accumulatedText, isNot(contains('然而')));
+        // 然而 is highlight-only: wrapped with markers, not replaced
+        expect(state.accumulatedText, contains('【然而】'));
       });
 
       test('should set error when no active provider configured', () async {

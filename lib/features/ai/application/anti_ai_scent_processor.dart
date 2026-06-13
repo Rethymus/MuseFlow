@@ -118,8 +118,12 @@ class ProcessingResult {
 /// }
 /// ```
 class AntiAIScentProcessor {
-  /// The keys from the built-in synonym map, used to seed user's banned list.
-  static List<String> get synonymKeys => _synonymMap.keys.toList();
+  /// The keys from the built-in synonym map plus highlight-only phrases,
+  /// used to seed user's banned list for the AI prompt layer.
+  static List<String> get synonymKeys => [
+        ..._synonymMap.keys,
+        ..._highlightOnlyPhrases,
+      ];
 
   /// Fixed synonym map for auto-replacement per D-09.
   /// Empty string values mean "delete the phrase".
@@ -463,6 +467,40 @@ class AntiAIScentProcessor {
     '着实': '',
   };
 
+  /// Phrases that appear in the AI prompt's banned list but are NOT
+  /// auto-replaced in post-processing. Instead, they are wrapped with
+  /// 【】 markers for the author to review and decide.
+  ///
+  /// These are common Chinese literary words that have high false-positive
+  /// risk — perfectly legitimate in classic fiction but overused by AI.
+  /// By highlighting instead of replacing, we preserve the author's ability
+  /// to accept or reject each usage in context.
+  ///
+  /// Categories moved to highlight-only:
+  /// - Common transitions: 然而, 事实上, 实际上, 此外
+  /// - Emphasis/judgment words: 毫无疑问, 不可否认, 不言而喻, etc.
+  /// - Enumeration markers: 首先, 其次, 最后 (break prose if deleted)
+  /// - Literary time expressions: 刹那间, 顷刻间, etc. (valid in fiction)
+  /// - Common intensifiers: 极其, 异常, 十分, etc. (too common to delete)
+  /// - Pacing fillers: 不知不觉间, etc. (natural in fiction)
+  static const Set<String> _highlightOnlyPhrases = {
+    // Common literary transitions
+    '然而', '事实上', '实际上', '此外',
+    // Emphasis/judgment words used in narrator voice
+    '毫无疑问', '不可否认', '不言而喻', '众所周知', '毋庸置疑',
+    '不容忽视', '无可厚非', '不言自明', '不可小觑', '尤其',
+    // Enumeration markers (deleting breaks prose structure)
+    '首先', '其次', '最后', '一方面', '另一方面',
+    // Literary time expressions (valid in wuxia/xianxia)
+    '刹那间', '顷刻间', '转瞬之间', '弹指之间', '须臾之间',
+    '瞬息之间', '片刻之后', '过了片刻', '良久之后',
+    // Pacing fillers (natural in fiction)
+    '不知不觉间', '在不知不觉中', '不知不觉地',
+    // Common intensifiers (too ubiquitous to auto-delete)
+    '极其', '异常', '万分', '无比', '极为', '尤为',
+    '十分', '格外', '甚为', '着实',
+  };
+
   /// Structural pattern regexes per D-10.
   /// These are highlighted with 【】 markers, not auto-replaced.
   /// Organized by pattern type for maintainability.
@@ -569,6 +607,10 @@ class AntiAIScentProcessor {
       );
     }
 
+    // Phase 1c: Highlight-only phrases (common literary words —
+    // highlight for author review, don't auto-replace)
+    processedText = _applyHighlightOnlyPhrases(processedText, highlights);
+
     // Phase 2: Structural pattern highlighting
     processedText = _applyStructuralHighlights(processedText, highlights);
 
@@ -584,10 +626,13 @@ class AntiAIScentProcessor {
   }
 
   /// Applies auto-replacement from the fixed synonym map.
+  /// Skips highlight-only phrases — those are handled separately.
   String _applyAutoReplacements(String text, List<TextHighlight> highlights) {
     var result = text;
     for (final entry in _synonymMap.entries) {
       final phrase = entry.key;
+      // Highlight-only phrases are not auto-replaced
+      if (_highlightOnlyPhrases.contains(phrase)) continue;
       final replacement = entry.value;
 
       result = _replaceBoundaryAware(
@@ -616,6 +661,51 @@ class AntiAIScentProcessor {
         highlights,
         HighlightType.bannedWord,
       );
+    }
+    return result;
+  }
+
+  /// Wraps highlight-only phrases with 【】 markers for author review.
+  ///
+  /// These phrases are too common in legitimate literature to auto-replace,
+  /// but still flagged for the author to decide in context.
+  String _applyHighlightOnlyPhrases(
+    String text,
+    List<TextHighlight> highlights,
+  ) {
+    var result = text;
+    for (final phrase in _highlightOnlyPhrases) {
+      var offset = 0;
+      while (true) {
+        final index = result.indexOf(phrase, offset);
+        if (index == -1) break;
+
+        // Boundary check: detect compound-word embedding (e.g., "然而"
+        // inside "自然而然" where chars overlap). Uses character
+        // overlap instead of simple CJK adjacency so that short
+        // function words like "极其" in "这极其重要" still match.
+        if (!_isAtValidBoundary(result, index, phrase.length)) {
+          offset = index + 1;
+          continue;
+        }
+
+        final marked = '【$phrase】';
+        result =
+            result.substring(0, index) +
+            marked +
+            result.substring(index + phrase.length);
+
+        highlights.add(
+          TextHighlight(
+            start: index,
+            end: index + marked.length,
+            originalText: phrase,
+            type: HighlightType.bannedWord,
+          ),
+        );
+
+        offset = index + marked.length;
+      }
     }
     return result;
   }
@@ -682,18 +772,25 @@ class AntiAIScentProcessor {
   /// Checks whether a phrase occurrence at [index] in [text] has
   /// proper boundaries (not embedded in a longer word).
   ///
-  /// Per Pitfall 5: A phrase is considered embedded in a longer word
-  /// when BOTH the character before AND the character after are CJK
-  /// ideographs. For example, "然而" in "自然而然" has "然" on both
-  /// sides, so it's embedded. But "然而他" only has CJK after, so
-  /// it's a valid standalone usage.
+  /// Uses phrase-content overlap detection:
+  /// - "然而" in "自然而然" → blocked (`然` after match is IN phrase)
+  /// - "极其" in "这极其重要" → allowed (`这`/`重` NOT in phrase)
   bool _isAtValidBoundary(String text, int index, int phraseLength) {
+    if (index <= 0 && index + phraseLength >= text.length) return true;
+
     final beforeIsCjk = index > 0 && _isCjkChar(text[index - 1]);
     final afterIndex = index + phraseLength;
     final afterIsCjk = afterIndex < text.length && _isCjkChar(text[afterIndex]);
 
-    // Only block when BOTH sides are CJK (phrase is embedded in a word)
-    return !(beforeIsCjk && afterIsCjk);
+    if (!beforeIsCjk || !afterIsCjk) return true;
+
+    // Both sides are CJK — check if adjacent chars appear IN the
+    // phrase itself, which indicates compound-word embedding.
+    final phrase = text.substring(index, index + phraseLength);
+    if (phrase.contains(text[index - 1])) return false;
+    if (phrase.contains(text[afterIndex])) return false;
+
+    return true;
   }
 
   /// Applies structural pattern highlighting with 【】 markers per D-10.

@@ -247,9 +247,8 @@ void main() {
         await _pumpAndWait();
 
         final state = container.read(editorAINotifierProvider);
-        // Anti-AI-scent should replace 然而 with 但是
-        expect(state.progressText, contains('但是'));
-        expect(state.progressText, isNot(contains('然而')));
+        // 然而 is highlight-only: wrapped with markers, not replaced
+        expect(state.progressText, contains('【然而】'));
       });
 
       test('should store anti-AI-scent review signals after stream', () async {
