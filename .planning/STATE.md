@@ -82,13 +82,14 @@ None.
 - Anti-AI-scent banned phrase lists should be validated with broader real Chinese prose samples before release sign-off
 - Phase 7 bundled template prose needs human literary review before release sign-off
 
-Last activity: 2026-06-13 - Completed quick task 260613-q8x: 修复 Claude token 审计 bug（promptTokens 恒为 0）
+Last activity: 2026-06-13 - Completed quick task 260613-dev-opt: 偏差检测可选化（编辑器 AI 操作后不再无条件触发第二次 LLM 调用，消除隐藏 2x token 成本；v1.5 CP-01 P0）；1510 tests pass (from 1508)
 
 ### Quick Tasks Completed
 
 | # | Description | Date | Commit | Directory |
 |---|-------------|------|--------|-----------|
 | 260613-q8x | 修复 Claude token 审计 bug（MessageStartEvent 两事件捕获） | 2026-06-13 | 58632e7 | [260613-q8x-fix-claude-usage-tokens](./quick/260613-q8x-fix-claude-usage-tokens/) |
+| 260613-dev-opt | 偏差检测可选化（默认关闭，消除编辑器 AI 操作隐藏 2x token 成本） | 2026-06-13 | dfe3198 | [260613-dev-optional-deviation](./quick/260613-dev-optional-deviation/) |
 
 ## Deferred Items
 
@@ -103,5 +104,5 @@ Items acknowledged and deferred from v1.3:
 ## Session Continuity
 
 Last session: 2026-06-13
-Stopped at: 6项优先功能改进完成，1505 tests pass (from 1468)
-Next step: Phase 25 真实API端到端验证 — 用真实 Claude/GPT API 验证三段式核心流程
+Stopped at: BUG-1（Claude token 审计）+ BUG-3（偏差检测可选化）已修；1510 tests pass (from 1505)
+Next step: BUG-2（审计 outputText 时序竞态）→ Onboarding Provider 引导 → README 截图诚实化；Phase 25 真实 API E2E 仍待真实 key/网络
