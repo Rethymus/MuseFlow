@@ -65,17 +65,15 @@ void main() {
         analyzedChapterCount: 1,
         analyzedCharCount: 200,
       );
-      final result = detector.analyze(
-        text: '林风站在山门前。',
-        profile: profile,
-      );
+      final result = detector.analyze(text: '林风站在山门前。', profile: profile);
 
       expect(result, isNull);
     });
 
     test('should return non-null result for valid input', () {
       final profile = _testProfile();
-      final text = '林风站在山门前，望着远方的乌云密布的天空。'
+      final text =
+          '林风站在山门前，望着远方的乌云密布的天空。'
           '他心中涌起一股不安的预感，仿佛有什么不好的事情即将发生。';
 
       final result = detector.analyze(text: text, profile: profile);
@@ -94,7 +92,8 @@ void main() {
       );
 
       // Write text with varied sentence lengths matching the profile
-      final text = '林风走进院子。'
+      final text =
+          '林风走进院子。'
           '月光洒在青石板上，映出一道长长的影子。'
           '他停下脚步，侧耳倾听远处传来的虫鸣。'
           '忽然，一阵冷风吹过，卷起地上的落叶。'
@@ -114,7 +113,8 @@ void main() {
       );
 
       // Write text with very uniform sentence lengths (AI-like)
-      final text = '林风站在山门前，望着远方的天空。'
+      final text =
+          '林风站在山门前，望着远方的天空。'
           '他心中涌起一股不安的感觉。'
           '风吹过庭院，带起了地上的落叶。'
           '远处的钟声悠悠传来，回荡在山谷之间。'
@@ -136,7 +136,8 @@ void main() {
       );
 
       // Text with very diverse/unusual vocabulary
-      final text = '璀璨的穹苍之下，氤氲的岚霭缭绕于嶙峋的峰巅。'
+      final text =
+          '璀璨的穹苍之下，氤氲的岚霭缭绕于嶙峋的峰巅。'
           '瑰丽的霞光穿透葳蕤的枝桠，投射斑斓的光影。'
           '苍茫的天地间，他踽踽独行，寻觅着那缥缈的归途。';
 
@@ -157,7 +158,8 @@ void main() {
       );
 
       // Text heavy on descriptions and metaphors
-      final text = '如同一条银色的丝带，小溪蜿蜒流过翠绿的山谷。'
+      final text =
+          '如同一条银色的丝带，小溪蜿蜒流过翠绿的山谷。'
           '仿佛大自然精心雕琢的画卷，每一处都是绝美的风景。'
           '阳光像碎金一样洒落在水面上，波光粼粼，宛如梦境。';
 
@@ -178,7 +180,8 @@ void main() {
       );
 
       // Emotionally flat text
-      final text = '林风走在路上。'
+      final text =
+          '林风走在路上。'
           '路边的树木郁郁葱葱，阳光透过树叶洒下斑驳的光影。'
           '他继续向前走去，步履平稳而从容。'
           '远处的山峦在云雾中若隐若现，景色宜人。'
@@ -222,13 +225,11 @@ void main() {
     });
 
     test('should generate appropriate summary', () {
-      final profile = _testProfile(
-        rhythmScore: 0.2,
-        intensity: 0.7,
-      );
+      final profile = _testProfile(rhythmScore: 0.2, intensity: 0.7);
 
       // Text designed to trigger multiple deviations
-      final text = '如同一条银色的丝带，小溪蜿蜒流过翠绿的山谷。'
+      final text =
+          '如同一条银色的丝带，小溪蜿蜒流过翠绿的山谷。'
           '仿佛大自然精心雕琢的画卷，每一处都是绝美的风景。'
           '阳光像碎金一样洒落在水面上。'
           '他站在那里，看着这一切。'
@@ -245,7 +246,8 @@ void main() {
 
     test('should produce no deviations summary for matching text', () {
       final profile = _testProfile();
-      final text = '林风走进院子。'
+      final text =
+          '林风走进院子。'
           '月光洒在青石板上，映出一道长长的影子。'
           '他停下脚步，侧耳倾听。'
           '忽然一阵冷风吹过。'
@@ -262,7 +264,8 @@ void main() {
     test('deviation scores should be clamped to 0-1 range', () {
       final profile = _testProfile(avgSentenceLen: 5, sentenceStdDev: 1);
 
-      final text = '林风站在山门前，望着远方的乌云密布的天空。'
+      final text =
+          '林风站在山门前，望着远方的乌云密布的天空。'
           '他心中涌起一股不安的预感。';
 
       final result = detector.analyze(text: text, profile: profile);

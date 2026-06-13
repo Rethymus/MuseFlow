@@ -307,8 +307,7 @@ void main() {
         final bytes = service.buildDocxBytes(bundle);
         final archive = ZipDecoder().decodeBytes(bytes);
 
-        final fileNames =
-            archive.files.map((f) => f.name).toList();
+        final fileNames = archive.files.map((f) => f.name).toList();
         expect(fileNames, contains('[Content_Types].xml'));
         expect(fileNames, contains('_rels/.rels'));
         expect(fileNames, contains('word/document.xml'));
@@ -316,9 +315,7 @@ void main() {
       });
 
       test('should include flat manuscript text in document.xml', () {
-        final bundle = createTestBundle(
-          manuscriptText: '第一段。\n\n第二段。',
-        );
+        final bundle = createTestBundle(manuscriptText: '第一段。\n\n第二段。');
         final bytes = service.buildDocxBytes(bundle);
         final archive = ZipDecoder().decodeBytes(bytes);
 
@@ -377,9 +374,7 @@ void main() {
       });
 
       test('should escape XML special characters in content', () {
-        final bundle = createTestBundle(
-          manuscriptText: '他喊道："快跑！" <tag>',
-        );
+        final bundle = createTestBundle(manuscriptText: '他喊道："快跑！" <tag>');
         final bytes = service.buildDocxBytes(bundle);
         final archive = ZipDecoder().decodeBytes(bytes);
 

@@ -165,23 +165,26 @@ void main() {
       expect(apiKey, 'sk-my-secret-key');
     });
 
-    test('testConnection should accept type parameter for all provider types', () async {
-      final types = AiProviderType.values;
-      for (final type in types) {
-        try {
-          await service.testConnection(
-            apiKey: 'test-key',
-            baseUrl: 'https://api.example.com/v1',
-            type: type,
-            model: 'test-model',
-          );
-        } on AINetworkException {
-          // Expected — no real server running in tests
-        } catch (_) {
-          // Other network errors are acceptable in test environment
+    test(
+      'testConnection should accept type parameter for all provider types',
+      () async {
+        final types = AiProviderType.values;
+        for (final type in types) {
+          try {
+            await service.testConnection(
+              apiKey: 'test-key',
+              baseUrl: 'https://api.example.com/v1',
+              type: type,
+              model: 'test-model',
+            );
+          } on AINetworkException {
+            // Expected — no real server running in tests
+          } catch (_) {
+            // Other network errors are acceptable in test environment
+          }
         }
-      }
-    });
+      },
+    );
   });
 
   group('AIException', () {

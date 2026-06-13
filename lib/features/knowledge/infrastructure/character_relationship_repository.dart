@@ -21,7 +21,11 @@ class CharacterRelationshipRepository {
   /// Returns all stored relationships.
   List<CharacterRelationship> getAll() {
     return _box.values
-        .map((json) => CharacterRelationship.fromJson(Map<String, dynamic>.from(json as Map)))
+        .map(
+          (json) => CharacterRelationship.fromJson(
+            Map<String, dynamic>.from(json as Map),
+          ),
+        )
         .toList();
   }
 
@@ -29,7 +33,9 @@ class CharacterRelationshipRepository {
   CharacterRelationship? getById(String id) {
     final json = _box.get(id);
     if (json == null) return null;
-    return CharacterRelationship.fromJson(Map<String, dynamic>.from(json as Map));
+    return CharacterRelationship.fromJson(
+      Map<String, dynamic>.from(json as Map),
+    );
   }
 
   /// Returns all relationships involving the given character ID.
@@ -39,16 +45,23 @@ class CharacterRelationshipRepository {
   /// or the target.
   List<CharacterRelationship> getForCharacter(String characterId) {
     return getAll()
-        .where((r) =>
-            r.fromCharacterId == characterId || r.toCharacterId == characterId)
+        .where(
+          (r) =>
+              r.fromCharacterId == characterId ||
+              r.toCharacterId == characterId,
+        )
         .toList();
   }
 
   /// Returns the relationship between two specific characters, or null.
   CharacterRelationship? getBetween(String fromId, String toId) {
-    return getAll().where((r) =>
-        (r.fromCharacterId == fromId && r.toCharacterId == toId) ||
-        (r.fromCharacterId == toId && r.toCharacterId == fromId)).firstOrNull;
+    return getAll()
+        .where(
+          (r) =>
+              (r.fromCharacterId == fromId && r.toCharacterId == toId) ||
+              (r.fromCharacterId == toId && r.toCharacterId == fromId),
+        )
+        .firstOrNull;
   }
 
   /// Adds a new relationship to the repository.

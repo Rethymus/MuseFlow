@@ -297,9 +297,9 @@ class EditorAINotifier extends Notifier<EditorAIState> {
     }
 
     // Phase 19: analyze AI output against author style profile for thermometer.
-    ref.read(styleDeviationNotifierProvider.notifier).analyzeText(
-      result.processedText,
-    );
+    ref
+        .read(styleDeviationNotifierProvider.notifier)
+        .analyzeText(result.processedText);
   }
 
   /// Accepts a single sentence diff at [index].
@@ -478,13 +478,11 @@ class EditorAINotifier extends Notifier<EditorAIState> {
       operation: operation,
     );
 
-    final updatedHistory = [
-      ...state.conversationHistory,
-      turn,
-    ];
+    final updatedHistory = [...state.conversationHistory, turn];
 
     // Trim to max conversation turns for token budget
-    final trimmedHistory = updatedHistory.length > EditorAIState.maxConversationTurns
+    final trimmedHistory =
+        updatedHistory.length > EditorAIState.maxConversationTurns
         ? updatedHistory.sublist(
             updatedHistory.length - EditorAIState.maxConversationTurns,
           )

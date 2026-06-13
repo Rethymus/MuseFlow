@@ -102,24 +102,27 @@ void main() {
       expect(restored.lexicalSignature.topTerms.first.frequency, 5);
     });
 
-    test('old JSON without lexicalSignature key should parse to empty signature', () {
-      // Simulate legacy persisted JSON: no lexicalSignature field.
-      final legacyJson = <String, dynamic>{
-        'manuscriptId': 'legacy-ms',
-        'sentenceLengthStats': const SentenceLengthStats().toJson(),
-        'rhythmScore': 0.5,
-        'vocabularyRichness': 0.5,
-        'rhetoricHabits': const RhetoricHabits().toJson(),
-        'emotionalTone': const EmotionalTone().toJson(),
-        'analyzedChapterCount': 3,
-        'analyzedCharCount': 1500,
-        'lastAnalyzedAt': DateTime(2025, 1, 1).toIso8601String(),
-        'sampleParagraphs': <Map<String, dynamic>>[],
-      };
-      final restored = AuthorStyleProfile.fromJson(legacyJson);
-      expect(restored.manuscriptId, 'legacy-ms');
-      expect(restored.lexicalSignature.isEmpty, isTrue);
-    });
+    test(
+      'old JSON without lexicalSignature key should parse to empty signature',
+      () {
+        // Simulate legacy persisted JSON: no lexicalSignature field.
+        final legacyJson = <String, dynamic>{
+          'manuscriptId': 'legacy-ms',
+          'sentenceLengthStats': const SentenceLengthStats().toJson(),
+          'rhythmScore': 0.5,
+          'vocabularyRichness': 0.5,
+          'rhetoricHabits': const RhetoricHabits().toJson(),
+          'emotionalTone': const EmotionalTone().toJson(),
+          'analyzedChapterCount': 3,
+          'analyzedCharCount': 1500,
+          'lastAnalyzedAt': DateTime(2025, 1, 1).toIso8601String(),
+          'sampleParagraphs': <Map<String, dynamic>>[],
+        };
+        final restored = AuthorStyleProfile.fromJson(legacyJson);
+        expect(restored.manuscriptId, 'legacy-ms');
+        expect(restored.lexicalSignature.isEmpty, isTrue);
+      },
+    );
 
     test('copyWith should override lexicalSignature when provided', () {
       final original = AuthorStyleProfile(
@@ -160,14 +163,8 @@ void main() {
     });
 
     test('should interpret vocabulary scores', () {
-      expect(
-        StyleDimension.vocabulary.interpret(0.1),
-        contains('重复率高'),
-      );
-      expect(
-        StyleDimension.vocabulary.interpret(0.5),
-        contains('较为丰富'),
-      );
+      expect(StyleDimension.vocabulary.interpret(0.1), contains('重复率高'));
+      expect(StyleDimension.vocabulary.interpret(0.5), contains('较为丰富'));
     });
   });
 
@@ -212,13 +209,11 @@ void main() {
     });
 
     test('positive and negative word sets should have no duplicates', () {
-      final positiveSet =
-          SentimentLexicon.positiveWords.toSet();
+      final positiveSet = SentimentLexicon.positiveWords.toSet();
       final positiveList = SentimentLexicon.positiveWords.toList();
       expect(positiveSet.length, positiveList.length);
 
-      final negativeSet =
-          SentimentLexicon.negativeWords.toSet();
+      final negativeSet = SentimentLexicon.negativeWords.toSet();
       final negativeList = SentimentLexicon.negativeWords.toList();
       expect(negativeSet.length, negativeList.length);
     });

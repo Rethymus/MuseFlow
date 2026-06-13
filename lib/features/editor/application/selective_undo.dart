@@ -98,8 +98,7 @@ class SelectiveUndoService {
   int get stackLength => _undoStack.length;
 
   /// The most recent undo entry, or null if the stack is empty.
-  UndoEntry? get lastEntry =>
-      _undoStack.isNotEmpty ? _undoStack.last : null;
+  UndoEntry? get lastEntry => _undoStack.isNotEmpty ? _undoStack.last : null;
 
   /// All entries in chronological order (oldest first).
   ///

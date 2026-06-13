@@ -61,11 +61,15 @@ class DynamicPersonaMiddleware extends PromptMiddleware {
     }
 
     // Rhythm guidance
-    final rhythmInterpret = StyleDimension.rhythm.interpret(profile.rhythmScore);
+    final rhythmInterpret = StyleDimension.rhythm.interpret(
+      profile.rhythmScore,
+    );
     parts.add('- 节奏：$rhythmInterpret。请保持句式长短错落的变化感。');
 
     // Vocabulary guidance
-    final vocabInterpret = StyleDimension.vocabulary.interpret(profile.vocabularyRichness);
+    final vocabInterpret = StyleDimension.vocabulary.interpret(
+      profile.vocabularyRichness,
+    );
     parts.add('- 词汇：$vocabInterpret。请使用与作者水平相当的词汇变化。');
 
     // Rhetoric guidance
@@ -90,9 +94,11 @@ class DynamicPersonaMiddleware extends PromptMiddleware {
     }
 
     // Anti-AI-scent anchor
-    parts.add('\n**核心要求**：模仿上述风格特征，但不要让读者感到刻意。'
-        '避免任何AI生成的痕迹，包括但不限于套话连接词、公式化句式、'
-        '过度均衡的描写、过于完美的逻辑。');
+    parts.add(
+      '\n**核心要求**：模仿上述风格特征，但不要让读者感到刻意。'
+      '避免任何AI生成的痕迹，包括但不限于套话连接词、公式化句式、'
+      '过度均衡的描写、过于完美的逻辑。',
+    );
 
     return parts.join('\n');
   }
@@ -137,8 +143,11 @@ class DynamicPersonaMiddleware extends PromptMiddleware {
   String _removeDefaultPersona(String content) {
     return content
         .replaceAll(PersonaInjectionMiddleware.personaText, '')
-        .replaceAll('\n\n写作风格：自然、有温度、像人写的。'
-            '避免使用任何AI生成的痕迹。', '');
+        .replaceAll(
+          '\n\n写作风格：自然、有温度、像人写的。'
+              '避免使用任何AI生成的痕迹。',
+          '',
+        );
   }
 
   int? _firstSystemMessageIndex(List messages) {

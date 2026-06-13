@@ -27,8 +27,11 @@ void main() {
         // No returned term should be a bare functional word.
         expect(['的', '了', '是', '在'], isNot(contains(term.term)));
         // No returned n-gram should be composed solely of stopword chars.
-        expect(_isAllStopword(term.term), isFalse,
-            reason: 'stopword-only n-gram leaked into signature: ${term.term}');
+        expect(
+          _isAllStopword(term.term),
+          isFalse,
+          reason: 'stopword-only n-gram leaked into signature: ${term.term}',
+        );
       }
     });
 
@@ -42,39 +45,57 @@ void main() {
       expect(terms, containsAll(['拔剑四', '剑四顾']));
     });
 
-    test('content term with former-stopword char should survive (D-1tp-FIX)', () {
-      // 道心/剑道 are highly characteristic xianxia terms. The stopword
-      // filter must NOT kill them even though 道 was once (wrongly) treated
-      // as a function stopword — in these compounds 道 is content-bearing.
-      // This is the core review fix: over-broad single-char stopwords were
-      // silently dropping genuine author vocabulary.
-      //
-      // Uses a generous maxTerms so the assertion isolates the FILTER
-      // (survival) from ranking/crowding — both terms must be present.
-      const text = '道心坚定道心通明剑道无痕人间正道';
-      final sig = LexicalSignatureExtractor.extract(text, maxTerms: 50);
-      final terms = sig.topTerms.map((t) => t.term).toSet();
-      expect(terms, contains('道心'),
-          reason: '道心 is a characteristic content term — must survive');
-      expect(terms, contains('剑道'),
-          reason: '剑道 must survive (道 is content-bearing here)');
-    });
+    test(
+      'content term with former-stopword char should survive (D-1tp-FIX)',
+      () {
+        // 道心/剑道 are highly characteristic xianxia terms. The stopword
+        // filter must NOT kill them even though 道 was once (wrongly) treated
+        // as a function stopword — in these compounds 道 is content-bearing.
+        // This is the core review fix: over-broad single-char stopwords were
+        // silently dropping genuine author vocabulary.
+        //
+        // Uses a generous maxTerms so the assertion isolates the FILTER
+        // (survival) from ranking/crowding — both terms must be present.
+        const text = '道心坚定道心通明剑道无痕人间正道';
+        final sig = LexicalSignatureExtractor.extract(text, maxTerms: 50);
+        final terms = sig.topTerms.map((t) => t.term).toSet();
+        expect(
+          terms,
+          contains('道心'),
+          reason: '道心 is a characteristic content term — must survive',
+        );
+        expect(
+          terms,
+          contains('剑道'),
+          reason: '剑道 must survive (道 is content-bearing here)',
+        );
+      },
+    );
 
-    test('multi-char functional phrases filtered via exact match (D-1tp-FIX)', () {
-      // 知道/这个 are functional bigrams whose constituent chars (知/个) are
-      // NOT single-char function particles. They must be filtered via exact
-      // multi-char match — otherwise they leak once content-bearing chars
-      // are removed from the single-char stopword set.
-      const text = '知道知道知道这个这个这个剑意冲霄剑意冲霄';
-      final sig = LexicalSignatureExtractor.extract(text);
-      final terms = sig.topTerms.map((t) => t.term).toSet();
-      expect(terms, isNot(contains('知道')),
-          reason: '知道 is a functional bigram — must be filtered');
-      expect(terms, isNot(contains('这个')),
-          reason: '这个 is a functional bigram — must be filtered');
-      // The content term still surfaces.
-      expect(terms, contains('剑意'));
-    });
+    test(
+      'multi-char functional phrases filtered via exact match (D-1tp-FIX)',
+      () {
+        // 知道/这个 are functional bigrams whose constituent chars (知/个) are
+        // NOT single-char function particles. They must be filtered via exact
+        // multi-char match — otherwise they leak once content-bearing chars
+        // are removed from the single-char stopword set.
+        const text = '知道知道知道这个这个这个剑意冲霄剑意冲霄';
+        final sig = LexicalSignatureExtractor.extract(text);
+        final terms = sig.topTerms.map((t) => t.term).toSet();
+        expect(
+          terms,
+          isNot(contains('知道')),
+          reason: '知道 is a functional bigram — must be filtered',
+        );
+        expect(
+          terms,
+          isNot(contains('这个')),
+          reason: '这个 is a functional bigram — must be filtered',
+        );
+        // The content term still surfaces.
+        expect(terms, contains('剑意'));
+      },
+    );
 
     test('empty / latin-only / punctuation-only input returns empty', () {
       expect(LexicalSignatureExtractor.extract('').isEmpty, isTrue);
@@ -116,10 +137,59 @@ bool _isAllStopword(String gram) {
   // Pure function particles only — content-bearing chars (人/有/无/说/道/看/
   // 想/里/中) are deliberately NOT here; they form characteristic compounds
   // (道心/剑道/人间/有意) that the signature must capture.
-  const stopwords = {'的', '了', '是', '在', '和', '与', '或', '我', '你',
-      '他', '她', '它', '们', '这', '那', '一', '个', '上', '下', '不',
-      '也', '都', '就', '还', '又', '把', '被', '让', '给', '向', '从',
-      '到', '于', '以', '为', '而', '则', '其', '之', '着', '过', '地',
-      '得', '所', '等', '吗', '呢', '吧', '啊', '呀', '哦', '么'};
+  const stopwords = {
+    '的',
+    '了',
+    '是',
+    '在',
+    '和',
+    '与',
+    '或',
+    '我',
+    '你',
+    '他',
+    '她',
+    '它',
+    '们',
+    '这',
+    '那',
+    '一',
+    '个',
+    '上',
+    '下',
+    '不',
+    '也',
+    '都',
+    '就',
+    '还',
+    '又',
+    '把',
+    '被',
+    '让',
+    '给',
+    '向',
+    '从',
+    '到',
+    '于',
+    '以',
+    '为',
+    '而',
+    '则',
+    '其',
+    '之',
+    '着',
+    '过',
+    '地',
+    '得',
+    '所',
+    '等',
+    '吗',
+    '呢',
+    '吧',
+    '啊',
+    '呀',
+    '哦',
+    '么',
+  };
   return gram.runes.every((r) => stopwords.contains(String.fromCharCode(r)));
 }

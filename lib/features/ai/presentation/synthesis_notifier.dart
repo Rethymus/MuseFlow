@@ -228,8 +228,7 @@ class SynthesisNotifier extends Notifier<SynthesisState> {
     // Synthesis runs in the capture tab where manuscript context may not exist,
     // so we gracefully fall back to empty string when no chapter is loaded.
     final chapters = ref.read(chapterNotifierProvider);
-    final manuscriptId =
-        chapters.asData?.value.firstOrNull?.manuscriptId ?? '';
+    final manuscriptId = chapters.asData?.value.firstOrNull?.manuscriptId ?? '';
 
     // Start streaming with adapter routed by active provider type
     final adapter = ref.read(activeAdapterProvider);
@@ -239,10 +238,7 @@ class SynthesisNotifier extends Notifier<SynthesisState> {
       try {
         // Clear partial text on retry for clean stream restart
         if (retryAttempt > 0) {
-          state = state.copyWith(
-            accumulatedText: '',
-            error: null,
-          );
+          state = state.copyWith(accumulatedText: '', error: null);
         }
 
         final stream = adapter.createStream(

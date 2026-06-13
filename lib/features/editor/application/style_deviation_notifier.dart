@@ -16,10 +16,7 @@ class StyleDeviationState {
   /// Whether analysis is in progress.
   final bool isAnalyzing;
 
-  const StyleDeviationState({
-    this.result,
-    this.isAnalyzing = false,
-  });
+  const StyleDeviationState({this.result, this.isAnalyzing = false});
 
   StyleDeviationState copyWith({
     StyleDeviationResult? result,
@@ -63,5 +60,5 @@ class StyleDeviationNotifier extends Notifier<StyleDeviationState> {
 /// Provider for the style deviation notifier.
 final styleDeviationNotifierProvider =
     NotifierProvider<StyleDeviationNotifier, StyleDeviationState>(
-  StyleDeviationNotifier.new,
-);
+      StyleDeviationNotifier.new,
+    );

@@ -182,7 +182,9 @@ void main() {
       );
     }
 
-    testWidgets('shows TXT, Markdown, JSON, and DOCX format choices', (tester) async {
+    testWidgets('shows TXT, Markdown, JSON, and DOCX format choices', (
+      tester,
+    ) async {
       await tester.pumpWidget(
         ProviderScope(
           child: MaterialApp(

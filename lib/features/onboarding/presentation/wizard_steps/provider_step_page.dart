@@ -129,9 +129,9 @@ class _ProviderStepPageState extends ConsumerState<ProviderStepPage> {
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('保存失败: $e')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('保存失败: $e')));
       }
     } finally {
       if (mounted) setState(() => _isSaving = false);
@@ -293,9 +293,7 @@ class _ProviderStepPageState extends ConsumerState<ProviderStepPage> {
         if (_testResult != null) ...[
           const SizedBox(width: 12),
           Icon(
-            _testResult == 'success'
-                ? Icons.check_circle
-                : Icons.error_outline,
+            _testResult == 'success' ? Icons.check_circle : Icons.error_outline,
             color: _testResult == 'success'
                 ? Colors.green
                 : theme.colorScheme.error,

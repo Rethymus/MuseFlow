@@ -216,27 +216,30 @@ void main() {
       expect(all.last.originalText, '最新');
     });
 
-    test('entries should return all entries in order for version comparison', () {
-      service.record(
-        originalText: '第一版',
-        replacementText: 'AI改一',
-        nodeId: 'n1',
-        startOffset: 0,
-        endOffset: 3,
-      );
-      service.record(
-        originalText: '第二版',
-        replacementText: 'AI改二',
-        nodeId: 'n2',
-        startOffset: 0,
-        endOffset: 3,
-      );
+    test(
+      'entries should return all entries in order for version comparison',
+      () {
+        service.record(
+          originalText: '第一版',
+          replacementText: 'AI改一',
+          nodeId: 'n1',
+          startOffset: 0,
+          endOffset: 3,
+        );
+        service.record(
+          originalText: '第二版',
+          replacementText: 'AI改二',
+          nodeId: 'n2',
+          startOffset: 0,
+          endOffset: 3,
+        );
 
-      final entries = service.entries;
-      expect(entries.length, 2);
-      expect(entries[0].originalText, '第一版');
-      expect(entries[1].originalText, '第二版');
-    });
+        final entries = service.entries;
+        expect(entries.length, 2);
+        expect(entries[0].originalText, '第一版');
+        expect(entries[1].originalText, '第二版');
+      },
+    );
 
     test('maxLimit should be configurable', () {
       final customService = SelectiveUndoService(maxLimit: 5);

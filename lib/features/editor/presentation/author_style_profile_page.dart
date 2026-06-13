@@ -23,10 +23,7 @@ import 'package:museflow/shared/constants/app_constants.dart';
 
 /// Page displaying the author's style profile analysis.
 class AuthorStyleProfilePage extends ConsumerStatefulWidget {
-  const AuthorStyleProfilePage({
-    super.key,
-    required this.manuscriptId,
-  });
+  const AuthorStyleProfilePage({super.key, required this.manuscriptId});
 
   final String manuscriptId;
 
@@ -60,9 +57,11 @@ class _AuthorStyleProfilePageState
           tooltip: '返回',
           icon: const Icon(Icons.arrow_back),
           onPressed: () => context.go(
-                AppConstants.manuscriptEditor
-                    .replaceFirst(':id', widget.manuscriptId),
-              ),
+            AppConstants.manuscriptEditor.replaceFirst(
+              ':id',
+              widget.manuscriptId,
+            ),
+          ),
         ),
         actions: [
           if (state.profile != null && state.profile!.hasData)
@@ -102,7 +101,10 @@ class _AuthorStyleProfilePageState
           children: [
             Icon(Icons.error_outline, size: 48, color: theme.colorScheme.error),
             const SizedBox(height: 16),
-            Text(state.error!, style: TextStyle(color: theme.colorScheme.error)),
+            Text(
+              state.error!,
+              style: TextStyle(color: theme.colorScheme.error),
+            ),
             const SizedBox(height: 16),
             FilledButton(
               onPressed: () => _triggerAnalysis,
@@ -120,10 +122,7 @@ class _AuthorStyleProfilePageState
           children: [
             Icon(Icons.style, size: 64, color: theme.colorScheme.outline),
             const SizedBox(height: 16),
-            Text(
-              '尚未分析写作风格',
-              style: theme.textTheme.titleMedium,
-            ),
+            Text('尚未分析写作风格', style: theme.textTheme.titleMedium),
             const SizedBox(height: 8),
             Text(
               '需要至少2章、500字以上的内容才能分析',
@@ -155,10 +154,7 @@ class _AuthorStyleProfilePageState
         ...StyleDimension.values.map(
           (dim) => Padding(
             padding: const EdgeInsets.only(bottom: 12),
-            child: _DimensionCard(
-              dimension: dim,
-              profile: profile,
-            ),
+            child: _DimensionCard(dimension: dim, profile: profile),
           ),
         ),
         const SizedBox(height: 16),
@@ -180,18 +176,23 @@ class _AuthorStyleProfilePageState
 
   void _triggerAnalysis() {
     // Get chapters for the current manuscript and trigger analysis
-    final chaptersAsync =
-        ref.read(chapterNotifierProvider); // chapters may already be loaded
+    final chaptersAsync = ref.read(
+      chapterNotifierProvider,
+    ); // chapters may already be loaded
     final chapters = chaptersAsync.asData?.value ?? [];
     if (chapters.isEmpty) {
       // Try loading chapters first
-      ref.read(chapterNotifierProvider.notifier).loadChapters(widget.manuscriptId);
+      ref
+          .read(chapterNotifierProvider.notifier)
+          .loadChapters(widget.manuscriptId);
       // Retry after a short delay to allow loading
       Future.delayed(const Duration(milliseconds: 500), () {
         if (!mounted) return;
         final loaded = ref.read(chapterNotifierProvider).asData?.value ?? [];
         if (loaded.isNotEmpty) {
-          ref.read(styleProfileNotifierProvider.notifier).analyzeManuscript(
+          ref
+              .read(styleProfileNotifierProvider.notifier)
+              .analyzeManuscript(
                 manuscriptId: widget.manuscriptId,
                 chapters: loaded,
               );
@@ -199,7 +200,9 @@ class _AuthorStyleProfilePageState
       });
       return;
     }
-    ref.read(styleProfileNotifierProvider.notifier).analyzeManuscript(
+    ref
+        .read(styleProfileNotifierProvider.notifier)
+        .analyzeManuscript(
           manuscriptId: widget.manuscriptId,
           chapters: chapters,
         );
@@ -244,11 +247,7 @@ class _OverviewCard extends StatelessWidget {
             const Divider(height: 24),
             Row(
               children: [
-                Icon(
-                  Icons.palette,
-                  size: 20,
-                  color: theme.colorScheme.primary,
-                ),
+                Icon(Icons.palette, size: 20, color: theme.colorScheme.primary),
                 const SizedBox(width: 8),
                 Text(
                   '情感基调：${profile.emotionalTone.overall}',
@@ -290,9 +289,12 @@ class _InfoRow extends StatelessWidget {
         const SizedBox(width: 8),
         Text(label, style: theme.textTheme.bodyMedium),
         const Spacer(),
-        Text(value, style: theme.textTheme.bodyMedium?.copyWith(
-          fontWeight: FontWeight.w500,
-        )),
+        Text(
+          value,
+          style: theme.textTheme.bodyMedium?.copyWith(
+            fontWeight: FontWeight.w500,
+          ),
+        ),
       ],
     );
   }
@@ -300,10 +302,7 @@ class _InfoRow extends StatelessWidget {
 
 /// Card showing a single style dimension with a progress bar.
 class _DimensionCard extends StatelessWidget {
-  const _DimensionCard({
-    required this.dimension,
-    required this.profile,
-  });
+  const _DimensionCard({required this.dimension, required this.profile});
 
   final StyleDimension dimension;
   final AuthorStyleProfile profile;
@@ -322,10 +321,7 @@ class _DimensionCard extends StatelessWidget {
           children: [
             Row(
               children: [
-                Text(
-                  dimension.label,
-                  style: theme.textTheme.titleSmall,
-                ),
+                Text(dimension.label, style: theme.textTheme.titleSmall),
                 const Spacer(),
                 Text(
                   '${(score * 100).toStringAsFixed(0)}%',
@@ -343,9 +339,7 @@ class _DimensionCard extends StatelessWidget {
                 value: score,
                 minHeight: 8,
                 backgroundColor: theme.colorScheme.surfaceContainerHighest,
-                valueColor: AlwaysStoppedAnimation(
-                  _scoreColor(score, theme),
-                ),
+                valueColor: AlwaysStoppedAnimation(_scoreColor(score, theme)),
               ),
             ),
             const SizedBox(height: 8),
@@ -391,7 +385,12 @@ class _DimensionCard extends StatelessWidget {
   double _normalizeRhetoric(AuthorStyleProfile profile) {
     final h = profile.rhetoricHabits;
     // Diversity score: how balanced are the four ratios
-    final ratios = [h.dialogueRatio, h.descriptionRatio, h.actionRatio, h.metaphorFrequency];
+    final ratios = [
+      h.dialogueRatio,
+      h.descriptionRatio,
+      h.actionRatio,
+      h.metaphorFrequency,
+    ];
     final maxRatio = ratios.reduce((a, b) => a > b ? a : b);
     final sum = ratios.reduce((a, b) => a + b);
     return sum > 0 ? (maxRatio * 3).clamp(0.0, 1.0) : 0.3;
@@ -461,15 +460,17 @@ class _SampleCard extends StatelessWidget {
                   ...sample.dimensionScores.entries
                       .where((e) => e.value > 0.6)
                       .take(2)
-                      .map((e) => Padding(
-                            padding: const EdgeInsets.only(left: 4),
-                            child: Chip(
-                              label: Text(e.key.label),
-                              visualDensity: VisualDensity.compact,
-                              materialTapTargetSize:
-                                  MaterialTapTargetSize.shrinkWrap,
-                            ),
-                          )),
+                      .map(
+                        (e) => Padding(
+                          padding: const EdgeInsets.only(left: 4),
+                          child: Chip(
+                            label: Text(e.key.label),
+                            visualDensity: VisualDensity.compact,
+                            materialTapTargetSize:
+                                MaterialTapTargetSize.shrinkWrap,
+                          ),
+                        ),
+                      ),
               ],
             ),
             const SizedBox(height: 8),

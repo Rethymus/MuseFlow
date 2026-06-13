@@ -78,17 +78,19 @@ void main() {
   });
 
   group('getForCharacter', () {
-    test('should return relationships where character is source or target',
-        () async {
-      // char-1 is source in rel-1, target in rel-3
-      await repository.add(rel1);
-      await repository.add(rel2);
-      await repository.add(rel3);
+    test(
+      'should return relationships where character is source or target',
+      () async {
+        // char-1 is source in rel-1, target in rel-3
+        await repository.add(rel1);
+        await repository.add(rel2);
+        await repository.add(rel3);
 
-      final result = repository.getForCharacter('char-1');
-      expect(result.length, 2);
-      expect(result.map((r) => r.id), containsAll(['rel-1', 'rel-3']));
-    });
+        final result = repository.getForCharacter('char-1');
+        expect(result.length, 2);
+        expect(result.map((r) => r.id), containsAll(['rel-1', 'rel-3']));
+      },
+    );
 
     test('should return empty for character with no relationships', () async {
       await repository.add(rel1);
@@ -126,10 +128,7 @@ void main() {
 
     test('should throw StateError when ID already exists', () async {
       await repository.add(rel1);
-      expect(
-        () => repository.add(rel1),
-        throwsA(isA<StateError>()),
-      );
+      expect(() => repository.add(rel1), throwsA(isA<StateError>()));
     });
   });
 
@@ -144,10 +143,7 @@ void main() {
     });
 
     test('should throw StateError when ID does not exist', () async {
-      expect(
-        () => repository.update(rel1),
-        throwsA(isA<StateError>()),
-      );
+      expect(() => repository.update(rel1), throwsA(isA<StateError>()));
     });
   });
 

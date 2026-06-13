@@ -19,12 +19,18 @@ void main() {
     });
 
     group('banned phrase auto-replacement', () {
-      test('should highlight 然而 instead of auto-replacing (highlight-only)', () {
-        final result = processor.process('他看着远方，然而心中却无比平静。', bannedPhrases: []);
-        // 然而 is a common literary word — should be highlighted, not replaced
-        expect(result.processedText, contains('【然而】'));
-        expect(result.processedText, isNot(contains('但是')));
-      });
+      test(
+        'should highlight 然而 instead of auto-replacing (highlight-only)',
+        () {
+          final result = processor.process(
+            '他看着远方，然而心中却无比平静。',
+            bannedPhrases: [],
+          );
+          // 然而 is a common literary word — should be highlighted, not replaced
+          expect(result.processedText, contains('【然而】'));
+          expect(result.processedText, isNot(contains('但是')));
+        },
+      );
 
       test('should delete 综上所述 (empty replacement)', () {
         final result = processor.process('综上所述，这是一个好故事。', bannedPhrases: []);
@@ -64,10 +70,13 @@ void main() {
         expect(result.processedText, contains('【然而】'));
       });
 
-      test('should highlight 然而 at sentence boundaries (after punctuation)', () {
-        final result = processor.process('天亮了。然而他又睡着了。', bannedPhrases: []);
-        expect(result.processedText, contains('【然而】'));
-      });
+      test(
+        'should highlight 然而 at sentence boundaries (after punctuation)',
+        () {
+          final result = processor.process('天亮了。然而他又睡着了。', bannedPhrases: []);
+          expect(result.processedText, contains('【然而】'));
+        },
+      );
 
       test('should respect additional bannedPhrases from parameter', () {
         final result = processor.process('这个故事真棒极了。', bannedPhrases: ['棒极了']);
@@ -97,17 +106,20 @@ void main() {
         expect(result.processedText, contains('他明白了'));
       });
 
-      test('should include highlight-only phrases in synonymKeys for prompt layer', () {
-        final keys = AntiAIScentProcessor.synonymKeys;
-        // Common words should still be in the banned list for AI prompt
-        expect(keys, contains('然而'));
-        expect(keys, contains('最后'));
-        expect(keys, contains('极其'));
-        expect(keys, contains('毫无疑问'));
-        // And AI-specific words too
-        expect(keys, contains('综上所述'));
-        expect(keys, contains('值得注意的是'));
-      });
+      test(
+        'should include highlight-only phrases in synonymKeys for prompt layer',
+        () {
+          final keys = AntiAIScentProcessor.synonymKeys;
+          // Common words should still be in the banned list for AI prompt
+          expect(keys, contains('然而'));
+          expect(keys, contains('最后'));
+          expect(keys, contains('极其'));
+          expect(keys, contains('毫无疑问'));
+          // And AI-specific words too
+          expect(keys, contains('综上所述'));
+          expect(keys, contains('值得注意的是'));
+        },
+      );
 
       test('should highlight multiple highlight-only phrases in one text', () {
         final result = processor.process(
@@ -120,17 +132,21 @@ void main() {
         expect(result.processedText, contains('【最后】'));
       });
 
-      test('should not highlight highlight-only phrases inside compound words', () {
-        final result = processor.process('他自然而然地走过去。', bannedPhrases: []);
-        // "然而" inside "自然而然" should NOT be highlighted
-        expect(result.processedText, contains('自然而然'));
-      });
+      test(
+        'should not highlight highlight-only phrases inside compound words',
+        () {
+          final result = processor.process('他自然而然地走过去。', bannedPhrases: []);
+          // "然而" inside "自然而然" should NOT be highlighted
+          expect(result.processedText, contains('自然而然'));
+        },
+      );
     });
 
     group('classic literature false-positive prevention', () {
       test('should not destroy classic fiction prose structure', () {
         // Simulates a passage in style of 余华's 《活着》
-        final passage = '然而福贵并没有放弃。他告诉自己，最后一定要活下去。'
+        final passage =
+            '然而福贵并没有放弃。他告诉自己，最后一定要活下去。'
             '首先他要想办法找点吃的，其次还要照顾家珍。';
 
         final result = processor.process(passage, bannedPhrases: []);
@@ -149,7 +165,8 @@ void main() {
       });
 
       test('should preserve literary time expressions in genre fiction', () {
-        final passage = '刹那间剑光闪过，顷刻间胜负已分。'
+        final passage =
+            '刹那间剑光闪过，顷刻间胜负已分。'
             '转瞬之间，一切归于平静。';
 
         final result = processor.process(passage, bannedPhrases: []);
@@ -166,7 +183,8 @@ void main() {
       });
 
       test('should not break narrator emphasis in literary prose', () {
-        final passage = '毫无疑问，他是全村最穷的人。'
+        final passage =
+            '毫无疑问，他是全村最穷的人。'
             '不可否认，他也是最善良的人。';
 
         final result = processor.process(passage, bannedPhrases: []);
@@ -292,15 +310,18 @@ void main() {
         expect(result.highlights, isEmpty);
       });
 
-      test('should highlight highlight-only phrases without structural patterns', () {
-        final result = processor.process('然而，天黑了。', bannedPhrases: []);
-        expect(result.processedText, contains('【然而】'));
-        // No structural patterns
-        final structuralHighlights = result.highlights
-            .where((h) => h.type == HighlightType.structuralPattern)
-            .toList();
-        expect(structuralHighlights, isEmpty);
-      });
+      test(
+        'should highlight highlight-only phrases without structural patterns',
+        () {
+          final result = processor.process('然而，天黑了。', bannedPhrases: []);
+          expect(result.processedText, contains('【然而】'));
+          // No structural patterns
+          final structuralHighlights = result.highlights
+              .where((h) => h.type == HighlightType.structuralPattern)
+              .toList();
+          expect(structuralHighlights, isEmpty);
+        },
+      );
 
       test('should highlight consecutive highlight-only phrases', () {
         final result = processor.process('首先其次最后', bannedPhrases: []);
@@ -342,19 +363,25 @@ void main() {
       });
 
       test('should have at least 25 synonym entries', () {
-        expect(AntiAIScentProcessor.synonymKeys.length, greaterThanOrEqualTo(25));
+        expect(
+          AntiAIScentProcessor.synonymKeys.length,
+          greaterThanOrEqualTo(25),
+        );
       });
 
-      test('synonymKeys should include both auto-replace and highlight-only phrases', () {
-        final keys = AntiAIScentProcessor.synonymKeys;
-        // Auto-replace phrases
-        expect(keys, contains('综上所述'));
-        expect(keys, contains('心中涌起一股暖流'));
-        // Highlight-only phrases
-        expect(keys, contains('然而'));
-        expect(keys, contains('最后'));
-        expect(keys, contains('极其'));
-      });
+      test(
+        'synonymKeys should include both auto-replace and highlight-only phrases',
+        () {
+          final keys = AntiAIScentProcessor.synonymKeys;
+          // Auto-replace phrases
+          expect(keys, contains('综上所述'));
+          expect(keys, contains('心中涌起一股暖流'));
+          // Highlight-only phrases
+          expect(keys, contains('然而'));
+          expect(keys, contains('最后'));
+          expect(keys, contains('极其'));
+        },
+      );
     });
 
     group('expanded structural patterns', () {
@@ -368,34 +395,22 @@ void main() {
       });
 
       test('should highlight 仿佛...一般 pattern', () {
-        final result = processor.process(
-          '那双眼睛仿佛深邃的星空一般。',
-          bannedPhrases: [],
-        );
+        final result = processor.process('那双眼睛仿佛深邃的星空一般。', bannedPhrases: []);
         expect(result.processedText, contains('【'));
       });
 
       test('should highlight 让人不禁 pattern', () {
-        final result = processor.process(
-          '这番话让人不禁深思。',
-          bannedPhrases: [],
-        );
+        final result = processor.process('这番话让人不禁深思。', bannedPhrases: []);
         expect(result.processedText, contains('【'));
       });
 
       test('should highlight 既...又... balanced pattern', () {
-        final result = processor.process(
-          '她既温柔又坚强。',
-          bannedPhrases: [],
-        );
+        final result = processor.process('她既温柔又坚强。', bannedPhrases: []);
         expect(result.processedText, contains('【'));
       });
 
       test('should highlight 因为...所以... explicit causal', () {
-        final result = processor.process(
-          '因为他太过疲惫，所以倒头就睡。',
-          bannedPhrases: [],
-        );
+        final result = processor.process('因为他太过疲惫，所以倒头就睡。', bannedPhrases: []);
         expect(result.processedText, contains('【'));
       });
 
@@ -416,10 +431,7 @@ void main() {
           bannedPhrases: [],
         );
 
-        expect(
-          result.reviewSignals.map((s) => s.title),
-          contains('情感描写套路化'),
-        );
+        expect(result.reviewSignals.map((s) => s.title), contains('情感描写套路化'));
       });
 
       test('should not flag emotional cliches when absent', () {
@@ -442,17 +454,11 @@ void main() {
           bannedPhrases: [],
         );
 
-        expect(
-          result.reviewSignals.map((s) => s.title),
-          contains('描写公式化'),
-        );
+        expect(result.reviewSignals.map((s) => s.title), contains('描写公式化'));
       });
 
       test('should not flag description formulas when absent', () {
-        final result = processor.process(
-          '枯叶落在泥水里，被行人踩成碎片。',
-          bannedPhrases: [],
-        );
+        final result = processor.process('枯叶落在泥水里，被行人踩成碎片。', bannedPhrases: []);
 
         expect(
           result.reviewSignals.map((s) => s.title),

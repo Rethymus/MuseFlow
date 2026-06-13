@@ -127,19 +127,19 @@ class ClaudeAdapter implements AIAdapter {
   /// roles to Anthropic format.
   List<anthropic.InputMessage> _convertMessages(List<ChatMessage> messages) {
     return messages
-        .where((msg) =>
-            msg.role != 'system' && msg.role != 'developer')
+        .where((msg) => msg.role != 'system' && msg.role != 'developer')
         .map((msg) {
-      final text = _getMessageContent(msg);
-      if (msg.role == 'user') {
-        return anthropic.InputMessage.user(text);
-      }
-      if (msg.role == 'assistant') {
-        return anthropic.InputMessage.assistant(text);
-      }
-      // Fallback: treat unknown roles as user
-      return anthropic.InputMessage.user(text);
-    }).toList();
+          final text = _getMessageContent(msg);
+          if (msg.role == 'user') {
+            return anthropic.InputMessage.user(text);
+          }
+          if (msg.role == 'assistant') {
+            return anthropic.InputMessage.assistant(text);
+          }
+          // Fallback: treat unknown roles as user
+          return anthropic.InputMessage.user(text);
+        })
+        .toList();
   }
 
   /// Extracts text content from a ChatMessage regardless of role.
@@ -287,10 +287,7 @@ class ClaudeAdapter implements AIAdapter {
     final message = error.toString();
     final sanitized = message
         .replaceAll(
-          RegExp(
-            r'x-api-key[:\s]*[^\s,}]+',
-            caseSensitive: false,
-          ),
+          RegExp(r'x-api-key[:\s]*[^\s,}]+', caseSensitive: false),
           'API key [REDACTED]',
         )
         .replaceAll(

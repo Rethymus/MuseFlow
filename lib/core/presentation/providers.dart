@@ -478,20 +478,21 @@ final deviationDetectionServiceProvider =
 
 /// Provides an [EditorialReviewService] for the 4-dimension LLM editorial
 /// review panel. Throws if no AI provider/key is configured.
-final editorialReviewServiceProvider =
-    FutureProvider<EditorialReviewService>((ref) async {
-      final provider = ref.watch(activeProviderProvider);
-      final apiKey = ref.watch(activeApiKeyProvider);
-      if (provider == null || apiKey == null || apiKey.isEmpty) {
-        throw StateError('未配置可用的 AI 模型');
-      }
-      return EditorialReviewService(
-        openAIAdapter: ref.watch(openaiAdapterProvider),
-        apiKey: apiKey,
-        baseUrl: provider.baseUrl,
-        model: provider.model,
-      );
-    });
+final editorialReviewServiceProvider = FutureProvider<EditorialReviewService>((
+  ref,
+) async {
+  final provider = ref.watch(activeProviderProvider);
+  final apiKey = ref.watch(activeApiKeyProvider);
+  if (provider == null || apiKey == null || apiKey.isEmpty) {
+    throw StateError('未配置可用的 AI 模型');
+  }
+  return EditorialReviewService(
+    openAIAdapter: ref.watch(openaiAdapterProvider),
+    apiKey: apiKey,
+    baseUrl: provider.baseUrl,
+    model: provider.model,
+  );
+});
 
 final deviationNotifierProvider =
     AsyncNotifierProvider<DeviationNotifier, DeviationResult>(
@@ -648,10 +649,11 @@ final characterRelationshipRepositoryProvider =
 ///
 /// Per Phase 21 (KNOW-02): Presentation layer uses this (not the repository
 /// directly) per Clean Architecture compliance.
-final characterRelationshipNotifierProvider = AsyncNotifierProvider<
-    CharacterRelationshipNotifier, List<CharacterRelationship>>(
-  CharacterRelationshipNotifier.new,
-);
+final characterRelationshipNotifierProvider =
+    AsyncNotifierProvider<
+      CharacterRelationshipNotifier,
+      List<CharacterRelationship>
+    >(CharacterRelationshipNotifier.new);
 
 /// Provides a [PlotNodeRepository] backed by a Hive 'plot_nodes' box.
 ///

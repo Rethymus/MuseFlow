@@ -163,24 +163,15 @@ void main() {
         // The adapter maps Anthropic AuthenticationException to our AIAuthException
         // This is tested by verifying the error classification chain exists.
         // Actual network errors are tested in integration tests.
-        expect(
-          AIAuthException('test').toString(),
-          isA<String>(),
-        );
+        expect(AIAuthException('test').toString(), isA<String>());
       });
 
       test('should classify RateLimitException as AIRateLimitException', () {
-        expect(
-          AIRateLimitException('test').toString(),
-          isA<String>(),
-        );
+        expect(AIRateLimitException('test').toString(), isA<String>());
       });
 
       test('should classify TimeoutException as AINetworkException', () {
-        expect(
-          AINetworkException('test').toString(),
-          isA<String>(),
-        );
+        expect(AINetworkException('test').toString(), isA<String>());
       });
     });
 
@@ -253,10 +244,7 @@ void main() {
             id: 'msg_1',
             content: [],
             model: 'claude-test',
-            usage: const anthropic.Usage(
-              inputTokens: 120,
-              outputTokens: 0,
-            ),
+            usage: const anthropic.Usage(inputTokens: 120, outputTokens: 0),
           ),
         ),
         anthropic.ContentBlockDeltaEvent(

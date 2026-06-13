@@ -29,10 +29,7 @@ void main() {
 
   group('StyleAnalyzer.analyze', () {
     test('should return default profile for empty chapter list', () {
-      final profile = analyzer.analyze(
-        manuscriptId: 'test-ms',
-        chapters: [],
-      );
+      final profile = analyzer.analyze(manuscriptId: 'test-ms', chapters: []);
       expect(profile.manuscriptId, 'test-ms');
       expect(profile.analyzedChapterCount, 0);
       expect(profile.hasData, isFalse);
@@ -41,16 +38,15 @@ void main() {
     test('should skip chapters with fewer than 100 CJK chars', () {
       final profile = analyzer.analyze(
         manuscriptId: 'test-ms',
-        chapters: [
-          _makeChapter(id: 'ch1', content: '短'),
-        ],
+        chapters: [_makeChapter(id: 'ch1', content: '短')],
       );
       expect(profile.analyzedChapterCount, 0);
       expect(profile.hasData, isFalse);
     });
 
     test('should analyze chapters with sufficient CJK content', () {
-      const baseText = '林风站在山巅，目光扫过无际的云海。'
+      const baseText =
+          '林风站在山巅，目光扫过无际的云海。'
           '他的心中充满了复杂的情感，既有对未来的期待，也有对过去的留恋。'
           '远处传来一声鹤鸣，划破了黎明的寂静。'
           '「师尊，弟子已经准备好了。」他低声说道。'
@@ -60,9 +56,7 @@ void main() {
 
       final profile = analyzer.analyze(
         manuscriptId: 'test-ms',
-        chapters: [
-          _makeChapter(id: 'ch1', content: longText),
-        ],
+        chapters: [_makeChapter(id: 'ch1', content: longText)],
       );
 
       expect(profile.analyzedChapterCount, 1);
@@ -70,7 +64,8 @@ void main() {
     });
 
     test('should compute sentence length stats', () {
-      const baseText = '林风站在山巅。'
+      const baseText =
+          '林风站在山巅。'
           '目光扫过无际的云海。'
           '他的心中充满了复杂的情感。'
           '「师尊，弟子已经准备好了。」';
@@ -78,9 +73,7 @@ void main() {
 
       final profile = analyzer.analyze(
         manuscriptId: 'test-ms',
-        chapters: [
-          _makeChapter(id: 'ch1', content: text),
-        ],
+        chapters: [_makeChapter(id: 'ch1', content: text)],
       );
 
       expect(profile.sentenceLengthStats.avg, greaterThan(0));
@@ -89,15 +82,14 @@ void main() {
     });
 
     test('should compute rhythm score between 0 and 1', () {
-      const baseText = '林风站在山巅，目光扫过无际的云海。'
+      const baseText =
+          '林风站在山巅，目光扫过无际的云海。'
           '他的心中充满了复杂的情感。';
       final text = baseText * 20;
 
       final profile = analyzer.analyze(
         manuscriptId: 'test-ms',
-        chapters: [
-          _makeChapter(id: 'ch1', content: text),
-        ],
+        chapters: [_makeChapter(id: 'ch1', content: text)],
       );
 
       expect(profile.rhythmScore, greaterThanOrEqualTo(0.0));
@@ -122,9 +114,7 @@ void main() {
 
       final profile = analyzer.analyze(
         manuscriptId: 'test-ms',
-        chapters: [
-          _makeChapter(id: 'ch1', content: text),
-        ],
+        chapters: [_makeChapter(id: 'ch1', content: text)],
       );
 
       expect(profile.vocabularyRichness, greaterThan(0));
@@ -132,7 +122,8 @@ void main() {
     });
 
     test('should compute rhetoric habits', () {
-      const baseText = '林风说：「今日天气不错。」'
+      const baseText =
+          '林风说：「今日天气不错。」'
           '他走在青石路上，看着路边的花花草草。'
           '天空蔚蓝如洗，云朵洁白似棉。'
           '「师尊，我要下山历练。」林风道。';
@@ -140,9 +131,7 @@ void main() {
 
       final profile = analyzer.analyze(
         manuscriptId: 'test-ms',
-        chapters: [
-          _makeChapter(id: 'ch1', content: text),
-        ],
+        chapters: [_makeChapter(id: 'ch1', content: text)],
       );
 
       expect(profile.rhetoricHabits.dialogueRatio, greaterThanOrEqualTo(0));
@@ -150,16 +139,15 @@ void main() {
     });
 
     test('should compute emotional tone', () {
-      const baseText = '温暖的阳光洒满大地，带来了幸福和希望。'
+      const baseText =
+          '温暖的阳光洒满大地，带来了幸福和希望。'
           '他微笑着看着远方的山峦，心中充满了感恩。'
           '这是一个美好的清晨，一切都很宁静祥和。';
       final text = baseText * 15;
 
       final profile = analyzer.analyze(
         manuscriptId: 'test-ms',
-        chapters: [
-          _makeChapter(id: 'ch1', content: text),
-        ],
+        chapters: [_makeChapter(id: 'ch1', content: text)],
       );
 
       expect(profile.emotionalTone.overall, isNotEmpty);
@@ -170,7 +158,8 @@ void main() {
     });
 
     test('should extract style samples from qualifying paragraphs', () {
-      const para = '林风站在山巅，目光扫过无际的云海。'
+      const para =
+          '林风站在山巅，目光扫过无际的云海。'
           '他的心中充满了复杂的情感，既有对未来的期待，也有对过去的留恋。'
           '远处传来一声鹤鸣，划破了黎明的寂静。'
           '微风吹过他的衣袍，带来一丝凉意。'
@@ -179,9 +168,7 @@ void main() {
 
       final profile = analyzer.analyze(
         manuscriptId: 'test-ms',
-        chapters: [
-          _makeChapter(id: 'ch1', content: paragraphs),
-        ],
+        chapters: [_makeChapter(id: 'ch1', content: paragraphs)],
       );
 
       expect(profile.sampleParagraphs.isNotEmpty, isTrue);
@@ -194,7 +181,8 @@ void main() {
     });
 
     test('should analyze multiple chapters', () {
-      const baseText = '林风站在山巅，目光扫过无际的云海。'
+      const baseText =
+          '林风站在山巅，目光扫过无际的云海。'
           '他的心中充满了复杂的情感。'
           '这一刻，天地之间仿佛只剩他一人。';
       final text = baseText * 20;
@@ -213,16 +201,15 @@ void main() {
     });
 
     test('should handle mixed content with Chinese and punctuation', () {
-      const baseText = '「师尊，弟子已经准备好了。」林风跪在石台上，'
+      const baseText =
+          '「师尊，弟子已经准备好了。」林风跪在石台上，'
           '目光坚定地看着面前的老者。'
           '老者微微点头，说道：「去吧，记住为师的教诲。」';
       final text = baseText * 20;
 
       final profile = analyzer.analyze(
         manuscriptId: 'test-ms',
-        chapters: [
-          _makeChapter(id: 'ch1', content: text),
-        ],
+        chapters: [_makeChapter(id: 'ch1', content: text)],
       );
 
       expect(profile.analyzedChapterCount, 1);
@@ -230,16 +217,15 @@ void main() {
     });
 
     test('profile should be serializable round-trip', () {
-      const baseText = '温暖的阳光洒满大地，带来了幸福和希望。'
+      const baseText =
+          '温暖的阳光洒满大地，带来了幸福和希望。'
           '林风说：「今日天气不错，我们去山上走走吧。」'
           '天空蔚蓝如洗，云朵洁白似棉花糖。';
       final text = baseText * 20;
 
       final profile = analyzer.analyze(
         manuscriptId: 'test-ms',
-        chapters: [
-          _makeChapter(id: 'ch1', content: text),
-        ],
+        chapters: [_makeChapter(id: 'ch1', content: text)],
       );
 
       final json = profile.toJson();
@@ -252,31 +238,32 @@ void main() {
       expect(restored.emotionalTone.overall, profile.emotionalTone.overall);
     });
 
-    test('should populate lexicalSignature from chapters with repeated terms', () {
-      // Two chapters, each >= 100 CJK chars, totaling >= 500 chars, with
-      // the characteristic term "剑意" repeated to dominate the n-gram ranking.
-      const charSeed = '剑意凌厉剑意冲霄剑意纵横剑意不绝剑意浩荡。'
-          '林风立于崖顶，衣袂飘扬若仙人临世，眼神如星辰般璀璨。';
-      final chapterContent = charSeed * 6; // well over 100 chars, repeats 剑意
+    test(
+      'should populate lexicalSignature from chapters with repeated terms',
+      () {
+        // Two chapters, each >= 100 CJK chars, totaling >= 500 chars, with
+        // the characteristic term "剑意" repeated to dominate the n-gram ranking.
+        const charSeed =
+            '剑意凌厉剑意冲霄剑意纵横剑意不绝剑意浩荡。'
+            '林风立于崖顶，衣袂飘扬若仙人临世，眼神如星辰般璀璨。';
+        final chapterContent = charSeed * 6; // well over 100 chars, repeats 剑意
 
-      final profile = analyzer.analyze(
-        manuscriptId: 'test-ms',
-        chapters: [
-          _makeChapter(id: 'ch1', content: chapterContent, order: 0),
-          _makeChapter(id: 'ch2', content: chapterContent, order: 1),
-        ],
-      );
+        final profile = analyzer.analyze(
+          manuscriptId: 'test-ms',
+          chapters: [
+            _makeChapter(id: 'ch1', content: chapterContent, order: 0),
+            _makeChapter(id: 'ch2', content: chapterContent, order: 1),
+          ],
+        );
 
-      expect(profile.hasData, isTrue);
-      expect(profile.lexicalSignature.isEmpty, isFalse);
-      expect(profile.lexicalSignature.topTerms, isNotEmpty);
-    });
+        expect(profile.hasData, isTrue);
+        expect(profile.lexicalSignature.isEmpty, isFalse);
+        expect(profile.lexicalSignature.topTerms, isNotEmpty);
+      },
+    );
 
     test('should produce empty lexicalSignature for empty chapter list', () {
-      final profile = analyzer.analyze(
-        manuscriptId: 'test-ms',
-        chapters: [],
-      );
+      final profile = analyzer.analyze(manuscriptId: 'test-ms', chapters: []);
       expect(profile.lexicalSignature.isEmpty, isTrue);
     });
   });

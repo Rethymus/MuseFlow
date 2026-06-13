@@ -109,8 +109,7 @@ class ForeshadowingReminderPanel extends ConsumerWidget {
               ],
             ),
             const SizedBox(height: 4),
-            for (final reminder in reminders)
-              _ReminderTile(reminder: reminder),
+            for (final reminder in reminders) _ReminderTile(reminder: reminder),
           ],
         ),
       ),
@@ -126,21 +125,22 @@ class _ReminderTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final color = switch (reminder.kind) {
-      ForeshadowingReminderKind.targetOverdue =>
-        Theme.of(context).colorScheme.error,
-      ForeshadowingReminderKind.thresholdOverdue =>
-        Theme.of(context).colorScheme.tertiary,
-      ForeshadowingReminderKind.unresolvedCount =>
-        Theme.of(context).colorScheme.primary,
+      ForeshadowingReminderKind.targetOverdue => Theme.of(
+        context,
+      ).colorScheme.error,
+      ForeshadowingReminderKind.thresholdOverdue => Theme.of(
+        context,
+      ).colorScheme.tertiary,
+      ForeshadowingReminderKind.unresolvedCount => Theme.of(
+        context,
+      ).colorScheme.primary,
     };
 
     final icon = switch (reminder.kind) {
-      ForeshadowingReminderKind.targetOverdue =>
-        Icons.error_outline,
+      ForeshadowingReminderKind.targetOverdue => Icons.error_outline,
       ForeshadowingReminderKind.thresholdOverdue =>
         Icons.warning_amber_outlined,
-      ForeshadowingReminderKind.unresolvedCount =>
-        Icons.info_outline,
+      ForeshadowingReminderKind.unresolvedCount => Icons.info_outline,
     };
 
     return Padding(
@@ -152,9 +152,9 @@ class _ReminderTile extends StatelessWidget {
           Expanded(
             child: Text(
               reminder.message,
-              style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: color,
-                  ),
+              style: Theme.of(
+                context,
+              ).textTheme.bodySmall?.copyWith(color: color),
             ),
           ),
         ],

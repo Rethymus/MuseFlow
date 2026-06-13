@@ -102,15 +102,18 @@ void main() {
       );
     });
 
-    test('should map rewrite, polish, freeInput, expand, compress, dialogue, scene to edit group', () {
-      expect(AuditOperationType.rewrite.group, 'edit');
-      expect(AuditOperationType.polish.group, 'edit');
-      expect(AuditOperationType.freeInput.group, 'edit');
-      expect(AuditOperationType.expand.group, 'edit');
-      expect(AuditOperationType.compress.group, 'edit');
-      expect(AuditOperationType.dialogue.group, 'edit');
-      expect(AuditOperationType.scene.group, 'edit');
-    });
+    test(
+      'should map rewrite, polish, freeInput, expand, compress, dialogue, scene to edit group',
+      () {
+        expect(AuditOperationType.rewrite.group, 'edit');
+        expect(AuditOperationType.polish.group, 'edit');
+        expect(AuditOperationType.freeInput.group, 'edit');
+        expect(AuditOperationType.expand.group, 'edit');
+        expect(AuditOperationType.compress.group, 'edit');
+        expect(AuditOperationType.dialogue.group, 'edit');
+        expect(AuditOperationType.scene.group, 'edit');
+      },
+    );
 
     test(
       'should map skillGen, opening, deviationDetect to worldview group',

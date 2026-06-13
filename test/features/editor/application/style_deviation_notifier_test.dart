@@ -43,8 +43,7 @@ void main() {
       );
       addTearDown(container.dispose);
 
-      final notifier =
-          container.read(styleDeviationNotifierProvider.notifier);
+      final notifier = container.read(styleDeviationNotifierProvider.notifier);
       notifier.analyzeText('林风独自站在高高的山门前。');
 
       final state = container.read(styleDeviationNotifierProvider);
@@ -67,8 +66,7 @@ void main() {
       );
       addTearDown(container.dispose);
 
-      final notifier =
-          container.read(styleDeviationNotifierProvider.notifier);
+      final notifier = container.read(styleDeviationNotifierProvider.notifier);
       notifier.analyzeText('林风独自站在高高的山门前。');
 
       final state = container.read(styleDeviationNotifierProvider);
@@ -85,11 +83,8 @@ void main() {
       );
       addTearDown(container.dispose);
 
-      final notifier =
-          container.read(styleDeviationNotifierProvider.notifier);
-      notifier.analyzeText(
-        '林风站在山门前，望着远方的天空。他心中涌起不安。',
-      );
+      final notifier = container.read(styleDeviationNotifierProvider.notifier);
+      notifier.analyzeText('林风站在山门前，望着远方的天空。他心中涌起不安。');
 
       final state = container.read(styleDeviationNotifierProvider);
       expect(state.result, isNotNull);
@@ -108,8 +103,7 @@ void main() {
       );
       addTearDown(container.dispose);
 
-      final notifier =
-          container.read(styleDeviationNotifierProvider.notifier);
+      final notifier = container.read(styleDeviationNotifierProvider.notifier);
       notifier.analyzeText('hello world test');
 
       final state = container.read(styleDeviationNotifierProvider);
@@ -126,8 +120,7 @@ void main() {
       );
       addTearDown(container.dispose);
 
-      final notifier =
-          container.read(styleDeviationNotifierProvider.notifier);
+      final notifier = container.read(styleDeviationNotifierProvider.notifier);
       notifier.analyzeText('林风独自站在高高的山门前。');
 
       expect(container.read(styleDeviationNotifierProvider).result, isNotNull);

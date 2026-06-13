@@ -563,8 +563,10 @@ class _EditorWithSidebarState extends ConsumerState<EditorWithSidebar>
                   tooltip: '风格档案',
                   icon: const Icon(Icons.style_outlined),
                   onPressed: () => context.go(
-                    AppConstants.manuscriptStyleProfile
-                        .replaceFirst(':id', widget.manuscriptId),
+                    AppConstants.manuscriptStyleProfile.replaceFirst(
+                      ':id',
+                      widget.manuscriptId,
+                    ),
                   ),
                 ),
                 IconButton(
@@ -615,8 +617,8 @@ class _EditorWithSidebarState extends ConsumerState<EditorWithSidebar>
     required int targetWordCount,
     required bool hasSelection,
   }) {
-    final isLastChapter = chapters.isEmpty ||
-        _currentChapterId == chapters.last.id;
+    final isLastChapter =
+        chapters.isEmpty || _currentChapterId == chapters.last.id;
     return Row(
       children: [
         ChapterSidebar(
@@ -636,18 +638,12 @@ class _EditorWithSidebarState extends ConsumerState<EditorWithSidebar>
               context: context,
               position: _getMenuPosition(chapter),
               isSplitEnabled: isCurrent && hasSelection,
-              isMergeEnabled:
-                  !isLastChapter || chapter.id != chapters.last.id,
-              onAction: (action) =>
-                  _handleContextMenuAction(chapter, action),
+              isMergeEnabled: !isLastChapter || chapter.id != chapters.last.id,
+              onAction: (action) => _handleContextMenuAction(chapter, action),
             );
           },
         ),
-        VerticalDivider(
-          width: 1,
-          thickness: 1,
-          color: colorScheme.outline,
-        ),
+        VerticalDivider(width: 1, thickness: 1, color: colorScheme.outline),
         Expanded(
           child: _buildEditorArea(
             colorScheme,
@@ -669,8 +665,8 @@ class _EditorWithSidebarState extends ConsumerState<EditorWithSidebar>
     required int targetWordCount,
     required bool hasSelection,
   }) {
-    final isLastChapter = chapters.isEmpty ||
-        _currentChapterId == chapters.last.id;
+    final isLastChapter =
+        chapters.isEmpty || _currentChapterId == chapters.last.id;
     return Scaffold(
       drawer: Drawer(
         child: ChapterSidebar(
@@ -696,19 +692,13 @@ class _EditorWithSidebarState extends ConsumerState<EditorWithSidebar>
               context: context,
               position: _getMenuPosition(chapter),
               isSplitEnabled: isCurrent && hasSelection,
-              isMergeEnabled:
-                  !isLastChapter || chapter.id != chapters.last.id,
-              onAction: (action) =>
-                  _handleContextMenuAction(chapter, action),
+              isMergeEnabled: !isLastChapter || chapter.id != chapters.last.id,
+              onAction: (action) => _handleContextMenuAction(chapter, action),
             );
           },
         ),
       ),
-      body: _buildEditorArea(
-        colorScheme,
-        currentWordCount,
-        targetWordCount,
-      ),
+      body: _buildEditorArea(colorScheme, currentWordCount, targetWordCount),
     );
   }
 

@@ -53,9 +53,7 @@ class EditorialReviewService {
         baseUrl: baseUrl,
         model: model,
         messages: [
-          ChatMessage.system(
-            '你是一位资深中文小说编辑。从情节、人物、文笔、节奏四个维度评审章节，只输出 JSON。',
-          ),
+          ChatMessage.system('你是一位资深中文小说编辑。从情节、人物、文笔、节奏四个维度评审章节，只输出 JSON。'),
           ChatMessage.user(prompt),
         ],
         maxTokens: 1200,

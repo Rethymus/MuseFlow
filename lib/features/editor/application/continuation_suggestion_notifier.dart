@@ -81,17 +81,13 @@ class ContinuationSuggestionNotifier
 
     final provider = ref.read(activeProviderProvider);
     if (provider == null) {
-      state = const ContinuationSuggestionState(
-        error: '未配置 AI 模型，请在设置中添加',
-      );
+      state = const ContinuationSuggestionState(error: '未配置 AI 模型，请在设置中添加');
       return;
     }
 
     final apiKey = ref.read(activeApiKeyProvider);
     if (apiKey == null || apiKey.isEmpty) {
-      state = const ContinuationSuggestionState(
-        error: 'API Key 无效，请检查设置',
-      );
+      state = const ContinuationSuggestionState(error: 'API Key 无效，请检查设置');
       return;
     }
 
@@ -172,7 +168,8 @@ class ContinuationSuggestionNotifier
         ? '\n\n前序章节脉络：\n$contextChain'
         : '';
 
-    const systemPrompt = '你是一位资深小说编辑，擅长分析故事走向并提出多样化的'
+    const systemPrompt =
+        '你是一位资深小说编辑，擅长分析故事走向并提出多样化的'
         '剧情发展方向。你需要根据当前章节内容和前序脉络，提出恰好3个风格各异、'
         '都符合逻辑的续写方向。';
 
@@ -180,7 +177,8 @@ class ContinuationSuggestionNotifier
         ? '${chapterText.substring(0, 1000)}...'
         : chapterText;
 
-    final userPrompt = '以下是一段小说正文的结尾部分：\n'
+    final userPrompt =
+        '以下是一段小说正文的结尾部分：\n'
         '```\n$truncatedText\n```$contextSection\n\n'
         '请基于以上内容，提出恰好3个风格各异的续写方向。'
         '每个方向应包含：\n'
@@ -192,10 +190,7 @@ class ContinuationSuggestionNotifier
         '{"direction":"方向名","summary":"简述","keyPoints":"要点1；要点2"}，'
         '{"direction":"方向名","summary":"简述","keyPoints":"要点1；要点2"}]';
 
-    return [
-      ChatMessage.system(systemPrompt),
-      ChatMessage.user(userPrompt),
-    ];
+    return [ChatMessage.system(systemPrompt), ChatMessage.user(userPrompt)];
   }
 
   /// Parses AI response text into a list of suggestions.
@@ -226,11 +221,13 @@ class ContinuationSuggestionNotifier
           final summary = item['summary'] as String?;
           final keyPoints = item['keyPoints'] as String?;
           if (direction != null && summary != null && keyPoints != null) {
-            suggestions.add(ContinuationSuggestion(
-              direction: direction.trim(),
-              summary: summary.trim(),
-              keyPoints: keyPoints.trim(),
-            ));
+            suggestions.add(
+              ContinuationSuggestion(
+                direction: direction.trim(),
+                summary: summary.trim(),
+                keyPoints: keyPoints.trim(),
+              ),
+            );
           }
         }
       }
@@ -250,6 +247,7 @@ class ContinuationSuggestionNotifier
 
 /// Provider for the continuation suggestion notifier.
 final continuationSuggestionNotifierProvider =
-    NotifierProvider<ContinuationSuggestionNotifier, ContinuationSuggestionState>(
-  ContinuationSuggestionNotifier.new,
-);
+    NotifierProvider<
+      ContinuationSuggestionNotifier,
+      ContinuationSuggestionState
+    >(ContinuationSuggestionNotifier.new);

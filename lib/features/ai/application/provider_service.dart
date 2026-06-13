@@ -114,9 +114,17 @@ class ProviderService {
     String model = 'gpt-4o-mini',
   }) async {
     if (type == AiProviderType.claude) {
-      await _testClaudeConnection(apiKey: apiKey, baseUrl: baseUrl, model: model);
+      await _testClaudeConnection(
+        apiKey: apiKey,
+        baseUrl: baseUrl,
+        model: model,
+      );
     } else {
-      await _testOpenAIConnection(apiKey: apiKey, baseUrl: baseUrl, model: model);
+      await _testOpenAIConnection(
+        apiKey: apiKey,
+        baseUrl: baseUrl,
+        model: model,
+      );
     }
   }
 

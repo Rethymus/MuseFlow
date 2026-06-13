@@ -144,8 +144,7 @@ class StyleDeviationDetector {
       );
     }
 
-    final textAvg =
-        lengths.reduce((a, b) => a + b) / lengths.length;
+    final textAvg = lengths.reduce((a, b) => a + b) / lengths.length;
     final profileAvg = profile.sentenceLengthStats.avg;
 
     // Deviation is proportional to the difference relative to the author's
@@ -159,12 +158,12 @@ class StyleDeviationDetector {
     final explanation = normalizedDev < deviationThreshold
         ? '句式长度与作者风格一致'
         : normalizedDev > 0.6
-            ? '句式长度明显偏离作者习惯'
-                '（作者均${profileAvg.toStringAsFixed(1)}字，'
-                '当前${textAvg.toStringAsFixed(1)}字）'
-            : '句式长度略有偏差'
-                '（作者均${profileAvg.toStringAsFixed(1)}字，'
-                '当前${textAvg.toStringAsFixed(1)}字）';
+        ? '句式长度明显偏离作者习惯'
+              '（作者均${profileAvg.toStringAsFixed(1)}字，'
+              '当前${textAvg.toStringAsFixed(1)}字）'
+        : '句式长度略有偏差'
+              '（作者均${profileAvg.toStringAsFixed(1)}字，'
+              '当前${textAvg.toStringAsFixed(1)}字）';
 
     return DimensionDeviation(
       dimension: StyleDimension.sentenceLength,
@@ -175,10 +174,7 @@ class StyleDeviationDetector {
     );
   }
 
-  DimensionDeviation _analyzeRhythm(
-    String text,
-    AuthorStyleProfile profile,
-  ) {
+  DimensionDeviation _analyzeRhythm(String text, AuthorStyleProfile profile) {
     final lengths = _extractSentenceLengths(text);
     final textRhythm = _computeRhythmScore(lengths);
 
@@ -199,8 +195,8 @@ class StyleDeviationDetector {
     final explanation = penaltyDev < deviationThreshold
         ? '节奏变化与作者风格一致'
         : textRhythm > profileRhythm
-            ? '节奏过于均匀，缺乏长短变化（AI常见特征）'
-            : '节奏变化略大于作者习惯';
+        ? '节奏过于均匀，缺乏长短变化（AI常见特征）'
+        : '节奏变化略大于作者习惯';
 
     return DimensionDeviation(
       dimension: StyleDimension.rhythm,
@@ -229,8 +225,7 @@ class StyleDeviationDetector {
     final uniqueChars = cjkChars.toSet().length;
     final textRichness = uniqueChars / cjkChars.length;
     // Normalize to 0-1 scale (same as StyleAnalyzer)
-    final normalizedRichness =
-        ((textRichness - 0.25) / 0.30).clamp(0.0, 1.0);
+    final normalizedRichness = ((textRichness - 0.25) / 0.30).clamp(0.0, 1.0);
 
     final profileRichness = profile.vocabularyRichness;
     final diff = (normalizedRichness - profileRichness).abs();
@@ -242,8 +237,8 @@ class StyleDeviationDetector {
     final explanation = normalizedDev < deviationThreshold
         ? '词汇丰富度与作者风格一致'
         : normalizedRichness > profileRichness
-            ? '词汇过于华丽，偏离作者朴实风格'
-            : '词汇重复度偏高，变化不足';
+        ? '词汇过于华丽，偏离作者朴实风格'
+        : '词汇重复度偏高，变化不足';
 
     return DimensionDeviation(
       dimension: StyleDimension.vocabulary,
@@ -254,10 +249,7 @@ class StyleDeviationDetector {
     );
   }
 
-  DimensionDeviation _analyzeRhetoric(
-    String text,
-    AuthorStyleProfile profile,
-  ) {
+  DimensionDeviation _analyzeRhetoric(String text, AuthorStyleProfile profile) {
     final habits = _computeRhetoricHabits(text);
     final profileHabits = profile.rhetoricHabits;
 
@@ -270,7 +262,10 @@ class StyleDeviationDetector {
     ];
 
     final avgDiff = diffs.reduce((a, b) => a + b) / diffs.length;
-    final normalizedDev = (avgDiff * 3).clamp(0.0, 1.0); // amplify for sensitivity
+    final normalizedDev = (avgDiff * 3).clamp(
+      0.0,
+      1.0,
+    ); // amplify for sensitivity
 
     // Check for specific AI patterns: over-balanced descriptions
     final descriptionHeavy =
@@ -282,11 +277,13 @@ class StyleDeviationDetector {
     if (normalizedDev < deviationThreshold) {
       explanation = '修辞手法与作者风格一致';
     } else if (descriptionHeavy) {
-      explanation = '描写比重过高'
+      explanation =
+          '描写比重过高'
           '（作者${(profileHabits.descriptionRatio * 100).toStringAsFixed(0)}%，'
           '当前${(habits.descriptionRatio * 100).toStringAsFixed(0)}%）';
     } else if (metaphorHeavy) {
-      explanation = '比喻修辞过多，偏向AI华丽风格'
+      explanation =
+          '比喻修辞过多，偏向AI华丽风格'
           '（作者${(profileHabits.metaphorFrequency * 100).toStringAsFixed(0)}%，'
           '当前${(habits.metaphorFrequency * 100).toStringAsFixed(0)}%）';
     } else {
@@ -316,11 +313,11 @@ class StyleDeviationDetector {
     final normalizedDev = (avgDiff * 2).clamp(0.0, 1.0);
 
     // AI pattern: flat emotion curve (intensity near 0.5, low variance)
-    final isFlat =
-        textTone.intensity > 0.35 && textTone.intensity < 0.65;
+    final isFlat = textTone.intensity > 0.35 && textTone.intensity < 0.65;
 
     final effectiveDev = isFlat && profileTone.intensity.abs() > 0.2
-        ? normalizedDev * 1.3 // penalize flat emotion more
+        ? normalizedDev *
+              1.3 // penalize flat emotion more
         : normalizedDev;
 
     String explanation;
@@ -386,9 +383,9 @@ class StyleDeviationDetector {
     if (lengths.length < 3) return 0.5;
     final avg = lengths.reduce((a, b) => a + b) / lengths.length;
     if (avg == 0) return 0.5;
-    final variance = lengths
-        .map((l) => (l - avg) * (l - avg))
-        .reduce((a, b) => a + b) / lengths.length;
+    final variance =
+        lengths.map((l) => (l - avg) * (l - avg)).reduce((a, b) => a + b) /
+        lengths.length;
     final stdDev = sqrt(variance);
     final cv = stdDev / avg;
     return (1.0 - (cv - 0.3) / 0.5).clamp(0.0, 1.0);
@@ -437,11 +434,11 @@ class StyleDeviationDetector {
 
     final warmth = totalCjk > 0
         ? ((positiveCount - negativeCount) / (totalCjk * 0.05 + 1) * 0.5 + 0.5)
-            .clamp(0.0, 1.0)
+              .clamp(0.0, 1.0)
         : 0.5;
     final intensity = totalCjk > 0
         ? ((positiveCount + negativeCount) / (totalCjk * 0.03 + 1) * 0.5 + 0.5)
-            .clamp(0.0, 1.0)
+              .clamp(0.0, 1.0)
         : 0.5;
 
     return EmotionalTone(
@@ -453,9 +450,30 @@ class StyleDeviationDetector {
 
   int _countPositiveSentiment(String text) {
     const positives = [
-      '温暖', '幸福', '快乐', '美好', '希望', '光明', '温柔', '甜蜜',
-      '感动', '欣喜', '安宁', '喜悦', '欢笑', '灿烂', '明媚', '欢快',
-      '欢喜', '喜悦', '安心', '满足', '欣慰', '爱', '喜欢', '珍惜',
+      '温暖',
+      '幸福',
+      '快乐',
+      '美好',
+      '希望',
+      '光明',
+      '温柔',
+      '甜蜜',
+      '感动',
+      '欣喜',
+      '安宁',
+      '喜悦',
+      '欢笑',
+      '灿烂',
+      '明媚',
+      '欢快',
+      '欢喜',
+      '喜悦',
+      '安心',
+      '满足',
+      '欣慰',
+      '爱',
+      '喜欢',
+      '珍惜',
     ];
     var count = 0;
     for (final word in positives) {
@@ -466,9 +484,30 @@ class StyleDeviationDetector {
 
   int _countNegativeSentiment(String text) {
     const negatives = [
-      '痛苦', '悲伤', '愤怒', '恐惧', '绝望', '孤独', '寒冷', '黑暗',
-      '忧伤', '心碎', '恐惧', '不安', '焦虑', '愤怒', '失望', '悲痛',
-      '寒心', '凄凉', '寂寞', '难过', '害怕', '恨', '厌恶', '痛苦',
+      '痛苦',
+      '悲伤',
+      '愤怒',
+      '恐惧',
+      '绝望',
+      '孤独',
+      '寒冷',
+      '黑暗',
+      '忧伤',
+      '心碎',
+      '恐惧',
+      '不安',
+      '焦虑',
+      '愤怒',
+      '失望',
+      '悲痛',
+      '寒心',
+      '凄凉',
+      '寂寞',
+      '难过',
+      '害怕',
+      '恨',
+      '厌恶',
+      '痛苦',
     ];
     var count = 0;
     for (final word in negatives) {
@@ -490,21 +529,18 @@ class StyleDeviationDetector {
         sentence.contains('」') ||
         sentence.contains('"') ||
         sentence.contains('"') ||
-        RegExp(
-            r'[一-鿿]{1,4}(说|道|喊|叫|问|答|笑|怒|骂|吼|嘀咕|嘟囔|喃喃)')
-            .hasMatch(sentence);
+        RegExp(r'[一-鿿]{1,4}(说|道|喊|叫|问|答|笑|怒|骂|吼|嘀咕|嘟囔|喃喃)').hasMatch(sentence);
   }
 
   bool _isAction(String sentence) {
     return RegExp(
-            r'^[一-鿿]{1,3}(走|跑|跳|打|踢|抓|握|挥|抬|举|放|推|拉|扯|砍|刺|挥|转|回|看|盯|望|瞥|听|闻)')
-        .hasMatch(sentence.trim());
+      r'^[一-鿿]{1,3}(走|跑|跳|打|踢|抓|握|挥|抬|举|放|推|拉|扯|砍|刺|挥|转|回|看|盯|望|瞥|听|闻)',
+    ).hasMatch(sentence.trim());
   }
 
   bool _isDescription(String sentence) {
     final cjkCount = _extractCjkChars(sentence).length;
-    final adjCount =
-        RegExp(r'[一-鿿]{2}(的|地|得)').allMatches(sentence).length;
+    final adjCount = RegExp(r'[一-鿿]{2}(的|地|得)').allMatches(sentence).length;
     return adjCount >= 2 || (cjkCount > 20 && adjCount >= 1);
   }
 
@@ -520,9 +556,12 @@ class StyleDeviationDetector {
 
   List<String> _extractCjkChars(String text) {
     return text.runes
-        .where((r) => (r >= 0x4E00 && r <= 0x9FFF) ||
-            (r >= 0x3400 && r <= 0x4DBF) ||
-            (r >= 0x3000 && r <= 0x303F))
+        .where(
+          (r) =>
+              (r >= 0x4E00 && r <= 0x9FFF) ||
+              (r >= 0x3400 && r <= 0x4DBF) ||
+              (r >= 0x3000 && r <= 0x303F),
+        )
         .map((r) => String.fromCharCode(r))
         .toList();
   }

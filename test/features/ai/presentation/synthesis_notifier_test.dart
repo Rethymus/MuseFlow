@@ -477,72 +477,80 @@ void main() {
       });
     });
     group('style profile integration', () {
-      test('should pass style profile to prompt context when available', () async {
-        final profile = AuthorStyleProfile(
-          manuscriptId: 'test-ms',
-          sentenceLengthStats: const SentenceLengthStats(avg: 20, stdDev: 8, median: 18),
-          rhythmScore: 0.4,
-          vocabularyRichness: 0.6,
-          rhetoricHabits: const RhetoricHabits(
-            metaphorFrequency: 0.07,
-            dialogueRatio: 0.3,
-            descriptionRatio: 0.35,
-          ),
-          emotionalTone: const EmotionalTone(overall: '温暖克制', warmth: 0.6),
-          analyzedChapterCount: 4,
-          analyzedCharCount: 8000,
-          sampleParagraphs: [
-            StyleSample(
-              chapterId: 'ch1',
-              paragraphIndex: 0,
-              text: '月光从云层间漏下来，照得庭院泛白。',
-              qualityScore: 0.9,
-              dimensionScores: {StyleDimension.rhythm: 0.8},
+      test(
+        'should pass style profile to prompt context when available',
+        () async {
+          final profile = AuthorStyleProfile(
+            manuscriptId: 'test-ms',
+            sentenceLengthStats: const SentenceLengthStats(
+              avg: 20,
+              stdDev: 8,
+              median: 18,
             ),
-          ],
-        );
-
-        fakeAdapter = _FakeOpenAIAdapter();
-
-        container = ProviderContainer(
-          overrides: [
-            openaiAdapterProvider.overrideWithValue(fakeAdapter),
-            activeProviderProvider.overrideWithValue(
-              AIProvider(
-                id: 'test-provider',
-                name: 'Test',
-                baseUrl: 'https://api.openai.com/v1',
-                type: AiProviderType.openai,
-                model: 'gpt-4o-mini',
-                isActive: true,
-                createdAt: DateTime(2026, 1, 1),
+            rhythmScore: 0.4,
+            vocabularyRichness: 0.6,
+            rhetoricHabits: const RhetoricHabits(
+              metaphorFrequency: 0.07,
+              dialogueRatio: 0.3,
+              descriptionRatio: 0.35,
+            ),
+            emotionalTone: const EmotionalTone(overall: '温暖克制', warmth: 0.6),
+            analyzedChapterCount: 4,
+            analyzedCharCount: 8000,
+            sampleParagraphs: [
+              StyleSample(
+                chapterId: 'ch1',
+                paragraphIndex: 0,
+                text: '月光从云层间漏下来，照得庭院泛白。',
+                qualityScore: 0.9,
+                dimensionScores: {StyleDimension.rhythm: 0.8},
               ),
-            ),
-            activeApiKeyProvider.overrideWithValue('test-key'),
-            selectedFragmentsProvider.overrideWithValue([
-              Fragment(id: 'f1', text: '碎片', createdAt: DateTime(2026, 1, 1)),
-            ]),
-            tokenAuditServiceProvider.overrideWith(
-              (ref) async => _RecordingTokenAuditService(),
-            ),
-            styleProfileNotifierProvider.overrideWith(
-              () => _FakeStyleProfileNotifier(profile),
-            ),
-          ],
-        );
+            ],
+          );
 
-        fakeAdapter.streamOutput = Stream.fromIterable(['生成文本']);
+          fakeAdapter = _FakeOpenAIAdapter();
 
-        container.read(synthesisProvider.notifier).startSynthesis();
-        await _pumpAndWait();
+          container = ProviderContainer(
+            overrides: [
+              openaiAdapterProvider.overrideWithValue(fakeAdapter),
+              activeProviderProvider.overrideWithValue(
+                AIProvider(
+                  id: 'test-provider',
+                  name: 'Test',
+                  baseUrl: 'https://api.openai.com/v1',
+                  type: AiProviderType.openai,
+                  model: 'gpt-4o-mini',
+                  isActive: true,
+                  createdAt: DateTime(2026, 1, 1),
+                ),
+              ),
+              activeApiKeyProvider.overrideWithValue('test-key'),
+              selectedFragmentsProvider.overrideWithValue([
+                Fragment(id: 'f1', text: '碎片', createdAt: DateTime(2026, 1, 1)),
+              ]),
+              tokenAuditServiceProvider.overrideWith(
+                (ref) async => _RecordingTokenAuditService(),
+              ),
+              styleProfileNotifierProvider.overrideWith(
+                () => _FakeStyleProfileNotifier(profile),
+              ),
+            ],
+          );
 
-        // Verify the adapter received messages containing dynamic persona
-        // (not the default fixed persona)
-        expect(fakeAdapter.lastMessages, isNotNull);
-        final systemContent = fakeAdapter.lastMessages!.first.toJson()['content'] as String;
-        expect(systemContent, contains('写作风格指令'));
-        expect(systemContent, isNot(contains('像人写的')));
-      });
+          fakeAdapter.streamOutput = Stream.fromIterable(['生成文本']);
+
+          container.read(synthesisProvider.notifier).startSynthesis();
+          await _pumpAndWait();
+
+          // Verify the adapter received messages containing dynamic persona
+          // (not the default fixed persona)
+          expect(fakeAdapter.lastMessages, isNotNull);
+          final systemContent =
+              fakeAdapter.lastMessages!.first.toJson()['content'] as String;
+          expect(systemContent, contains('写作风格指令'));
+          expect(systemContent, isNot(contains('像人写的')));
+        },
+      );
     });
   });
 }

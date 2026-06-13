@@ -93,13 +93,7 @@ void main() {
 
       final result = middleware.apply(
         PromptContext(
-          fragments: [
-            Fragment(
-              id: 'f1',
-              text: '林风走到门前，他对守卫说',
-              createdAt: now,
-            ),
-          ],
+          fragments: [Fragment(id: 'f1', text: '林风走到门前，他对守卫说', createdAt: now)],
           tokenBudget: 4096,
           characterGenders: {'林风': Gender.male},
         ),
@@ -125,9 +119,7 @@ void main() {
 
       final result = middleware.apply(
         PromptContext(
-          fragments: [
-            Fragment(id: 'f1', text: '王刚走到门前', createdAt: now),
-          ],
+          fragments: [Fragment(id: 'f1', text: '王刚走到门前', createdAt: now)],
           tokenBudget: 4096,
         ),
       );
@@ -160,9 +152,7 @@ void main() {
 
       final result = middleware.apply(
         PromptContext(
-          fragments: [
-            Fragment(id: 'f1', text: '林锋站在山门前', createdAt: now),
-          ],
+          fragments: [Fragment(id: 'f1', text: '林锋站在山门前', createdAt: now)],
           tokenBudget: 4096,
         ),
       );
@@ -198,18 +188,9 @@ void main() {
 
       final result = middleware.apply(
         PromptContext(
-          fragments: [
-            Fragment(
-              id: 'f1',
-              text: '林风对李雪说，他对她微笑',
-              createdAt: now,
-            ),
-          ],
+          fragments: [Fragment(id: 'f1', text: '林风对李雪说，他对她微笑', createdAt: now)],
           tokenBudget: 4096,
-          characterGenders: {
-            '林风': Gender.male,
-            '李雪': Gender.female,
-          },
+          characterGenders: {'林风': Gender.male, '李雪': Gender.female},
         ),
       );
 

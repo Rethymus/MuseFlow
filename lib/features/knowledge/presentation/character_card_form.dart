@@ -256,7 +256,9 @@ class _RelationshipsSection extends ConsumerWidget {
       error: (_, _) => const SizedBox.shrink(),
       data: (relationships) {
         final myRels = relationships
-            .where((r) => r.fromCharacterId == cardId || r.toCharacterId == cardId)
+            .where(
+              (r) => r.fromCharacterId == cardId || r.toCharacterId == cardId,
+            )
             .toList();
 
         final otherCards = cardsAsync.asData?.value ?? [];
@@ -266,8 +268,7 @@ class _RelationshipsSection extends ConsumerWidget {
           children: [
             Row(
               children: [
-                Text('角色关系',
-                    style: Theme.of(context).textTheme.titleSmall),
+                Text('角色关系', style: Theme.of(context).textTheme.titleSmall),
                 const Spacer(),
                 if (otherCards.length >= 2)
                   TextButton.icon(
@@ -283,16 +284,18 @@ class _RelationshipsSection extends ConsumerWidget {
                 child: Text(
                   '暂无关系记录',
                   style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        color: Theme.of(context).colorScheme.outline,
-                      ),
+                    color: Theme.of(context).colorScheme.outline,
+                  ),
                 ),
               )
             else
-              ...myRels.map((rel) => _RelationshipTile(
-                    rel: rel,
-                    cardId: cardId,
-                    cards: otherCards,
-                  )),
+              ...myRels.map(
+                (rel) => _RelationshipTile(
+                  rel: rel,
+                  cardId: cardId,
+                  cards: otherCards,
+                ),
+              ),
           ],
         );
       },
@@ -309,10 +312,8 @@ class _RelationshipsSection extends ConsumerWidget {
 
     showDialog(
       context: context,
-      builder: (ctx) => _AddRelationshipDialog(
-        fromId: cardId,
-        otherCards: otherCards,
-      ),
+      builder: (ctx) =>
+          _AddRelationshipDialog(fromId: cardId, otherCards: otherCards),
     );
   }
 }
@@ -333,10 +334,9 @@ class _RelationshipTile extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final isFrom = rel.fromCharacterId == cardId;
     final otherId = isFrom ? rel.toCharacterId : rel.fromCharacterId;
-    final otherName = cards
-        .where((c) => c.id == otherId)
-        .map((c) => c.name)
-        .firstOrNull ?? otherId;
+    final otherName =
+        cards.where((c) => c.id == otherId).map((c) => c.name).firstOrNull ??
+        otherId;
 
     final prefix = isFrom ? '' : '';
     final suffix = isFrom ? '' : '';
@@ -362,8 +362,8 @@ class _RelationshipTile extends ConsumerWidget {
               child: Text(
                 '（${rel.description}）',
                 style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                      color: Theme.of(context).colorScheme.outline,
-                    ),
+                  color: Theme.of(context).colorScheme.outline,
+                ),
                 overflow: TextOverflow.ellipsis,
               ),
             ),
@@ -437,10 +437,9 @@ class _AddRelationshipDialogState
                 border: OutlineInputBorder(),
               ),
               items: widget.otherCards
-                  .map((c) => DropdownMenuItem(
-                        value: c.id,
-                        child: Text(c.name),
-                      ))
+                  .map(
+                    (c) => DropdownMenuItem(value: c.id, child: Text(c.name)),
+                  )
                   .toList(),
               onChanged: (value) => setState(() => _selectedCharId = value),
             ),
@@ -452,10 +451,7 @@ class _AddRelationshipDialogState
                 border: OutlineInputBorder(),
               ),
               items: RelationshipType.values
-                  .map((t) => DropdownMenuItem(
-                        value: t,
-                        child: Text(t.label),
-                      ))
+                  .map((t) => DropdownMenuItem(value: t, child: Text(t.label)))
                   .toList(),
               onChanged: (value) {
                 if (value != null) setState(() => _selectedType = value);
@@ -483,7 +479,8 @@ class _AddRelationshipDialogState
           onPressed: _isSaving ? null : _save,
           child: _isSaving
               ? const SizedBox(
-                  width: 16, height: 16,
+                  width: 16,
+                  height: 16,
                   child: CircularProgressIndicator(strokeWidth: 2),
                 )
               : const Text('添加'),
@@ -507,16 +504,14 @@ class _AddRelationshipDialogState
         createdAt: DateTime.now(),
       );
 
-      await ref
-          .read(characterRelationshipNotifierProvider.notifier)
-          .add(rel);
+      await ref.read(characterRelationshipNotifierProvider.notifier).add(rel);
 
       if (mounted) Navigator.of(context).pop();
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('添加失败: $e')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('添加失败: $e')));
       }
     } finally {
       if (mounted) setState(() => _isSaving = false);

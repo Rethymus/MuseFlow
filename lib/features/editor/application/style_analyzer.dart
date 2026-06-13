@@ -75,8 +75,7 @@ class StyleAnalyzer {
     final samples = _extractTopSamples(qualifying, totalCjk);
 
     // Extract author characteristic n-gram vocabulary from all analyzed text.
-    final lexicalSignature =
-        LexicalSignatureExtractor.extract(allText);
+    final lexicalSignature = LexicalSignatureExtractor.extract(allText);
 
     // Determine if we should merge with existing profile (incremental update)
     final analyzedCount = alreadyAnalyzed?.length ?? 0;
@@ -147,9 +146,9 @@ class StyleAnalyzer {
     final avg = lengths.reduce((a, b) => a + b) / lengths.length;
     if (avg == 0) return 0.5;
 
-    final variance = lengths
-        .map((l) => (l - avg) * (l - avg))
-        .reduce((a, b) => a + b) / lengths.length;
+    final variance =
+        lengths.map((l) => (l - avg) * (l - avg)).reduce((a, b) => a + b) /
+        lengths.length;
     final stdDev = sqrt(variance);
     final cv = stdDev / avg;
 
@@ -227,7 +226,9 @@ class StyleAnalyzer {
 
   bool _isAction(String sentence) {
     // Action verbs at sentence start
-    return RegExp(r'^[一-鿿]{1,3}(走|跑|跳|打|踢|抓|握|挥|抬|举|放|推|拉|扯|砍|刺|挥|转|回|看|盯|望|瞥|听|闻)').hasMatch(sentence.trim());
+    return RegExp(
+      r'^[一-鿿]{1,3}(走|跑|跳|打|踢|抓|握|挥|抬|举|放|推|拉|扯|砍|刺|挥|转|回|看|盯|望|瞥|听|闻)',
+    ).hasMatch(sentence.trim());
   }
 
   bool _isDescription(String sentence) {
@@ -256,8 +257,11 @@ class StyleAnalyzer {
     final totalCjk = _cjkCharCount(text);
 
     final warmth = SentimentLexicon.warmthScore(positiveCount, negativeCount);
-    final intensity =
-        SentimentLexicon.intensityScore(positiveCount, negativeCount, totalCjk);
+    final intensity = SentimentLexicon.intensityScore(
+      positiveCount,
+      negativeCount,
+      totalCjk,
+    );
     final overall = SentimentLexicon.classifyTone(warmth, intensity);
 
     return EmotionalTone(
@@ -273,10 +277,7 @@ class StyleAnalyzer {
   ///
   /// Paragraphs are scored by a composite of dimension metrics.
   /// The [_topSampleCount] highest-scoring paragraphs are returned.
-  List<StyleSample> _extractTopSamples(
-    List<Chapter> chapters,
-    int totalCjk,
-  ) {
+  List<StyleSample> _extractTopSamples(List<Chapter> chapters, int totalCjk) {
     final candidates = <_ParagraphCandidate>[];
 
     for (final chapter in chapters) {
@@ -287,12 +288,14 @@ class StyleAnalyzer {
         if (cjkLen < _minSampleChars || cjkLen > _maxSampleChars) continue;
 
         final score = _scoreParagraph(text);
-        candidates.add(_ParagraphCandidate(
-          chapterId: chapter.id,
-          paragraphIndex: i,
-          text: text,
-          score: score,
-        ));
+        candidates.add(
+          _ParagraphCandidate(
+            chapterId: chapter.id,
+            paragraphIndex: i,
+            text: text,
+            score: score,
+          ),
+        );
       }
     }
 
@@ -301,13 +304,15 @@ class StyleAnalyzer {
 
     return candidates
         .take(_topSampleCount)
-        .map((c) => StyleSample(
-              chapterId: c.chapterId,
-              paragraphIndex: c.paragraphIndex,
-              text: c.text,
-              qualityScore: c.score,
-              dimensionScores: _computeDimensionScores(c.text),
-            ))
+        .map(
+          (c) => StyleSample(
+            chapterId: c.chapterId,
+            paragraphIndex: c.paragraphIndex,
+            text: c.text,
+            qualityScore: c.score,
+            dimensionScores: _computeDimensionScores(c.text),
+          ),
+        )
         .toList();
   }
 
@@ -333,7 +338,8 @@ class StyleAnalyzer {
     final toneExpressiveness =
         1.0 - (tone.intensity - 0.4).abs(); // peak at 0.4-0.6
     // Rhetoric diversity: balanced mix is ideal
-    final rhetoricSum = rhetoric.dialogueRatio +
+    final rhetoricSum =
+        rhetoric.dialogueRatio +
         rhetoric.descriptionRatio +
         rhetoric.actionRatio +
         rhetoric.metaphorFrequency;
@@ -354,8 +360,7 @@ class StyleAnalyzer {
       StyleDimension.rhythm: _computeRhythmScore(sentenceLens),
       StyleDimension.vocabulary: _computeVocabularyRichness(text),
       StyleDimension.rhetoric: _computeRhetoricHabits(text).metaphorFrequency,
-      StyleDimension.emotionalTone:
-          _computeEmotionalTone(text).intensity,
+      StyleDimension.emotionalTone: _computeEmotionalTone(text).intensity,
     };
   }
 
@@ -374,9 +379,12 @@ class StyleAnalyzer {
   /// Extracts all CJK characters from text as a list.
   static List<String> _extractCjkChars(String text) {
     return text.runes
-        .where((r) => (r >= 0x4E00 && r <= 0x9FFF) || // CJK Unified
-            (r >= 0x3400 && r <= 0x4DBF) || // CJK Extension A
-            (r >= 0x3000 && r <= 0x303F)) // CJK Symbols
+        .where(
+          (r) =>
+              (r >= 0x4E00 && r <= 0x9FFF) || // CJK Unified
+              (r >= 0x3400 && r <= 0x4DBF) || // CJK Extension A
+              (r >= 0x3000 && r <= 0x303F),
+        ) // CJK Symbols
         .map((r) => String.fromCharCode(r))
         .toList();
   }

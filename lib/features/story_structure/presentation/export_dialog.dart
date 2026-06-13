@@ -23,7 +23,8 @@ class ExportDialog extends ConsumerStatefulWidget {
     String path, {
     String? textContent,
     List<int>? binaryContent,
-  }) onExport;
+  })
+  onExport;
 
   const ExportDialog({super.key, required this.bundle, required this.onExport});
 
@@ -78,21 +79,13 @@ class _ExportDialogState extends ConsumerState<ExportDialog> {
     try {
       if (_selectedFormat.isBinary) {
         final bytes = _exportService.buildDocxBytes(widget.bundle);
-        await widget.onExport(
-          _selectedFormat,
-          path,
-          binaryContent: bytes,
-        );
+        await widget.onExport(_selectedFormat, path, binaryContent: bytes);
       } else {
         final content = _exportService.buildContent(
           widget.bundle,
           _selectedFormat,
         );
-        await widget.onExport(
-          _selectedFormat,
-          path,
-          textContent: content,
-        );
+        await widget.onExport(_selectedFormat, path, textContent: content);
       }
 
       if (mounted) {

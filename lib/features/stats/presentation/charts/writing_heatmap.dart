@@ -48,9 +48,7 @@ class WritingHeatmap extends StatelessWidget {
     // Calculate max for color scaling
     final maxVal = dataMap.isEmpty
         ? 1.0
-        : dataMap.values
-            .reduce((a, b) => a > b ? a : b)
-            .toDouble();
+        : dataMap.values.reduce((a, b) => a > b ? a : b).toDouble();
 
     // Generate date range: from today going back weekCount weeks
     final today = DateTime.now();
@@ -148,16 +146,12 @@ class _HeatmapGrid extends StatelessWidget {
 
                 // Skip cells before startDate
                 if (date.isBefore(startDate)) {
-                  return SizedBox(
-                    height: cellSize + cellSpacing,
-                  );
+                  return SizedBox(height: cellSize + cellSpacing);
                 }
 
                 // Skip future dates
                 if (date.isAfter(DateTime.now())) {
-                  return SizedBox(
-                    height: cellSize + cellSpacing,
-                  );
+                  return SizedBox(height: cellSize + cellSpacing);
                 }
 
                 final units = dataMap[dateKey] ?? 0;
@@ -213,33 +207,35 @@ class _MonthLabels extends StatelessWidget {
         Expanded(
           child: SizedBox(
             height: 16,
-            child: LayoutBuilder(builder: (context, _) {
-              final months = <String>[];
-              DateTime? lastMonth;
+            child: LayoutBuilder(
+              builder: (context, _) {
+                final months = <String>[];
+                DateTime? lastMonth;
 
-              for (int w = 0; w <= weekCount; w++) {
-                final date = startDate.add(Duration(days: w * 7));
-                if (lastMonth == null || date.month != lastMonth.month) {
-                  months.add('${date.month}月');
-                  lastMonth = date;
-                } else {
-                  months.add('');
+                for (int w = 0; w <= weekCount; w++) {
+                  final date = startDate.add(Duration(days: w * 7));
+                  if (lastMonth == null || date.month != lastMonth.month) {
+                    months.add('${date.month}月');
+                    lastMonth = date;
+                  } else {
+                    months.add('');
+                  }
                 }
-              }
 
-              return Row(
-                children: months.map((label) {
-                  return SizedBox(
-                    width: columnWidth,
-                    child: Text(
-                      label,
-                      style: style,
-                      overflow: TextOverflow.visible,
-                    ),
-                  );
-                }).toList(),
-              );
-            }),
+                return Row(
+                  children: months.map((label) {
+                    return SizedBox(
+                      width: columnWidth,
+                      child: Text(
+                        label,
+                        style: style,
+                        overflow: TextOverflow.visible,
+                      ),
+                    );
+                  }).toList(),
+                );
+              },
+            ),
           ),
         ),
       ],

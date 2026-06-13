@@ -11,18 +11,21 @@ import 'package:museflow/features/editor/domain/editor_ai_state.dart';
 
 void main() {
   group('Editor AI keyboard shortcuts', () {
-    test('shortcut key bindings should include Ctrl+Shift+T for tone rewrite', () {
-      final keySet = LogicalKeySet(
-        LogicalKeyboardKey.control,
-        LogicalKeyboardKey.shift,
-        LogicalKeyboardKey.keyT,
-      );
-      // Verify the key set resolves to a valid shortcut
-      expect(keySet.keys.length, 3);
-      expect(keySet.keys.contains(LogicalKeyboardKey.control), isTrue);
-      expect(keySet.keys.contains(LogicalKeyboardKey.shift), isTrue);
-      expect(keySet.keys.contains(LogicalKeyboardKey.keyT), isTrue);
-    });
+    test(
+      'shortcut key bindings should include Ctrl+Shift+T for tone rewrite',
+      () {
+        final keySet = LogicalKeySet(
+          LogicalKeyboardKey.control,
+          LogicalKeyboardKey.shift,
+          LogicalKeyboardKey.keyT,
+        );
+        // Verify the key set resolves to a valid shortcut
+        expect(keySet.keys.length, 3);
+        expect(keySet.keys.contains(LogicalKeyboardKey.control), isTrue);
+        expect(keySet.keys.contains(LogicalKeyboardKey.shift), isTrue);
+        expect(keySet.keys.contains(LogicalKeyboardKey.keyT), isTrue);
+      },
+    );
 
     test('shortcut key bindings should include Ctrl+Shift+P for polish', () {
       final keySet = LogicalKeySet(

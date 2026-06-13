@@ -101,7 +101,9 @@ void main() async {
       );
       final purged = await purgeService.purgeExpired();
       if (purged > 0) {
-        debugPrint('ManuscriptPurgeService: purged $purged expired manuscripts');
+        debugPrint(
+          'ManuscriptPurgeService: purged $purged expired manuscripts',
+        );
       }
     } catch (e) {
       debugPrint('ManuscriptPurgeService: purge failed (non-critical): $e');

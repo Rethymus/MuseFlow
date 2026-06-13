@@ -57,10 +57,10 @@ void main() {
       final review = EditorialReview.parseFromLLM(partial);
       expect(review.isDegraded, isFalse);
       expect(review.dimensions, hasLength(2));
-      expect(
-        review.dimensions.map((d) => d.dimension).toList(),
-        [ReviewDimension.plot, ReviewDimension.prose],
-      );
+      expect(review.dimensions.map((d) => d.dimension).toList(), [
+        ReviewDimension.plot,
+        ReviewDimension.prose,
+      ]);
     });
 
     test('clamps out-of-range scores into 0-100', () {

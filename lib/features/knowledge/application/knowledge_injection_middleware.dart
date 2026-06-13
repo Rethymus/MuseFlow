@@ -78,13 +78,15 @@ class KnowledgeInjectionMiddleware extends PromptMiddleware {
             (m) => m.entityId == id && m.position == fr.position,
           );
           if (!isDuplicate) {
-            fuzzyMatches.add(EntityMatch(
-              entityId: id,
-              entityType: type,
-              entityName: fr.candidate,
-              position: fr.position,
-              length: fr.length,
-            ));
+            fuzzyMatches.add(
+              EntityMatch(
+                entityId: id,
+                entityType: type,
+                entityName: fr.candidate,
+                position: fr.position,
+                length: fr.length,
+              ),
+            );
           }
         }
       }
@@ -103,30 +105,26 @@ class KnowledgeInjectionMiddleware extends PromptMiddleware {
           final type = nameIndex.typeOf(r.entityId);
           if (type == null) continue;
 
-          final isDuplicate = exactMatches.any(
-            (m) => m.entityId == r.entityId,
-          ) || fuzzyMatches.any(
-            (m) => m.entityId == r.entityId,
-          );
+          final isDuplicate =
+              exactMatches.any((m) => m.entityId == r.entityId) ||
+              fuzzyMatches.any((m) => m.entityId == r.entityId);
           if (!isDuplicate) {
-            pronounMatches.add(EntityMatch(
-              entityId: r.entityId,
-              entityType: type,
-              entityName: r.entityName,
-              position: r.pronounPosition,
-              length: 1,
-            ));
+            pronounMatches.add(
+              EntityMatch(
+                entityId: r.entityId,
+                entityType: type,
+                entityName: r.entityName,
+                position: r.pronounPosition,
+                length: 1,
+              ),
+            );
           }
         }
       }
     }
 
     // Merge all matches: exact first, then fuzzy, then pronoun
-    final allMatches = [
-      ...exactMatches,
-      ...fuzzyMatches,
-      ...pronounMatches,
-    ];
+    final allMatches = [...exactMatches, ...fuzzyMatches, ...pronounMatches];
     if (allMatches.isEmpty) return context;
 
     // Count mentions per entity (higher = more relevant)

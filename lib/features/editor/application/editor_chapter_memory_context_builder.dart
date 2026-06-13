@@ -164,14 +164,20 @@ class EditorChapterMemoryContextBuilder {
     final buffer = StringBuffer();
     var chainIndex = 0;
 
-    for (var i = currentIndex - 1; i >= 0 && chainIndex < 3; i--, chainIndex++) {
+    for (
+      var i = currentIndex - 1;
+      i >= 0 && chainIndex < 3;
+      i--, chainIndex++
+    ) {
       final chapter = chapters[i];
       final text = _compactWhitespace(chapter.documentContent);
       if (text.isEmpty) continue;
 
       final limit = limits[chainIndex];
       final label = chainIndex == 0 ? '紧邻前章' : '前${chainIndex + 1}章';
-      final summary = text.length <= limit ? text : '${text.substring(0, limit)}...';
+      final summary = text.length <= limit
+          ? text
+          : '${text.substring(0, limit)}...';
       buffer.writeln('$label摘要：$summary');
     }
 

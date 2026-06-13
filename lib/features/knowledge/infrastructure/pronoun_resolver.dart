@@ -11,8 +11,10 @@ library;
 enum Gender {
   /// Male (他).
   male,
+
   /// Female (她).
   female,
+
   /// Unknown or non-binary (它).
   unknown,
 }
@@ -91,11 +93,9 @@ class PronounResolver {
       while (start < pronounPos) {
         final index = text.indexOf(name, start);
         if (index == -1 || index >= pronounPos) break;
-        mentions.add(_NameMention(
-          name: name,
-          gender: charGender,
-          position: index,
-        ));
+        mentions.add(
+          _NameMention(name: name, gender: charGender, position: index),
+        );
         start = index + name.length;
       }
     }

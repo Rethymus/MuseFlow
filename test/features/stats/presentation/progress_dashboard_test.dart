@@ -20,9 +20,7 @@ void main() {
       await tester.pumpWidget(
         const MaterialApp(
           home: Scaffold(
-            body: SingleChildScrollView(
-              child: WritingHeatmap(dailyStats: []),
-            ),
+            body: SingleChildScrollView(child: WritingHeatmap(dailyStats: [])),
           ),
         ),
       );
@@ -61,9 +59,7 @@ void main() {
       await tester.pumpWidget(
         const MaterialApp(
           home: Scaffold(
-            body: SingleChildScrollView(
-              child: WritingHeatmap(dailyStats: []),
-            ),
+            body: SingleChildScrollView(child: WritingHeatmap(dailyStats: [])),
           ),
         ),
       );
@@ -77,18 +73,15 @@ void main() {
   group('ProgressDashboardPage', () {
     testWidgets('should show loading state', (tester) async {
       await tester.pumpWidget(
-        const ProviderScope(
-          child: MaterialApp(
-            home: ProgressDashboardPage(),
-          ),
-        ),
+        const ProviderScope(child: MaterialApp(home: ProgressDashboardPage())),
       );
 
       expect(find.byType(CircularProgressIndicator), findsOneWidget);
     });
 
-    testWidgets('should render dashboard content with debug snapshot',
-        (tester) async {
+    testWidgets('should render dashboard content with debug snapshot', (
+      tester,
+    ) async {
       final snapshot = StatsSnapshot(
         totalUnits: 12000,
         humanUnits: 8000,
@@ -102,8 +95,9 @@ void main() {
         MaterialApp(
           home: ProviderScope(
             overrides: [
-              writingStatsNotifierProvider.overrideWith(() =>
-                  _FakeStatsNotifier(snapshot)),
+              writingStatsNotifierProvider.overrideWith(
+                () => _FakeStatsNotifier(snapshot),
+              ),
             ],
             child: const ProgressDashboardPage(),
           ),
@@ -127,10 +121,7 @@ void main() {
       final today = DateTime.now();
       final daily = List.generate(7, (i) {
         final date = today.subtract(Duration(days: i));
-        return DailyWritingStats(
-          dateKey: _dateKey(date),
-          humanUnits: 100,
-        );
+        return DailyWritingStats(dateKey: _dateKey(date), humanUnits: 100);
       });
 
       // Verify data has activity for 7 consecutive days
@@ -149,10 +140,7 @@ void main() {
 
       // No activity today, but activity yesterday
       final daily = [
-        DailyWritingStats(
-          dateKey: _dateKey(yesterday),
-          humanUnits: 200,
-        ),
+        DailyWritingStats(dateKey: _dateKey(yesterday), humanUnits: 200),
       ];
 
       // Streak starts from yesterday (1 day)
@@ -165,10 +153,7 @@ void main() {
       final today = DateTime.now();
       final daily = List.generate(15, (i) {
         final date = today.subtract(Duration(days: i));
-        return DailyWritingStats(
-          dateKey: _dateKey(date),
-          humanUnits: 100,
-        );
+        return DailyWritingStats(dateKey: _dateKey(date), humanUnits: 100);
       });
 
       // 15 active out of 30 days = 50%

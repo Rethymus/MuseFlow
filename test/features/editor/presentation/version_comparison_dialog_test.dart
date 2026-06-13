@@ -15,18 +15,13 @@ import 'package:museflow/features/editor/presentation/version_comparison_dialog.
 Widget _dialogScaffold({SelectiveUndoService? service}) {
   return ProviderScope(
     overrides: service != null
-        ? [
-            selectiveUndoServiceProvider.overrideWith((ref) => service),
-          ]
+        ? [selectiveUndoServiceProvider.overrideWith((ref) => service)]
         : [],
     child: const MaterialApp(
       home: Scaffold(
         body: Center(
           child: Dialog(
-            child: SizedBox(
-              width: 500,
-              child: VersionComparisonDialog(),
-            ),
+            child: SizedBox(width: 500, child: VersionComparisonDialog()),
           ),
         ),
       ),
@@ -36,13 +31,12 @@ Widget _dialogScaffold({SelectiveUndoService? service}) {
 
 void main() {
   group('VersionHistoryButton', () {
-    testWidgets('should show without badge when undo stack is empty',
-        (tester) async {
+    testWidgets('should show without badge when undo stack is empty', (
+      tester,
+    ) async {
       await tester.pumpWidget(
         const ProviderScope(
-          child: MaterialApp(
-            home: Scaffold(body: VersionHistoryButton()),
-          ),
+          child: MaterialApp(home: Scaffold(body: VersionHistoryButton())),
         ),
       );
 
@@ -50,8 +44,9 @@ void main() {
       expect(find.text('0'), findsNothing);
     });
 
-    testWidgets('should show badge when undo stack has entries',
-        (tester) async {
+    testWidgets('should show badge when undo stack has entries', (
+      tester,
+    ) async {
       final service = SelectiveUndoService();
       service.record(
         originalText: '原文',
@@ -85,8 +80,7 @@ void main() {
       expect(find.text('暂无 AI 操作记录'), findsOneWidget);
     });
 
-    testWidgets('should show entries when undo stack has data',
-        (tester) async {
+    testWidgets('should show entries when undo stack has data', (tester) async {
       final service = SelectiveUndoService();
       service.record(
         originalText: '他走进了房间。',
@@ -106,8 +100,9 @@ void main() {
       expect(find.text('他走进了房间。'), findsOneWidget);
     });
 
-    testWidgets('should show multiple entries in reverse order',
-        (tester) async {
+    testWidgets('should show multiple entries in reverse order', (
+      tester,
+    ) async {
       final service = SelectiveUndoService();
       service.record(
         originalText: '第一段原文',

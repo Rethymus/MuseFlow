@@ -50,14 +50,11 @@ class LexicalSignatureExtractor {
       final gram = entry.key;
       if (gram.length < 2) continue;
       if (_isStopword(gram)) continue;
-      final weight =
-          gram.length >= 3 ? _trigramWeight : _bigramWeight;
+      final weight = gram.length >= 3 ? _trigramWeight : _bigramWeight;
       final score = entry.value.toDouble() * weight;
-      candidates.add(LexicalTerm(
-        term: gram,
-        score: score,
-        frequency: entry.value,
-      ));
+      candidates.add(
+        LexicalTerm(term: gram, score: score, frequency: entry.value),
+      );
     }
 
     candidates.sort((a, b) => b.score.compareTo(a.score));
@@ -66,8 +63,7 @@ class LexicalSignatureExtractor {
     // deliberately both retained (e.g. 拔剑 + 拔剑四 both capture distinct
     // author-characteristic surface forms). Salience ranking (trigram ×1.5
     // > bigram ×1.0) naturally orders them, and maxTerms bounds the result.
-    final selected =
-        candidates.take(maxTerms).toList(growable: false);
+    final selected = candidates.take(maxTerms).toList(growable: false);
 
     return LexicalSignature(topTerms: selected);
   }

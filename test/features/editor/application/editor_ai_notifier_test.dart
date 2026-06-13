@@ -111,13 +111,15 @@ void main() {
           container = createContainer(deviationRecorder: recorder);
           fakeAdapter.streamOutput = Stream.fromIterable(['结果']);
 
-          container.read(editorAINotifierProvider.notifier).startOperation(
-            EditorAIOperation.paragraphPolish,
-            '原始文字',
-            'node-1',
-            0,
-            4,
-          );
+          container
+              .read(editorAINotifierProvider.notifier)
+              .startOperation(
+                EditorAIOperation.paragraphPolish,
+                '原始文字',
+                'node-1',
+                0,
+                4,
+              );
           await _pumpAndWait();
 
           expect(
@@ -136,20 +138,18 @@ void main() {
         );
         fakeAdapter.streamOutput = Stream.fromIterable(['结果']);
 
-        container.read(editorAINotifierProvider.notifier).startOperation(
-          EditorAIOperation.paragraphPolish,
-          '原始文字',
-          'node-1',
-          0,
-          4,
-        );
+        container
+            .read(editorAINotifierProvider.notifier)
+            .startOperation(
+              EditorAIOperation.paragraphPolish,
+              '原始文字',
+              'node-1',
+              0,
+              4,
+            );
         await _pumpAndWait();
 
-        expect(
-          recorder.checkedTexts,
-          hasLength(1),
-          reason: '用户开启 -> 触发一次偏差检测',
-        );
+        expect(recorder.checkedTexts, hasLength(1), reason: '用户开启 -> 触发一次偏差检测');
       });
     });
 
@@ -571,27 +571,33 @@ void main() {
     });
 
     group('multi-turn conversation history', () {
-      test('should save conversation turn after successful operation', () async {
-        container = createContainer();
-        fakeAdapter.streamOutput = Stream.fromIterable(['润色后']);
+      test(
+        'should save conversation turn after successful operation',
+        () async {
+          container = createContainer();
+          fakeAdapter.streamOutput = Stream.fromIterable(['润色后']);
 
-        container
-            .read(editorAINotifierProvider.notifier)
-            .startOperation(
-              EditorAIOperation.paragraphPolish,
-              '原文',
-              'node-1',
-              0,
-              2,
-              userInstruction: '请润色',
-            );
-        await _pumpAndWait();
+          container
+              .read(editorAINotifierProvider.notifier)
+              .startOperation(
+                EditorAIOperation.paragraphPolish,
+                '原文',
+                'node-1',
+                0,
+                2,
+                userInstruction: '请润色',
+              );
+          await _pumpAndWait();
 
-        final state = container.read(editorAINotifierProvider);
-        expect(state.conversationHistory, hasLength(1));
-        expect(state.conversationHistory.first.userInstruction, '请润色');
-        expect(state.conversationHistory.first.operation, EditorAIOperation.paragraphPolish);
-      });
+          final state = container.read(editorAINotifierProvider);
+          expect(state.conversationHistory, hasLength(1));
+          expect(state.conversationHistory.first.userInstruction, '请润色');
+          expect(
+            state.conversationHistory.first.operation,
+            EditorAIOperation.paragraphPolish,
+          );
+        },
+      );
 
       test('should include history messages in subsequent requests', () async {
         container = createContainer();
@@ -625,7 +631,9 @@ void main() {
         // Verify the adapter received messages with history
         expect(fakeAdapter.lastMessages.length, greaterThan(2));
         // System message + history (user + assistant) + current user message
-        final roles = fakeAdapter.lastMessages.map((m) => m.toJson()['role']).toList();
+        final roles = fakeAdapter.lastMessages
+            .map((m) => m.toJson()['role'])
+            .toList();
         expect(roles.first, 'system');
         // History messages from first turn
         expect(roles, contains('assistant'));
@@ -650,7 +658,10 @@ void main() {
         }
 
         final state = container.read(editorAINotifierProvider);
-        expect(state.conversationHistory.length, EditorAIState.maxConversationTurns);
+        expect(
+          state.conversationHistory.length,
+          EditorAIState.maxConversationTurns,
+        );
         // Oldest turn should be trimmed (turn 0 is gone)
         expect(state.conversationHistory.first.userInstruction, '文段润色');
       });
@@ -670,11 +681,17 @@ void main() {
             );
         await _pumpAndWait();
 
-        expect(container.read(editorAINotifierProvider).conversationHistory, hasLength(1));
+        expect(
+          container.read(editorAINotifierProvider).conversationHistory,
+          hasLength(1),
+        );
 
         container.read(editorAINotifierProvider.notifier).reset();
 
-        expect(container.read(editorAINotifierProvider).conversationHistory, isEmpty);
+        expect(
+          container.read(editorAINotifierProvider).conversationHistory,
+          isEmpty,
+        );
       });
     });
   });
@@ -836,8 +853,7 @@ class _RecordingDeviationNotifier extends DeviationNotifier {
   final List<String> checkedTexts = [];
 
   @override
-  Future<DeviationResult> build() async =>
-      const DeviationResult(warnings: []);
+  Future<DeviationResult> build() async => const DeviationResult(warnings: []);
 
   @override
   Future<void> checkDeviations(String text) async {

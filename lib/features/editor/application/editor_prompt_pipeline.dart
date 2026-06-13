@@ -70,8 +70,7 @@ class EditorOperationMiddleware extends PromptMiddleware {
         '请根据以下指令修改选中的文字：${context.userInstruction ?? ""}',
       EditorAIOperation.expand =>
         '请扩写以下文字，丰富细节、感官描写和情感层次，保持原有风格不变。不要简单地堆砌形容词，而是通过具体的动作、对话和环境来拓展画面。',
-      EditorAIOperation.compress =>
-        '请精简缩写以下文字，保留核心情节和关键信息，删减冗余描写和重复表达，保持行文流畅。',
+      EditorAIOperation.compress => '请精简缩写以下文字，保留核心情节和关键信息，删减冗余描写和重复表达，保持行文流畅。',
       EditorAIOperation.dialogue =>
         '请将以下叙述转换为角色之间的对话形式，保持人物性格和语气特点，对话要自然、有个性、符合角色关系。',
       EditorAIOperation.scene =>

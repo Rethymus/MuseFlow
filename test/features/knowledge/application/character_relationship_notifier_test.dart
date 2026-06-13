@@ -61,8 +61,9 @@ void main() {
       );
       addTearDown(container.dispose);
 
-      final notifier = container
-          .read(characterRelationshipNotifierProvider.notifier);
+      final notifier = container.read(
+        characterRelationshipNotifierProvider.notifier,
+      );
       await notifier.build();
 
       final state = container.read(characterRelationshipNotifierProvider);
@@ -79,8 +80,9 @@ void main() {
       );
       addTearDown(container.dispose);
 
-      final notifier = container
-          .read(characterRelationshipNotifierProvider.notifier);
+      final notifier = container.read(
+        characterRelationshipNotifierProvider.notifier,
+      );
       await notifier.add(rel1);
 
       // Invalidate self triggers rebuild
@@ -102,8 +104,9 @@ void main() {
       );
       addTearDown(container.dispose);
 
-      final notifier = container
-          .read(characterRelationshipNotifierProvider.notifier);
+      final notifier = container.read(
+        characterRelationshipNotifierProvider.notifier,
+      );
       await notifier.add(rel1);
 
       final updated = rel1.copyWith(type: RelationshipType.rival);
@@ -122,8 +125,9 @@ void main() {
       );
       addTearDown(container.dispose);
 
-      final notifier = container
-          .read(characterRelationshipNotifierProvider.notifier);
+      final notifier = container.read(
+        characterRelationshipNotifierProvider.notifier,
+      );
       await notifier.add(rel1);
       await notifier.delete('rel-1');
 
@@ -140,8 +144,9 @@ void main() {
       );
       addTearDown(container.dispose);
 
-      final notifier = container
-          .read(characterRelationshipNotifierProvider.notifier);
+      final notifier = container.read(
+        characterRelationshipNotifierProvider.notifier,
+      );
       await notifier.add(rel1);
       await notifier.add(rel2);
       await notifier.add(rel3);

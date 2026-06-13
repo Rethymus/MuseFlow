@@ -52,12 +52,12 @@ class SentenceLengthStats {
   }
 
   Map<String, dynamic> toJson() => {
-        'avg': avg,
-        'stdDev': stdDev,
-        'median': median,
-        'shortRatio': shortRatio,
-        'longRatio': longRatio,
-      };
+    'avg': avg,
+    'stdDev': stdDev,
+    'median': median,
+    'shortRatio': shortRatio,
+    'longRatio': longRatio,
+  };
 }
 
 /// Rhetoric habits — ratios of different writing modes.
@@ -98,11 +98,11 @@ class RhetoricHabits {
   }
 
   Map<String, dynamic> toJson() => {
-        'metaphorFrequency': metaphorFrequency,
-        'dialogueRatio': dialogueRatio,
-        'descriptionRatio': descriptionRatio,
-        'actionRatio': actionRatio,
-      };
+    'metaphorFrequency': metaphorFrequency,
+    'dialogueRatio': dialogueRatio,
+    'descriptionRatio': descriptionRatio,
+    'actionRatio': actionRatio,
+  };
 }
 
 /// Emotional tone analysis results.
@@ -117,11 +117,7 @@ class EmotionalTone {
     this.intensity = 0.5,
   });
 
-  EmotionalTone copyWith({
-    String? overall,
-    double? warmth,
-    double? intensity,
-  }) {
+  EmotionalTone copyWith({String? overall, double? warmth, double? intensity}) {
     return EmotionalTone(
       overall: overall ?? this.overall,
       warmth: warmth ?? this.warmth,
@@ -138,10 +134,10 @@ class EmotionalTone {
   }
 
   Map<String, dynamic> toJson() => {
-        'overall': overall,
-        'warmth': warmth,
-        'intensity': intensity,
-      };
+    'overall': overall,
+    'warmth': warmth,
+    'intensity': intensity,
+  };
 }
 
 /// Author style profile — quantified writing style across 5 dimensions.
@@ -234,29 +230,34 @@ class AuthorStyleProfile {
       manuscriptId: json['manuscriptId'] as String,
       sentenceLengthStats: json['sentenceLengthStats'] != null
           ? SentenceLengthStats.fromJson(
-              json['sentenceLengthStats'] as Map<String, dynamic>)
+              json['sentenceLengthStats'] as Map<String, dynamic>,
+            )
           : const SentenceLengthStats(),
       rhythmScore: (json['rhythmScore'] as num?)?.toDouble() ?? 0.5,
       vocabularyRichness:
           (json['vocabularyRichness'] as num?)?.toDouble() ?? 0.5,
       rhetoricHabits: json['rhetoricHabits'] != null
           ? RhetoricHabits.fromJson(
-              json['rhetoricHabits'] as Map<String, dynamic>)
+              json['rhetoricHabits'] as Map<String, dynamic>,
+            )
           : const RhetoricHabits(),
       emotionalTone: json['emotionalTone'] != null
           ? EmotionalTone.fromJson(
-              json['emotionalTone'] as Map<String, dynamic>)
+              json['emotionalTone'] as Map<String, dynamic>,
+            )
           : const EmotionalTone(),
       lexicalSignature: json['lexicalSignature'] != null
           ? LexicalSignature.fromJson(
-              json['lexicalSignature'] as Map<String, dynamic>)
+              json['lexicalSignature'] as Map<String, dynamic>,
+            )
           : const LexicalSignature(),
       analyzedChapterCount: json['analyzedChapterCount'] as int? ?? 0,
       analyzedCharCount: json['analyzedCharCount'] as int? ?? 0,
       lastAnalyzedAt: json['lastAnalyzedAt'] != null
           ? DateTime.parse(json['lastAnalyzedAt'] as String)
           : DateTime.now(),
-      sampleParagraphs: (json['sampleParagraphs'] as List<dynamic>?)
+      sampleParagraphs:
+          (json['sampleParagraphs'] as List<dynamic>?)
               ?.map((s) => StyleSample.fromJson(s as Map<String, dynamic>))
               .toList() ??
           [],
@@ -264,18 +265,18 @@ class AuthorStyleProfile {
   }
 
   Map<String, dynamic> toJson() => {
-        'manuscriptId': manuscriptId,
-        'sentenceLengthStats': sentenceLengthStats.toJson(),
-        'rhythmScore': rhythmScore,
-        'vocabularyRichness': vocabularyRichness,
-        'rhetoricHabits': rhetoricHabits.toJson(),
-        'emotionalTone': emotionalTone.toJson(),
-        'lexicalSignature': lexicalSignature.toJson(),
-        'analyzedChapterCount': analyzedChapterCount,
-        'analyzedCharCount': analyzedCharCount,
-        'lastAnalyzedAt': lastAnalyzedAt.toIso8601String(),
-        'sampleParagraphs': sampleParagraphs.map((s) => s.toJson()).toList(),
-      };
+    'manuscriptId': manuscriptId,
+    'sentenceLengthStats': sentenceLengthStats.toJson(),
+    'rhythmScore': rhythmScore,
+    'vocabularyRichness': vocabularyRichness,
+    'rhetoricHabits': rhetoricHabits.toJson(),
+    'emotionalTone': emotionalTone.toJson(),
+    'lexicalSignature': lexicalSignature.toJson(),
+    'analyzedChapterCount': analyzedChapterCount,
+    'analyzedCharCount': analyzedCharCount,
+    'lastAnalyzedAt': lastAnalyzedAt.toIso8601String(),
+    'sampleParagraphs': sampleParagraphs.map((s) => s.toJson()).toList(),
+  };
 
   /// Whether this profile has enough data to be useful.
   bool get hasData => analyzedChapterCount >= 2 && analyzedCharCount >= 500;

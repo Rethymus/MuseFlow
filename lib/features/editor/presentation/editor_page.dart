@@ -162,9 +162,7 @@ class _EditorPageState extends ConsumerState<EditorPage> {
           LogicalKeyboardKey.shift,
           LogicalKeyboardKey.keyE,
         ): const _ExpandIntent(),
-        LogicalKeySet(
-          LogicalKeyboardKey.escape,
-        ): const _CancelAIIntent(),
+        LogicalKeySet(LogicalKeyboardKey.escape): const _CancelAIIntent(),
       },
       child: Actions(
         actions: <Type, Action<Intent>>{
@@ -320,18 +318,21 @@ class _EditorPageState extends ConsumerState<EditorPage> {
     final node = document.getNodeById(nodeId);
     if (node is! TextNode) return;
 
-    final baseOffset =
-        (selection.base.nodePosition as TextNodePosition).offset;
+    final baseOffset = (selection.base.nodePosition as TextNodePosition).offset;
     final extentOffset =
         (selection.extent.nodePosition as TextNodePosition).offset;
     final startOffset = baseOffset < extentOffset ? baseOffset : extentOffset;
     final endOffset = baseOffset < extentOffset ? extentOffset : baseOffset;
 
-    final selectedText =
-        node.text.toPlainText().substring(startOffset, endOffset);
+    final selectedText = node.text.toPlainText().substring(
+      startOffset,
+      endOffset,
+    );
     if (selectedText.isEmpty) return;
 
-    ref.read(editorAINotifierProvider.notifier).startOperation(
+    ref
+        .read(editorAINotifierProvider.notifier)
+        .startOperation(
           operation,
           selectedText,
           nodeId,

@@ -26,9 +26,11 @@ void main() {
       );
     }
 
-    test('parses 4-dimension review from fenced JSON stream + records audit', () async {
-      final adapter = _FakeReviewAdapter(
-        output: '''```json
+    test(
+      'parses 4-dimension review from fenced JSON stream + records audit',
+      () async {
+        final adapter = _FakeReviewAdapter(
+          output: '''```json
 {"dimensions":[
   {"dimension":"情节","score":80,"strengths":"a","weaknesses":"b","suggestions":"c"},
   {"dimension":"人物","score":70,"strengths":"a","weaknesses":"b","suggestions":"c"},
@@ -36,40 +38,50 @@ void main() {
   {"dimension":"节奏","score":65,"strengths":"a","weaknesses":"b","suggestions":"c"}
 ]}
 ```''',
-        usage: const Usage(promptTokens: 100, completionTokens: 50, totalTokens: 150),
-      );
-      final audit = _RecordingAudit();
-      final service = serviceWith(adapter: adapter, audit: audit);
+          usage: const Usage(
+            promptTokens: 100,
+            completionTokens: 50,
+            totalTokens: 150,
+          ),
+        );
+        final audit = _RecordingAudit();
+        final service = serviceWith(adapter: adapter, audit: audit);
 
-      final review = await service.reviewChapter(
-        '林风站在山门前，袖中的断裂剑印忽然发烫。问心石阶只回应断裂剑印。',
-        manuscriptId: 'm1',
-        chapterId: 'c1',
-      );
+        final review = await service.reviewChapter(
+          '林风站在山门前，袖中的断裂剑印忽然发烫。问心石阶只回应断裂剑印。',
+          manuscriptId: 'm1',
+          chapterId: 'c1',
+        );
 
-      expect(review.isDegraded, isFalse);
-      expect(review.dimensions, hasLength(4));
-      expect(adapter.createStreamCalls, 1);
-      expect(audit.ops, [AuditOperationType.editorialReview]);
-      expect(audit.inputs, hasLength(1));
-      expect(audit.inputs.single, contains('待评审章节'));
-      expect(audit.manuscriptIds, ['m1']);
-    });
+        expect(review.isDegraded, isFalse);
+        expect(review.dimensions, hasLength(4));
+        expect(adapter.createStreamCalls, 1);
+        expect(audit.ops, [AuditOperationType.editorialReview]);
+        expect(audit.inputs, hasLength(1));
+        expect(audit.inputs.single, contains('待评审章节'));
+        expect(audit.manuscriptIds, ['m1']);
+      },
+    );
 
-    test('too-short text returns degraded without an LLM call or audit', () async {
-      final adapter = _FakeReviewAdapter(output: '{"dimensions":[]}');
-      final audit = _RecordingAudit();
-      final service = serviceWith(adapter: adapter, audit: audit);
+    test(
+      'too-short text returns degraded without an LLM call or audit',
+      () async {
+        final adapter = _FakeReviewAdapter(output: '{"dimensions":[]}');
+        final audit = _RecordingAudit();
+        final service = serviceWith(adapter: adapter, audit: audit);
 
-      final review = await service.reviewChapter('短文本');
+        final review = await service.reviewChapter('短文本');
 
-      expect(review.isDegraded, isTrue);
-      expect(adapter.createStreamCalls, 0);
-      expect(audit.ops, isEmpty);
-    });
+        expect(review.isDegraded, isTrue);
+        expect(adapter.createStreamCalls, 0);
+        expect(audit.ops, isEmpty);
+      },
+    );
 
     test('adapter error degrades gracefully (no throw)', () async {
-      final adapter = _FakeReviewAdapter(throwOnStream: Exception('network down'));
+      final adapter = _FakeReviewAdapter(
+        throwOnStream: Exception('network down'),
+      );
       final service = serviceWith(adapter: adapter);
 
       final review = await service.reviewChapter(

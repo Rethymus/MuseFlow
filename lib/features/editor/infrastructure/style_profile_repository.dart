@@ -31,7 +31,9 @@ class StyleProfileRepository {
     try {
       await _box.put(profile.manuscriptId, profile.toJson());
     } catch (e) {
-      throw StateError('Failed to save style profile for ${profile.manuscriptId}: $e');
+      throw StateError(
+        'Failed to save style profile for ${profile.manuscriptId}: $e',
+      );
     }
   }
 
@@ -50,7 +52,9 @@ class StyleProfileRepository {
   List<AuthorStyleProfile> getAll() {
     try {
       return _box.values
-          .map((json) => AuthorStyleProfile.fromJson(json as Map<String, dynamic>))
+          .map(
+            (json) => AuthorStyleProfile.fromJson(json as Map<String, dynamic>),
+          )
           .toList();
     } catch (e) {
       throw StateError('Failed to read style profiles: $e');

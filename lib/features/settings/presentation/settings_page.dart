@@ -44,9 +44,7 @@ class SettingsPage extends ConsumerWidget {
           SwitchListTile(
             secondary: const Icon(Icons.fact_check_outlined),
             title: const Text('AI 操作后自动一致性检查'),
-            subtitle: const Text(
-              '每次 AI 操作后自动校验设定一致性（额外消耗 token，默认关闭）',
-            ),
+            subtitle: const Text('每次 AI 操作后自动校验设定一致性（额外消耗 token，默认关闭）'),
             value: ref.watch(autoDeviationCheckProvider),
             onChanged: (value) =>
                 ref.read(autoDeviationCheckProvider.notifier).set(value),

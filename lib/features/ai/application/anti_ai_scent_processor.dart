@@ -121,9 +121,9 @@ class AntiAIScentProcessor {
   /// The keys from the built-in synonym map plus highlight-only phrases,
   /// used to seed user's banned list for the AI prompt layer.
   static List<String> get synonymKeys => [
-        ..._synonymMap.keys,
-        ..._highlightOnlyPhrases,
-      ];
+    ..._synonymMap.keys,
+    ..._highlightOnlyPhrases,
+  ];
 
   /// Fixed synonym map for auto-replacement per D-09.
   /// Empty string values mean "delete the phrase".
@@ -920,7 +920,10 @@ class AntiAIScentProcessor {
       );
     }
 
-    final descriptionFormulaCount = _countPhraseHits(text, _descriptionFormulas);
+    final descriptionFormulaCount = _countPhraseHits(
+      text,
+      _descriptionFormulas,
+    );
     if (descriptionFormulaCount >= 2) {
       signals.add(
         ReviewSignal(

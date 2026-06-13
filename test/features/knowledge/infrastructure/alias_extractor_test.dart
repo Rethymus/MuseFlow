@@ -31,18 +31,12 @@ void main() {
       });
 
       test('should extract 儿 suffix pattern', () {
-        final aliases = extractor.extract(
-          name: '林风',
-          description: '风儿站在山门前。',
-        );
+        final aliases = extractor.extract(name: '林风', description: '风儿站在山门前。');
         expect(aliases, contains('风儿'));
       });
 
       test('should extract 阿+given_name pattern', () {
-        final aliases = extractor.extract(
-          name: '陈云',
-          description: '阿云是村长的女儿。',
-        );
+        final aliases = extractor.extract(name: '陈云', description: '阿云是村长的女儿。');
         expect(aliases, contains('阿云'));
       });
 
@@ -79,10 +73,7 @@ void main() {
 
     group('deduplication', () {
       test('should not include the original name', () {
-        final aliases = extractor.extract(
-          name: '林风',
-          description: '林风站在山门前。',
-        );
+        final aliases = extractor.extract(name: '林风', description: '林风站在山门前。');
         expect(aliases, isNot(contains('林风')));
       });
 
@@ -109,10 +100,7 @@ void main() {
 
     group('filtering', () {
       test('should exclude aliases shorter than 2 characters', () {
-        final aliases = extractor.extract(
-          name: '林风',
-          description: '他叫做风。',
-        );
+        final aliases = extractor.extract(name: '林风', description: '他叫做风。');
         // '风' is only 1 char, should be excluded
         expect(aliases, isNot(contains('风')));
       });
@@ -135,10 +123,7 @@ void main() {
       });
 
       test('should handle empty description', () {
-        final aliases = extractor.extract(
-          name: '林风',
-          description: '',
-        );
+        final aliases = extractor.extract(name: '林风', description: '');
         expect(aliases, isEmpty);
       });
     });

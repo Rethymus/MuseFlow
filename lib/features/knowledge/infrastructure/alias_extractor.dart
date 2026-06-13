@@ -27,23 +27,120 @@ class AliasExtractor {
   ///
   /// Used to detect surname-based nickname patterns like 小林, 老王.
   static const _commonSurnames = {
-    '王', '李', '张', '刘', '陈', '杨', '黄', '赵', '周', '吴',
-    '徐', '孙', '胡', '朱', '高', '林', '何', '郭', '马', '罗',
-    '梁', '宋', '郑', '谢', '韩', '唐', '冯', '于', '董', '萧',
-    '程', '曹', '袁', '邓', '许', '傅', '沈', '曾', '彭', '吕',
-    '苏', '卢', '蒋', '蔡', '贾', '丁', '魏', '薛', '叶', '阎',
-    '余', '潘', '杜', '戴', '夏', '钟', '汪', '田', '任', '姜',
-    '范', '方', '石', '姚', '谭', '廖', '邹', '熊', '金', '陆',
-    '郝', '孔', '白', '崔', '康', '毛', '邱', '秦', '江', '史',
-    '顾', '侯', '邵', '孟', '龙', '万', '段', '雷', '钱', '汤',
+    '王',
+    '李',
+    '张',
+    '刘',
+    '陈',
+    '杨',
+    '黄',
+    '赵',
+    '周',
+    '吴',
+    '徐',
+    '孙',
+    '胡',
+    '朱',
+    '高',
+    '林',
+    '何',
+    '郭',
+    '马',
+    '罗',
+    '梁',
+    '宋',
+    '郑',
+    '谢',
+    '韩',
+    '唐',
+    '冯',
+    '于',
+    '董',
+    '萧',
+    '程',
+    '曹',
+    '袁',
+    '邓',
+    '许',
+    '傅',
+    '沈',
+    '曾',
+    '彭',
+    '吕',
+    '苏',
+    '卢',
+    '蒋',
+    '蔡',
+    '贾',
+    '丁',
+    '魏',
+    '薛',
+    '叶',
+    '阎',
+    '余',
+    '潘',
+    '杜',
+    '戴',
+    '夏',
+    '钟',
+    '汪',
+    '田',
+    '任',
+    '姜',
+    '范',
+    '方',
+    '石',
+    '姚',
+    '谭',
+    '廖',
+    '邹',
+    '熊',
+    '金',
+    '陆',
+    '郝',
+    '孔',
+    '白',
+    '崔',
+    '康',
+    '毛',
+    '邱',
+    '秦',
+    '江',
+    '史',
+    '顾',
+    '侯',
+    '邵',
+    '孟',
+    '龙',
+    '万',
+    '段',
+    '雷',
+    '钱',
+    '汤',
   };
 
   /// Common titles that form title+name patterns.
   static const _titles = {
-    '掌柜', '师傅', '师兄', '师姐', '师弟', '师妹',
-    '大哥', '大姐', '二哥', '二姐',
-    '公子', '小姐', '姑娘', '老爷', '夫人',
-    '师父', '徒弟', '道长', '方丈', '长老',
+    '掌柜',
+    '师傅',
+    '师兄',
+    '师姐',
+    '师弟',
+    '师妹',
+    '大哥',
+    '大姐',
+    '二哥',
+    '二姐',
+    '公子',
+    '小姐',
+    '姑娘',
+    '老爷',
+    '夫人',
+    '师父',
+    '徒弟',
+    '道长',
+    '方丈',
+    '长老',
   };
 
   /// Extracts potential aliases from character text fields.
@@ -81,10 +178,7 @@ class AliasExtractor {
     final givenName = _extractGivenName(name, surname);
 
     // Build exclusion set
-    final exclude = <String>{
-      name,
-      ...existingAliases,
-    };
+    final exclude = <String>{name, ...existingAliases};
 
     // Collect aliases from all patterns
     final found = <String>{};
@@ -111,10 +205,7 @@ class AliasExtractor {
 
     // Filter by length and return
     return found
-        .where(
-          (a) =>
-              a.length >= minAliasLength && a.length <= maxAliasLength,
-        )
+        .where((a) => a.length >= minAliasLength && a.length <= maxAliasLength)
         .toList()
       ..sort();
   }
@@ -146,8 +237,19 @@ class AliasExtractor {
   bool _isCompoundSurname(String s) {
     // Common compound surnames in Chinese
     const compoundSurnames = {
-      '欧阳', '上官', '司马', '诸葛', '东方', '西门', '南宫',
-      '北堂', '令狐', '慕容', '轩辕', '公孙', '百里',
+      '欧阳',
+      '上官',
+      '司马',
+      '诸葛',
+      '东方',
+      '西门',
+      '南宫',
+      '北堂',
+      '令狐',
+      '慕容',
+      '轩辕',
+      '公孙',
+      '百里',
     };
     return compoundSurnames.contains(s);
   }

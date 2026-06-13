@@ -44,8 +44,7 @@ class StyleProfileState {
       profile: profile ?? this.profile,
       isAnalyzing: isAnalyzing ?? this.isAnalyzing,
       error: error,
-      analyzedChapterCount:
-          analyzedChapterCount ?? this.analyzedChapterCount,
+      analyzedChapterCount: analyzedChapterCount ?? this.analyzedChapterCount,
     );
   }
 }
@@ -71,8 +70,9 @@ class StyleProfileNotifier extends Notifier<StyleProfileState> {
     state = state.copyWith(isAnalyzing: true, error: null);
 
     try {
-      final StyleProfileRepository repository =
-          await ref.read(styleProfileRepositoryProvider.future);
+      final StyleProfileRepository repository = await ref.read(
+        styleProfileRepositoryProvider.future,
+      );
 
       // Load existing profile for incremental context
       final existingProfile = repository.getByManuscript(manuscriptId);
@@ -93,18 +93,16 @@ class StyleProfileNotifier extends Notifier<StyleProfileState> {
         analyzedChapterCount: profile.analyzedChapterCount,
       );
     } catch (e) {
-      state = state.copyWith(
-        isAnalyzing: false,
-        error: '风格分析失败：$e',
-      );
+      state = state.copyWith(isAnalyzing: false, error: '风格分析失败：$e');
     }
   }
 
   /// Loads the saved style profile for a manuscript without re-analyzing.
   Future<void> loadProfile(String manuscriptId) async {
     try {
-      final StyleProfileRepository repository =
-          await ref.read(styleProfileRepositoryProvider.future);
+      final StyleProfileRepository repository = await ref.read(
+        styleProfileRepositoryProvider.future,
+      );
       final profile = repository.getByManuscript(manuscriptId);
 
       state = state.copyWith(
@@ -126,4 +124,5 @@ class StyleProfileNotifier extends Notifier<StyleProfileState> {
 /// Provider for the style profile notifier.
 final styleProfileNotifierProvider =
     NotifierProvider<StyleProfileNotifier, StyleProfileState>(
-        StyleProfileNotifier.new);
+      StyleProfileNotifier.new,
+    );

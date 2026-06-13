@@ -48,10 +48,7 @@ class StyleThermometerDashboard extends StatelessWidget {
         ...result.deviations.map(
           (d) => Padding(
             padding: const EdgeInsets.only(bottom: 8),
-            child: _DimensionBar(
-              deviation: d,
-              onTap: onDimensionTap,
-            ),
+            child: _DimensionBar(deviation: d, onTap: onDimensionTap),
           ),
         ),
       ],
@@ -109,10 +106,7 @@ class _ScoreLabel extends StatelessWidget {
 
 /// A horizontal bar showing one dimension's deviation.
 class _DimensionBar extends StatelessWidget {
-  const _DimensionBar({
-    required this.deviation,
-    this.onTap,
-  });
+  const _DimensionBar({required this.deviation, this.onTap});
 
   final DimensionDeviation deviation;
   final void Function(StyleDimension)? onTap;
@@ -234,17 +228,11 @@ class _GaugePainter extends CustomPainter {
         height: 1.0,
       ),
     );
-    final tp = TextPainter(
-      text: textSpan,
-      textDirection: TextDirection.ltr,
-    );
+    final tp = TextPainter(text: textSpan, textDirection: TextDirection.ltr);
     tp.layout();
     tp.paint(
       canvas,
-      Offset(
-        center.dx - tp.width / 2,
-        center.dy - tp.height / 2,
-      ),
+      Offset(center.dx - tp.width / 2, center.dy - tp.height / 2),
     );
   }
 

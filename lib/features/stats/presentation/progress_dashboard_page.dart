@@ -183,8 +183,7 @@ class _WordCountCard extends StatelessWidget {
                     value: progress,
                     strokeWidth: 5,
                     backgroundColor: colorScheme.surfaceContainerHighest,
-                    valueColor:
-                        AlwaysStoppedAnimation(colorScheme.primary),
+                    valueColor: AlwaysStoppedAnimation(colorScheme.primary),
                   ),
                   Center(
                     child: Text(
@@ -331,8 +330,11 @@ class _StreakCard extends StatelessWidget {
           children: [
             Row(
               children: [
-                Icon(Icons.local_fire_department,
-                    color: colorScheme.error, size: 20),
+                Icon(
+                  Icons.local_fire_department,
+                  color: colorScheme.error,
+                  size: 20,
+                ),
                 const SizedBox(width: 8),
                 Text(
                   '连续写作',
@@ -356,10 +358,7 @@ class _StreakCard extends StatelessWidget {
                 const SizedBox(width: 4),
                 Padding(
                   padding: const EdgeInsets.only(bottom: 4),
-                  child: Text(
-                    '天',
-                    style: theme.textTheme.bodyMedium,
-                  ),
+                  child: Text('天', style: theme.textTheme.bodyMedium),
                 ),
               ],
             ),
@@ -429,8 +428,7 @@ class _PaceCard extends StatelessWidget {
         : 0;
     const targetWords = 80000;
     final remaining = (targetWords - snapshot.totalUnits).clamp(0, targetWords);
-    final daysToComplete =
-        avgDaily > 0 ? (remaining / avgDaily).ceil() : 0;
+    final daysToComplete = avgDaily > 0 ? (remaining / avgDaily).ceil() : 0;
 
     return Card(
       child: Padding(
@@ -500,8 +498,7 @@ class _ConsistencyCard extends StatelessWidget {
     // Calculate how many of the last 30 days had writing activity
     final last30 = _getLastNDaysStats(snapshot.daily, 30);
     final activeDays = last30.where((d) => d.totalUnits > 0).length;
-    final consistencyScore =
-        (activeDays / 30 * 100).round(); // percentage
+    final consistencyScore = (activeDays / 30 * 100).round(); // percentage
 
     return Card(
       child: Padding(
@@ -511,8 +508,7 @@ class _ConsistencyCard extends StatelessWidget {
           children: [
             Row(
               children: [
-                Icon(Icons.trending_up,
-                    color: colorScheme.secondary, size: 20),
+                Icon(Icons.trending_up, color: colorScheme.secondary, size: 20),
                 const SizedBox(width: 8),
                 Text(
                   '写作一致性',
@@ -537,8 +533,7 @@ class _ConsistencyCard extends StatelessWidget {
                 value: consistencyScore / 100,
                 minHeight: 8,
                 backgroundColor: colorScheme.surfaceContainerHighest,
-                valueColor:
-                    AlwaysStoppedAnimation(colorScheme.secondary),
+                valueColor: AlwaysStoppedAnimation(colorScheme.secondary),
               ),
             ),
             const SizedBox(height: 6),
@@ -573,14 +568,13 @@ class _HeatmapSection extends StatelessWidget {
           children: [
             Row(
               children: [
-                Icon(Icons.calendar_month,
-                    size: 20,
-                    color: Theme.of(context).colorScheme.onSurfaceVariant),
-                const SizedBox(width: 8),
-                Text(
-                  '每日创作节奏',
-                  style: theme.textTheme.titleSmall,
+                Icon(
+                  Icons.calendar_month,
+                  size: 20,
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
                 ),
+                const SizedBox(width: 8),
+                Text('每日创作节奏', style: theme.textTheme.titleSmall),
               ],
             ),
             const SizedBox(height: 12),

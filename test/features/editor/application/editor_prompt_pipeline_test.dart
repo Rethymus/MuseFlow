@@ -206,13 +206,10 @@ void main() {
         final messages = pipeline.build(context);
 
         // Find the chapter context system message
-        final chapterMsg = messages.firstWhere(
-          (m) {
-            final content = _extractContent(m);
-            return content.contains('前序章节脉络');
-          },
-          orElse: () => messages.last,
-        );
+        final chapterMsg = messages.firstWhere((m) {
+          final content = _extractContent(m);
+          return content.contains('前序章节脉络');
+        }, orElse: () => messages.last);
         final content = _extractContent(chapterMsg);
 
         // Chain should appear first, then adjacent summaries

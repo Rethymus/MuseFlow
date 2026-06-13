@@ -170,14 +170,19 @@ class ExportService {
     final archive = Archive();
 
     // [Content_Types].xml
-    final contentTypes = '''<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+    final contentTypes =
+        '''<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types">
   <Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/>
   <Default Extension="xml" ContentType="application/xml"/>
   <Override PartName="/word/document.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"/>
 </Types>''';
     archive.addFile(
-      ArchiveFile('[Content_Types].xml', contentTypes.length, utf8.encode(contentTypes)),
+      ArchiveFile(
+        '[Content_Types].xml',
+        contentTypes.length,
+        utf8.encode(contentTypes),
+      ),
     );
 
     // _rels/.rels
@@ -185,16 +190,18 @@ class ExportService {
 <Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">
   <Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="word/document.xml"/>
 </Relationships>''';
-    archive.addFile(
-      ArchiveFile('_rels/.rels', rels.length, utf8.encode(rels)),
-    );
+    archive.addFile(ArchiveFile('_rels/.rels', rels.length, utf8.encode(rels)));
 
     // word/_rels/document.xml.rels
     const docRels = '''<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">
 </Relationships>''';
     archive.addFile(
-      ArchiveFile('word/_rels/document.xml.rels', docRels.length, utf8.encode(docRels)),
+      ArchiveFile(
+        'word/_rels/document.xml.rels',
+        docRels.length,
+        utf8.encode(docRels),
+      ),
     );
 
     // word/document.xml

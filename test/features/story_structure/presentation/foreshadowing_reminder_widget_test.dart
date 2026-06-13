@@ -48,9 +48,7 @@ void main() {
       await tester.pumpWidget(
         const ProviderScope(
           child: MaterialApp(
-            home: Scaffold(
-              body: ForeshadowingReminderPanel(currentChapter: 5),
-            ),
+            home: Scaffold(body: ForeshadowingReminderPanel(currentChapter: 5)),
           ),
         ),
       );
@@ -59,7 +57,9 @@ void main() {
       expect(find.text('伏笔追踪'), findsNothing);
     });
 
-    testWidgets('should accept chapter and threshold parameters', (tester) async {
+    testWidgets('should accept chapter and threshold parameters', (
+      tester,
+    ) async {
       await tester.pumpWidget(
         const ProviderScope(
           child: MaterialApp(

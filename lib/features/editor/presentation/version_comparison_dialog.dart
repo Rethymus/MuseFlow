@@ -31,9 +31,7 @@ class VersionComparisonDialog extends ConsumerWidget {
         child: entries.isEmpty
             ? const Padding(
                 padding: EdgeInsets.symmetric(vertical: 24),
-                child: Center(
-                  child: Text('暂无 AI 操作记录'),
-                ),
+                child: Center(child: Text('暂无 AI 操作记录')),
               )
             : Column(
                 mainAxisSize: MainAxisSize.min,
@@ -123,10 +121,8 @@ class _VersionTile extends StatelessWidget {
                         ),
                         child: Text(
                           '原文 (A)',
-                          style:
-                              Theme.of(context).textTheme.labelSmall?.copyWith(
-                                    color: colorScheme.onPrimaryContainer,
-                                  ),
+                          style: Theme.of(context).textTheme.labelSmall
+                              ?.copyWith(color: colorScheme.onPrimaryContainer),
                         ),
                       ),
                       const SizedBox(height: 4),
@@ -134,9 +130,7 @@ class _VersionTile extends StatelessWidget {
                         constraints: const BoxConstraints(maxHeight: 80),
                         padding: const EdgeInsets.all(8),
                         decoration: BoxDecoration(
-                          border: Border.all(
-                            color: colorScheme.outlineVariant,
-                          ),
+                          border: Border.all(color: colorScheme.outlineVariant),
                           borderRadius: BorderRadius.circular(4),
                         ),
                         child: SingleChildScrollView(
@@ -176,10 +170,10 @@ class _VersionTile extends StatelessWidget {
                         ),
                         child: Text(
                           'AI 文本 (B)',
-                          style:
-                              Theme.of(context).textTheme.labelSmall?.copyWith(
-                                    color: colorScheme.onTertiaryContainer,
-                                  ),
+                          style: Theme.of(context).textTheme.labelSmall
+                              ?.copyWith(
+                                color: colorScheme.onTertiaryContainer,
+                              ),
                         ),
                       ),
                       const SizedBox(height: 4),
@@ -187,9 +181,7 @@ class _VersionTile extends StatelessWidget {
                         constraints: const BoxConstraints(maxHeight: 80),
                         padding: const EdgeInsets.all(8),
                         decoration: BoxDecoration(
-                          border: Border.all(
-                            color: colorScheme.outlineVariant,
-                          ),
+                          border: Border.all(color: colorScheme.outlineVariant),
                           borderRadius: BorderRadius.circular(4),
                         ),
                         child: SingleChildScrollView(

@@ -14,34 +14,44 @@ import 'package:museflow/features/reports/domain/editorial_review.dart';
 import 'package:museflow/features/reports/presentation/editorial_review_page.dart';
 import 'package:museflow/features/reports/providers.dart';
 
-EditorialReview _sampleReview() => EditorialReview(dimensions: [
-      DimensionReview(
-          dimension: ReviewDimension.plot,
-          score: 82,
-          strengths: '伏笔清晰',
-          weaknesses: '转折略快',
-          suggestions: '放缓'),
-      DimensionReview(
-          dimension: ReviewDimension.character,
-          score: 75,
-          strengths: '动机合理',
-          weaknesses: '配角扁平',
-          suggestions: '补背景'),
-      DimensionReview(
-          dimension: ReviewDimension.prose,
-          score: 80,
-          strengths: '描写细腻',
-          weaknesses: '偶有堆砌',
-          suggestions: '删形容词'),
-      DimensionReview(
-          dimension: ReviewDimension.pacing,
-          score: 70,
-          strengths: '张弛有度',
-          weaknesses: '中段拖沓',
-          suggestions: '删冗余'),
-    ]);
+EditorialReview _sampleReview() => EditorialReview(
+  dimensions: [
+    DimensionReview(
+      dimension: ReviewDimension.plot,
+      score: 82,
+      strengths: '伏笔清晰',
+      weaknesses: '转折略快',
+      suggestions: '放缓',
+    ),
+    DimensionReview(
+      dimension: ReviewDimension.character,
+      score: 75,
+      strengths: '动机合理',
+      weaknesses: '配角扁平',
+      suggestions: '补背景',
+    ),
+    DimensionReview(
+      dimension: ReviewDimension.prose,
+      score: 80,
+      strengths: '描写细腻',
+      weaknesses: '偶有堆砌',
+      suggestions: '删形容词',
+    ),
+    DimensionReview(
+      dimension: ReviewDimension.pacing,
+      score: 70,
+      strengths: '张弛有度',
+      weaknesses: '中段拖沓',
+      suggestions: '删冗余',
+    ),
+  ],
+);
 
-Chapter _chapter({required String id, required String title, required int order}) {
+Chapter _chapter({
+  required String id,
+  required String title,
+  required int order,
+}) {
   return Chapter(
     id: id,
     manuscriptId: 'm1',

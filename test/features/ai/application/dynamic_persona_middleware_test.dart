@@ -48,8 +48,7 @@ void main() {
 
   group('DynamicPersonaMiddleware lexical-signature injection', () {
     test('injects top characteristic terms into system message', () {
-      final profile =
-          _profileWithSignature(const ['剑意', '凌厉']);
+      final profile = _profileWithSignature(const ['剑意', '凌厉']);
       final result = middleware.apply(baseContext(profile));
       final content = _systemContent(result);
       expect(content, contains('剑意'));
@@ -57,16 +56,14 @@ void main() {
     });
 
     test('uses "自然融入" guidance phrasing (anti keyword stuffing)', () {
-      final profile =
-          _profileWithSignature(const ['剑意']);
+      final profile = _profileWithSignature(const ['剑意']);
       final result = middleware.apply(baseContext(profile));
       final content = _systemContent(result);
       expect(content, contains('自然融入'));
     });
 
     test('preserves anti-AI-scent anchor ("核心要求" / "AI生成的痕迹")', () {
-      final profile =
-          _profileWithSignature(const ['剑意']);
+      final profile = _profileWithSignature(const ['剑意']);
       final result = middleware.apply(baseContext(profile));
       final content = _systemContent(result);
       expect(content, contains('核心要求'));

@@ -84,10 +84,12 @@ class FewShotMiddleware extends PromptMiddleware {
       final estimatedTokens = (sample.text.length * 3 ~/ 2);
       if (usedTokens + estimatedTokens > maxTokens) continue;
 
-      selected.add(SampleSelection(
-        text: sample.text,
-        dimensionScores: sample.dimensionScores,
-      ));
+      selected.add(
+        SampleSelection(
+          text: sample.text,
+          dimensionScores: sample.dimensionScores,
+        ),
+      );
       usedTokens += estimatedTokens;
     }
 
@@ -126,8 +128,5 @@ class SampleSelection {
   final String text;
   final Map<StyleDimension, double> dimensionScores;
 
-  const SampleSelection({
-    required this.text,
-    required this.dimensionScores,
-  });
+  const SampleSelection({required this.text, required this.dimensionScores});
 }

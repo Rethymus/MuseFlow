@@ -392,8 +392,9 @@ class _ActionButton extends StatelessWidget {
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
 
-    final tooltipText =
-        shortcutLabel != null ? '$label ($shortcutLabel)' : label;
+    final tooltipText = shortcutLabel != null
+        ? '$label ($shortcutLabel)'
+        : label;
 
     return Tooltip(
       message: tooltipText,

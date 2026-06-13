@@ -48,7 +48,9 @@ class _EditorialReviewPageState extends ConsumerState<EditorialReviewPage> {
   Future<void> _runReview() async {
     final chapter = _selected;
     if (chapter == null) return;
-    await ref.read(editorialReviewProvider.notifier).review(
+    await ref
+        .read(editorialReviewProvider.notifier)
+        .review(
           chapter.documentContent,
           manuscriptId: chapter.manuscriptId,
           chapterId: chapter.id,
@@ -65,22 +67,23 @@ class _EditorialReviewPageState extends ConsumerState<EditorialReviewPage> {
       body: _loading
           ? const Center(child: CircularProgressIndicator())
           : (_chapters == null || _chapters!.isEmpty)
-              ? _empty(theme)
-              : Column(
-                  children: [
-                    _selector(),
-                    const Divider(height: 1),
-                    Expanded(
-                      child: reviewAsync.when(
-                        data: (review) =>
-                            review == null ? _hint(theme) : _ReviewBody(review: review),
-                        loading: () =>
-                            const Center(child: CircularProgressIndicator()),
-                        error: (e, _) => Center(child: Text('评审失败：$e')),
-                      ),
-                    ),
-                  ],
+          ? _empty(theme)
+          : Column(
+              children: [
+                _selector(),
+                const Divider(height: 1),
+                Expanded(
+                  child: reviewAsync.when(
+                    data: (review) => review == null
+                        ? _hint(theme)
+                        : _ReviewBody(review: review),
+                    loading: () =>
+                        const Center(child: CircularProgressIndicator()),
+                    error: (e, _) => Center(child: Text('评审失败：$e')),
+                  ),
                 ),
+              ],
+            ),
       floatingActionButton: (_selected != null && !_loading)
           ? FloatingActionButton.extended(
               onPressed: reviewAsync.isLoading ? null : _runReview,
@@ -92,34 +95,37 @@ class _EditorialReviewPageState extends ConsumerState<EditorialReviewPage> {
   }
 
   Widget _empty(ThemeData theme) => Center(
-        child: Padding(
-          padding: const EdgeInsets.all(32),
-          child: Text(
-            '暂无章节。先创建一部作品和章节，再来获取编辑评审。',
+    child: Padding(
+      padding: const EdgeInsets.all(32),
+      child: Text(
+        '暂无章节。先创建一部作品和章节，再来获取编辑评审。',
+        style: theme.textTheme.bodyLarge,
+        textAlign: TextAlign.center,
+      ),
+    ),
+  );
+
+  Widget _hint(ThemeData theme) => Center(
+    child: Padding(
+      padding: const EdgeInsets.all(32),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(
+            Icons.rate_review_outlined,
+            size: 48,
+            color: theme.colorScheme.outline,
+          ),
+          const SizedBox(height: 12),
+          Text(
+            '选择一个章节，点击「开始评审」。\nAI 将从情节、人物、文笔、节奏四个维度给出建议（不重写正文）。',
             style: theme.textTheme.bodyLarge,
             textAlign: TextAlign.center,
           ),
-        ),
-      );
-
-  Widget _hint(ThemeData theme) => Center(
-        child: Padding(
-          padding: const EdgeInsets.all(32),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Icon(Icons.rate_review_outlined,
-                  size: 48, color: theme.colorScheme.outline),
-              const SizedBox(height: 12),
-              Text(
-                '选择一个章节，点击「开始评审」。\nAI 将从情节、人物、文笔、节奏四个维度给出建议（不重写正文）。',
-                style: theme.textTheme.bodyLarge,
-                textAlign: TextAlign.center,
-              ),
-            ],
-          ),
-        ),
-      );
+        ],
+      ),
+    ),
+  );
 
   Widget _selector() {
     return Padding(
@@ -132,10 +138,12 @@ class _EditorialReviewPageState extends ConsumerState<EditorialReviewPage> {
           ref.read(editorialReviewProvider.notifier).reset();
         }),
         dropdownMenuEntries: _chapters!
-            .map((c) => DropdownMenuEntry<Chapter>(
-                  value: c,
-                  label: '${c.title}（${c.wordCount}字）',
-                ))
+            .map(
+              (c) => DropdownMenuEntry<Chapter>(
+                value: c,
+                label: '${c.title}（${c.wordCount}字）',
+              ),
+            )
             .toList(),
       ),
     );
@@ -195,18 +203,28 @@ class _DimensionCard extends StatelessWidget {
           children: [
             Row(
               children: [
-                Text(review.dimension.label,
-                    style: theme.textTheme.titleMedium),
+                Text(
+                  review.dimension.label,
+                  style: theme.textTheme.titleMedium,
+                ),
                 const Spacer(),
                 _ScoreChip(score: review.score),
               ],
             ),
             const SizedBox(height: 8),
-            _line(Icons.check_circle_outline, '优点', review.strengths,
-                Colors.green),
+            _line(
+              Icons.check_circle_outline,
+              '优点',
+              review.strengths,
+              Colors.green,
+            ),
             _line(Icons.error_outline, '不足', review.weaknesses, Colors.orange),
-            _line(Icons.lightbulb_outline, '建议', review.suggestions,
-                theme.colorScheme.primary),
+            _line(
+              Icons.lightbulb_outline,
+              '建议',
+              review.suggestions,
+              theme.colorScheme.primary,
+            ),
           ],
         ),
       ),

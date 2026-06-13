@@ -21,17 +21,9 @@ class LexicalTerm {
   /// Raw occurrence count in the analyzed text.
   final int frequency;
 
-  const LexicalTerm({
-    required this.term,
-    this.score = 0,
-    this.frequency = 0,
-  });
+  const LexicalTerm({required this.term, this.score = 0, this.frequency = 0});
 
-  LexicalTerm copyWith({
-    String? term,
-    double? score,
-    int? frequency,
-  }) {
+  LexicalTerm copyWith({String? term, double? score, int? frequency}) {
     return LexicalTerm(
       term: term ?? this.term,
       score: score ?? this.score,
@@ -48,10 +40,10 @@ class LexicalTerm {
   }
 
   Map<String, dynamic> toJson() => {
-        'term': term,
-        'score': score,
-        'frequency': frequency,
-      };
+    'term': term,
+    'score': score,
+    'frequency': frequency,
+  };
 
   @override
   bool operator ==(Object other) {
@@ -79,15 +71,14 @@ class LexicalSignature {
   bool get isEmpty => topTerms.isEmpty;
 
   LexicalSignature copyWith({List<LexicalTerm>? topTerms}) {
-    return LexicalSignature(
-      topTerms: topTerms ?? this.topTerms,
-    );
+    return LexicalSignature(topTerms: topTerms ?? this.topTerms);
   }
 
   factory LexicalSignature.fromJson(Map<String, dynamic> json) {
     final raw = json['topTerms'] as List<dynamic>?;
     return LexicalSignature(
-      topTerms: raw
+      topTerms:
+          raw
               ?.map((t) => LexicalTerm.fromJson(t as Map<String, dynamic>))
               .toList() ??
           const [],
@@ -95,8 +86,8 @@ class LexicalSignature {
   }
 
   Map<String, dynamic> toJson() => {
-        'topTerms': topTerms.map((t) => t.toJson()).toList(),
-      };
+    'topTerms': topTerms.map((t) => t.toJson()).toList(),
+  };
 
   @override
   bool operator ==(Object other) {

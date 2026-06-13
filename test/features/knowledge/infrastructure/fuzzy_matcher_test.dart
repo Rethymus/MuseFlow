@@ -129,8 +129,14 @@ void main() {
         );
         // 林锋→林风 at pos 0, 张峰→张峰 at pos 3 — one result each
         expect(results.length, 2);
-        expect(results.any((r) => r.candidate == '林风' && r.distance == 1), true);
-        expect(results.any((r) => r.candidate == '张峰' && r.distance == 0), true);
+        expect(
+          results.any((r) => r.candidate == '林风' && r.distance == 1),
+          true,
+        );
+        expect(
+          results.any((r) => r.candidate == '张峰' && r.distance == 0),
+          true,
+        );
       });
 
       test('should handle empty text', () {

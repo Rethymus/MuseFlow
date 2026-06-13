@@ -33,7 +33,8 @@ void main() {
     }) {
       fakeAdapter = _ControllableFakeAdapter();
 
-      final testProvider = activeProvider ??
+      final testProvider =
+          activeProvider ??
           AIProvider(
             id: 'test-provider',
             name: 'Test',
@@ -99,8 +100,7 @@ void main() {
 
       // First call fails with rate limit, second succeeds
       fakeAdapter.nextStream = Stream.error(const AIRateLimitException());
-      fakeAdapter
-          .setStreamAt(1, Stream.fromIterable(['重试', '成功']));
+      fakeAdapter.setStreamAt(1, Stream.fromIterable(['重试', '成功']));
 
       // Use zero-delay retry for testing
       container.read(synthesisProvider.notifier).startSynthesis();
@@ -127,8 +127,7 @@ void main() {
       // First two calls fail with network error, third succeeds
       fakeAdapter.nextStream = Stream.error(const AINetworkException());
       fakeAdapter.setStreamAt(1, Stream.error(const AINetworkException()));
-      fakeAdapter
-          .setStreamAt(2, Stream.fromIterable(['第三次', '成功']));
+      fakeAdapter.setStreamAt(2, Stream.fromIterable(['第三次', '成功']));
 
       container.read(synthesisProvider.notifier).startSynthesis();
       await _pump();

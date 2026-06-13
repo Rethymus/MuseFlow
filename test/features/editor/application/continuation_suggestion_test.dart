@@ -176,8 +176,9 @@ void main() {
 
     test('should return error when no provider configured', () {
       createContainer(hasProvider: false, hasApiKey: false);
-      final notifier =
-          container.read(continuationSuggestionNotifierProvider.notifier);
+      final notifier = container.read(
+        continuationSuggestionNotifierProvider.notifier,
+      );
 
       notifier.generateSuggestions(chapterText: '测试章节文本');
 
@@ -188,8 +189,9 @@ void main() {
 
     test('should return error when API key is null', () {
       createContainer(hasProvider: true, hasApiKey: false);
-      final notifier =
-          container.read(continuationSuggestionNotifierProvider.notifier);
+      final notifier = container.read(
+        continuationSuggestionNotifierProvider.notifier,
+      );
 
       notifier.generateSuggestions(chapterText: '测试章节文本');
 
@@ -200,8 +202,9 @@ void main() {
 
     test('should return error when API key is empty', () {
       createContainer(hasProvider: true, apiKey: '');
-      final notifier =
-          container.read(continuationSuggestionNotifierProvider.notifier);
+      final notifier = container.read(
+        continuationSuggestionNotifierProvider.notifier,
+      );
 
       notifier.generateSuggestions(chapterText: '测试章节文本');
 
@@ -210,17 +213,17 @@ void main() {
     });
 
     test('should parse valid 3-suggestion JSON response', () async {
-      const aiResponse = '[{"direction":"冲突升级","summary":"通过外部事件加剧当前矛盾","keyPoints":"引入新敌人；揭示隐藏秘密"},'
+      const aiResponse =
+          '[{"direction":"冲突升级","summary":"通过外部事件加剧当前矛盾","keyPoints":"引入新敌人；揭示隐藏秘密"},'
           '{"direction":"人物深入","summary":"探索角色内心世界和情感变化","keyPoints":"回忆往事；情感独白"},'
           '{"direction":"转折铺垫","summary":"为后续剧情埋下伏笔","keyPoints":"发现线索；角色态度转变"}]';
 
       createContainer(aiResponse: aiResponse);
-      final notifier =
-          container.read(continuationSuggestionNotifierProvider.notifier);
-
-      notifier.generateSuggestions(
-        chapterText: '林风站在山门前，望着远方乌云密布的天空。',
+      final notifier = container.read(
+        continuationSuggestionNotifierProvider.notifier,
       );
+
+      notifier.generateSuggestions(chapterText: '林风站在山门前，望着远方乌云密布的天空。');
 
       // Wait for async processing
       await Future<void>.delayed(const Duration(milliseconds: 100));
@@ -235,13 +238,15 @@ void main() {
     });
 
     test('should handle JSON wrapped in markdown code blocks', () async {
-      const aiResponse = '```json\n[{"direction":"A","summary":"方向A","keyPoints":"要点1"},'
+      const aiResponse =
+          '```json\n[{"direction":"A","summary":"方向A","keyPoints":"要点1"},'
           '{"direction":"B","summary":"方向B","keyPoints":"要点2"},'
           '{"direction":"C","summary":"方向C","keyPoints":"要点3"}]\n```';
 
       createContainer(aiResponse: aiResponse);
-      final notifier =
-          container.read(continuationSuggestionNotifierProvider.notifier);
+      final notifier = container.read(
+        continuationSuggestionNotifierProvider.notifier,
+      );
 
       notifier.generateSuggestions(chapterText: '测试文本');
 
@@ -254,8 +259,9 @@ void main() {
 
     test('should return error for empty response', () async {
       createContainer(aiResponse: '');
-      final notifier =
-          container.read(continuationSuggestionNotifierProvider.notifier);
+      final notifier = container.read(
+        continuationSuggestionNotifierProvider.notifier,
+      );
 
       notifier.generateSuggestions(chapterText: '测试文本');
 
@@ -267,12 +273,14 @@ void main() {
     });
 
     test('should return error for fewer than 3 suggestions', () async {
-      const aiResponse = '[{"direction":"A","summary":"方向A","keyPoints":"要点1"},'
+      const aiResponse =
+          '[{"direction":"A","summary":"方向A","keyPoints":"要点1"},'
           '{"direction":"B","summary":"方向B","keyPoints":"要点2"}]';
 
       createContainer(aiResponse: aiResponse);
-      final notifier =
-          container.read(continuationSuggestionNotifierProvider.notifier);
+      final notifier = container.read(
+        continuationSuggestionNotifierProvider.notifier,
+      );
 
       notifier.generateSuggestions(chapterText: '测试文本');
 
@@ -285,8 +293,9 @@ void main() {
 
     test('should return error for malformed JSON', () async {
       createContainer(aiResponse: '这不是JSON');
-      final notifier =
-          container.read(continuationSuggestionNotifierProvider.notifier);
+      final notifier = container.read(
+        continuationSuggestionNotifierProvider.notifier,
+      );
 
       notifier.generateSuggestions(chapterText: '测试文本');
 
@@ -298,11 +307,10 @@ void main() {
     });
 
     test('should return error for AI exception', () async {
-      createContainer(
-        errorToThrow: AIAuthException('invalid key'),
+      createContainer(errorToThrow: AIAuthException('invalid key'));
+      final notifier = container.read(
+        continuationSuggestionNotifierProvider.notifier,
       );
-      final notifier =
-          container.read(continuationSuggestionNotifierProvider.notifier);
 
       notifier.generateSuggestions(chapterText: '测试文本');
 
@@ -313,11 +321,10 @@ void main() {
     });
 
     test('should map rate limit exception to Chinese message', () async {
-      createContainer(
-        errorToThrow: AIRateLimitException('rate limited'),
+      createContainer(errorToThrow: AIRateLimitException('rate limited'));
+      final notifier = container.read(
+        continuationSuggestionNotifierProvider.notifier,
       );
-      final notifier =
-          container.read(continuationSuggestionNotifierProvider.notifier);
 
       notifier.generateSuggestions(chapterText: '测试文本');
 
@@ -328,11 +335,10 @@ void main() {
     });
 
     test('should map network exception to Chinese message', () async {
-      createContainer(
-        errorToThrow: AINetworkException('connection failed'),
+      createContainer(errorToThrow: AINetworkException('connection failed'));
+      final notifier = container.read(
+        continuationSuggestionNotifierProvider.notifier,
       );
-      final notifier =
-          container.read(continuationSuggestionNotifierProvider.notifier);
 
       notifier.generateSuggestions(chapterText: '测试文本');
 
@@ -343,13 +349,15 @@ void main() {
     });
 
     test('selectSuggestion should set selectedIndex', () async {
-      const aiResponse = '[{"direction":"A","summary":"S1","keyPoints":"K1"},'
+      const aiResponse =
+          '[{"direction":"A","summary":"S1","keyPoints":"K1"},'
           '{"direction":"B","summary":"S2","keyPoints":"K2"},'
           '{"direction":"C","summary":"S3","keyPoints":"K3"}]';
 
       createContainer(aiResponse: aiResponse);
-      final notifier =
-          container.read(continuationSuggestionNotifierProvider.notifier);
+      final notifier = container.read(
+        continuationSuggestionNotifierProvider.notifier,
+      );
 
       notifier.generateSuggestions(chapterText: '测试文本');
       await Future<void>.delayed(const Duration(milliseconds: 100));
@@ -360,13 +368,15 @@ void main() {
     });
 
     test('selectSuggestion should ignore out-of-range index', () async {
-      const aiResponse = '[{"direction":"A","summary":"S1","keyPoints":"K1"},'
+      const aiResponse =
+          '[{"direction":"A","summary":"S1","keyPoints":"K1"},'
           '{"direction":"B","summary":"S2","keyPoints":"K2"},'
           '{"direction":"C","summary":"S3","keyPoints":"K3"}]';
 
       createContainer(aiResponse: aiResponse);
-      final notifier =
-          container.read(continuationSuggestionNotifierProvider.notifier);
+      final notifier = container.read(
+        continuationSuggestionNotifierProvider.notifier,
+      );
 
       notifier.generateSuggestions(chapterText: '测试文本');
       await Future<void>.delayed(const Duration(milliseconds: 100));
@@ -394,13 +404,15 @@ void main() {
     });
 
     test('reset should clear all state', () async {
-      const aiResponse = '[{"direction":"A","summary":"S1","keyPoints":"K1"},'
+      const aiResponse =
+          '[{"direction":"A","summary":"S1","keyPoints":"K1"},'
           '{"direction":"B","summary":"S2","keyPoints":"K2"},'
           '{"direction":"C","summary":"S3","keyPoints":"K3"}]';
 
       createContainer(aiResponse: aiResponse);
-      final notifier =
-          container.read(continuationSuggestionNotifierProvider.notifier);
+      final notifier = container.read(
+        continuationSuggestionNotifierProvider.notifier,
+      );
 
       notifier.generateSuggestions(chapterText: '测试文本');
       await Future<void>.delayed(const Duration(milliseconds: 100));
@@ -415,13 +427,15 @@ void main() {
     });
 
     test('should include context chain in prompt when provided', () async {
-      const aiResponse = '[{"direction":"A","summary":"S1","keyPoints":"K1"},'
+      const aiResponse =
+          '[{"direction":"A","summary":"S1","keyPoints":"K1"},'
           '{"direction":"B","summary":"S2","keyPoints":"K2"},'
           '{"direction":"C","summary":"S3","keyPoints":"K3"}]';
 
       createContainer(aiResponse: aiResponse);
-      final notifier =
-          container.read(continuationSuggestionNotifierProvider.notifier);
+      final notifier = container.read(
+        continuationSuggestionNotifierProvider.notifier,
+      );
 
       notifier.generateSuggestions(
         chapterText: '当前章节结尾文本。',
@@ -436,7 +450,8 @@ void main() {
       final adapter =
           container.read(openaiAdapterProvider) as _FakeOpenAIAdapter;
       expect(adapter.lastMessages, isNotNull);
-      final userContent = adapter.lastMessages![1].toJson()['content'] as String;
+      final userContent =
+          adapter.lastMessages![1].toJson()['content'] as String;
       expect(userContent, contains('前序章节脉络'));
       expect(userContent, contains('林风进入宗门'));
     });

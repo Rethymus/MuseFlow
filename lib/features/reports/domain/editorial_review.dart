@@ -25,8 +25,7 @@ enum ReviewDimension {
     if (raw == null) return null;
     final trimmed = raw.trim();
     for (final d in ReviewDimension.values) {
-      if (d.name.toLowerCase() == trimmed.toLowerCase() ||
-          d.label == trimmed) {
+      if (d.name.toLowerCase() == trimmed.toLowerCase() || d.label == trimmed) {
         return d;
       }
     }
@@ -104,13 +103,8 @@ class DimensionReview {
           other.suggestions == suggestions;
 
   @override
-  int get hashCode => Object.hash(
-    dimension,
-    score,
-    strengths,
-    weaknesses,
-    suggestions,
-  );
+  int get hashCode =>
+      Object.hash(dimension, score, strengths, weaknesses, suggestions);
 }
 
 /// Aggregate editorial review across all dimensions.
@@ -158,10 +152,10 @@ class EditorialReview {
   /// first JSON object, and degrades gracefully on any failure.
   static EditorialReview parseFromLLM(String raw) {
     try {
-      final stripped = raw.trim().replaceAll('```json', '').replaceAll(
-        '```',
-        '',
-      );
+      final stripped = raw
+          .trim()
+          .replaceAll('```json', '')
+          .replaceAll('```', '');
       final start = stripped.indexOf('{');
       final end = stripped.lastIndexOf('}');
       if (start < 0 || end <= start) {

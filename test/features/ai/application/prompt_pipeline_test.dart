@@ -448,7 +448,11 @@ void main() {
     AuthorStyleProfile createTestProfile({List<StyleSample>? samples}) {
       return AuthorStyleProfile(
         manuscriptId: 'test-ms',
-        sentenceLengthStats: const SentenceLengthStats(avg: 18, stdDev: 8, median: 16),
+        sentenceLengthStats: const SentenceLengthStats(
+          avg: 18,
+          stdDev: 8,
+          median: 16,
+        ),
         rhythmScore: 0.4,
         vocabularyRichness: 0.6,
         rhetoricHabits: const RhetoricHabits(
@@ -548,9 +552,7 @@ void main() {
         Fragment(id: 'f1', text: '碎片', createdAt: DateTime.now()),
       ];
 
-      final messages = pipeline.build(
-        PromptContext(fragments: fragments),
-      );
+      final messages = pipeline.build(PromptContext(fragments: fragments));
 
       final systemContent = messages[0].toJson()['content'] as String;
       // Default persona should be present when no profile

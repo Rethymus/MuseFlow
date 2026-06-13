@@ -309,9 +309,7 @@ class _OnboardingWizardPageState extends ConsumerState<OnboardingWizardPage> {
                   },
                 ),
                 // Step 2: AI provider setup
-                ProviderStepPage(
-                  onSetupComplete: (_) => _nextStep(),
-                ),
+                ProviderStepPage(onSetupComplete: (_) => _nextStep()),
                 // Step 3: World setting creation
                 WorldStepPage(
                   key: _worldStepKey,
