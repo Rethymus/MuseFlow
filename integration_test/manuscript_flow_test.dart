@@ -152,10 +152,10 @@ void main() {
           child: MaterialApp(
             home: ExportDialog(
               bundle: _exportBundle(),
-              onExport: (format, path, content) async {
+              onExport: (format, path, {textContent, binaryContent}) async {
                 expect(format, ExportFormat.markdown);
                 expect(path, endsWith('jiandao_cangqiong.md'));
-                expect(content, contains('剑道苍穹'));
+                expect(textContent, contains('剑道苍穹'));
               },
             ),
           ),
