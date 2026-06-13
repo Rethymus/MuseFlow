@@ -5,6 +5,7 @@
 /// text deltas with proper error handling.
 library;
 
+import 'package:anthropic_sdk_dart/anthropic_sdk_dart.dart' as anthropic;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:museflow/features/ai/domain/ai_exception.dart';
 import 'package:museflow/features/ai/infrastructure/claude_adapter.dart';
@@ -237,6 +238,84 @@ void main() {
           ),
           returnsNormally,
         );
+      });
+    });
+
+    group('usage tracking', () {
+      // Synthetic event sequence mirroring real Anthropic streams:
+      //   MessageStartEvent carries INPUT tokens (prompt) at stream start.
+      //   ContentBlockDeltaEvent carries text chunks.
+      //   MessageDeltaEvent carries OUTPUT tokens (completion) at stream end,
+      //     and its inputTokens field is null (this is the bug source).
+      List<anthropic.MessageStreamEvent> fullStream() => [
+        anthropic.MessageStartEvent(
+          message: anthropic.Message(
+            id: 'msg_1',
+            content: [],
+            model: 'claude-test',
+            usage: const anthropic.Usage(
+              inputTokens: 120,
+              outputTokens: 0,
+            ),
+          ),
+        ),
+        anthropic.ContentBlockDeltaEvent(
+          index: 0,
+          delta: const anthropic.TextDelta('Hello'),
+        ),
+        anthropic.MessageDeltaEvent(
+          delta: const anthropic.MessageDelta(),
+          // inputTokens intentionally omitted → null, mirroring real streams.
+          usage: const anthropic.MessageDeltaUsage(outputTokens: 45),
+        ),
+      ];
+
+      test(
+        'should capture input tokens from MessageStartEvent and output tokens '
+        'from MessageDeltaEvent',
+        () {
+          Usage? capturedUsage;
+          adapter.processStreamEvents(
+            fullStream(),
+            onUsage: (usage) => capturedUsage = usage,
+          );
+
+          expect(capturedUsage, isNotNull);
+          expect(capturedUsage!.promptTokens, 120);
+          expect(capturedUsage!.completionTokens, 45);
+          expect(capturedUsage!.totalTokens, 165);
+        },
+      );
+
+      test(
+        'should emit null usage when no MessageStartEvent or MessageDeltaEvent '
+        'seen',
+        () {
+          // Minimal event sequence with no usage events: yields null usage,
+          // preserving the "unknown usage = null" contract downstream token
+          // audit relies on.
+          final events = [
+            anthropic.ContentBlockDeltaEvent(
+              index: 0,
+              delta: const anthropic.TextDelta('Hi'),
+            ),
+          ];
+
+          Usage? capturedUsage;
+          adapter.processStreamEvents(
+            events,
+            onUsage: (usage) => capturedUsage = usage,
+          );
+
+          expect(capturedUsage, isNull);
+        },
+      );
+
+      test('should still stream text deltas from ContentBlockDeltaEvent', () {
+        final text = adapter.processStreamEvents(fullStream());
+
+        // Regression guard: text extraction logic must not regress.
+        expect(text, 'Hello');
       });
     });
   });
