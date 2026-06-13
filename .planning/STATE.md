@@ -82,7 +82,7 @@ None.
 - Anti-AI-scent banned phrase lists should be validated with broader real Chinese prose samples before release sign-off
 - Phase 7 bundled template prose needs human literary review before release sign-off
 
-Last activity: 2026-06-14 - quick 260614-1tp P2 Author Writing Sheet 词汇签名升级（CJK n-gram 抽取作者特征词注入生成 prompt，"自然融入"措辞防关键词 stuffing；IJCNLP 2025 背书；1548 tests +24 新零回归）
+Last activity: 2026-06-14 - quick 260614-1tp P2 Author Writing Sheet 词汇签名升级（CJK n-gram 抽取作者特征词注入生成 prompt，"自然融入"措辞防关键词 stuffing；IJCNLP 2025 背书）+ ecc 代码审查发现 HIGH bug（停用词含内容字道/人/有误杀道心/剑道）已修（d141d3c）；1550 tests 零回归
 
 ### Quick Tasks Completed
 
