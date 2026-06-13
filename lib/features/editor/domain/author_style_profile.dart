@@ -6,6 +6,7 @@
 /// [FewShotMiddleware] to personalize AI output.
 library;
 
+import 'package:museflow/features/editor/domain/lexical_signature.dart';
 import 'package:museflow/features/editor/domain/style_sample.dart';
 
 /// Sentence length statistics for the author's writing.
@@ -167,6 +168,13 @@ class AuthorStyleProfile {
   /// Emotional tone analysis.
   final EmotionalTone emotionalTone;
 
+  /// Author's characteristic CJK n-gram vocabulary (bigrams + trigrams).
+  ///
+  /// Captures the actual words the author favors, complementing the scalar
+  /// [vocabularyRichness] ratio. Injected by DynamicPersonaMiddleware into
+  /// generation prompts so the AI internalizes the author's vocabulary palette.
+  final LexicalSignature lexicalSignature;
+
   /// Number of chapters analyzed.
   final int analyzedChapterCount;
 
@@ -186,6 +194,7 @@ class AuthorStyleProfile {
     this.vocabularyRichness = 0.5,
     this.rhetoricHabits = const RhetoricHabits(),
     this.emotionalTone = const EmotionalTone(),
+    this.lexicalSignature = const LexicalSignature(),
     this.analyzedChapterCount = 0,
     this.analyzedCharCount = 0,
     DateTime? lastAnalyzedAt,
@@ -199,6 +208,7 @@ class AuthorStyleProfile {
     double? vocabularyRichness,
     RhetoricHabits? rhetoricHabits,
     EmotionalTone? emotionalTone,
+    LexicalSignature? lexicalSignature,
     int? analyzedChapterCount,
     int? analyzedCharCount,
     DateTime? lastAnalyzedAt,
@@ -211,6 +221,7 @@ class AuthorStyleProfile {
       vocabularyRichness: vocabularyRichness ?? this.vocabularyRichness,
       rhetoricHabits: rhetoricHabits ?? this.rhetoricHabits,
       emotionalTone: emotionalTone ?? this.emotionalTone,
+      lexicalSignature: lexicalSignature ?? this.lexicalSignature,
       analyzedChapterCount: analyzedChapterCount ?? this.analyzedChapterCount,
       analyzedCharCount: analyzedCharCount ?? this.analyzedCharCount,
       lastAnalyzedAt: lastAnalyzedAt ?? this.lastAnalyzedAt,
@@ -236,6 +247,10 @@ class AuthorStyleProfile {
           ? EmotionalTone.fromJson(
               json['emotionalTone'] as Map<String, dynamic>)
           : const EmotionalTone(),
+      lexicalSignature: json['lexicalSignature'] != null
+          ? LexicalSignature.fromJson(
+              json['lexicalSignature'] as Map<String, dynamic>)
+          : const LexicalSignature(),
       analyzedChapterCount: json['analyzedChapterCount'] as int? ?? 0,
       analyzedCharCount: json['analyzedCharCount'] as int? ?? 0,
       lastAnalyzedAt: json['lastAnalyzedAt'] != null
@@ -255,6 +270,7 @@ class AuthorStyleProfile {
         'vocabularyRichness': vocabularyRichness,
         'rhetoricHabits': rhetoricHabits.toJson(),
         'emotionalTone': emotionalTone.toJson(),
+        'lexicalSignature': lexicalSignature.toJson(),
         'analyzedChapterCount': analyzedChapterCount,
         'analyzedCharCount': analyzedCharCount,
         'lastAnalyzedAt': lastAnalyzedAt.toIso8601String(),

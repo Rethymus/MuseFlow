@@ -1,5 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:museflow/features/editor/domain/author_style_profile.dart';
+import 'package:museflow/features/editor/domain/lexical_signature.dart';
 import 'package:museflow/features/editor/domain/style_dimension.dart';
 import 'package:museflow/features/editor/domain/style_sample.dart';
 import 'package:museflow/features/editor/infrastructure/sentiment_lexicon.dart';
@@ -77,6 +78,65 @@ void main() {
       expect(updated.manuscriptId, 'test-ms');
       expect(updated.analyzedChapterCount, 10);
       expect(updated.analyzedCharCount, 2000);
+    });
+
+    test('default profile should have empty lexicalSignature', () {
+      final profile = AuthorStyleProfile(manuscriptId: 'test-ms');
+      expect(profile.lexicalSignature.isEmpty, isTrue);
+    });
+
+    test('lexicalSignature should survive toJson/fromJson round-trip', () {
+      final profile = AuthorStyleProfile(
+        manuscriptId: 'test-ms',
+        lexicalSignature: const LexicalSignature(
+          topTerms: [
+            LexicalTerm(term: '剑意', score: 7.5, frequency: 5),
+            LexicalTerm(term: '凌厉', score: 4.5, frequency: 3),
+          ],
+        ),
+      );
+      final restored = AuthorStyleProfile.fromJson(profile.toJson());
+      expect(restored.lexicalSignature.isEmpty, isFalse);
+      expect(restored.lexicalSignature.topTerms.length, 2);
+      expect(restored.lexicalSignature.topTerms.first.term, '剑意');
+      expect(restored.lexicalSignature.topTerms.first.frequency, 5);
+    });
+
+    test('old JSON without lexicalSignature key should parse to empty signature', () {
+      // Simulate legacy persisted JSON: no lexicalSignature field.
+      final legacyJson = <String, dynamic>{
+        'manuscriptId': 'legacy-ms',
+        'sentenceLengthStats': const SentenceLengthStats().toJson(),
+        'rhythmScore': 0.5,
+        'vocabularyRichness': 0.5,
+        'rhetoricHabits': const RhetoricHabits().toJson(),
+        'emotionalTone': const EmotionalTone().toJson(),
+        'analyzedChapterCount': 3,
+        'analyzedCharCount': 1500,
+        'lastAnalyzedAt': DateTime(2025, 1, 1).toIso8601String(),
+        'sampleParagraphs': <Map<String, dynamic>>[],
+      };
+      final restored = AuthorStyleProfile.fromJson(legacyJson);
+      expect(restored.manuscriptId, 'legacy-ms');
+      expect(restored.lexicalSignature.isEmpty, isTrue);
+    });
+
+    test('copyWith should override lexicalSignature when provided', () {
+      final original = AuthorStyleProfile(
+        manuscriptId: 'test-ms',
+        lexicalSignature: const LexicalSignature(
+          topTerms: [LexicalTerm(term: '剑意', score: 7.5, frequency: 5)],
+        ),
+      );
+      final updated = original.copyWith(
+        lexicalSignature: const LexicalSignature(
+          topTerms: [LexicalTerm(term: '凌厉', score: 9.0, frequency: 6)],
+        ),
+      );
+      expect(updated.lexicalSignature.topTerms.first.term, '凌厉');
+      // Untouched copyWith preserves the original signature.
+      final kept = original.copyWith(analyzedChapterCount: 9);
+      expect(kept.lexicalSignature.topTerms.first.term, '剑意');
     });
   });
 

@@ -251,5 +251,33 @@ void main() {
       expect(restored.vocabularyRichness, profile.vocabularyRichness);
       expect(restored.emotionalTone.overall, profile.emotionalTone.overall);
     });
+
+    test('should populate lexicalSignature from chapters with repeated terms', () {
+      // Two chapters, each >= 100 CJK chars, totaling >= 500 chars, with
+      // the characteristic term "剑意" repeated to dominate the n-gram ranking.
+      const charSeed = '剑意凌厉剑意冲霄剑意纵横剑意不绝剑意浩荡。'
+          '林风立于崖顶，衣袂飘扬若仙人临世，眼神如星辰般璀璨。';
+      final chapterContent = charSeed * 6; // well over 100 chars, repeats 剑意
+
+      final profile = analyzer.analyze(
+        manuscriptId: 'test-ms',
+        chapters: [
+          _makeChapter(id: 'ch1', content: chapterContent, order: 0),
+          _makeChapter(id: 'ch2', content: chapterContent, order: 1),
+        ],
+      );
+
+      expect(profile.hasData, isTrue);
+      expect(profile.lexicalSignature.isEmpty, isFalse);
+      expect(profile.lexicalSignature.topTerms, isNotEmpty);
+    });
+
+    test('should produce empty lexicalSignature for empty chapter list', () {
+      final profile = analyzer.analyze(
+        manuscriptId: 'test-ms',
+        chapters: [],
+      );
+      expect(profile.lexicalSignature.isEmpty, isTrue);
+    });
   });
 }

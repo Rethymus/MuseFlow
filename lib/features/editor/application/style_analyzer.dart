@@ -12,6 +12,7 @@ library;
 
 import 'dart:math';
 
+import 'package:museflow/features/editor/application/lexical_signature_extractor.dart';
 import 'package:museflow/features/editor/domain/author_style_profile.dart';
 import 'package:museflow/features/editor/domain/style_dimension.dart';
 import 'package:museflow/features/editor/domain/style_sample.dart';
@@ -73,6 +74,10 @@ class StyleAnalyzer {
     // Extract top quality paragraphs as style samples
     final samples = _extractTopSamples(qualifying, totalCjk);
 
+    // Extract author characteristic n-gram vocabulary from all analyzed text.
+    final lexicalSignature =
+        LexicalSignatureExtractor.extract(allText);
+
     // Determine if we should merge with existing profile (incremental update)
     final analyzedCount = alreadyAnalyzed?.length ?? 0;
 
@@ -83,6 +88,7 @@ class StyleAnalyzer {
       vocabularyRichness: vocabularyRichness,
       rhetoricHabits: rhetoricHabits,
       emotionalTone: emotionalTone,
+      lexicalSignature: lexicalSignature,
       analyzedChapterCount: qualifying.length + analyzedCount,
       analyzedCharCount: totalCjk,
       lastAnalyzedAt: DateTime.now(),
