@@ -327,12 +327,14 @@ class _ToolbarContent extends StatelessWidget {
                   key: const Key('ai_synthesis_button'),
                   icon: Icons.auto_fix_high,
                   label: '语气改写',
+                  shortcutLabel: 'Ctrl+Shift+T',
                   onTap: () => onStartOperation(EditorAIOperation.toneRewrite),
                 ),
                 const SizedBox(width: 2),
                 _ActionButton(
                   icon: Icons.auto_awesome,
                   label: '文段润色',
+                  shortcutLabel: 'Ctrl+Shift+P',
                   onTap: () =>
                       onStartOperation(EditorAIOperation.paragraphPolish),
                 ),
@@ -377,39 +379,47 @@ class _ActionButton extends StatelessWidget {
     required this.label,
     required this.onTap,
     this.isActive = false,
+    this.shortcutLabel,
   });
 
   final IconData icon;
   final String label;
   final VoidCallback onTap;
   final bool isActive;
+  final String? shortcutLabel;
 
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
 
-    return InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(6),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(
-              icon,
-              size: 16,
-              color: isActive ? colorScheme.primary : colorScheme.onSurface,
-            ),
-            const SizedBox(width: 4),
-            Text(
-              label,
-              style: TextStyle(
-                fontSize: 13,
+    final tooltipText =
+        shortcutLabel != null ? '$label ($shortcutLabel)' : label;
+
+    return Tooltip(
+      message: tooltipText,
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(6),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(
+                icon,
+                size: 16,
                 color: isActive ? colorScheme.primary : colorScheme.onSurface,
               ),
-            ),
-          ],
+              const SizedBox(width: 4),
+              Text(
+                label,
+                style: TextStyle(
+                  fontSize: 13,
+                  color: isActive ? colorScheme.primary : colorScheme.onSurface,
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

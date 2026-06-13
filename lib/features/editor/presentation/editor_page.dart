@@ -13,6 +13,7 @@ import 'package:museflow/features/editor/presentation/status_bar.dart';
 import 'package:museflow/features/knowledge/presentation/quick_insert_dialog.dart';
 import 'package:museflow/features/knowledge/presentation/deviation_warning_widget.dart';
 import 'package:super_editor/super_editor.dart';
+import 'package:museflow/features/editor/domain/editor_ai_state.dart';
 
 /// Notifier exposing the current Editor instance.
 ///
@@ -145,6 +146,25 @@ class _EditorPageState extends ConsumerState<EditorPage> {
         ): const _UndoAIIntent(),
         LogicalKeySet(LogicalKeyboardKey.control, LogicalKeyboardKey.keyK):
             const _QuickInsertIntent(),
+        // AI operation shortcuts (require text selection)
+        LogicalKeySet(
+          LogicalKeyboardKey.control,
+          LogicalKeyboardKey.shift,
+          LogicalKeyboardKey.keyT,
+        ): const _ToneRewriteIntent(),
+        LogicalKeySet(
+          LogicalKeyboardKey.control,
+          LogicalKeyboardKey.shift,
+          LogicalKeyboardKey.keyP,
+        ): const _ParagraphPolishIntent(),
+        LogicalKeySet(
+          LogicalKeyboardKey.control,
+          LogicalKeyboardKey.shift,
+          LogicalKeyboardKey.keyE,
+        ): const _ExpandIntent(),
+        LogicalKeySet(
+          LogicalKeyboardKey.escape,
+        ): const _CancelAIIntent(),
       },
       child: Actions(
         actions: <Type, Action<Intent>>{
@@ -159,6 +179,19 @@ class _EditorPageState extends ConsumerState<EditorPage> {
           ),
           _QuickInsertIntent: CallbackAction<_QuickInsertIntent>(
             onInvoke: (_) => _showQuickInsertDialog(),
+          ),
+          _ToneRewriteIntent: CallbackAction<_ToneRewriteIntent>(
+            onInvoke: (_) => _startAIOperation(EditorAIOperation.toneRewrite),
+          ),
+          _ParagraphPolishIntent: CallbackAction<_ParagraphPolishIntent>(
+            onInvoke: (_) =>
+                _startAIOperation(EditorAIOperation.paragraphPolish),
+          ),
+          _ExpandIntent: CallbackAction<_ExpandIntent>(
+            onInvoke: (_) => _startAIOperation(EditorAIOperation.expand),
+          ),
+          _CancelAIIntent: CallbackAction<_CancelAIIntent>(
+            onInvoke: (_) => _cancelAIOperation(),
           ),
         },
         child: PopScope(
@@ -265,6 +298,56 @@ class _EditorPageState extends ConsumerState<EditorPage> {
     );
   }
 
+  /// Starts an AI operation via keyboard shortcut.
+  ///
+  /// Requires text to be selected in the editor. If no selection,
+  /// shows a SnackBar prompting the user to select text first.
+  void _startAIOperation(EditorAIOperation operation) {
+    final selection = _editor.composer.selection;
+    if (selection == null || selection.isCollapsed) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('请先选中要${operation.label}的文本'),
+          duration: const Duration(seconds: 2),
+        ),
+      );
+      return;
+    }
+
+    // Extract selected text and range info
+    final nodeId = selection.base.nodeId;
+    final document = _editor.document;
+    final node = document.getNodeById(nodeId);
+    if (node is! TextNode) return;
+
+    final baseOffset =
+        (selection.base.nodePosition as TextNodePosition).offset;
+    final extentOffset =
+        (selection.extent.nodePosition as TextNodePosition).offset;
+    final startOffset = baseOffset < extentOffset ? baseOffset : extentOffset;
+    final endOffset = baseOffset < extentOffset ? extentOffset : baseOffset;
+
+    final selectedText =
+        node.text.toPlainText().substring(startOffset, endOffset);
+    if (selectedText.isEmpty) return;
+
+    ref.read(editorAINotifierProvider.notifier).startOperation(
+          operation,
+          selectedText,
+          nodeId,
+          startOffset,
+          endOffset,
+        );
+  }
+
+  /// Cancels the current AI streaming operation.
+  void _cancelAIOperation() {
+    final aiState = ref.read(editorAINotifierProvider);
+    if (aiState.isStreaming) {
+      ref.read(editorAINotifierProvider.notifier).cancel();
+    }
+  }
+
   /// Checks for unresolved diffs before navigating away.
   ///
   /// Per D-04: Shows a confirmation dialog when there are pending
@@ -342,6 +425,22 @@ class _UndoAIIntent extends Intent {
 
 class _QuickInsertIntent extends Intent {
   const _QuickInsertIntent();
+}
+
+class _ToneRewriteIntent extends Intent {
+  const _ToneRewriteIntent();
+}
+
+class _ParagraphPolishIntent extends Intent {
+  const _ParagraphPolishIntent();
+}
+
+class _ExpandIntent extends Intent {
+  const _ExpandIntent();
+}
+
+class _CancelAIIntent extends Intent {
+  const _CancelAIIntent();
 }
 
 /// Layer builder that positions leader widgets at selection bounds.
