@@ -25,8 +25,8 @@ See: .planning/PROJECT.md (updated 2026-06-12)
 ## Current Position
 
 Phase: Pre-25 of 32 (v1.5 — 真实创作验证与体验打磨) 🟡 PLANNING
-Status: v1.4 shipped (24 phases, 1468 tests), 5项功能改进完成，待真实API验证
-Last activity: 2026-06-13 — 5项优先功能改进: ①Claude测试连接 ②Synthesis自动重试(指数退避) ③Onboarding AI引导 ④反AI味假阳性校准(42词高亮替代自动删除+改进边界检测) ⑤编辑器AI快捷键(Ctrl+Shift+T/P/E)
+Status: v1.4 shipped (24 phases, 1468 tests), 6项功能改进完成，待真实API验证
+Last activity: 2026-06-13 — 6项优先功能改进: ①Claude测试连接 ②Synthesis自动重试(指数退避) ③Onboarding AI引导 ④反AI味假阳性校准(42词高亮替代自动删除+改进边界检测) ⑤编辑器AI快捷键(Ctrl+Shift+T/P/E) ⑥DOCX导出(archive包OOXML手动生成)
 
 Progress: [░░░░░░░░░░░░░░░░░░░░] 0%
 
@@ -82,6 +82,14 @@ None.
 - Anti-AI-scent banned phrase lists should be validated with broader real Chinese prose samples before release sign-off
 - Phase 7 bundled template prose needs human literary review before release sign-off
 
+Last activity: 2026-06-13 - Completed quick task 260613-q8x: 修复 Claude token 审计 bug（promptTokens 恒为 0）
+
+### Quick Tasks Completed
+
+| # | Description | Date | Commit | Directory |
+|---|-------------|------|--------|-----------|
+| 260613-q8x | 修复 Claude token 审计 bug（MessageStartEvent 两事件捕获） | 2026-06-13 | 58632e7 | [260613-q8x-fix-claude-usage-tokens](./quick/260613-q8x-fix-claude-usage-tokens/) |
+
 ## Deferred Items
 
 Items acknowledged and deferred from v1.3:
@@ -95,5 +103,5 @@ Items acknowledged and deferred from v1.3:
 ## Session Continuity
 
 Last session: 2026-06-13
-Stopped at: 5项优先功能改进完成，1497 tests pass (from 1468)
+Stopped at: 6项优先功能改进完成，1505 tests pass (from 1468)
 Next step: Phase 25 真实API端到端验证 — 用真实 Claude/GPT API 验证三段式核心流程
