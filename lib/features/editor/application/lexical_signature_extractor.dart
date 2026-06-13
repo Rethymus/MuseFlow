@@ -6,9 +6,11 @@
 /// 1. CJK segmentation (punctuation/space/latin as delimiters)
 /// 2. n-gram generation (bigram windows of 2, trigram windows of 3)
 /// 3. frequency counting
-/// 4. stopword filtering ([CjkStopwords])
+/// 4. stopword filtering ([CjkStopwords]: exact multi-char functional
+///    phrase OR any single-char function particle)
 /// 5. salience scoring (trigram weight 1.5 > bigram weight 1.0)
-/// 6. ranking and near-overlap deduplication
+/// 6. ranking (no substring dedup — bigrams and trigrams of the same span
+///    are both retained as distinct author-characteristic surface forms)
 /// 7. truncation to maxTerms
 ///
 /// No IO, no external dependencies. Corresponds to the IJCNLP 2025
@@ -47,7 +49,7 @@ class LexicalSignatureExtractor {
     for (final entry in frequencies.entries) {
       final gram = entry.key;
       if (gram.length < 2) continue;
-      if (_containsStopwordChar(gram)) continue;
+      if (_isStopword(gram)) continue;
       final weight =
           gram.length >= 3 ? _trigramWeight : _bigramWeight;
       final score = entry.value.toDouble() * weight;
@@ -91,17 +93,22 @@ class LexicalSignatureExtractor {
       (rune >= 0x4E00 && rune <= 0x9FFF) || // CJK Unified Ideographs
       (rune >= 0x3400 && rune <= 0x4DBF); // CJK Extension A
 
-  /// Returns true if any single CJK character in [gram] is a stopword.
+  /// Whether [gram] is a stopword n-gram.
   ///
-  /// Per plan design notes: an n-gram containing any functional-word
-  /// character is discarded because functional words (的/了/是/在 etc.)
-  /// are high-frequency in any text and carry no author style. Content
-  /// n-grams like 剑意/凌厉 never contain functional chars, so this filter
-  /// never strips genuine author-characteristic terms.
-  static bool _containsStopwordChar(String gram) {
+  /// Discards on EITHER:
+  /// - exact match against a multi-char functional phrase (知道/这个/没有),
+  ///   whose constituent characters are not themselves function particles;
+  /// - containing ANY single-char function particle (的/了/是/在 …).
+  ///
+  /// Content-bearing characters that form characteristic compounds
+  /// (道→道心/剑道, 人→人间, 有→有意, 看→看破) are deliberately absent from
+  /// [CjkStopwords.functionChars], so genuine author vocabulary survives.
+  static bool _isStopword(String gram) {
+    if (CjkStopwords.functionPhrases.contains(gram)) return true;
     for (final rune in gram.runes) {
-      final ch = String.fromCharCode(rune);
-      if (CjkStopwords.grams.contains(ch)) return true;
+      if (CjkStopwords.functionChars.contains(String.fromCharCode(rune))) {
+        return true;
+      }
     }
     return false;
   }
