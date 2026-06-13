@@ -75,6 +75,20 @@ class DynamicPersonaMiddleware extends PromptMiddleware {
     // Emotional tone guidance
     parts.add('- 情感基调：${profile.emotionalTone.overall}。');
 
+    // Author vocabulary signature (naturally blend, anti keyword stuffing).
+    // Injects the author's characteristic n-grams so the AI internalizes the
+    // author's actual vocabulary palette rather than a generic "comparable
+    // vocabulary level". Phrased as guidance — mechanical stuffing of these
+    // words is itself an AI-scent tell and violates the product soul.
+    if (profile.lexicalSignature.topTerms.isNotEmpty) {
+      final terms = profile.lexicalSignature.topTerms
+          .take(10)
+          .map((t) => t.term)
+          .join('、');
+      parts.add('- 作者常用表达：$terms');
+      parts.add('  （请在创作中自然融入作者的表达倾向，不要机械堆砌这些词）');
+    }
+
     // Anti-AI-scent anchor
     parts.add('\n**核心要求**：模仿上述风格特征，但不要让读者感到刻意。'
         '避免任何AI生成的痕迹，包括但不限于套话连接词、公式化句式、'
