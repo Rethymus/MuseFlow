@@ -38,7 +38,7 @@ String _systemContent(PromptContext context) {
 void main() {
   const middleware = DynamicPersonaMiddleware();
 
-  PromptContext _baseContext(AuthorStyleProfile? profile) {
+  PromptContext baseContext(AuthorStyleProfile? profile) {
     return PromptContext(
       fragments: [Fragment(id: 'f1', text: '碎片', createdAt: DateTime.now())],
       messages: [ChatMessage.system('你是一个写作助手。')],
@@ -50,7 +50,7 @@ void main() {
     test('injects top characteristic terms into system message', () {
       final profile =
           _profileWithSignature(const ['剑意', '凌厉']);
-      final result = middleware.apply(_baseContext(profile));
+      final result = middleware.apply(baseContext(profile));
       final content = _systemContent(result);
       expect(content, contains('剑意'));
       expect(content, contains('凌厉'));
@@ -59,7 +59,7 @@ void main() {
     test('uses "自然融入" guidance phrasing (anti keyword stuffing)', () {
       final profile =
           _profileWithSignature(const ['剑意']);
-      final result = middleware.apply(_baseContext(profile));
+      final result = middleware.apply(baseContext(profile));
       final content = _systemContent(result);
       expect(content, contains('自然融入'));
     });
@@ -67,7 +67,7 @@ void main() {
     test('preserves anti-AI-scent anchor ("核心要求" / "AI生成的痕迹")', () {
       final profile =
           _profileWithSignature(const ['剑意']);
-      final result = middleware.apply(_baseContext(profile));
+      final result = middleware.apply(baseContext(profile));
       final content = _systemContent(result);
       expect(content, contains('核心要求'));
       expect(content, contains('AI生成的痕迹'));
@@ -80,7 +80,7 @@ void main() {
         analyzedCharCount: 800,
         lexicalSignature: LexicalSignature.empty,
       );
-      final result = middleware.apply(_baseContext(profile));
+      final result = middleware.apply(baseContext(profile));
       final content = _systemContent(result);
       expect(content, isNot(contains('作者常用表达')));
       // Other dimension guidance and the anti-AI-scent anchor remain.
@@ -88,7 +88,7 @@ void main() {
     });
 
     test('null styleProfile passes context through unchanged', () {
-      final context = _baseContext(null);
+      final context = baseContext(null);
       final result = middleware.apply(context);
       // Messages list is identical (same length, same content) when no profile.
       expect(result.messages.length, context.messages.length);
