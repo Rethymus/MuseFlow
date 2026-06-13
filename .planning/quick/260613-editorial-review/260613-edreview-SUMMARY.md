@@ -98,3 +98,22 @@ Baseline 1510 → 1522 (+12 tests: 8 domain, 3 service, 1 audit). No pre-existin
 ## Threat Surface
 
 Single new LLM call, audited as `editorialReview` (cost transparent). The call sends chapter text to the configured provider — same trust boundary as the existing synthesis/deviation calls (no new external dependency). The JSON parser never `eval`s; it uses `jsonDecode` on an isolated `{...}` substring with all failures degrading to a named reason. Advisory output is displayed read-only (never written into the manuscript), so a malicious/malformed model response cannot corrupt user data.
+
+## Independent Code Review (OMC + ECC-equivalent, via agents)
+
+After implementation, two specialist agents reviewed the P2 feature (the `ecc/*` agents are not registered as spawnable in this env, so the ECC Flutter + security mandates were applied via the available OMC equivalents per the CLAUDE.md routing table):
+
+| Reviewer (agent) | Scope | Verdict |
+| --- | --- | --- |
+| OMC code-reviewer (`oh-my-claudecode:code-reviewer`) | correctness, immutability, error handling, Clean Architecture | **APPROVE** — 0 critical, 0 high |
+| ECC security-review equivalent (`oh-my-claudecode:security-reviewer`) | OWASP, secrets, unsafe patterns, untrusted-JSON handling, prompt injection | **LOW risk — safe to ship** — 0 critical/high; parser fails closed, output read-only, no secret leak, minimal injection blast radius. 2 Medium (hardening only) + 3 Low noted as non-blocking follow-ups. |
+
+No blocking issues. Feature is ship-quality.
+
+## Skill-Usage Audit (goal requirement)
+
+- **pua**: invoked; corrected a premature "skills unavailable" misjudgment (wrong discovery tool), then applied owner-mindset — verified the page widget with tests instead of asserting done, ran independent code review rather than shipping unreviewed.
+- **kimi-webbridge**: daemon started + health-checked per skill docs; web app built (`✓ Built build/web`) and served (HTTP 200 on :8090). The real-browser screenshot remains pending the user's physical browser-extension connection — a genuine external dependency, not solvable by retrying.
+- **omc**: `oh-my-claudecode:code-reviewer` + `oh-my-claudecode:security-reviewer` agents reviewed the P2 feature.
+- **ecc (tcc)**: ECC Flutter + security mandates applied via the available OMC-equivalent agents (ecc/* not spawnable here).
+- **gsd**: editorial review delivered as a GSD-quick TDD plan (RED→GREEN→docs, atomic commits, STATE.md tracking).
