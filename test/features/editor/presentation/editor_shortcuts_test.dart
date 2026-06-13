@@ -7,16 +7,7 @@ library;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:museflow/core/domain/fragment.dart';
-import 'package:museflow/core/presentation/providers.dart';
-import 'package:museflow/features/capture/presentation/capture_provider.dart';
 import 'package:museflow/features/editor/domain/editor_ai_state.dart';
-import 'package:museflow/features/stats/application/token_audit_service.dart';
-import 'package:museflow/features/stats/domain/audit_operation_type.dart';
-import 'package:museflow/features/stats/domain/token_audit_record.dart';
-import 'package:openai_dart/openai_dart.dart';
-import 'package:super_editor/super_editor.dart';
 
 void main() {
   group('Editor AI keyboard shortcuts', () {
@@ -97,30 +88,4 @@ void main() {
       }
     });
   });
-}
-
-/// Minimal no-op TokenAuditService for test containers.
-class _NoOpAuditService implements TokenAuditService {
-  @override
-  void recordAudit({
-    required Usage? usage,
-    required String modelName,
-    required AuditOperationType operationType,
-    required String manuscriptId,
-    String? chapterId,
-    required String inputText,
-    required String outputText,
-  }) {}
-
-  @override
-  Future<void> flush() async {}
-
-  @override
-  void dispose() {}
-
-  @override
-  Duration get debounceDuration => Duration.zero;
-
-  @override
-  void record_(TokenAuditRecord record) {}
 }

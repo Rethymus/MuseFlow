@@ -11,13 +11,7 @@ import 'package:museflow/features/story_structure/domain/guardian_annotation.dar
 import 'package:museflow/features/manuscript/domain/chapter_export.dart';
 
 /// Decodes the content of an [ArchiveFile] as UTF-8 string.
-String _decodeFile(ArchiveFile f) {
-  final bytes = f.content;
-  if (bytes is List<int>) {
-    return utf8.decode(bytes);
-  }
-  return bytes.toString();
-}
+String _decodeFile(ArchiveFile f) => utf8.decode(f.content);
 
 void main() {
   group('ExportService', () {
