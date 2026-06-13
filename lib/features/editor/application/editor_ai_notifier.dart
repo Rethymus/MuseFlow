@@ -284,12 +284,17 @@ class EditorAINotifier extends Notifier<EditorAIState> {
     ref.read(contextAnchorNotifierProvider.notifier).clearOneTime();
 
     // Phase 4: advisory consistency warnings for active skill constraints.
-    unawaited(
-      ref
-          .read(deviationNotifierProvider.notifier)
-          .checkDeviations(result.processedText)
-          .catchError((_) {}),
-    );
+    // OPT-IN (D-CP-01): this fires a SECOND LLM call that doubles token cost,
+    // so it only runs when the user enables it in Settings. Default off keeps
+    // the core creation flow single-call (cost-transparency promise).
+    if (ref.read(autoDeviationCheckProvider)) {
+      unawaited(
+        ref
+            .read(deviationNotifierProvider.notifier)
+            .checkDeviations(result.processedText)
+            .catchError((_) {}),
+      );
+    }
 
     // Phase 19: analyze AI output against author style profile for thermometer.
     ref.read(styleDeviationNotifierProvider.notifier).analyzeText(

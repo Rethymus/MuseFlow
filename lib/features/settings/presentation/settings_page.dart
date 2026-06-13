@@ -39,6 +39,18 @@ class SettingsPage extends ConsumerWidget {
             trailing: const Icon(Icons.chevron_right),
             onTap: () => context.go(AppConstants.bannedPhrases),
           ),
+          // D-CP-01: opt-in post-operation consistency check. OFF by default
+          // because it fires an extra LLM call (raises token cost).
+          SwitchListTile(
+            secondary: const Icon(Icons.fact_check_outlined),
+            title: const Text('AI 操作后自动一致性检查'),
+            subtitle: const Text(
+              '每次 AI 操作后自动校验设定一致性（额外消耗 token，默认关闭）',
+            ),
+            value: ref.watch(autoDeviationCheckProvider),
+            onChanged: (value) =>
+                ref.read(autoDeviationCheckProvider.notifier).set(value),
+          ),
           const Divider(),
           const SizedBox(height: 16),
           // Storage section

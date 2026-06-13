@@ -12,6 +12,7 @@ class SettingsRepository {
   static const String _windowSizeKey = 'windowSize';
   static const String _windowPositionKey = 'windowPosition';
   static const String _defaultTagKey = 'defaultTag';
+  static const String _autoDeviationCheckKey = 'auto_deviation_check';
 
   SettingsRepository(this._box);
 
@@ -56,6 +57,20 @@ class SettingsRepository {
   /// Sets the default fragment tag for quick capture.
   Future<void> setDefaultTag(String tag) async {
     await _box.put(_defaultTagKey, tag);
+  }
+
+  /// Whether the editor should run an automatic skill-consistency
+  /// (deviation) check after each AI operation.
+  ///
+  /// OFF by default: the post-operation check fires a SECOND LLM call that
+  /// silently doubles token cost. Users opt in via Settings. See D-CP-01.
+  bool getAutoDeviationCheck() {
+    return _box.get(_autoDeviationCheckKey, defaultValue: false) as bool;
+  }
+
+  /// Persists the auto deviation-check preference.
+  Future<void> saveAutoDeviationCheck(bool enabled) async {
+    await _box.put(_autoDeviationCheckKey, enabled);
   }
 
   /// Gets the user's banned phrase list for anti-AI-scent processing.
