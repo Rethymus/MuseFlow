@@ -23,6 +23,7 @@ import 'package:museflow/features/stats/presentation/writing_stats_page.dart';
 import 'package:museflow/features/stats/presentation/progress_dashboard_page.dart';
 import 'package:museflow/features/reports/presentation/blind_read_page.dart';
 import 'package:museflow/features/reports/presentation/consistency_report_page.dart';
+import 'package:museflow/features/reports/presentation/editorial_review_page.dart';
 import 'package:museflow/features/reports/presentation/pain_point_report_page.dart';
 import 'package:museflow/features/reports/presentation/reports_hub_page.dart';
 import 'package:museflow/features/reports/presentation/token_cost_report_page.dart';
@@ -227,6 +228,11 @@ class MuseFlowApp extends ConsumerWidget {
                           path: 'consistency',
                           builder: (context, state) =>
                               const ConsistencyReportPage(),
+                        ),
+                        GoRoute(
+                          path: 'editorial-review',
+                          builder: (context, state) =>
+                              const EditorialReviewPage(),
                         ),
                       ],
                     ),

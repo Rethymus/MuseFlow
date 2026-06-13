@@ -45,6 +45,8 @@ abstract class AppConstants {
   static const String statsReportsPainPoints = '/stats/reports/pain-points';
   static const String statsReportsAntiAiScent = '/stats/reports/anti-ai-scent';
   static const String statsReportsConsistency = '/stats/reports/consistency';
+  static const String statsReportsEditorialReview =
+      '/stats/reports/editorial-review';
   static const String statsProgress = '/stats/progress';
   static const String onboarding = '/onboarding';
 

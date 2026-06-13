@@ -93,7 +93,7 @@ void main() {
       );
     });
 
-    testWidgets('should render 4 ReportCard widgets with correct titles', (
+    testWidgets('should render 5 ReportCard widgets with correct titles', (
       WidgetTester tester,
     ) async {
       await pumpHubPage(tester);
@@ -102,10 +102,11 @@ void main() {
       expect(find.text('用户痛点报告'), findsOneWidget);
       expect(find.text('反AI味效果评估'), findsOneWidget);
       expect(find.text('知识库一致性分析'), findsOneWidget);
+      expect(find.text('编辑评审团'), findsOneWidget);
     });
 
     testWidgets(
-      'should render 4 ReportCard widgets with correct descriptions',
+      'should render 5 ReportCard widgets with correct descriptions',
       (WidgetTester tester) async {
         await pumpHubPage(tester);
 
@@ -113,10 +114,11 @@ void main() {
         expect(find.text('功能缺陷 + 体验摩擦 + 缺失需求，按严重程度分类'), findsOneWidget);
         expect(find.text('盲读测试评估 AI 生成内容的自然度'), findsOneWidget);
         expect(find.text('角色卡和设定集与实际内容的一致性对比'), findsOneWidget);
+        expect(find.text('AI 从情节、人物、文笔、节奏四维给出建议性评审'), findsOneWidget);
       },
     );
 
-    testWidgets('should render 4 report cards with correct icons', (
+    testWidgets('should render 5 report cards with correct icons', (
       WidgetTester tester,
     ) async {
       await pumpHubPage(tester);
@@ -125,6 +127,7 @@ void main() {
       expect(find.byIcon(Icons.bug_report_outlined), findsOneWidget);
       expect(find.byIcon(Icons.visibility_outlined), findsOneWidget);
       expect(find.byIcon(Icons.fact_check_outlined), findsOneWidget);
+      expect(find.byIcon(Icons.rate_review_outlined), findsOneWidget);
     });
 
     testWidgets('should render chevron trailing icons on cards', (
@@ -132,7 +135,7 @@ void main() {
     ) async {
       await pumpHubPage(tester);
 
-      expect(find.byIcon(Icons.chevron_right), findsNWidgets(4));
+      expect(find.byIcon(Icons.chevron_right), findsNWidgets(5));
     });
 
     testWidgets('should navigate to token-cost route on tap', (
@@ -202,7 +205,7 @@ void main() {
   });
 
   group('AppConstants reports routes', () {
-    test('should have all 5 report route constants', () {
+    test('should have all 6 report route constants', () {
       expect(AppConstants.statsReports, '/stats/reports');
       expect(AppConstants.statsReportsTokenCost, '/stats/reports/token-cost');
       expect(AppConstants.statsReportsPainPoints, '/stats/reports/pain-points');
@@ -213,6 +216,10 @@ void main() {
       expect(
         AppConstants.statsReportsConsistency,
         '/stats/reports/consistency',
+      );
+      expect(
+        AppConstants.statsReportsEditorialReview,
+        '/stats/reports/editorial-review',
       );
     });
   });

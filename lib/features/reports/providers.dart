@@ -6,6 +6,7 @@ import 'package:museflow/features/reports/application/pain_point_report_service.
 import 'package:museflow/features/reports/application/token_cost_report_service.dart';
 import 'package:museflow/features/reports/domain/blind_read_result.dart';
 import 'package:museflow/features/reports/domain/consistency_report.dart';
+import 'package:museflow/features/reports/domain/editorial_review.dart';
 import 'package:museflow/features/reports/domain/pain_point_report.dart';
 import 'package:museflow/features/reports/domain/token_cost_report.dart';
 
@@ -192,5 +193,38 @@ class ConsistencyReportNotifier extends AsyncNotifier<ConsistencyReport> {
     final service = await ref.read(consistencyReportServiceProvider.future);
     state = const AsyncLoading();
     state = await AsyncValue.guard(() async => service.analyze(manuscriptId));
+  }
+}
+
+/// Editorial review panel state. null until the author triggers a review.
+final editorialReviewProvider =
+    AsyncNotifierProvider<EditorialReviewNotifier, EditorialReview?>(
+      EditorialReviewNotifier.new,
+    );
+
+class EditorialReviewNotifier extends AsyncNotifier<EditorialReview?> {
+  @override
+  Future<EditorialReview?> build() async => null;
+
+  /// Runs a 4-dimension editorial review on [text] via a single audited LLM
+  /// call. Advisory only.
+  Future<void> review(
+    String text, {
+    String? manuscriptId,
+    String? chapterId,
+  }) async {
+    final service = await ref.read(editorialReviewServiceProvider.future);
+    state = const AsyncLoading();
+    state = await AsyncValue.guard(
+      () => service.reviewChapter(
+        text,
+        manuscriptId: manuscriptId,
+        chapterId: chapterId,
+      ),
+    );
+  }
+
+  void reset() {
+    state = const AsyncData(null);
   }
 }

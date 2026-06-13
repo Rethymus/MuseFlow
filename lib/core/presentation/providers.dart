@@ -26,6 +26,7 @@ import 'package:museflow/features/knowledge/application/character_card_notifier.
 import 'package:museflow/features/knowledge/application/character_relationship_notifier.dart';
 import 'package:museflow/features/knowledge/application/deviation_detection_service.dart';
 import 'package:museflow/features/knowledge/application/knowledge_injection_middleware.dart';
+import 'package:museflow/features/reports/application/editorial_review_service.dart';
 import 'package:museflow/features/knowledge/application/name_index_service.dart';
 import 'package:museflow/features/knowledge/application/skill_enforcement_middleware.dart';
 import 'package:museflow/features/knowledge/application/skill_generation_service.dart';
@@ -468,6 +469,23 @@ final deviationDetectionServiceProvider =
         throw StateError('未配置可用的 AI 模型');
       }
       return DeviationDetectionService(
+        openAIAdapter: ref.watch(openaiAdapterProvider),
+        apiKey: apiKey,
+        baseUrl: provider.baseUrl,
+        model: provider.model,
+      );
+    });
+
+/// Provides an [EditorialReviewService] for the 4-dimension LLM editorial
+/// review panel. Throws if no AI provider/key is configured.
+final editorialReviewServiceProvider =
+    FutureProvider<EditorialReviewService>((ref) async {
+      final provider = ref.watch(activeProviderProvider);
+      final apiKey = ref.watch(activeApiKeyProvider);
+      if (provider == null || apiKey == null || apiKey.isEmpty) {
+        throw StateError('未配置可用的 AI 模型');
+      }
+      return EditorialReviewService(
         openAIAdapter: ref.watch(openaiAdapterProvider),
         apiKey: apiKey,
         baseUrl: provider.baseUrl,

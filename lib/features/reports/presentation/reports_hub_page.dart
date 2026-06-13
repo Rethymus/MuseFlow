@@ -5,8 +5,8 @@ import 'package:museflow/shared/constants/app_constants.dart';
 
 /// Hub page for the Analysis & Reports feature.
 ///
-/// Displays 4 report cards (Token cost, Pain points, Anti-AI-scent,
-/// KB consistency) that navigate to their respective detail pages.
+/// Displays report cards (Token cost, Pain points, Anti-AI-scent,
+/// KB consistency, Editorial review) that navigate to their detail pages.
 /// Accessible from WritingStatsPage via the "分析报告" button.
 class ReportsHubPage extends StatelessWidget {
   const ReportsHubPage({super.key});
@@ -50,6 +50,13 @@ class ReportsHubPage extends StatelessWidget {
             title: '知识库一致性分析',
             description: '角色卡和设定集与实际内容的一致性对比',
             onTap: () => context.go(AppConstants.statsReportsConsistency),
+          ),
+          const SizedBox(height: 12),
+          ReportCard(
+            icon: Icons.rate_review_outlined,
+            title: '编辑评审团',
+            description: 'AI 从情节、人物、文笔、节奏四维给出建议性评审',
+            onTap: () => context.go(AppConstants.statsReportsEditorialReview),
           ),
         ],
       ),

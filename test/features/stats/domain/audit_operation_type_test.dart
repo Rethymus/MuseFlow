@@ -3,8 +3,8 @@ import 'package:museflow/features/stats/domain/audit_operation_type.dart';
 
 void main() {
   group('AuditOperationType', () {
-    test('should have exactly 12 operation types', () {
-      expect(AuditOperationType.values.length, 12);
+    test('should have exactly 13 operation types', () {
+      expect(AuditOperationType.values.length, 13);
     });
 
     test('should contain all expected operation types', () {
@@ -22,6 +22,7 @@ void main() {
           'skillGen',
           'opening',
           'deviationDetect',
+          'editorialReview',
           'templateComplete',
         ]),
       );
@@ -80,6 +81,11 @@ void main() {
     test('should have deviationDetect operation with worldview group', () {
       expect(AuditOperationType.deviationDetect.label, '偏离检测');
       expect(AuditOperationType.deviationDetect.group, 'worldview');
+    });
+
+    test('should have editorialReview operation with worldview group', () {
+      expect(AuditOperationType.editorialReview.label, '编辑评审');
+      expect(AuditOperationType.editorialReview.group, 'worldview');
     });
 
     test('should have templateComplete operation with template group', () {
