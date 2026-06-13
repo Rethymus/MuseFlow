@@ -1120,10 +1120,10 @@ packages:
     dependency: "direct main"
     description:
       name: super_editor
-      sha256: c10bcd53e8e5386ff74273a8afb639501ec0c21e8fdaea41b7b364dc9267417e
+      sha256: a711dabfa443a0b55771b9e459d5ab8d8b6fa46db797e13b1aba9ed33fa447f8
       url: "https://pub.dev"
     source: hosted
-    version: "0.3.0-dev.51"
+    version: "0.3.0-dev.52"
   super_keyboard:
     dependency: "direct overridden"
     description:

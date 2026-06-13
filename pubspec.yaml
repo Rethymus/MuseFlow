@@ -21,7 +21,7 @@ dependencies:
   freezed_annotation: ^3.1.0
 
   # Rich text editor (winning editor from Phase 0 benchmark)
-  super_editor: ^0.3.0-dev.20
+  super_editor: ^0.3.0-dev.52
 
   # Navigation
   go_router: ^17.2.3
