@@ -182,14 +182,14 @@ void main() {
       );
     }
 
-    testWidgets('shows TXT, Markdown, and JSON format choices', (tester) async {
+    testWidgets('shows TXT, Markdown, JSON, and DOCX format choices', (tester) async {
       await tester.pumpWidget(
         ProviderScope(
           child: MaterialApp(
             home: Scaffold(
               body: ExportDialog(
                 bundle: createTestBundle(),
-                onExport: (_, _, _) async {},
+                onExport: (_, _, {textContent, binaryContent}) async {},
               ),
             ),
           ),
@@ -199,6 +199,7 @@ void main() {
       expect(find.text('TXT'), findsOneWidget);
       expect(find.text('Markdown'), findsOneWidget);
       expect(find.text('JSON'), findsOneWidget);
+      expect(find.text('DOCX'), findsOneWidget);
     });
 
     testWidgets('missing file path prevents export action', (tester) async {
@@ -210,7 +211,7 @@ void main() {
             home: Scaffold(
               body: ExportDialog(
                 bundle: createTestBundle(),
-                onExport: (_, _, _) async {
+                onExport: (_, _, {textContent, binaryContent}) async {
                   exportCalled = true;
                 },
               ),
@@ -238,7 +239,7 @@ void main() {
             home: Scaffold(
               body: ExportDialog(
                 bundle: createTestBundle(),
-                onExport: (_, _, _) async {},
+                onExport: (_, _, {textContent, binaryContent}) async {},
               ),
             ),
           ),
@@ -255,7 +256,7 @@ void main() {
             home: Scaffold(
               body: ExportDialog(
                 bundle: createTestBundle(),
-                onExport: (_, _, _) async {},
+                onExport: (_, _, {textContent, binaryContent}) async {},
               ),
             ),
           ),
@@ -289,7 +290,7 @@ void main() {
             home: Scaffold(
               body: ExportDialog(
                 bundle: createTestBundle(),
-                onExport: (_, _, _) async {},
+                onExport: (_, _, {textContent, binaryContent}) async {},
               ),
             ),
           ),
@@ -322,10 +323,10 @@ void main() {
             home: Scaffold(
               body: ExportDialog(
                 bundle: createTestBundle(),
-                onExport: (format, path, content) async {
+                onExport: (format, path, {textContent, binaryContent}) async {
                   exportedFormat = format;
                   exportedPath = path;
-                  exportedContent = content;
+                  exportedContent = textContent;
                 },
               ),
             ),

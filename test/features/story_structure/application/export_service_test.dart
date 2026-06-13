@@ -1,12 +1,23 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:archive/archive.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:museflow/features/story_structure/application/export_service.dart';
 import 'package:museflow/features/story_structure/domain/export_bundle.dart';
 import 'package:museflow/features/story_structure/domain/foreshadowing_entry.dart';
 import 'package:museflow/features/story_structure/domain/plot_node.dart';
 import 'package:museflow/features/story_structure/domain/guardian_annotation.dart';
+import 'package:museflow/features/manuscript/domain/chapter_export.dart';
+
+/// Decodes the content of an [ArchiveFile] as UTF-8 string.
+String _decodeFile(ArchiveFile f) {
+  final bytes = f.content;
+  if (bytes is List<int>) {
+    return utf8.decode(bytes);
+  }
+  return bytes.toString();
+}
 
 void main() {
   group('ExportService', () {
@@ -269,6 +280,131 @@ void main() {
         expect(txt, contains('第一段。'));
         expect(md, contains('第一段。'));
         expect(() => jsonDecode(json), returnsNormally);
+      });
+
+      test('buildContent should throw for DOCX format', () {
+        final bundle = createTestBundle();
+        expect(
+          () => service.buildContent(bundle, ExportFormat.docx),
+          throwsUnsupportedError,
+        );
+      });
+    });
+
+    // --- DOCX builder ---
+
+    group('DOCX builder', () {
+      test('should produce a valid ZIP archive', () {
+        final bundle = createTestBundle();
+        final bytes = service.buildDocxBytes(bundle);
+
+        // Should be a valid ZIP (starts with PK magic bytes)
+        expect(bytes.isNotEmpty, isTrue);
+        expect(bytes[0], 0x50); // P
+        expect(bytes[1], 0x4B); // K
+
+        // Should be decodable as ZIP
+        final archive = ZipDecoder().decodeBytes(bytes);
+        expect(archive, isNotNull);
+      });
+
+      test('should contain required OOXML files', () {
+        final bundle = createTestBundle();
+        final bytes = service.buildDocxBytes(bundle);
+        final archive = ZipDecoder().decodeBytes(bytes);
+
+        final fileNames =
+            archive.files.map((f) => f.name).toList();
+        expect(fileNames, contains('[Content_Types].xml'));
+        expect(fileNames, contains('_rels/.rels'));
+        expect(fileNames, contains('word/document.xml'));
+        expect(fileNames, contains('word/_rels/document.xml.rels'));
+      });
+
+      test('should include flat manuscript text in document.xml', () {
+        final bundle = createTestBundle(
+          manuscriptText: '第一段。\n\n第二段。',
+        );
+        final bytes = service.buildDocxBytes(bundle);
+        final archive = ZipDecoder().decodeBytes(bytes);
+
+        final docFile = archive.files.firstWhere(
+          (f) => f.name == 'word/document.xml',
+        );
+        final docXml = _decodeFile(docFile);
+        expect(docXml, contains('第一段。'));
+        expect(docXml, contains('第二段。'));
+        expect(docXml, contains('BodyText'));
+      });
+
+      test('should render chapter titles as Heading1', () {
+        final bundle = ExportBundle(
+          schemaVersion: '1.0',
+          manuscriptText: '',
+          chapters: [
+            ChapterExport(title: '第一章 开端', sortOrder: 1, content: '内容一。'),
+            ChapterExport(title: '第二章 发展', sortOrder: 2, content: '内容二。'),
+          ],
+        );
+        final bytes = service.buildDocxBytes(bundle);
+        final archive = ZipDecoder().decodeBytes(bytes);
+
+        final docFile = archive.files.firstWhere(
+          (f) => f.name == 'word/document.xml',
+        );
+        final docXml = _decodeFile(docFile);
+        expect(docXml, contains('第一章 开端'));
+        expect(docXml, contains('第二章 发展'));
+        expect(docXml, contains('Heading1'));
+        expect(docXml, contains('BodyText'));
+      });
+
+      test('should sort chapters by sortOrder', () {
+        final bundle = ExportBundle(
+          schemaVersion: '1.0',
+          manuscriptText: '',
+          chapters: [
+            ChapterExport(title: '第二章', sortOrder: 2, content: 'B'),
+            ChapterExport(title: '第一章', sortOrder: 1, content: 'A'),
+          ],
+        );
+        final bytes = service.buildDocxBytes(bundle);
+        final archive = ZipDecoder().decodeBytes(bytes);
+
+        final docFile = archive.files.firstWhere(
+          (f) => f.name == 'word/document.xml',
+        );
+        final docXml = _decodeFile(docFile);
+
+        // 第一章 should appear before 第二章 in the XML
+        final firstIndex = docXml.indexOf('第一章');
+        final secondIndex = docXml.indexOf('第二章');
+        expect(firstIndex, lessThan(secondIndex));
+      });
+
+      test('should escape XML special characters in content', () {
+        final bundle = createTestBundle(
+          manuscriptText: '他喊道："快跑！" <tag>',
+        );
+        final bytes = service.buildDocxBytes(bundle);
+        final archive = ZipDecoder().decodeBytes(bytes);
+
+        final docFile = archive.files.firstWhere(
+          (f) => f.name == 'word/document.xml',
+        );
+        final docXml = _decodeFile(docFile);
+
+        // XML special chars should be escaped
+        expect(docXml, contains('&lt;'));
+        expect(docXml, contains('&gt;'));
+        expect(docXml, contains('&quot;'));
+      });
+
+      test('should produce stable output for same input', () {
+        final bundle = createTestBundle();
+        final bytes1 = service.buildDocxBytes(bundle);
+        final bytes2 = service.buildDocxBytes(bundle);
+        expect(bytes1, bytes2);
       });
     });
   });

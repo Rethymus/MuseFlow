@@ -14,8 +14,16 @@ class ExportDialog extends ConsumerStatefulWidget {
   final ExportBundle bundle;
 
   /// Callback for performing the actual export.
-  final Future<void> Function(ExportFormat format, String path, String content)
-  onExport;
+  ///
+  /// For text formats (TXT, Markdown, JSON), [textContent] is populated and
+  /// [binaryContent] is null. For binary formats (DOCX), [binaryContent]
+  /// is populated and [textContent] is null.
+  final Future<void> Function(
+    ExportFormat format,
+    String path, {
+    String? textContent,
+    List<int>? binaryContent,
+  }) onExport;
 
   const ExportDialog({super.key, required this.bundle, required this.onExport});
 
@@ -68,11 +76,24 @@ class _ExportDialogState extends ConsumerState<ExportDialog> {
     });
 
     try {
-      final content = _exportService.buildContent(
-        widget.bundle,
-        _selectedFormat,
-      );
-      await widget.onExport(_selectedFormat, path, content);
+      if (_selectedFormat.isBinary) {
+        final bytes = _exportService.buildDocxBytes(widget.bundle);
+        await widget.onExport(
+          _selectedFormat,
+          path,
+          binaryContent: bytes,
+        );
+      } else {
+        final content = _exportService.buildContent(
+          widget.bundle,
+          _selectedFormat,
+        );
+        await widget.onExport(
+          _selectedFormat,
+          path,
+          textContent: content,
+        );
+      }
 
       if (mounted) {
         setState(() {
@@ -121,6 +142,7 @@ class _ExportDialogState extends ConsumerState<ExportDialog> {
                     label: Text('Markdown'),
                   ),
                   ButtonSegment(value: ExportFormat.json, label: Text('JSON')),
+                  ButtonSegment(value: ExportFormat.docx, label: Text('DOCX')),
                 ],
                 selected: {_selectedFormat},
                 onSelectionChanged: (formats) {
@@ -276,6 +298,41 @@ class _ExportDialogState extends ConsumerState<ExportDialog> {
                   ),
                 ),
               ],
+
+              // Content summary for DOCX
+              if (_selectedFormat == ExportFormat.docx) ...[
+                const SizedBox(height: 16),
+                Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: colorScheme.surfaceContainerHighest,
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'DOCX 导出包含:',
+                        style: TextStyle(
+                          fontWeight: FontWeight.w600,
+                          fontSize: 12,
+                          color: colorScheme.onSurface,
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      if (widget.bundle.chapters.isNotEmpty) ...[
+                        _summaryItem(
+                          '${widget.bundle.chapters.length} 个章节（标题 + 正文）',
+                        ),
+                      ] else ...[
+                        _summaryItem('完整稿件正文'),
+                      ],
+                      _summaryItem('Word Heading1 / BodyText 排版'),
+                      _summaryItem('可在 Word / WPS / LibreOffice 中打开'),
+                    ],
+                  ),
+                ),
+              ],
             ],
           ),
         ),
@@ -311,6 +368,7 @@ class _ExportDialogState extends ConsumerState<ExportDialog> {
       ExportFormat.txt => '纯文本格式，包含可读的稿件正文。',
       ExportFormat.markdown => 'Markdown 格式，保留段落分隔。',
       ExportFormat.json => '完整 JSON 格式，包含稿件文本和所有结构化故事数据。',
+      ExportFormat.docx => 'Word 文档格式，支持章节标题和段落排版。',
     };
   }
 

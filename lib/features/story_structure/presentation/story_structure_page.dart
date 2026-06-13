@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:museflow/core/presentation/providers.dart';
 import 'package:museflow/features/story_structure/application/foreshadowing_reminder_service.dart';
+import 'package:museflow/features/story_structure/application/export_service.dart';
 import 'package:museflow/features/story_structure/domain/export_bundle.dart';
 import 'package:museflow/features/story_structure/domain/foreshadowing_entry.dart';
 import 'package:museflow/features/story_structure/presentation/foreshadowing_form.dart';
@@ -429,9 +430,13 @@ class _FinishExportSection extends ConsumerWidget {
       context: context,
       builder: (_) => ExportDialog(
         bundle: bundle,
-        onExport: (format, path, content) async {
+        onExport: (format, path, {textContent, binaryContent}) async {
           final exportService = ref.read(exportServiceProvider);
-          await exportService.writeLocalFile(path, content);
+          if (binaryContent != null) {
+            await ExportService.dartBinaryFileWriter(path, binaryContent);
+          } else {
+            await exportService.writeLocalFile(path, textContent!);
+          }
         },
       ),
     );
