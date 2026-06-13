@@ -36,6 +36,7 @@ void main() {
       expect(state.error, isNull);
       expect(state.excludedFragmentsNotice, isNull);
       expect(state.highlights, isEmpty);
+      expect(state.retryCount, 0);
     });
 
     test('copyWith should create a new state with updated fields', () {
@@ -266,6 +267,7 @@ void main() {
 
     group('stream interruption per D-15', () {
       test('should preserve partial content on stream error', () async {
+        // Auth errors don't retry, so partial content is preserved
         container = createContainer(
           selectedFragments: [
             Fragment(id: 'f1', text: 'test', createdAt: DateTime(2026, 1, 1)),
@@ -280,7 +282,8 @@ void main() {
         controller.add('月光下');
         await _pump();
 
-        controller.addError(const AINetworkException());
+        // Use AIAuthException (no retry) to preserve partial content
+        controller.addError(const AIAuthException());
         await _pumpAndWait();
 
         final state = container.read(synthesisProvider);
@@ -313,7 +316,7 @@ void main() {
         await controller.close();
       });
 
-      test('should classify rate limit errors per D-14', () async {
+      test('should retry on rate limit errors and recover', () async {
         container = createContainer(
           selectedFragments: [
             Fragment(id: 'f1', text: 'test', createdAt: DateTime(2026, 1, 1)),
@@ -325,16 +328,24 @@ void main() {
         container.read(synthesisProvider.notifier).startSynthesis();
         await _pump();
 
+        // Rate limit error triggers auto-retry (second call succeeds)
         controller.addError(const AIRateLimitException());
+        await _pump();
+
+        // Wait for backoff (2s) and retry
+        await Future<void>.delayed(const Duration(seconds: 3));
         await _pumpAndWait();
 
         final state = container.read(synthesisProvider);
-        expect(state.error, contains('稍后'));
+        // After retry succeeds, should be in editing state with content
+        expect(fakeAdapter.callCount, greaterThanOrEqualTo(2));
+        expect(state.isStreaming, false);
+        expect(state.isEditing, true);
 
         await controller.close();
       });
 
-      test('should classify network errors per D-14', () async {
+      test('should retry on network errors and recover', () async {
         container = createContainer(
           selectedFragments: [
             Fragment(id: 'f1', text: 'test', createdAt: DateTime(2026, 1, 1)),
@@ -346,11 +357,17 @@ void main() {
         container.read(synthesisProvider.notifier).startSynthesis();
         await _pump();
 
+        // Network error triggers auto-retry (second call succeeds)
         controller.addError(const AINetworkException());
+        await _pump();
+
+        // Wait for backoff (2s) and retry
+        await Future<void>.delayed(const Duration(seconds: 3));
         await _pumpAndWait();
 
         final state = container.read(synthesisProvider);
-        expect(state.error, contains('网络'));
+        expect(fakeAdapter.callCount, greaterThanOrEqualTo(2));
+        expect(state.isStreaming, false);
 
         await controller.close();
       });
@@ -553,10 +570,15 @@ Future<void> _pumpAndWait() async {
 // --- Test fakes ---
 
 /// Fake OpenAI adapter that returns a controllable stream.
+///
+/// Tracks call count so tests can verify retry behavior.
+/// On the second+ call (retry), returns the configured stream or a default
+/// success stream, simulating transient error recovery.
 class _FakeOpenAIAdapter extends OpenAIAdapter {
   Stream<String>? streamOutput;
   Usage? usage;
   List<ChatMessage>? lastMessages;
+  int callCount = 0;
 
   @override
   Stream<String> createStream({
@@ -569,7 +591,24 @@ class _FakeOpenAIAdapter extends OpenAIAdapter {
     int? maxTokens,
     void Function(Usage?)? onUsage,
   }) {
+    callCount++;
     lastMessages = messages;
+
+    // On retry (call > 1), return a default success stream unless
+    // streamOutput is still the error stream (transient retry scenario)
+    if (callCount > 1) {
+      final source = streamOutput ?? Stream.fromIterable(['重试成功']);
+      return source.transform(
+        StreamTransformer<String, String>.fromHandlers(
+          handleData: (data, sink) => sink.add(data),
+          handleDone: (sink) {
+            onUsage?.call(usage);
+            sink.close();
+          },
+        ),
+      );
+    }
+
     final source = streamOutput ?? Stream.fromIterable(['默认文本']);
     return source.transform(
       StreamTransformer<String, String>.fromHandlers(

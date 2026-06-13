@@ -26,7 +26,7 @@ See: .planning/PROJECT.md (updated 2026-06-12)
 
 Phase: Pre-25 of 32 (v1.5 — 真实创作验证与体验打磨) 🟡 PLANNING
 Status: v1.4 shipped (24 phases, 1468 tests), Claude adapter implemented, v1.5 roadmap created
-Last activity: 2026-06-13 — Claude适配器实现+测试(17个), v1.5路线图制定(8阶段37计划)
+Last activity: 2026-06-13 — 3项优先功能改进: Claude测试连接、Synthesis自动重试(指数退避)、Onboarding AI Provider配置引导
 
 Progress: [░░░░░░░░░░░░░░░░░░░░] 0%
 
@@ -95,5 +95,5 @@ Items acknowledged and deferred from v1.3:
 ## Session Continuity
 
 Last session: 2026-06-13
-Stopped at: v1.5 roadmap created (8 phases, 37 plans), Claude adapter committed, STATE/PROJECT synced
+Stopped at: 3项优先功能改进完成 (Claude测试连接、Synthesis自动重试、Onboarding AI引导), 待全量测试验证
 Next step: Phase 25 真实API端到端验证 — 用真实 Claude/GPT API 验证三段式核心流程

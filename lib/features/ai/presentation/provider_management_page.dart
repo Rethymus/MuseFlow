@@ -203,6 +203,7 @@ class _ProviderManagementPageState
       apiKey: apiKey,
       baseUrl: _baseUrlController.text.trim(),
       model: _modelController.text.trim(),
+      type: _selectedType,
     );
   }
 

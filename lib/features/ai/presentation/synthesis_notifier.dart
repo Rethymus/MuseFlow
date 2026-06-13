@@ -50,6 +50,12 @@ class SynthesisState {
   /// Optional additional instruction for regeneration per D-06.
   final String? additionalInstruction;
 
+  /// Current retry attempt count (0 = no retry yet).
+  final int retryCount;
+
+  /// Maximum retry attempts for transient errors.
+  static const maxRetries = 3;
+
   const SynthesisState({
     this.accumulatedText = '',
     this.isStreaming = false,
@@ -58,6 +64,7 @@ class SynthesisState {
     this.excludedFragmentsNotice,
     this.highlights = const [],
     this.additionalInstruction,
+    this.retryCount = 0,
   });
 
   /// Creates a copy with the given fields replaced.
@@ -69,6 +76,7 @@ class SynthesisState {
     String? excludedFragmentsNotice,
     List<TextHighlight>? highlights,
     String? additionalInstruction,
+    int? retryCount,
   }) {
     return SynthesisState(
       accumulatedText: accumulatedText ?? this.accumulatedText,
@@ -79,6 +87,7 @@ class SynthesisState {
       highlights: highlights ?? this.highlights,
       additionalInstruction:
           additionalInstruction ?? this.additionalInstruction,
+      retryCount: retryCount ?? this.retryCount,
     );
   }
 }
@@ -215,50 +224,90 @@ class SynthesisNotifier extends Notifier<SynthesisState> {
     // Get audit service
     final auditService = await ref.read(tokenAuditServiceProvider.future);
 
+    // Resolve manuscript context from loaded chapters, if available.
+    // Synthesis runs in the capture tab where manuscript context may not exist,
+    // so we gracefully fall back to empty string when no chapter is loaded.
+    final chapters = ref.read(chapterNotifierProvider);
+    final manuscriptId =
+        chapters.asData?.value.firstOrNull?.manuscriptId ?? '';
+
     // Start streaming with adapter routed by active provider type
     final adapter = ref.read(activeAdapterProvider);
-    try {
-      final stream = adapter.createStream(
-        apiKey: apiKey,
-        baseUrl: provider.baseUrl,
-        model: provider.model,
-        messages: messages,
-        temperature: provider.temperature,
-        topP: provider.topP,
-        maxTokens: provider.maxTokens,
-        onUsage: (usage) {
-          // Record audit after stream completes successfully
-          auditService.recordAudit(
-            usage: usage,
-            modelName: provider.model,
-            operationType: AuditOperationType.synthesis,
-            manuscriptId:
-                '', // TODO: pass from caller when manuscript context available
-            chapterId: null,
-            inputText: inputText,
-            outputText: state.accumulatedText,
+    int retryAttempt = 0;
+
+    while (retryAttempt <= SynthesisState.maxRetries) {
+      try {
+        // Clear partial text on retry for clean stream restart
+        if (retryAttempt > 0) {
+          state = state.copyWith(
+            accumulatedText: '',
+            error: null,
           );
-        },
-      );
+        }
 
-      await for (final token in stream) {
+        final stream = adapter.createStream(
+          apiKey: apiKey,
+          baseUrl: provider.baseUrl,
+          model: provider.model,
+          messages: messages,
+          temperature: provider.temperature,
+          topP: provider.topP,
+          maxTokens: provider.maxTokens,
+          onUsage: (usage) {
+            // Record audit after stream completes successfully
+            auditService.recordAudit(
+              usage: usage,
+              modelName: provider.model,
+              operationType: AuditOperationType.synthesis,
+              manuscriptId: manuscriptId,
+              chapterId: null,
+              inputText: inputText,
+              outputText: state.accumulatedText,
+            );
+          },
+        );
+
+        await for (final token in stream) {
+          if (!ref.mounted) return;
+          state = state.copyWith(
+            accumulatedText: state.accumulatedText + token,
+            retryCount: retryAttempt,
+          );
+        }
+
+        // Stream complete -- run anti-AI-scent processing
         if (!ref.mounted) return;
-        state = state.copyWith(accumulatedText: state.accumulatedText + token);
-      }
+        await _postProcess();
+        return; // Success — exit retry loop
+      } on AIException catch (e) {
+        if (!ref.mounted) return;
 
-      // Stream complete -- run anti-AI-scent processing
-      if (!ref.mounted) return;
-      await _postProcess();
-    } on AIException catch (e) {
-      if (!ref.mounted) return;
-      _handleStreamError(e);
-    } catch (e) {
-      if (!ref.mounted) return;
-      state = state.copyWith(
-        isStreaming: false,
-        isEditing: true,
-        error: '生成中断，可继续编辑或重试',
-      );
+        // Auth errors are permanent — don't retry
+        if (e is AIAuthException || retryAttempt >= SynthesisState.maxRetries) {
+          _handleStreamError(e);
+          return;
+        }
+
+        // Transient error — retry with exponential backoff
+        retryAttempt++;
+        state = state.copyWith(
+          retryCount: retryAttempt,
+          accumulatedText: '',
+          error: null,
+        );
+
+        final backoffSeconds = 2 * (1 << (retryAttempt - 1)); // 2s, 4s, 8s
+        await Future.delayed(Duration(seconds: backoffSeconds));
+        if (!ref.mounted) return;
+      } catch (e) {
+        if (!ref.mounted) return;
+        state = state.copyWith(
+          isStreaming: false,
+          isEditing: true,
+          error: '生成中断，可继续编辑或重试',
+        );
+        return;
+      }
     }
   }
 

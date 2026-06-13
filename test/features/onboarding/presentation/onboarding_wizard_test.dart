@@ -73,8 +73,8 @@ void main() {
       await tester.tap(find.text('下一步'));
       await tester.pumpAndSettle();
 
-      // Should now show step 2 title
-      expect(find.text('构建世界'), findsOneWidget);
+      // Step 2 is now the AI provider setup step
+      expect(find.text('配置AI'), findsOneWidget);
       // Should now show "上一步" button
       expect(find.text('上一步'), findsOneWidget);
     });
@@ -86,7 +86,7 @@ void main() {
       // Go forward
       await tester.tap(find.text('下一步'));
       await tester.pumpAndSettle();
-      expect(find.text('构建世界'), findsOneWidget);
+      expect(find.text('配置AI'), findsOneWidget);
 
       // Now go back
       await tester.tap(find.text('上一步'));
@@ -102,17 +102,22 @@ void main() {
       await tester.pumpWidget(const MaterialApp(home: OnboardingWizardPage()));
       await tester.pumpAndSettle();
 
-      // Step 1 -> Step 2
+      // Step 1 (Genre) -> Step 2 (AI Provider)
+      await tester.tap(find.text('下一步'));
+      await tester.pumpAndSettle();
+      expect(find.text('配置AI'), findsOneWidget);
+
+      // Step 2 (AI Provider) -> Step 3 (World)
       await tester.tap(find.text('下一步'));
       await tester.pumpAndSettle();
       expect(find.text('构建世界'), findsOneWidget);
 
-      // Step 2 -> Step 3
+      // Step 3 (World) -> Step 4 (Character)
       await tester.tap(find.text('下一步'));
       await tester.pumpAndSettle();
       expect(find.text('创建角色'), findsOneWidget);
 
-      // Step 3 -> Step 4
+      // Step 4 (Character) -> Step 5 (Opening)
       await tester.tap(find.text('下一步'));
       await tester.pumpAndSettle();
       expect(find.text('写开篇'), findsOneWidget);
@@ -129,8 +134,8 @@ void main() {
       await tester.tap(find.text('跳过'));
       await tester.pumpAndSettle();
 
-      // Should be on step 2
-      expect(find.text('构建世界'), findsOneWidget);
+      // Should be on step 2 (AI Provider setup)
+      expect(find.text('配置AI'), findsOneWidget);
     });
   });
 
@@ -500,13 +505,15 @@ void main() {
   });
 
   group('Wizard entity creation integration', () {
-    testWidgets('should show world form fields when on step 2', (tester) async {
+    testWidgets('should show world form fields when on step 3', (tester) async {
       await tester.pumpWidget(
         const ProviderScope(child: MaterialApp(home: OnboardingWizardPage())),
       );
       await tester.pumpAndSettle();
 
-      // Advance to step 2
+      // Advance to step 2 (AI Provider), then step 3 (World)
+      await tester.tap(find.text('下一步'));
+      await tester.pumpAndSettle();
       await tester.tap(find.text('下一步'));
       await tester.pumpAndSettle();
 
@@ -515,7 +522,7 @@ void main() {
       expect(find.text('世界简介'), findsOneWidget);
     });
 
-    testWidgets('should show character form fields when on step 3', (
+    testWidgets('should show character form fields when on step 4', (
       tester,
     ) async {
       await tester.pumpWidget(
@@ -523,11 +530,13 @@ void main() {
       );
       await tester.pumpAndSettle();
 
-      // Advance to step 2
+      // Advance to step 3 (World)
+      await tester.tap(find.text('下一步'));
+      await tester.pumpAndSettle();
       await tester.tap(find.text('下一步'));
       await tester.pumpAndSettle();
 
-      // Advance to step 3 (skip world form validation since empty)
+      // Advance to step 4 (Character)
       await tester.tap(find.text('下一步'));
       await tester.pumpAndSettle();
 
@@ -544,17 +553,17 @@ void main() {
       );
       await tester.pumpAndSettle();
 
-      // Skip from step 1 to step 2
+      // Skip from step 1 to step 2 (AI Provider)
+      await tester.tap(find.text('跳过'));
+      await tester.pumpAndSettle();
+
+      expect(find.text('配置AI'), findsOneWidget);
+
+      // Skip from step 2 to step 3 (World, no validation triggered)
       await tester.tap(find.text('跳过'));
       await tester.pumpAndSettle();
 
       expect(find.text('构建世界'), findsOneWidget);
-
-      // Skip from step 2 to step 3 (no validation triggered)
-      await tester.tap(find.text('跳过'));
-      await tester.pumpAndSettle();
-
-      expect(find.text('创建角色'), findsOneWidget);
     });
   });
 

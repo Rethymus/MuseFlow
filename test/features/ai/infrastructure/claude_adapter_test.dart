@@ -211,16 +211,13 @@ void main() {
       });
 
       test('should support onUsage callback for token auditing', () {
-        bool usageCalled = false;
         expect(
           () => adapter.createStream(
             apiKey: 'test-key',
             baseUrl: 'https://api.anthropic.com/v1',
             model: 'claude-sonnet-4-20250514',
             messages: [ChatMessage.user('test')],
-            onUsage: (_) {
-              usageCalled = true;
-            },
+            onUsage: (_) {},
           ),
           returnsNormally,
         );

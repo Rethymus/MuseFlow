@@ -1,3 +1,4 @@
+import 'package:anthropic_sdk_dart/anthropic_sdk_dart.dart' as anthropic;
 import 'package:museflow/core/infrastructure/secure_storage_service.dart';
 import 'package:museflow/features/ai/domain/ai_exception.dart';
 import 'package:museflow/features/ai/domain/ai_provider.dart';
@@ -100,8 +101,8 @@ class ProviderService {
 
   /// Tests the connection to an AI provider by sending a minimal request.
   ///
-  /// Creates a temporary OpenAI-compatible client and sends a minimal chat
-  /// completion request to validate the API key and base URL.
+  /// Routes to [ClaudeAdapter]-style test for Claude providers, or
+  /// [OpenAI]-style test for all other OpenAI-compatible providers.
   ///
   /// Throws [AIAuthException] on authentication failure (401/403).
   /// Throws [AIRateLimitException] on rate limiting (429).
@@ -109,7 +110,72 @@ class ProviderService {
   Future<void> testConnection({
     required String apiKey,
     required String baseUrl,
+    required AiProviderType type,
     String model = 'gpt-4o-mini',
+  }) async {
+    if (type == AiProviderType.claude) {
+      await _testClaudeConnection(apiKey: apiKey, baseUrl: baseUrl, model: model);
+    } else {
+      await _testOpenAIConnection(apiKey: apiKey, baseUrl: baseUrl, model: model);
+    }
+  }
+
+  /// Tests connection using the Anthropic Messages API.
+  Future<void> _testClaudeConnection({
+    required String apiKey,
+    required String baseUrl,
+    required String model,
+  }) async {
+    try {
+      String normalizedUrl = baseUrl;
+      if (normalizedUrl.endsWith('/')) {
+        normalizedUrl = normalizedUrl.substring(0, normalizedUrl.length - 1);
+      }
+      if (normalizedUrl.endsWith('/v1')) {
+        normalizedUrl = normalizedUrl.substring(0, normalizedUrl.length - 3);
+      }
+
+      final client = anthropic.AnthropicClient(
+        config: anthropic.AnthropicConfig(
+          authProvider: anthropic.ApiKeyProvider(apiKey),
+          baseUrl: normalizedUrl,
+          timeout: const Duration(seconds: 30),
+        ),
+      );
+
+      await client.messages.create(
+        anthropic.MessageCreateRequest(
+          model: model,
+          maxTokens: 5,
+          messages: [anthropic.InputMessage.user('Hi')],
+        ),
+      );
+      client.close();
+    } on anthropic.AuthenticationException {
+      throw const AIAuthException();
+    } on anthropic.RateLimitException {
+      throw const AIRateLimitException();
+    } on anthropic.TimeoutException {
+      throw const AINetworkException();
+    } on anthropic.ApiException catch (e) {
+      final statusCode = e.statusCode;
+      if (statusCode == 401 || statusCode == 403) {
+        throw const AIAuthException();
+      }
+      if (statusCode == 429) {
+        throw const AIRateLimitException();
+      }
+      throw const AINetworkException();
+    } catch (_) {
+      throw const AINetworkException();
+    }
+  }
+
+  /// Tests connection using an OpenAI-compatible API client.
+  Future<void> _testOpenAIConnection({
+    required String apiKey,
+    required String baseUrl,
+    required String model,
   }) async {
     try {
       final client = OpenAIClient.withApiKey(apiKey, baseUrl: baseUrl);

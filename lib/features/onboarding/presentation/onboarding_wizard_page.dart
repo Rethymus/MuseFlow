@@ -11,6 +11,7 @@ import 'package:museflow/features/onboarding/presentation/opening_text_insertion
 import 'package:museflow/features/onboarding/presentation/wizard_steps/character_step_page.dart';
 import 'package:museflow/features/onboarding/presentation/wizard_steps/genre_step_page.dart';
 import 'package:museflow/features/onboarding/presentation/wizard_steps/opening_step_page.dart';
+import 'package:museflow/features/onboarding/presentation/wizard_steps/provider_step_page.dart';
 import 'package:museflow/features/onboarding/presentation/wizard_steps/world_step_page.dart';
 import 'package:museflow/shared/constants/app_constants.dart';
 
@@ -31,13 +32,20 @@ class _OnboardingWizardPageState extends ConsumerState<OnboardingWizardPage> {
   int _currentStep = 0;
 
   /// Total number of wizard steps.
-  static const int _totalSteps = 4;
+  static const int _totalSteps = 5;
 
   /// Step titles displayed in the progress area.
-  static const List<String> _stepTitles = ['选择题材', '构建世界', '创建角色', '写开篇'];
+  static const List<String> _stepTitles = [
+    '选择题材',
+    '配置AI',
+    '构建世界',
+    '创建角色',
+    '写开篇',
+  ];
 
   static const List<String> _stepSubtitles = [
     '选择你感兴趣的故事类型',
+    '设置AI模型，开启智能辅助',
     '为你的世界命名，让故事有根基',
     '创造你的主角，给故事一个灵魂',
     '选择一种开篇风格，开始你的故事',
@@ -87,13 +95,13 @@ class _OnboardingWizardPageState extends ConsumerState<OnboardingWizardPage> {
 
     // Step-specific logic when advancing FROM a step
     switch (_currentStep) {
-      case 1: // Advancing from World step -> create WorldSetting entity
+      case 2: // Advancing from World step -> create WorldSetting entity
         final isValid = _worldStepKey.currentState?.validate() ?? false;
         if (isValid && _worldNameController.text.trim().isNotEmpty) {
           await _createWorldSetting();
         }
         break;
-      case 2: // Advancing from Character step -> create CharacterCard entity
+      case 3: // Advancing from Character step -> create CharacterCard entity
         final isValid = _characterStepKey.currentState?.validate() ?? false;
         if (isValid && _characterNameController.text.trim().isNotEmpty) {
           await _createCharacterCard();
@@ -300,13 +308,17 @@ class _OnboardingWizardPageState extends ConsumerState<OnboardingWizardPage> {
                     _nextStep();
                   },
                 ),
-                // Step 2: World setting creation
+                // Step 2: AI provider setup
+                ProviderStepPage(
+                  onSetupComplete: (_) => _nextStep(),
+                ),
+                // Step 3: World setting creation
                 WorldStepPage(
                   key: _worldStepKey,
                   worldNameController: _worldNameController,
                   worldDescriptionController: _worldDescriptionController,
                 ),
-                // Step 3: Character card creation
+                // Step 4: Character card creation
                 CharacterStepPage(
                   key: _characterStepKey,
                   characterNameController: _characterNameController,
