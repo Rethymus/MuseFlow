@@ -15,6 +15,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:hive_ce/hive.dart';
 import 'package:museflow/core/presentation/providers.dart';
+import 'package:museflow/features/knowledge/application/deviation_detection_service.dart';
+import 'package:museflow/features/knowledge/application/skill_notifier.dart';
 import 'package:museflow/features/ai/domain/ai_exception.dart';
 import 'package:museflow/features/ai/application/token_budget_calculator.dart';
 import 'package:museflow/features/ai/domain/ai_provider.dart';
@@ -42,6 +44,8 @@ void main() {
       bool hasApiKey = true,
       TokenAuditService? auditService,
       EditorChapterMemoryContextBuilder? chapterMemoryContextBuilder,
+      bool? autoDeviationCheck,
+      _RecordingDeviationNotifier? deviationRecorder,
     }) {
       fakeAdapter = _FakeOpenAIAdapter();
 
@@ -75,6 +79,12 @@ void main() {
             editorChapterMemoryContextBuilderProvider.overrideWith(
               (ref) async => chapterMemoryContextBuilder,
             ),
+          if (deviationRecorder != null)
+            deviationNotifierProvider.overrideWith(() => deviationRecorder),
+          if (autoDeviationCheck != null)
+            autoDeviationCheckProvider.overrideWith(
+              () => _StaticAutoDeviationCheck(autoDeviationCheck),
+            ),
         ],
       );
     }
@@ -91,6 +101,56 @@ void main() {
       expect(state.progressText, isNull);
       expect(state.error, isNull);
       expect(state.selectedText, '');
+    });
+
+    group('deviation check gating', () {
+      test(
+        'does NOT trigger deviation check by default (no hidden 2x cost)',
+        () async {
+          final recorder = _RecordingDeviationNotifier();
+          container = createContainer(deviationRecorder: recorder);
+          fakeAdapter.streamOutput = Stream.fromIterable(['结果']);
+
+          container.read(editorAINotifierProvider.notifier).startOperation(
+            EditorAIOperation.paragraphPolish,
+            '原始文字',
+            'node-1',
+            0,
+            4,
+          );
+          await _pumpAndWait();
+
+          expect(
+            recorder.checkedTexts,
+            isEmpty,
+            reason: '默认关闭 -> 不应触发第二次偏差检测 LLM 调用（成本不翻倍）',
+          );
+        },
+      );
+
+      test('triggers deviation check only when setting is ON', () async {
+        final recorder = _RecordingDeviationNotifier();
+        container = createContainer(
+          deviationRecorder: recorder,
+          autoDeviationCheck: true,
+        );
+        fakeAdapter.streamOutput = Stream.fromIterable(['结果']);
+
+        container.read(editorAINotifierProvider.notifier).startOperation(
+          EditorAIOperation.paragraphPolish,
+          '原始文字',
+          'node-1',
+          0,
+          4,
+        );
+        await _pumpAndWait();
+
+        expect(
+          recorder.checkedTexts,
+          hasLength(1),
+          reason: '用户开启 -> 触发一次偏差检测',
+        );
+      });
     });
 
     group('startOperation', () {
@@ -768,4 +828,30 @@ class _NoopTokenAuditRepository implements TokenAuditRepository {
   @override
   Future<TokenAuditSnapshot> buildSnapshot() async =>
       const TokenAuditSnapshot();
+}
+
+/// Records every [DeviationNotifier.checkDeviations] invocation so tests can
+/// assert whether the hidden second LLM call fired.
+class _RecordingDeviationNotifier extends DeviationNotifier {
+  final List<String> checkedTexts = [];
+
+  @override
+  Future<DeviationResult> build() async =>
+      const DeviationResult(warnings: []);
+
+  @override
+  Future<void> checkDeviations(String text) async {
+    checkedTexts.add(text);
+  }
+}
+
+/// Static override for [autoDeviationCheckProvider] to force the opt-in state
+/// deterministically in tests.
+class _StaticAutoDeviationCheck extends AutoDeviationCheckNotifier {
+  _StaticAutoDeviationCheck(this.value);
+
+  final bool value;
+
+  @override
+  bool build() => value;
 }

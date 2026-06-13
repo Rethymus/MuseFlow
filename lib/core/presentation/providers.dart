@@ -141,6 +141,26 @@ final onboardingProgressProvider = FutureProvider<OnboardingProgressRepository>(
   },
 );
 
+/// Whether to run an automatic skill-consistency (deviation) check after each
+/// editor AI operation. OFF by default to avoid a hidden second LLM call that
+/// silently doubles token cost on every operation (cost-transparency promise).
+///
+/// RED stub: always returns false until the gate is wired (Task 2 GREEN).
+final autoDeviationCheckProvider =
+    NotifierProvider<AutoDeviationCheckNotifier, bool>(
+      AutoDeviationCheckNotifier.new,
+    );
+
+/// Notifier backing [autoDeviationCheckProvider].
+class AutoDeviationCheckNotifier extends Notifier<bool> {
+  @override
+  bool build() => false; // RED stub
+
+  Future<void> set(bool value) async {
+    state = value;
+  }
+}
+
 /// Provides a singleton [SecureStorageService] instance.
 final secureStorageServiceProvider = Provider<SecureStorageService>((ref) {
   return SecureStorageService();
