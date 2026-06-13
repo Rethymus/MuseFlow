@@ -68,14 +68,23 @@ class ClaudeAdapter implements AIAdapter {
       topP: topP,
     );
 
-    // Track usage from stream delta events
+    // Track usage across BOTH stream events:
+    //   MessageStartEvent carries INPUT (prompt) tokens at stream start.
+    //   MessageDeltaEvent carries OUTPUT (completion) tokens at stream end.
+    // Anthropic splits usage across two events; MessageDeltaUsage.inputTokens
+    // is null in real streams, so prompt tokens MUST come from the start event.
+    int? startInputTokens;
     anthropic.MessageDeltaUsage? deltaUsage;
 
     // Map the Claude stream to text deltas
     return client.messages
         .createStream(request)
         .map((event) {
-          // Capture usage from message_delta events
+          // Capture INPUT tokens from message_start events (prompt)
+          if (event is anthropic.MessageStartEvent) {
+            startInputTokens = event.message.usage.inputTokens;
+          }
+          // Capture OUTPUT tokens from message_delta events (completion)
           if (event is anthropic.MessageDeltaEvent) {
             deltaUsage = event.usage;
           }
@@ -88,16 +97,9 @@ class ClaudeAdapter implements AIAdapter {
         .transform(
           StreamTransformer<String, String>.fromHandlers(
             handleDone: (sink) {
-              // Convert Anthropic MessageDeltaUsage to OpenAI Usage format
-              onUsage?.call(deltaUsage != null
-                  ? Usage(
-                      promptTokens: deltaUsage!.inputTokens ?? 0,
-                      completionTokens: deltaUsage!.outputTokens,
-                      totalTokens:
-                          (deltaUsage!.inputTokens ?? 0) +
-                          deltaUsage!.outputTokens,
-                    )
-                  : null);
+              // Convert captured Anthropic usage to OpenAI Usage format,
+              // using the same logic as processStreamEvents (DRY).
+              onUsage?.call(_buildUsage(startInputTokens, deltaUsage));
               sink.close();
             },
           ),
@@ -184,43 +186,71 @@ class ClaudeAdapter implements AIAdapter {
   /// This is a testable seam extracted from [createStream] so usage-capture
   /// logic can be exercised without a live API. It iterates [events],
   /// accumulates text from [anthropic.ContentBlockDeltaEvent] deltas, captures
-  /// usage, and invokes [onUsage] exactly once with the combined usage (or
-  /// null if no usage events were seen). Returns the concatenated text.
+  /// usage from BOTH [anthropic.MessageStartEvent] (input/prompt tokens) and
+  /// [anthropic.MessageDeltaEvent] (output/completion tokens), and invokes
+  /// [onUsage] exactly once with the combined usage (or null if neither usage
+  /// event was seen). Returns the concatenated text.
   ///
-  /// NOTE (RED state): this implementation deliberately preserves the original
-  /// bug — it reads input tokens only from [anthropic.MessageDeltaEvent.usage],
-  /// whose [anthropic.MessageDeltaUsage.inputTokens] is null in real Anthropic
-  /// streams, so promptTokens is always 0. The regression test in
-  /// `claude_adapter_test.dart` proves this is wrong; Task 2 (GREEN) fixes it.
+  /// Anthropic splits usage across two stream events: input tokens arrive in
+  /// `MessageStartEvent.message.usage.inputTokens` at start, output tokens
+  /// arrive in `MessageDeltaEvent.usage.outputTokens` at end. Reading input
+  /// tokens from `MessageDeltaUsage` is wrong — that field is null in real
+  /// streams, which is the root cause of the promptTokens=0 audit bug.
   @visibleForTesting
   String processStreamEvents(
     List<anthropic.MessageStreamEvent> events, {
     void Function(Usage?)? onUsage,
   }) {
     final buffer = StringBuffer();
+    int? startInputTokens;
     anthropic.MessageDeltaUsage? deltaUsage;
 
     for (final event in events) {
-      if (event is anthropic.ContentBlockDeltaEvent &&
-          event.delta is anthropic.TextDelta) {
-        buffer.write((event.delta as anthropic.TextDelta).text);
+      if (event is anthropic.MessageStartEvent) {
+        startInputTokens = event.message.usage.inputTokens;
       } else if (event is anthropic.MessageDeltaEvent) {
         deltaUsage = event.usage;
+      } else if (event is anthropic.ContentBlockDeltaEvent &&
+          event.delta is anthropic.TextDelta) {
+        buffer.write((event.delta as anthropic.TextDelta).text);
       }
     }
 
-    onUsage?.call(
-      deltaUsage != null
-          ? Usage(
-              promptTokens: deltaUsage.inputTokens ?? 0,
-              completionTokens: deltaUsage.outputTokens,
-              totalTokens:
-                  (deltaUsage.inputTokens ?? 0) + deltaUsage.outputTokens,
-            )
-          : null,
-    );
+    onUsage?.call(_buildUsage(startInputTokens, deltaUsage));
 
     return buffer.toString();
+  }
+
+  /// Builds the OpenAI-compatible [Usage] from the two captured Anthropic
+  /// usage events.
+  ///
+  /// - [startInputTokens]: prompt tokens from `MessageStartEvent` (non-null in
+  ///   real streams).
+  /// - [deltaUsage]: completion usage from `MessageDeltaEvent` (provides
+  ///   `outputTokens`; its `inputTokens` is intentionally ignored — it is null
+  ///   in real streams and is the bug source).
+  ///
+  /// Returns:
+  /// - A [Usage] combining prompt + completion when BOTH events were seen.
+  /// - null when NEITHER event was seen (preserves the "unknown usage = null"
+  ///   contract that downstream token audit relies on).
+  /// - A partial-but-nonzero [Usage] when only one event arrived (defensive:
+  ///   prefer recording what we know over null — documented per the plan's
+  ///   partial-stream edge case T-q8x-03).
+  static Usage? _buildUsage(
+    int? startInputTokens,
+    anthropic.MessageDeltaUsage? deltaUsage,
+  ) {
+    if (startInputTokens == null && deltaUsage == null) {
+      return null;
+    }
+    final promptTokens = startInputTokens ?? 0;
+    final completionTokens = deltaUsage?.outputTokens ?? 0;
+    return Usage(
+      promptTokens: promptTokens,
+      completionTokens: completionTokens,
+      totalTokens: promptTokens + completionTokens,
+    );
   }
 
   /// Classifies an Anthropic SDK exception into the appropriate [AIException].
