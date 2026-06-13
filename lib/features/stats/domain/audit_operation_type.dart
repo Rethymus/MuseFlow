@@ -17,6 +17,7 @@ enum AuditOperationType {
   skillGen('Skill生成', 'worldview'),
   opening('开篇生成', 'worldview'),
   deviationDetect('偏离检测', 'worldview'),
+  editorialReview('编辑评审', 'worldview'),
   templateComplete('模板补全', 'template');
 
   const AuditOperationType(this.label, this.group);
