@@ -109,12 +109,19 @@ class PromptContext {
   /// correct character when building knowledge context.
   final Map<String, dynamic> characterGenders;
 
-  /// User-selected creativity level (AA-03) that overrides the provider's
-  /// default sampling temperature at the generation call site.
+  /// User-selected creativity level (AA-03) that governs the sampling
+  /// temperature at generation call sites.
   ///
-  /// Null means "honor the provider-configured temperature" (historical
-  /// behavior). When set, generation call sites use
-  /// [CreativityLevel.temperature] instead of the provider default.
+  /// In production this is almost always non-null: the notifiers populate it
+  /// from [creativityLevelProvider], whose default is
+  /// [CreativityLevel.balanced] (0.8) even while the encrypted settings box is
+  /// still loading. So the creativity level — not the provider-configured
+  /// temperature — drives generation, per TempParaphraser (EMNLP 2025):
+  /// higher sampling diversity reduces AI-text detection. Call sites use
+  /// `context.creativityLevel?.temperature ?? provider.temperature`; the
+  /// provider temperature is a test-only / unset fallback, not the production
+  /// path. Power users who want a specific raw temperature pick a creativity
+  /// level (conservative 0.6 is the floor).
   final CreativityLevel? creativityLevel;
 
   const PromptContext({
@@ -227,8 +234,9 @@ abstract class PromptMiddleware {
 /// Per AI-04: The default ordering is:
 /// 1. SystemPromptMiddleware (base system instruction)
 /// 2. PersonaInjectionMiddleware (anti-AI-scent persona)
-/// 3. BannedListMiddleware (negative checklist)
-/// 4. UserContentMiddleware (fragment content)
+/// 3. BannedListMiddleware (negative keyword checklist)
+/// 4. ContrastiveSubtractionMiddleware (CoPA sentence-organization anti-AI-scent)
+/// 5. UserContentMiddleware (fragment content)
 ///
 /// Usage:
 /// ```dart
