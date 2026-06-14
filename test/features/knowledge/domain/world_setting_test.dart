@@ -96,6 +96,35 @@ void main() {
       });
     });
 
+    group('lastVerifiedChapter (MC-01 staleness)', () {
+      test('defaults to null when not provided', () {
+        expect(baseSetting.lastVerifiedChapter, isNull);
+      });
+
+      test('persists through JSON round-trip', () {
+        final setting = baseSetting.copyWith(lastVerifiedChapter: 42);
+        final restored = WorldSetting.fromJson(setting.toJson());
+        expect(restored.lastVerifiedChapter, 42);
+        expect(restored, equals(setting));
+      });
+
+      test('legacy JSON without the key parses to null (backward-compat)', () {
+        final legacyJson = baseSetting.toJson()..remove('lastVerifiedChapter');
+        final restored = WorldSetting.fromJson(legacyJson);
+        expect(restored.lastVerifiedChapter, isNull);
+        expect(restored.name, baseSetting.name);
+      });
+
+      test('participates in equality and hashCode', () {
+        final a = baseSetting.copyWith(lastVerifiedChapter: 5);
+        final b = baseSetting.copyWith(lastVerifiedChapter: 5);
+        final c = baseSetting.copyWith(lastVerifiedChapter: 6);
+        expect(a, equals(b));
+        expect(a.hashCode, equals(b.hashCode));
+        expect(a, isNot(equals(c)));
+      });
+    });
+
     group('allNames', () {
       test('should return name plus aliases', () {
         expect(baseSetting.allNames, equals(['修仙界', '仙界', '九天']));

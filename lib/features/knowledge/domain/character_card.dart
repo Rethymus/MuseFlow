@@ -18,6 +18,12 @@ class CharacterCard implements KnowledgeEntity {
   final DateTime createdAt;
   final DateTime? updatedAt;
 
+  /// The chapter number at which this card was last verified against the
+  /// manuscript (MC-01 dynamic knowledge-base staleness). Null for legacy
+  /// entries predating staleness tracking — treated as fresh by
+  /// [KbStalenessChecker].
+  final int? lastVerifiedChapter;
+
   /// Creates a [CharacterCard] with field validation.
   ///
   /// Throws [ArgumentError] if:
@@ -33,6 +39,7 @@ class CharacterCard implements KnowledgeEntity {
     this.aliases = const [],
     required this.createdAt,
     this.updatedAt,
+    this.lastVerifiedChapter,
   }) {
     // T-04-01: Validate field lengths at domain layer
     _validateNameText(name, 'name');
@@ -94,6 +101,7 @@ class CharacterCard implements KnowledgeEntity {
     List<String>? aliases,
     DateTime? createdAt,
     DateTime? updatedAt,
+    int? lastVerifiedChapter,
   }) {
     return CharacterCard(
       id: id ?? this.id,
@@ -104,6 +112,7 @@ class CharacterCard implements KnowledgeEntity {
       aliases: aliases ?? this.aliases,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
+      lastVerifiedChapter: lastVerifiedChapter ?? this.lastVerifiedChapter,
     );
   }
 
@@ -120,6 +129,7 @@ class CharacterCard implements KnowledgeEntity {
       updatedAt: json['updatedAt'] != null
           ? DateTime.parse(json['updatedAt'] as String)
           : null,
+      lastVerifiedChapter: json['lastVerifiedChapter'] as int?,
     );
   }
 
@@ -134,6 +144,7 @@ class CharacterCard implements KnowledgeEntity {
       'aliases': aliases,
       'createdAt': createdAt.toIso8601String(),
       'updatedAt': updatedAt?.toIso8601String(),
+      'lastVerifiedChapter': lastVerifiedChapter,
     };
   }
 
@@ -148,7 +159,8 @@ class CharacterCard implements KnowledgeEntity {
         other.backstory == backstory &&
         _listEquals(other.aliases, aliases) &&
         other.createdAt == createdAt &&
-        other.updatedAt == updatedAt;
+        other.updatedAt == updatedAt &&
+        other.lastVerifiedChapter == lastVerifiedChapter;
   }
 
   @override
@@ -161,13 +173,15 @@ class CharacterCard implements KnowledgeEntity {
     Object.hashAll(aliases),
     createdAt,
     updatedAt,
+    lastVerifiedChapter,
   );
 
   @override
   String toString() =>
       'CharacterCard(id: $id, name: $name, personality: $personality, '
       'appearance: $appearance, backstory: $backstory, aliases: $aliases, '
-      'createdAt: $createdAt, updatedAt: $updatedAt)';
+      'createdAt: $createdAt, updatedAt: $updatedAt, '
+      'lastVerifiedChapter: $lastVerifiedChapter)';
 
   // --- KnowledgeEntity interface ---
 

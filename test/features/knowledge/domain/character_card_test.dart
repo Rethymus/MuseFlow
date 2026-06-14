@@ -89,6 +89,36 @@ void main() {
       });
     });
 
+    group('lastVerifiedChapter (MC-01 staleness)', () {
+      test('defaults to null when not provided', () {
+        expect(baseCard.lastVerifiedChapter, isNull);
+      });
+
+      test('persists through JSON round-trip', () {
+        final card = baseCard.copyWith(lastVerifiedChapter: 42);
+        final restored = CharacterCard.fromJson(card.toJson());
+        expect(restored.lastVerifiedChapter, 42);
+        expect(restored, equals(card));
+      });
+
+      test('legacy JSON without the key parses to null (backward-compat)', () {
+        // Simulate a pre-MC-01 persisted card.
+        final legacyJson = baseCard.toJson()..remove('lastVerifiedChapter');
+        final restored = CharacterCard.fromJson(legacyJson);
+        expect(restored.lastVerifiedChapter, isNull);
+        expect(restored.name, baseCard.name);
+      });
+
+      test('participates in equality and hashCode', () {
+        final a = baseCard.copyWith(lastVerifiedChapter: 5);
+        final b = baseCard.copyWith(lastVerifiedChapter: 5);
+        final c = baseCard.copyWith(lastVerifiedChapter: 6);
+        expect(a, equals(b));
+        expect(a.hashCode, equals(b.hashCode));
+        expect(a, isNot(equals(c)));
+      });
+    });
+
     group('allNames', () {
       test('should return name plus aliases', () {
         expect(baseCard.allNames, equals(['李逍遥', '逍遥', '李大哥']));

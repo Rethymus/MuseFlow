@@ -20,6 +20,12 @@ class WorldSetting implements KnowledgeEntity {
   final DateTime createdAt;
   final DateTime? updatedAt;
 
+  /// The chapter number at which this setting was last verified against the
+  /// manuscript (MC-01 dynamic knowledge-base staleness). Null for legacy
+  /// entries predating staleness tracking — treated as fresh by
+  /// [KbStalenessChecker].
+  final int? lastVerifiedChapter;
+
   /// Creates a [WorldSetting] with field validation.
   ///
   /// Throws [ArgumentError] if:
@@ -37,6 +43,7 @@ class WorldSetting implements KnowledgeEntity {
     this.aliases = const [],
     required this.createdAt,
     this.updatedAt,
+    this.lastVerifiedChapter,
   }) {
     // T-04-01: Validate field lengths at domain layer
     _validateNameText(name, 'name');
@@ -114,6 +121,7 @@ class WorldSetting implements KnowledgeEntity {
     List<String>? aliases,
     DateTime? createdAt,
     DateTime? updatedAt,
+    int? lastVerifiedChapter,
   }) {
     return WorldSetting(
       id: id ?? this.id,
@@ -126,6 +134,7 @@ class WorldSetting implements KnowledgeEntity {
       aliases: aliases ?? this.aliases,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
+      lastVerifiedChapter: lastVerifiedChapter ?? this.lastVerifiedChapter,
     );
   }
 
@@ -144,6 +153,7 @@ class WorldSetting implements KnowledgeEntity {
       updatedAt: json['updatedAt'] != null
           ? DateTime.parse(json['updatedAt'] as String)
           : null,
+      lastVerifiedChapter: json['lastVerifiedChapter'] as int?,
     );
   }
 
@@ -160,6 +170,7 @@ class WorldSetting implements KnowledgeEntity {
       'aliases': aliases,
       'createdAt': createdAt.toIso8601String(),
       'updatedAt': updatedAt?.toIso8601String(),
+      'lastVerifiedChapter': lastVerifiedChapter,
     };
   }
 
@@ -176,7 +187,8 @@ class WorldSetting implements KnowledgeEntity {
         other.techLevel == techLevel &&
         _listEquals(other.aliases, aliases) &&
         other.createdAt == createdAt &&
-        other.updatedAt == updatedAt;
+        other.updatedAt == updatedAt &&
+        other.lastVerifiedChapter == lastVerifiedChapter;
   }
 
   @override
@@ -191,6 +203,7 @@ class WorldSetting implements KnowledgeEntity {
     Object.hashAll(aliases),
     createdAt,
     updatedAt,
+    lastVerifiedChapter,
   );
 
   @override
@@ -198,7 +211,8 @@ class WorldSetting implements KnowledgeEntity {
       'WorldSetting(id: $id, name: $name, description: $description, '
       'rules: $rules, factions: $factions, geography: $geography, '
       'techLevel: $techLevel, aliases: $aliases, '
-      'createdAt: $createdAt, updatedAt: $updatedAt)';
+      'createdAt: $createdAt, updatedAt: $updatedAt, '
+      'lastVerifiedChapter: $lastVerifiedChapter)';
 
   // --- KnowledgeEntity interface ---
 
