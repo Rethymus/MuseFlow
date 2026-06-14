@@ -1,5 +1,21 @@
 # MuseFlow
 
+[![CI](https://github.com/Rethymus/MuseFlow/actions/workflows/ci.yml/badge.svg)](https://github.com/Rethymus/MuseFlow/actions/workflows/ci.yml)
+[![Version](https://img.shields.io/badge/version-0.1.4-blue?style=flat-square)](https://github.com/Rethymus/MuseFlow/releases)
+[![Platform](https://img.shields.io/badge/platform-Android%20%7C%20Linux%20%7C%20Windows%20%7C%20Web-lightgrey?style=flat-square)](#tech-stack)
+[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen?style=flat-square)](CONTRIBUTING.md)
+
+![Flutter](https://img.shields.io/badge/Flutter-02569B?style=flat-square&logo=flutter&logoColor=white)
+![Dart](https://img.shields.io/badge/Dart-0175C2?style=flat-square&logo=dart&logoColor=white)
+![Riverpod](https://img.shields.io/badge/Riverpod-FF5C7C?style=flat-square)
+![Hive CE](https://img.shields.io/badge/Hive_CE-EEB33B?style=flat-square)
+![super_editor](https://img.shields.io/badge/super__editor-4B5563?style=flat-square)
+![OpenAI](https://img.shields.io/badge/OpenAI-111111?style=flat-square&logo=openai&logoColor=white)
+![Claude](https://img.shields.io/badge/Claude-D97757?style=flat-square)
+![DeepSeek](https://img.shields.io/badge/DeepSeek-4D6BFE?style=flat-square)
+![Ollama](https://img.shields.io/badge/Ollama-111827?style=flat-square)
+![GitHub Actions](https://img.shields.io/badge/GitHub_Actions-2088FF?style=flat-square&logo=githubactions&logoColor=white)
+
 English | [中文](README.md)
 
 > Imagination as the bones. AI as the wings.
@@ -161,6 +177,22 @@ This README uses 21 reproducible UI feature screenshots stored in `docs/readme/s
 - [View chapter JSON data](docs/v1.3-user-journey/data/chapters.json)
 
 GitHub displays HTML files as source. For the full visual experience, clone the repository and open `docs/v1.3-user-journey/index.html` in a browser.
+
+## When Authors Meet AI
+
+Eliminating the AI scent is the soul of MuseFlow, not an add-on. That forces a real question: as AI writing capabilities keep improving, how do mature creators actually choose? The answers diverge.
+
+The Chinese novelist **Yu Hua** still puts it sharply: as he understands GPT today, it "can probably write a mediocre novel, but not one full of personality — because the human brain always makes mistakes, and that is precisely what makes it most precious."
+
+**Hao Jingfang** (author of *Folding Beijing*, and the next Chinese writer after Liu Cixin's *The Three-Body Problem* to win the Hugo Award) gives a different answer. She admits that in her new novel this year, AI-written content already accounts for half. "My editor kept praising how much better I wrote this year, and readers couldn't tell which parts were AI." For a long time, writers caught using AI tended to deny it; openly admitting it — and taking pride in it — remains rare.
+
+**Olga Tokarczuk** (2018 Nobel laureate in literature) goes further. She purchased a premium tier of an AI model and peppers it with questions while writing: What kind of music would the protagonist listen to? Darling, how do we make this story better? She knows AI hallucinates on "hard data" such as economics, yet believes the technology has "incredible advantages" in literary creation — which left many readers rattled once they learned.
+
+**Anthony Horowitz** (author of the *Magpie Murders* trilogy) reads more like a cautious pragmatist. He says writing with AI feels "like cheating," and he has seen its clumsiness firsthand: ask it the shape of a potato and it answers *ellipsoid*; let it turn that into prose and you get a sentence like "the potato on the plate was ellipsoid in shape."
+
+From skepticism to embrace, from feeling betrayed to feeling like a cheat, authors' attitudes are splitting. MuseFlow does not take sides for the writer; it holds one line — let AI understand your material, organize your settings, and polish your prose, while the story stays the author's. That is exactly what Yu Hua calls "the most precious thing about the human brain."
+
+> These author quotes are drawn from an article by "山下热狗" on XIAOHEIHE, "当雨果奖&诺奖得主开始用AI写作，作为普通人你会坚守还是倒戈？" ([original link](https://www.xiaoheihe.cn/app/bbs/link/2db772047c7c?h_camp=link&h_session_id=laQc8HhHmBTV48ud&h_src=YXBwX3NoYXJl)).
 
 ## Vision
 

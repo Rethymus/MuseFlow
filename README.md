@@ -1,5 +1,21 @@
 # MuseFlow 灵韵
 
+[![CI](https://github.com/Rethymus/MuseFlow/actions/workflows/ci.yml/badge.svg)](https://github.com/Rethymus/MuseFlow/actions/workflows/ci.yml)
+[![Version](https://img.shields.io/badge/version-0.1.4-blue?style=flat-square)](https://github.com/Rethymus/MuseFlow/releases)
+[![Platform](https://img.shields.io/badge/platform-Android%20%7C%20Linux%20%7C%20Windows%20%7C%20Web-lightgrey?style=flat-square)](#技术栈)
+[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen?style=flat-square)](CONTRIBUTING.md)
+
+![Flutter](https://img.shields.io/badge/Flutter-02569B?style=flat-square&logo=flutter&logoColor=white)
+![Dart](https://img.shields.io/badge/Dart-0175C2?style=flat-square&logo=dart&logoColor=white)
+![Riverpod](https://img.shields.io/badge/Riverpod-FF5C7C?style=flat-square)
+![Hive CE](https://img.shields.io/badge/Hive_CE-EEB33B?style=flat-square)
+![super_editor](https://img.shields.io/badge/super__editor-4B5563?style=flat-square)
+![OpenAI](https://img.shields.io/badge/OpenAI-111111?style=flat-square&logo=openai&logoColor=white)
+![Claude](https://img.shields.io/badge/Claude-D97757?style=flat-square)
+![DeepSeek](https://img.shields.io/badge/DeepSeek-4D6BFE?style=flat-square)
+![Ollama](https://img.shields.io/badge/Ollama-111827?style=flat-square)
+![GitHub Actions](https://img.shields.io/badge/GitHub_Actions-2088FF?style=flat-square&logo=githubactions&logoColor=white)
+
 [English](README.en.md) | 中文
 
 > 想象力为骨，AI 为翼。
@@ -161,6 +177,22 @@ flutter build web --release
 - [查看章节 JSON 数据](docs/v1.3-user-journey/data/chapters.json)
 
 GitHub 代码视图会以源码方式展示 HTML；如需完整视觉效果，请 clone 仓库后在浏览器中打开 `docs/v1.3-user-journey/index.html`。
+
+## 当作家遇见 AI
+
+反 AI 味是 MuseFlow 的产品灵魂，而非附加功能。这迫使我们直面一个真问题：当 AI 的写作能力不断进化，真正成熟的创作者会作何选择？答案并不统一。
+
+作家**余华**对 GPT 的判断至今锋利：以当下的理解，它“大概能写出中庸的小说，却写不出充满了个性的小说——因为人脑总是要犯错误的，而这恰恰是人脑最可贵的地方”。
+
+**郝景芳**（《北京折叠》作者，继《三体》之后又一位摘得雨果奖的中国作家）给出了另一种回答。她坦言今年新出的小说里，AI 写作的比重已占一半：“编辑还一个劲夸我今年写得好，读者也看不出来哪些部分是 AI 写的。”很长一段时间里，作家被“抓包”用 AI 往往矢口否认；敢于公开承认并引以为荣的，她算少见的一位。
+
+**奥尔加·托卡尔丘克**（2018 年诺贝尔文学奖得主）走得更远。她购入了某款 AI 模型的高级版本，写作时会向它抛出各种问题：故事里的主人公会听什么样的歌？亲爱的，我们该如何把故事写得更精彩？她清楚 AI 在经济学等“硬数据”上会出现幻觉和事实错误，却坚信在文学创作中这项技术拥有“难以置信的优势”——这让不少读者知情后颇感“破防”。
+
+**安东尼·霍洛维茨**（《喜鹊谋杀案》三部曲作者）更像一位谨慎的实用者。他坦言用 AI 写作“像在作弊”，同时也见识过它的笨拙：你问它土豆是什么形状，它答 *ellipsoid*（椭球体）；让它落笔成文，就成了“盘子里的土豆呈椭球体状”这种不伦不类的句子。
+
+从质疑到拥抱，从破防到作弊感，作家们的态度正在分化。MuseFlow 不替作者站队，只守住一条底线：让 AI 听懂你的素材、理顺你的设定、打磨你的文字，而故事最终归属于作者——这恰是余华所说“人脑最可贵的地方”。
+
+> 以上作家言论转引自小黑盒作者“山下热狗”的文章《当雨果奖&诺奖得主开始用AI写作，作为普通人你会坚守还是倒戈？》([原文链接](https://www.xiaoheihe.cn/app/bbs/link/2db772047c7c?h_camp=link&h_session_id=laQc8HhHmBTV48ud&h_src=YXBwX3NoYXJl))。
 
 ## 愿景
 
