@@ -82,7 +82,7 @@ None.
 - Anti-AI-scent banned phrase lists should be validated with broader real Chinese prose samples before release sign-off
 - Phase 7 bundled template prose needs human literary review before release sign-off
 
-Last activity: 2026-06-14 - quick 260614-gmg P2 反AI味生成侧深化（AA-02 对比减法 ContrastiveSubtractionMiddleware CoPA 4模式「减去机器味」prompt 接入 synthesis+editor 两 pipeline，与词库正交；AA-03 CreativityLevel 三档→温度 TempParaphraser，creativityLevelProvider 持久化+设置页 SegmentedButton+两调用点覆盖；1571 tests +21 零回归 analyze 0）
+Last activity: 2026-06-14 - P2 深化连发：260614-gmg（AA-02 对比减法 CoPA prompt + AA-03 创意度→温度，ECC APPROVE）+ 260614-aa4（AA-04 句子级AI味 SentenceAiScentAnalyzer）+ 260614-mc1（🔴P0 MC-01 动态知识库陈旧度 KbStalenessChecker + lastVerifiedChapter 字段）；1602 tests 累计 +52 零回归 analyze 0
 
 ### Quick Tasks Completed
 
@@ -95,6 +95,7 @@ Last activity: 2026-06-14 - quick 260614-gmg P2 反AI味生成侧深化（AA-02 
 | 260614-1tp | P2 Author Writing Sheet 词汇签名（CJK n-gram 抽取作者特征词注入生成 prompt，"自然融入"措辞；IJCNLP 2025 背书；1548 tests +24） | 2026-06-14 | baac2cc | [260614-1tp-p2-author-writing-sheet-prompt](./quick/260614-1tp-p2-author-writing-sheet-prompt/) |
 | 260614-gmg | P2 反AI味生成侧深化（AA-02 对比减法 CoPA 4模式 prompt + AA-03 创意度三档→温度 TempParaphraser；ContrastiveSubtractionMiddleware 接入两 pipeline + 设置页 SegmentedButton；1571 tests +21 零回归） | 2026-06-14 | 81e8738 | [260614-gmg-p2-contrastive-creativity](./quick/260614-gmg-p2-contrastive-creativity/) |
 | 260614-aa4 | P2 AA-04 句子级 AI 味标记（SentenceAiScentAnalyzer 4 句局部信号：机械过渡词起句/AI套式/虚词占比过高/超长无断句；逐句 0-100 评分，worst/hasNotable；与 Phase 19 整体 detector 正交；1581 tests +9 零回归） | 2026-06-14 | 6233af5 | [260614-aa4-sentence-ai-scent](./quick/260614-aa4-sentence-ai-scent/) |
+| 260614-mc1 | P2 🔴P0 MC-01 动态知识库陈旧度追踪（KbStalenessChecker fresh<10/stale≥10/veryStale≥20 + null旧条目→fresh 向后兼容；CharacterCard+WorldSetting 加 lastVerifiedChapter 字段全套向后兼容；checker 与实体解耦；1602 tests +21 零回归） | 2026-06-14 | 31e9c30 | [260614-mc1-kb-staleness](./quick/260614-mc1-kb-staleness/) |
 
 ## Deferred Items
 
@@ -109,5 +110,5 @@ Items acknowledged and deferred from v1.3:
 ## Session Continuity
 
 Last session: 2026-06-14
-Stopped at: P2 反AI味生成侧深化已交付（260614-gmg：AA-02 ContrastiveSubtractionMiddleware CoPA 4模式分解式「减去机器味」prompt 接入 synthesis+editor 两 pipeline，与 BannedListMiddleware 正交；AA-03 CreativityLevel 三档（保守0.6/平衡0.8/灵动0.95）→温度，creativityLevelProvider 持久化+设置页 SegmentedButton+两调用点覆盖；1571 tests +21 零回归 analyze 0 issue）
-Next step: P2 余项（MC-01/02 动态知识库+摘要刷新 🔴P0 / CI-01 PATHs 对话行为识别）或 Phase 25 真实 API E2E（需真实 key/网络）
+Stopped at: P2 🔴P0 MC-01 动态知识库陈旧度追踪已交付（260614-mc1：KbStalenessChecker fresh<10/stale≥10/veryStale≥20，null旧条目→fresh 向后兼容不误 nag；CharacterCard+WorldSetting 加 lastVerifiedChapter 字段全套向后兼容；checker 与实体解耦纯 int?,int 函数；1602 tests +21 零回归 analyze 0）
+Next step: MC-01 UI（章数提示+刷新按钮 copyWith(lastVerifiedChapter:current)）/ MC-02 章节摘要自动刷新（需新建摘要 domain）/ CI-01 PATHs 对话行为识别，或 Phase 25 真实 API E2E（需真实 key/网络）
