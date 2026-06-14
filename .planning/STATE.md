@@ -82,7 +82,7 @@ None.
 - Anti-AI-scent banned phrase lists should be validated with broader real Chinese prose samples before release sign-off
 - Phase 7 bundled template prose needs human literary review before release sign-off
 
-Last activity: 2026-06-14 - P2 深化连发：260614-gmg（AA-02 对比减法 CoPA prompt + AA-03 创意度→温度，ECC APPROVE）+ 260614-aa4（AA-04 句子级AI味 SentenceAiScentAnalyzer）+ 260614-mc1（🔴P0 MC-01 动态知识库陈旧度 KbStalenessChecker + lastVerifiedChapter 字段）；1602 tests 累计 +52 零回归 analyze 0
+Last activity: 2026-06-14 - P2 深化连发 5 项：260614-gmg（AA-02 对比减法 CoPA + AA-03 创意度→温度，ECC APPROVE）+ 260614-aa4（AA-04 句子级AI味）+ 260614-mc1（🔴P0 MC-01 动态知识库陈旧度 KbStalenessChecker+lastVerifiedChapter）+ 260614-ci1（CI-01 PATHs 对话行为 DialogueActClassifier）；1611 tests 累计 +61 零回归 analyze 0
 
 ### Quick Tasks Completed
 
@@ -96,6 +96,7 @@ Last activity: 2026-06-14 - P2 深化连发：260614-gmg（AA-02 对比减法 Co
 | 260614-gmg | P2 反AI味生成侧深化（AA-02 对比减法 CoPA 4模式 prompt + AA-03 创意度三档→温度 TempParaphraser；ContrastiveSubtractionMiddleware 接入两 pipeline + 设置页 SegmentedButton；1571 tests +21 零回归） | 2026-06-14 | 81e8738 | [260614-gmg-p2-contrastive-creativity](./quick/260614-gmg-p2-contrastive-creativity/) |
 | 260614-aa4 | P2 AA-04 句子级 AI 味标记（SentenceAiScentAnalyzer 4 句局部信号：机械过渡词起句/AI套式/虚词占比过高/超长无断句；逐句 0-100 评分，worst/hasNotable；与 Phase 19 整体 detector 正交；1581 tests +9 零回归） | 2026-06-14 | 6233af5 | [260614-aa4-sentence-ai-scent](./quick/260614-aa4-sentence-ai-scent/) |
 | 260614-mc1 | P2 🔴P0 MC-01 动态知识库陈旧度追踪（KbStalenessChecker fresh<10/stale≥10/veryStale≥20 + null旧条目→fresh 向后兼容；CharacterCard+WorldSetting 加 lastVerifiedChapter 字段全套向后兼容；checker 与实体解耦；1602 tests +21 零回归） | 2026-06-14 | 31e9c30 | [260614-mc1-kb-staleness](./quick/260614-mc1-kb-staleness/) |
+| 260614-ci1 | P2 CI-01 PATHs 对话行为识别（DialogueAct 5行为枚举 + DialogueActClassifier 关键词信号分类纯逻辑，默认followUp，置信度/匹配词可解释；响应策略wiring留后续；1611 tests +9 零回归） | 2026-06-14 | 0525a9e | [260614-ci1-paths-dialogue-act](./quick/260614-ci1-paths-dialogue-act/) |
 
 ## Deferred Items
 
@@ -110,5 +111,5 @@ Items acknowledged and deferred from v1.3:
 ## Session Continuity
 
 Last session: 2026-06-14
-Stopped at: P2 🔴P0 MC-01 动态知识库陈旧度追踪已交付（260614-mc1：KbStalenessChecker fresh<10/stale≥10/veryStale≥20，null旧条目→fresh 向后兼容不误 nag；CharacterCard+WorldSetting 加 lastVerifiedChapter 字段全套向后兼容；checker 与实体解耦纯 int?,int 函数；1602 tests +21 零回归 analyze 0）
-Next step: MC-01 UI（章数提示+刷新按钮 copyWith(lastVerifiedChapter:current)）/ MC-02 章节摘要自动刷新（需新建摘要 domain）/ CI-01 PATHs 对话行为识别，或 Phase 25 真实 API E2E（需真实 key/网络）
+Stopped at: P2 CI-01 PATHs 对话行为识别已交付（260614-ci1：DialogueAct 5行为枚举 + DialogueActClassifier 关键词信号分类纯逻辑，默认 followUp，置信度/匹配词可解释；响应策略 wiring 留后续；1611 tests +9 零回归）。本会话 P2 深化累计交付 5 项：AA-02 对比减法 / AA-03 创意度 / AA-04 句子级AI味 / 🔴P0 MC-01 KB陈旧度 / CI-01 对话行为。
+Next step: 各项 wiring 收尾（MC-01 UI 刷新按钮 / CI-01 act→prompt模板适配 / AA-04 编辑器高亮）/ MC-02 章节摘要自动刷新（需新建摘要 domain）/ AA-05 类型文反AI味，或 Phase 25 真实 API E2E（需真实 key/网络）
