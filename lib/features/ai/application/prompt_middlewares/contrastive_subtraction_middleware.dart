@@ -41,7 +41,8 @@ class ContrastiveSubtractionMiddleware extends PromptMiddleware {
   ///
   /// Kept as a static const so the exact wording is testable and the
   /// idempotency guard can match it.
-  static const String blockContent = '''
+  static const String blockContent =
+      '''
 
 **$blockTitle — 主动减去机器味**：
 人类写作有自然的「不规则突发性」（burstiness），AI 写作倾向机械均衡。请在以下四点主动减去机器味：
@@ -63,10 +64,7 @@ class ContrastiveSubtractionMiddleware extends PromptMiddleware {
       return context;
     }
 
-    return context.replaceSystemMessage(
-      0,
-      systemContent + blockContent,
-    );
+    return context.replaceSystemMessage(0, systemContent + blockContent);
   }
 
   /// Extracts the text content from a [ChatMessage].

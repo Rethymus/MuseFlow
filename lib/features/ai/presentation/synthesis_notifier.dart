@@ -247,7 +247,8 @@ class SynthesisNotifier extends Notifier<SynthesisState> {
           baseUrl: provider.baseUrl,
           model: provider.model,
           messages: messages,
-          temperature: context.creativityLevel?.temperature ?? provider.temperature,
+          temperature:
+              context.creativityLevel?.temperature ?? provider.temperature,
           topP: provider.topP,
           maxTokens: provider.maxTokens,
           onUsage: (usage) {

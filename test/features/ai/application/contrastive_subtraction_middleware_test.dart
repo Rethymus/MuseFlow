@@ -81,17 +81,17 @@ void main() {
       expect(content, contains('句长'));
     });
 
-    test('appends to existing system message (preserves base persona text)', () {
-      final result = middleware.apply(_baseContext());
-      final content = _systemContent(result);
-      // The original persona text must survive.
-      expect(content, contains('你是一个写作助手。'));
-      // ...and the subtraction block must be appended after it.
-      expect(
-        content.indexOf('你是一个写作助手。'),
-        lessThan(content.indexOf('对比减法')),
-      );
-    });
+    test(
+      'appends to existing system message (preserves base persona text)',
+      () {
+        final result = middleware.apply(_baseContext());
+        final content = _systemContent(result);
+        // The original persona text must survive.
+        expect(content, contains('你是一个写作助手。'));
+        // ...and the subtraction block must be appended after it.
+        expect(content.indexOf('你是一个写作助手。'), lessThan(content.indexOf('对比减法')));
+      },
+    );
 
     test('creates a system message when none exists', () {
       final ctx = PromptContext(
@@ -104,14 +104,17 @@ void main() {
       expect(_systemContent(result), contains('对比减法'));
     });
 
-    test('does not duplicate injection on repeated apply (idempotent append)', () {
-      // The middleware may run in pipelines that pre-compose system text;
-      // ensure applying twice doesn't duplicate the block (guard against
-      // re-entrancy if the same context flows through twice).
-      final once = middleware.apply(_baseContext());
-      final twice = middleware.apply(once);
-      final content = _systemContent(twice);
-      expect('对比减法'.allMatches(content).length, lessThanOrEqualTo(1));
-    });
+    test(
+      'does not duplicate injection on repeated apply (idempotent append)',
+      () {
+        // The middleware may run in pipelines that pre-compose system text;
+        // ensure applying twice doesn't duplicate the block (guard against
+        // re-entrancy if the same context flows through twice).
+        final once = middleware.apply(_baseContext());
+        final twice = middleware.apply(once);
+        final content = _systemContent(twice);
+        expect('对比减法'.allMatches(content).length, lessThanOrEqualTo(1));
+      },
+    );
   });
 }

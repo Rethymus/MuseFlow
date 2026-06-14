@@ -22,15 +22,19 @@ void main() {
 
     test('plain human-like prose scores low on every sentence', () {
       // Short, varied, concrete, dialogue — no AI tells.
-      const text = '他推开门。风很冷。'
+      const text =
+          '他推开门。风很冷。'
           '"你来晚了，"老人说。'
           '剑还带血。';
       final result = analyzer.analyze(text);
       expect(result.scores, isNotEmpty);
       // Every sentence should be below the "notable" threshold.
       for (final s in result.scores) {
-        expect(s.score, lessThan(SentenceAiScentAnalyzer.notableThreshold),
-            reason: 'human-like sentence should not be flagged: "${s.sentence}"');
+        expect(
+          s.score,
+          lessThan(SentenceAiScentAnalyzer.notableThreshold),
+          reason: 'human-like sentence should not be flagged: "${s.sentence}"',
+        );
       }
       expect(result.hasNotable, isFalse);
     });
@@ -41,7 +45,10 @@ void main() {
       final however = result.scores.firstWhere(
         (s) => s.sentence.contains('然而'),
       );
-      expect(however.score, greaterThanOrEqualTo(SentenceAiScentAnalyzer.notableThreshold));
+      expect(
+        however.score,
+        greaterThanOrEqualTo(SentenceAiScentAnalyzer.notableThreshold),
+      );
       expect(however.reasons.join(), anyOf(contains('过渡'), contains('机械')));
     });
 
@@ -50,8 +57,14 @@ void main() {
       final result = analyzer.analyze(text);
       expect(result.scores, isNotEmpty);
       final worst = result.worst!;
-      expect(worst.score, greaterThanOrEqualTo(SentenceAiScentAnalyzer.notableThreshold));
-      expect(worst.reasons.join(), anyOf(contains('AI'), contains('套式'), contains('模式')));
+      expect(
+        worst.score,
+        greaterThanOrEqualTo(SentenceAiScentAnalyzer.notableThreshold),
+      );
+      expect(
+        worst.reasons.join(),
+        anyOf(contains('AI'), contains('套式'), contains('模式')),
+      );
     });
 
     test('flags high function-word ratio sentence', () {
@@ -59,7 +72,10 @@ void main() {
       const text = '他的剑是他的，而她的剑也是的，是的，是的。';
       final result = analyzer.analyze(text);
       final worst = result.worst!;
-      expect(worst.score, greaterThanOrEqualTo(SentenceAiScentAnalyzer.notableThreshold));
+      expect(
+        worst.score,
+        greaterThanOrEqualTo(SentenceAiScentAnalyzer.notableThreshold),
+      );
       expect(worst.reasons.join(), anyOf(contains('虚词'), contains('功能词')));
     });
 
@@ -68,8 +84,11 @@ void main() {
       final result = analyzer.analyze(text);
       final scores = result.scores.map((s) => s.score).toList();
       for (var i = 1; i < scores.length; i++) {
-        expect(scores[i - 1], greaterThanOrEqualTo(scores[i]),
-            reason: 'scores must be non-increasing');
+        expect(
+          scores[i - 1],
+          greaterThanOrEqualTo(scores[i]),
+          reason: 'scores must be non-increasing',
+        );
       }
     });
 

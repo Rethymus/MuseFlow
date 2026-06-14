@@ -54,35 +54,43 @@ void main() {
       );
       addTearDown(container.dispose);
 
-      expect(container.read(creativityLevelProvider), CreativityLevel.expressive);
-    });
-
-    test('set() updates state immediately and persists for the next session',
-        () async {
-      await setUpHiveTest();
-      addTearDown(tearDownHiveTest);
-
-      final testBox = await Hive.openBox<dynamic>('test_settings');
-      final settingsRepo = SettingsRepository(testBox);
-
-      final container = ProviderContainer(
-        overrides: [
-          settingsRepositoryProvider.overrideWithValue(
-            AsyncValue.data(settingsRepo),
-          ),
-        ],
+      expect(
+        container.read(creativityLevelProvider),
+        CreativityLevel.expressive,
       );
-      addTearDown(container.dispose);
-
-      await container.read(creativityLevelProvider.notifier).set(
-            CreativityLevel.conservative,
-          );
-
-      // State updated in-memory.
-      expect(container.read(creativityLevelProvider), CreativityLevel.conservative);
-      // Persisted: a fresh repository over the same box reads it back.
-      final freshRepo = SettingsRepository(testBox);
-      expect(freshRepo.getCreativityLevel(), CreativityLevel.conservative);
     });
+
+    test(
+      'set() updates state immediately and persists for the next session',
+      () async {
+        await setUpHiveTest();
+        addTearDown(tearDownHiveTest);
+
+        final testBox = await Hive.openBox<dynamic>('test_settings');
+        final settingsRepo = SettingsRepository(testBox);
+
+        final container = ProviderContainer(
+          overrides: [
+            settingsRepositoryProvider.overrideWithValue(
+              AsyncValue.data(settingsRepo),
+            ),
+          ],
+        );
+        addTearDown(container.dispose);
+
+        await container
+            .read(creativityLevelProvider.notifier)
+            .set(CreativityLevel.conservative);
+
+        // State updated in-memory.
+        expect(
+          container.read(creativityLevelProvider),
+          CreativityLevel.conservative,
+        );
+        // Persisted: a fresh repository over the same box reads it back.
+        final freshRepo = SettingsRepository(testBox);
+        expect(freshRepo.getCreativityLevel(), CreativityLevel.conservative);
+      },
+    );
   });
 }

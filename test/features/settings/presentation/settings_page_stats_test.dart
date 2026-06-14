@@ -52,9 +52,7 @@ void main() {
       addTearDown(tester.view.resetDevicePixelRatio);
 
       await tester.pumpWidget(
-        ProviderScope(
-          child: MaterialApp(home: SettingsPage()),
-        ),
+        ProviderScope(child: MaterialApp(home: SettingsPage())),
       );
 
       // The creativity control (标题 + 保守/平衡/灵动 三档) must render

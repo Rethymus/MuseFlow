@@ -20,10 +20,7 @@ void main() {
         classifier.classify('帮我把这段改得更正式一点').act,
         DialogueAct.styleAdjustment,
       );
-      expect(
-        classifier.classify('换个口语化的语气').act,
-        DialogueAct.styleAdjustment,
-      );
+      expect(classifier.classify('换个口语化的语气').act, DialogueAct.styleAdjustment);
     });
 
     test('content exploration: user explores alternatives ("what if")', () {
@@ -49,21 +46,12 @@ void main() {
     });
 
     test('follow-up: user asks for more depth', () {
-      expect(
-        classifier.classify('为什么他会这么做？展开说说').act,
-        DialogueAct.followUp,
-      );
-      expect(
-        classifier.classify('这里的具体细节能再详细一点吗').act,
-        DialogueAct.followUp,
-      );
+      expect(classifier.classify('为什么他会这么做？展开说说').act, DialogueAct.followUp);
+      expect(classifier.classify('这里的具体细节能再详细一点吗').act, DialogueAct.followUp);
     });
 
     test('injection: user asks to insert/add content', () {
-      expect(
-        classifier.classify('在这里加入一段环境描写').act,
-        DialogueAct.injection,
-      );
+      expect(classifier.classify('在这里加入一段环境描写').act, DialogueAct.injection);
       expect(
         classifier.classify('补充一段对话，写两人在月下的交谈').act,
         DialogueAct.injection,
@@ -73,10 +61,7 @@ void main() {
     test('ambiguous / unmatched message defaults to followUp', () {
       // A bare prompt with no clear act signal — safest default is to give
       // more (followUp) rather than mis-route to injection/style.
-      expect(
-        classifier.classify('嗯，还行吧').act,
-        DialogueAct.followUp,
-      );
+      expect(classifier.classify('嗯，还行吧').act, DialogueAct.followUp);
     });
   });
 
@@ -88,14 +73,7 @@ void main() {
     });
 
     test('confidence is in [0, 1]', () {
-      for (final msg in [
-        '改语气',
-        '如果他没来',
-        '不对',
-        '为什么',
-        '加一段',
-        '嗯',
-      ]) {
+      for (final msg in ['改语气', '如果他没来', '不对', '为什么', '加一段', '嗯']) {
         final c = classifier.classify(msg).confidence;
         expect(c, greaterThanOrEqualTo(0));
         expect(c, lessThanOrEqualTo(1));

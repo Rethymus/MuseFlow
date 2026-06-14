@@ -73,7 +73,10 @@ void main() {
 
     test('stale result message mentions staleness', () {
       final msg = checker.check(20, 30).message;
-      expect(msg, anyOf(contains('过期'), contains('陈旧'), contains('更新'), contains('提醒')));
+      expect(
+        msg,
+        anyOf(contains('过期'), contains('陈旧'), contains('更新'), contains('提醒')),
+      );
     });
 
     test('veryStale result message is more urgent than stale', () {

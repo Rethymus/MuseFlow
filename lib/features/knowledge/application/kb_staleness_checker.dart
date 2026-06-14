@@ -83,7 +83,8 @@ class KbStalenessChecker {
       return KbStalenessResult(
         level: KbStalenessLevel.veryStale,
         chaptersSinceVerified: since,
-        message: '⚠️ 该条目已 $since 章未验证，严重过期，知识库可能正为 AI '
+        message:
+            '⚠️ 该条目已 $since 章未验证，严重过期，知识库可能正为 AI '
             '提供陈旧上下文，强烈建议立即回顾刷新。',
       );
     }

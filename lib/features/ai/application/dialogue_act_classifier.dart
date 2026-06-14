@@ -42,23 +42,54 @@ class DialogueActClassifier {
   /// classifier counts distinct matches per act.
   static const Map<DialogueAct, List<String>> signals = {
     DialogueAct.styleAdjustment: [
-      '改一下', '改得', '改成', '改个', '改写', '润色', '语气', '风格', '文风',
-      '正式', '口语', '换个', '调整',
+      '改一下',
+      '改得',
+      '改成',
+      '改个',
+      '改写',
+      '润色',
+      '语气',
+      '风格',
+      '文风',
+      '正式',
+      '口语',
+      '换个',
+      '调整',
     ],
     DialogueAct.contentExploration: [
-      '如果', '假如', '要是', '试试', '换一种', '另一个方向', '会怎样', '或者',
+      '如果',
+      '假如',
+      '要是',
+      '试试',
+      '换一种',
+      '另一个方向',
+      '会怎样',
+      '或者',
     ],
     DialogueAct.intentRevision: [
-      '不对', '不是这个', '不是这样', '我要的', '我的意思', '重新理解', '错了',
-      '偏了', '误解',
+      '不对',
+      '不是这个',
+      '不是这样',
+      '我要的',
+      '我的意思',
+      '重新理解',
+      '错了',
+      '偏了',
+      '误解',
     ],
     DialogueAct.followUp: [
-      '为什么', '怎么', '详细', '具体', '展开', '继续', '说说', '解释', '深入',
+      '为什么',
+      '怎么',
+      '详细',
+      '具体',
+      '展开',
+      '继续',
+      '说说',
+      '解释',
+      '深入',
       '讲讲',
     ],
-    DialogueAct.injection: [
-      '加入', '添加', '插入', '补充', '写一段', '加一段', '增添',
-    ],
+    DialogueAct.injection: ['加入', '添加', '插入', '补充', '写一段', '加一段', '增添'],
   };
 
   /// Tie-break priority: when two acts tie on match count, the earlier one
@@ -91,8 +122,9 @@ class DialogueActClassifier {
       }
     }
 
-    final confidence =
-        bestScore == 0 ? 0.0 : (bestScore / 2.0).clamp(0.0, 1.0).toDouble();
+    final confidence = bestScore == 0
+        ? 0.0
+        : (bestScore / 2.0).clamp(0.0, 1.0).toDouble();
 
     return DialogueActClassification(
       act: bestAct,

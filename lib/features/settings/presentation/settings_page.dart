@@ -79,10 +79,9 @@ class SettingsPage extends ConsumerWidget {
                 ),
               ],
               selected: {ref.watch(creativityLevelProvider)},
-              onSelectionChanged: (selection) =>
-                  ref.read(creativityLevelProvider.notifier).set(
-                        selection.first,
-                      ),
+              onSelectionChanged: (selection) => ref
+                  .read(creativityLevelProvider.notifier)
+                  .set(selection.first),
             ),
           ),
           const Divider(),
