@@ -94,6 +94,7 @@ Last activity: 2026-06-14 - quick 260614-gmg P2 反AI味生成侧深化（AA-02 
 | 260614-0rz | 修复 analyzer 技术债（integration_test 导出签名回归 + 10 测试文件 warning；analyze 11→0，1524 tests 无回归） | 2026-06-14 | 6fce67a | [260614-0rz-analyzer-integration-test-error-10-warni](./quick/260614-0rz-analyzer-integration-test-error-10-warni/) |
 | 260614-1tp | P2 Author Writing Sheet 词汇签名（CJK n-gram 抽取作者特征词注入生成 prompt，"自然融入"措辞；IJCNLP 2025 背书；1548 tests +24） | 2026-06-14 | baac2cc | [260614-1tp-p2-author-writing-sheet-prompt](./quick/260614-1tp-p2-author-writing-sheet-prompt/) |
 | 260614-gmg | P2 反AI味生成侧深化（AA-02 对比减法 CoPA 4模式 prompt + AA-03 创意度三档→温度 TempParaphraser；ContrastiveSubtractionMiddleware 接入两 pipeline + 设置页 SegmentedButton；1571 tests +21 零回归） | 2026-06-14 | 81e8738 | [260614-gmg-p2-contrastive-creativity](./quick/260614-gmg-p2-contrastive-creativity/) |
+| 260614-aa4 | P2 AA-04 句子级 AI 味标记（SentenceAiScentAnalyzer 4 句局部信号：机械过渡词起句/AI套式/虚词占比过高/超长无断句；逐句 0-100 评分，worst/hasNotable；与 Phase 19 整体 detector 正交；1581 tests +9 零回归） | 2026-06-14 | 6233af5 | [260614-aa4-sentence-ai-scent](./quick/260614-aa4-sentence-ai-scent/) |
 
 ## Deferred Items
 
