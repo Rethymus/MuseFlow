@@ -171,12 +171,47 @@ flutter build web --release
 
 ## v1.3 用户旅程成果站
 
-- [打开 v1.3 静态成果站](docs/v1.3-user-journey/index.html)
-- [阅读《剑道苍穹》百章修仙验证样例](docs/v1.3-user-journey/xianxia-100-chapter-sample.html)
-- [查看 v1.3 用户旅程验证报告](docs/v1.3-user-journey/validation-report.html)
-- [查看章节 JSON 数据](docs/v1.3-user-journey/data/chapters.json)
+v1.3 以「百章修仙小说用户旅程验证」为核心，把分散在测试代码与日志里的验证结果整理成可直接阅读的成果。下方为成果站的视觉预览与关键结论；完整可交互版（深色主题、章节目录导航、实时数据）可 clone 仓库后在浏览器打开 [`index.html`](docs/v1.3-user-journey/index.html)。
 
-GitHub 代码视图会以源码方式展示 HTML；如需完整视觉效果，请 clone 仓库后在浏览器中打开 `docs/v1.3-user-journey/index.html`。
+### 成果站首页
+
+![v1.3 成果站首页](docs/v1.3-user-journey/screenshots/index.png)
+
+**关键指标**　章节规模 **100**　·　验证阶段 **Phase 12–16**　·　自动化测试 **1169+**　·　状态 **已通过**
+
+### 验证链路
+
+代入「有故事但拙于表达」的用户视角，MuseFlow 完成从世界观到百章导出的完整创作闭环：
+
+```mermaid
+flowchart LR
+    A["世界观搭建<br/>修仙模板 · 角色卡 · Skill 守护"] --> B["碎片捕捉与整理<br/>PromptPipeline"]
+    B --> C["开篇引导<br/>场景 / 人物 / 悬念"]
+    C --> D["百章章节流<br/>300–500 字边界"]
+    D --> E["故事结构与导出<br/>伏笔生命周期 · MD/TXT/JSON"]
+    E --> F["分析报告<br/>Token · 痛点 · 反 AI 味 · 一致性"]
+```
+
+### 验证结果
+
+![v1.3 验证报告](docs/v1.3-user-journey/screenshots/validation-report.png)
+
+- ✅ `flutter analyze` 无问题
+- ✅ `flutter test` 全套通过（`All tests passed!`）
+- ✅ 确定性用户旅程测试完成 100 章流程
+- ⚠️ 缺少 `GLM_API_KEY` / `OPENAI_API_KEY` 时，真实外部模型测试按预期跳过
+
+### 《剑道苍穹》百章样例预览
+
+![百章修仙样例](docs/v1.3-user-journey/screenshots/xianxia-sample.png)
+
+样例展示凡人入门 → 筑基 → 金丹 → 元婴 → 飞升的 100 章确定性大纲，用于验证链路闭环与输出边界。它是**效果参考与验收材料，不代表最终文学出版稿**。
+
+### 完整交互版与证据源
+
+- 可交互页面：[成果首页](docs/v1.3-user-journey/index.html) · [百章样例](docs/v1.3-user-journey/xianxia-100-chapter-sample.html) · [验证报告](docs/v1.3-user-journey/validation-report.html)
+- [章节 JSON 数据](docs/v1.3-user-journey/data/chapters.json)（来源：`test/journey/helpers/story_outline.dart`）
+- 测试证据：[`full_journey_test.dart`](test/journey/full_journey_test.dart) · [`automated_ui_evidence_test.dart`](test/journey/automated_ui_evidence_test.dart)
 
 ## 当作家遇见 AI
 
