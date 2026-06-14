@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:museflow/core/presentation/providers.dart';
+import 'package:museflow/features/ai/domain/creativity_level.dart';
 import 'package:museflow/shared/constants/app_constants.dart';
 
 /// Settings page with section headers for storage and about.
@@ -48,6 +49,41 @@ class SettingsPage extends ConsumerWidget {
             value: ref.watch(autoDeviationCheckProvider),
             onChanged: (value) =>
                 ref.read(autoDeviationCheckProvider.notifier).set(value),
+          ),
+          // AA-03: user-facing creativity level that governs generation
+          // temperature (TempParaphraser, EMNLP 2025 — higher sampling
+          // diversity reduces AI-text detection footprint).
+          ListTile(
+            leading: const Icon(Icons.tune_outlined),
+            title: const Text('创意度'),
+            subtitle: const Text('影响 AI 生成的多样性，灵动档可降低机器味'),
+          ),
+          Padding(
+            padding: const EdgeInsets.symmetric(
+              horizontal: 16.0,
+              vertical: 4.0,
+            ),
+            child: SegmentedButton<CreativityLevel>(
+              segments: const [
+                ButtonSegment(
+                  value: CreativityLevel.conservative,
+                  label: Text('保守'),
+                ),
+                ButtonSegment(
+                  value: CreativityLevel.balanced,
+                  label: Text('平衡'),
+                ),
+                ButtonSegment(
+                  value: CreativityLevel.expressive,
+                  label: Text('灵动'),
+                ),
+              ],
+              selected: {ref.watch(creativityLevelProvider)},
+              onSelectionChanged: (selection) =>
+                  ref.read(creativityLevelProvider.notifier).set(
+                        selection.first,
+                      ),
+            ),
           ),
           const Divider(),
           const SizedBox(height: 16),

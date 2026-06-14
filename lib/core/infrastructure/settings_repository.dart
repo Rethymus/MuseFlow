@@ -2,6 +2,7 @@ import 'dart:ui';
 
 import 'package:hive_ce/hive.dart';
 import 'package:museflow/core/domain/fragment_tag.dart';
+import 'package:museflow/features/ai/domain/creativity_level.dart';
 
 /// Repository for managing application settings in an encrypted Hive box.
 ///
@@ -13,6 +14,7 @@ class SettingsRepository {
   static const String _windowPositionKey = 'windowPosition';
   static const String _defaultTagKey = 'defaultTag';
   static const String _autoDeviationCheckKey = 'auto_deviation_check';
+  static const String _creativityLevelKey = 'creativity_level';
 
   SettingsRepository(this._box);
 
@@ -71,6 +73,20 @@ class SettingsRepository {
   /// Persists the auto deviation-check preference.
   Future<void> saveAutoDeviationCheck(bool enabled) async {
     await _box.put(_autoDeviationCheckKey, enabled);
+  }
+
+  /// Gets the user's creativity level (AA-03) for generation temperature.
+  ///
+  /// Falls back to [CreativityLevel.balanced] when no value is persisted yet,
+  /// matching the historical default temperature behavior.
+  CreativityLevel getCreativityLevel() {
+    final raw = _box.get(_creativityLevelKey) as String?;
+    return CreativityLevel.fromJson(raw);
+  }
+
+  /// Persists the user's creativity level selection.
+  Future<void> saveCreativityLevel(CreativityLevel level) async {
+    await _box.put(_creativityLevelKey, level.toJson());
   }
 
   /// Gets the user's banned phrase list for anti-AI-scent processing.

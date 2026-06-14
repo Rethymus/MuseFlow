@@ -150,6 +150,7 @@ class EditorAINotifier extends Notifier<EditorAIState> {
       nextChapterMemoryWarning: chapterMemory.nextChapterMemoryWarning,
       chapterContextChain: chapterMemory.chapterContextChain,
       styleProfile: ref.read(styleProfileNotifierProvider).profile,
+      creativityLevel: ref.read(creativityLevelProvider),
     );
     var messages = pipeline.build(context);
 
@@ -184,7 +185,7 @@ class EditorAINotifier extends Notifier<EditorAIState> {
         baseUrl: provider.baseUrl,
         model: provider.model,
         messages: messages,
-        temperature: provider.temperature,
+        temperature: context.creativityLevel?.temperature ?? provider.temperature,
         topP: provider.topP,
         maxTokens: provider.maxTokens,
         onUsage: (usage) {

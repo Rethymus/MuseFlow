@@ -21,6 +21,7 @@ void main() {
       ),
     );
 
+    await tester.scrollUntilVisible(find.text('清除写作统计'), 100.0);
     await tester.tap(find.text('清除写作统计'));
     await tester.pump();
     expect(find.text('清除写作统计？'), findsOneWidget);
@@ -29,6 +30,7 @@ void main() {
     await tester.pump();
     expect(clearCount, 0);
 
+    await tester.scrollUntilVisible(find.text('清除写作统计'), 100.0);
     await tester.tap(find.text('清除写作统计'));
     await tester.pump();
     await tester.tap(find.widgetWithText(TextButton, '清除'));

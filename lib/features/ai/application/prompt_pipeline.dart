@@ -9,7 +9,9 @@
 library;
 
 import 'package:museflow/core/domain/fragment.dart';
+import 'package:museflow/features/ai/domain/creativity_level.dart';
 import 'package:museflow/features/ai/application/prompt_middlewares/banned_list_middleware.dart';
+import 'package:museflow/features/ai/application/prompt_middlewares/contrastive_subtraction_middleware.dart';
 import 'package:museflow/features/ai/application/prompt_middlewares/dynamic_persona_middleware.dart';
 import 'package:museflow/features/ai/application/prompt_middlewares/few_shot_middleware.dart';
 import 'package:museflow/features/ai/application/prompt_middlewares/persona_injection_middleware.dart';
@@ -107,6 +109,14 @@ class PromptContext {
   /// correct character when building knowledge context.
   final Map<String, dynamic> characterGenders;
 
+  /// User-selected creativity level (AA-03) that overrides the provider's
+  /// default sampling temperature at the generation call site.
+  ///
+  /// Null means "honor the provider-configured temperature" (historical
+  /// behavior). When set, generation call sites use
+  /// [CreativityLevel.temperature] instead of the provider default.
+  final CreativityLevel? creativityLevel;
+
   const PromptContext({
     required this.fragments,
     this.additionalInstruction,
@@ -124,6 +134,7 @@ class PromptContext {
     this.chapterContextChain,
     this.styleProfile,
     this.characterGenders = const {},
+    this.creativityLevel,
   });
 
   /// Creates a copy with an additional message appended.
@@ -145,6 +156,7 @@ class PromptContext {
       chapterContextChain: chapterContextChain,
       styleProfile: styleProfile,
       characterGenders: characterGenders,
+      creativityLevel: creativityLevel,
     );
   }
 
@@ -167,6 +179,7 @@ class PromptContext {
       chapterContextChain: chapterContextChain,
       styleProfile: styleProfile,
       characterGenders: characterGenders,
+      creativityLevel: creativityLevel,
     );
   }
 
@@ -191,6 +204,7 @@ class PromptContext {
       chapterContextChain: chapterContextChain,
       styleProfile: styleProfile,
       characterGenders: characterGenders,
+      creativityLevel: creativityLevel,
     );
   }
 }
@@ -244,6 +258,7 @@ class PromptPipeline {
         const DynamicPersonaMiddleware(),
         const FewShotMiddleware(),
         BannedListMiddleware(),
+        const ContrastiveSubtractionMiddleware(),
         ?knowledgeInjectionMiddleware,
         ?skillEnforcementMiddleware,
         UserContentMiddleware(),

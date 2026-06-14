@@ -215,6 +215,7 @@ class SynthesisNotifier extends Notifier<SynthesisState> {
       additionalInstruction: additionalInstruction,
       bannedPhrases: bannedPhrases,
       styleProfile: ref.read(styleProfileNotifierProvider).profile,
+      creativityLevel: ref.read(creativityLevelProvider),
     );
     final messages = pipeline.build(context);
 
@@ -246,7 +247,7 @@ class SynthesisNotifier extends Notifier<SynthesisState> {
           baseUrl: provider.baseUrl,
           model: provider.model,
           messages: messages,
-          temperature: provider.temperature,
+          temperature: context.creativityLevel?.temperature ?? provider.temperature,
           topP: provider.topP,
           maxTokens: provider.maxTokens,
           onUsage: (usage) {

@@ -11,6 +11,7 @@ library;
 
 import 'package:museflow/features/ai/application/prompt_pipeline.dart';
 import 'package:museflow/features/ai/application/prompt_middlewares/banned_list_middleware.dart';
+import 'package:museflow/features/ai/application/prompt_middlewares/contrastive_subtraction_middleware.dart';
 import 'package:museflow/features/ai/application/prompt_middlewares/dynamic_persona_middleware.dart';
 import 'package:museflow/features/ai/application/prompt_middlewares/few_shot_middleware.dart';
 import 'package:museflow/features/ai/application/prompt_middlewares/persona_injection_middleware.dart';
@@ -39,6 +40,7 @@ class EditorPromptPipeline extends PromptPipeline {
            const DynamicPersonaMiddleware(),
            const FewShotMiddleware(),
            BannedListMiddleware(),
+           const ContrastiveSubtractionMiddleware(),
            ?knowledgeInjectionMiddleware,
            ?skillEnforcementMiddleware,
            const ContextAnchorMiddleware(),

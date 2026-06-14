@@ -15,6 +15,7 @@ import 'package:museflow/features/ai/application/provider_service.dart';
 import 'package:museflow/features/ai/application/token_budget_calculator.dart';
 import 'package:museflow/features/ai/domain/ai_adapter.dart';
 import 'package:museflow/features/ai/domain/ai_provider.dart';
+import 'package:museflow/features/ai/domain/creativity_level.dart';
 import 'package:museflow/features/ai/infrastructure/claude_adapter.dart';
 import 'package:museflow/features/ai/infrastructure/openai_adapter.dart';
 import 'package:museflow/features/ai/infrastructure/provider_repository.dart';
@@ -167,6 +168,36 @@ class AutoDeviationCheckNotifier extends Notifier<bool> {
     final settings = ref.read(settingsRepositoryProvider).value;
     if (settings != null) {
       await settings.saveAutoDeviationCheck(value);
+    }
+  }
+}
+
+/// User-facing creativity level (AA-03) that governs generation temperature.
+///
+/// Persists across sessions in [SettingsRepository]. Generation call sites
+/// (synthesis + editor AI operations) read this and use its [temperature] to
+/// override the provider-configured default, per TempParaphraser (EMNLP 2025):
+/// higher sampling diversity reduces AI-text detection rate. Defaults to
+/// [CreativityLevel.balanced] when the encrypted box is still loading or no
+/// preference is persisted yet.
+final creativityLevelProvider =
+    NotifierProvider<CreativityLevelNotifier, CreativityLevel>(
+      CreativityLevelNotifier.new,
+    );
+
+/// Notifier backing [creativityLevelProvider].
+class CreativityLevelNotifier extends Notifier<CreativityLevel> {
+  @override
+  CreativityLevel build() {
+    final settings = ref.watch(settingsRepositoryProvider).value;
+    return settings?.getCreativityLevel() ?? CreativityLevel.balanced;
+  }
+
+  Future<void> set(CreativityLevel level) async {
+    state = level;
+    final settings = ref.read(settingsRepositoryProvider).value;
+    if (settings != null) {
+      await settings.saveCreativityLevel(level);
     }
   }
 }
