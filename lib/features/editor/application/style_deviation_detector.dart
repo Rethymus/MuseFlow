@@ -457,6 +457,9 @@ class StyleDeviationDetector {
   }
 
   int _countPositiveSentiment(String text) {
+    // NOTE: omit bare single-char entries (e.g. 爱) — String.allMatches does
+    // substring matching and would over-count inside compounds such as
+    // 可爱/爱好/爱情/亲爱, distorting warmth/intensity.
     const positives = <String>{
       '温暖',
       '幸福',
@@ -478,7 +481,6 @@ class StyleDeviationDetector {
       '安心',
       '满足',
       '欣慰',
-      '爱',
       '喜欢',
       '珍惜',
     };
@@ -490,6 +492,9 @@ class StyleDeviationDetector {
   }
 
   int _countNegativeSentiment(String text) {
+    // NOTE: omit bare single-char entries (e.g. 恨) — String.allMatches does
+    // substring matching and would over-count inside compounds such as
+    // 恨不得 (eager/positive sense) / 悔恨/愤恨, inverting polarity.
     const negatives = <String>{
       '痛苦',
       '悲伤',
@@ -510,7 +515,6 @@ class StyleDeviationDetector {
       '寂寞',
       '难过',
       '害怕',
-      '恨',
       '厌恶',
     };
     var count = 0;
