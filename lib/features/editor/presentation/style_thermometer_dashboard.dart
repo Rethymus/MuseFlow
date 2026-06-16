@@ -8,6 +8,7 @@ library;
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
+import 'package:museflow/features/editor/application/sentence_ai_scent_analyzer.dart';
 import 'package:museflow/features/editor/application/style_deviation_detector.dart';
 import 'package:museflow/features/editor/domain/style_dimension.dart';
 
@@ -51,6 +52,116 @@ class StyleThermometerDashboard extends StatelessWidget {
             child: _DimensionBar(deviation: d, onTap: onDimensionTap),
           ),
         ),
+        if (result.text.isNotEmpty) ...[
+          const SizedBox(height: 16),
+          _SentenceAiScentSection(text: result.text),
+        ],
+      ],
+    );
+  }
+}
+
+/// Sentence-level AI-scent section.
+///
+/// Renders 「最可疑的句子」 with up to 3 worst-scoring sentences from
+/// [SentenceAiScentAnalyzer], each shown with its score badge and reasons.
+/// Hidden entirely when no sentence reaches the notable threshold — so the
+/// dashboard stays noise-free on fresh/natural prose.
+class _SentenceAiScentSection extends StatelessWidget {
+  const _SentenceAiScentSection({required this.text});
+
+  /// The full source passage to analyze sentence-by-sentence.
+  final String text;
+
+  @override
+  Widget build(BuildContext context) {
+    final analysis = const SentenceAiScentAnalyzer().analyze(
+      text,
+      maxSentences: 3,
+    );
+    if (!analysis.hasNotable) return const SizedBox.shrink();
+
+    final theme = Theme.of(context);
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          '最可疑的句子',
+          style: theme.textTheme.titleSmall?.copyWith(
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        const SizedBox(height: 8),
+        for (final score in analysis.scores) ...[
+          _SentenceScoreRow(score: score, theme: theme),
+          const SizedBox(height: 8),
+        ],
+      ],
+    );
+  }
+}
+
+/// A single sentence's score + reasons row inside the section.
+class _SentenceScoreRow extends StatelessWidget {
+  const _SentenceScoreRow({required this.score, required this.theme});
+
+  final SentenceAiScentScore score;
+  final ThemeData theme;
+
+  @override
+  Widget build(BuildContext context) {
+    final color = _scoreColor(score.score);
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Expanded(
+              child: Text(
+                score.sentence,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+                style: theme.textTheme.bodySmall,
+              ),
+            ),
+            const SizedBox(width: 8),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+              decoration: BoxDecoration(
+                color: color.withValues(alpha: 0.15),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Text(
+                '${score.score}',
+                style: theme.textTheme.labelSmall?.copyWith(
+                  color: color,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+          ],
+        ),
+        if (score.reasons.isNotEmpty)
+          Padding(
+            padding: const EdgeInsets.only(top: 2),
+            child: Wrap(
+              spacing: 6,
+              runSpacing: 2,
+              children: [
+                for (final reason in score.reasons)
+                  Text(
+                    reason,
+                    style: theme.textTheme.labelSmall?.copyWith(
+                      color: theme.colorScheme.onSurfaceVariant,
+                      fontSize: 11,
+                    ),
+                  ),
+              ],
+            ),
+          ),
       ],
     );
   }
