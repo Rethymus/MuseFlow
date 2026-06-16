@@ -12,6 +12,7 @@ library;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:museflow/features/ai/application/anti_ai_scent_processor.dart';
 import 'package:museflow/features/ai/presentation/synthesis_notifier.dart';
 import 'package:museflow/shared/constants/app_constants.dart';
 
@@ -225,25 +226,37 @@ class _SynthesisPanelState extends ConsumerState<SynthesisPanel> {
     }
 
     if (state.isEditing || state.accumulatedText.isNotEmpty) {
-      // Editable text area per CAPT-04
+      // Editable text area per CAPT-04, with an optional anti-AI-scent
+      // review summary above it (SY-01, mirrors the editor flow's status bar).
       return Padding(
         padding: const EdgeInsets.all(16),
-        child: TextField(
-          controller: _editController,
-          focusNode: _editFocusNode,
-          maxLines: null,
-          expands: true,
-          textAlignVertical: TextAlignVertical.top,
-          style: theme.textTheme.bodyLarge,
-          decoration: InputDecoration(
-            border: const OutlineInputBorder(),
-            hintText: 'AI 生成的文本将显示在这里...',
-            contentPadding: const EdgeInsets.all(12),
-          ),
-          onChanged: (text) {
-            _isTextDirty = true;
-            ref.read(synthesisProvider.notifier).updateText(text);
-          },
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            if (state.reviewSignals.isNotEmpty) ...[
+              _SynthesisReviewSummary(signals: state.reviewSignals),
+              const SizedBox(height: 12),
+            ],
+            Expanded(
+              child: TextField(
+                controller: _editController,
+                focusNode: _editFocusNode,
+                maxLines: null,
+                expands: true,
+                textAlignVertical: TextAlignVertical.top,
+                style: theme.textTheme.bodyLarge,
+                decoration: InputDecoration(
+                  border: const OutlineInputBorder(),
+                  hintText: 'AI 生成的文本将显示在这里...',
+                  contentPadding: const EdgeInsets.all(12),
+                ),
+                onChanged: (text) {
+                  _isTextDirty = true;
+                  ref.read(synthesisProvider.notifier).updateText(text);
+                },
+              ),
+            ),
+          ],
         ),
       );
     }
@@ -416,6 +429,62 @@ class _SynthesisPanelState extends ConsumerState<SynthesisPanel> {
     _isTextDirty = false;
     _additionalInstructionController.clear();
   }
+}
+
+/// Anti-AI-scent review summary for the synthesis panel (SY-01).
+///
+/// Mirrors the editor status bar's review-signal rendering: shows the count
+/// of signals and leads with the highest-severity one, colored by severity.
+/// Rendered only when [SynthesisState.reviewSignals] is non-empty, so clean
+/// synthesized text produces no noise.
+class _SynthesisReviewSummary extends StatelessWidget {
+  const _SynthesisReviewSummary({required this.signals});
+
+  final List<ReviewSignal> signals;
+
+  @override
+  Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final primary = _highestSeverity(signals);
+    final color = switch (primary.severity) {
+      ReviewSignalSeverity.high => colorScheme.error,
+      ReviewSignalSeverity.medium => colorScheme.tertiary,
+      ReviewSignalSeverity.low => colorScheme.onSurfaceVariant,
+    };
+
+    return Tooltip(
+      message: '${primary.description}（${primary.evidence}）',
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+        decoration: BoxDecoration(
+          color: color.withValues(alpha: 0.08),
+          borderRadius: BorderRadius.circular(8),
+        ),
+        child: Text(
+          '${signals.length} 条AI修改复查：${primary.title}',
+          overflow: TextOverflow.ellipsis,
+          maxLines: 1,
+          style: TextStyle(
+            fontSize: 12,
+            fontWeight: FontWeight.w600,
+            color: color,
+          ),
+        ),
+      ),
+    );
+  }
+
+  ReviewSignal _highestSeverity(List<ReviewSignal> signals) {
+    final sorted = [...signals]
+      ..sort((a, b) => _rank(b.severity).compareTo(_rank(a.severity)));
+    return sorted.first;
+  }
+
+  int _rank(ReviewSignalSeverity severity) => switch (severity) {
+    ReviewSignalSeverity.high => 3,
+    ReviewSignalSeverity.medium => 2,
+    ReviewSignalSeverity.low => 1,
+  };
 }
 
 /// Blinking cursor widget for streaming text display.

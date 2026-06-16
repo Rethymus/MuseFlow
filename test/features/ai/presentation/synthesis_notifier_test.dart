@@ -14,6 +14,7 @@ import 'package:museflow/core/domain/fragment.dart';
 import 'package:museflow/features/ai/domain/ai_exception.dart';
 import 'package:museflow/features/ai/domain/ai_provider.dart';
 import 'package:museflow/features/ai/infrastructure/openai_adapter.dart';
+import 'package:museflow/features/ai/application/anti_ai_scent_processor.dart';
 import 'package:museflow/features/ai/presentation/synthesis_notifier.dart';
 import 'package:museflow/features/capture/presentation/capture_provider.dart';
 import 'package:museflow/core/presentation/providers.dart';
@@ -55,6 +56,34 @@ void main() {
       const state = SynthesisState(error: 'some error');
       final cleared = state.copyWith(error: null);
       expect(cleared.error, isNull);
+    });
+
+    test(
+      'reviewSignals should default to empty (SY-01 symmetry with editor)',
+      () {
+        const state = SynthesisState();
+        expect(state.reviewSignals, isEmpty);
+      },
+    );
+
+    test('copyWith should update and preserve reviewSignals', () {
+      final signals = [
+        const ReviewSignal(
+          title: '转场套话偏多',
+          description: 'd',
+          severity: ReviewSignalSeverity.medium,
+          evidence: '2 次',
+        ),
+      ];
+      final state = SynthesisState(reviewSignals: signals);
+      // Explicitly set is carried through.
+      expect(state.reviewSignals, same(signals));
+      // copyWith without reviewSignals preserves it.
+      final kept = state.copyWith(accumulatedText: 'x');
+      expect(kept.reviewSignals, same(signals));
+      // copyWith with reviewSignals replaces it.
+      final replaced = state.copyWith(reviewSignals: const []);
+      expect(replaced.reviewSignals, isEmpty);
     });
   });
 
@@ -165,6 +194,36 @@ void main() {
         // 然而 is highlight-only: wrapped with markers, not replaced
         expect(state.accumulatedText, contains('【然而】'));
       });
+
+      test(
+        'should expose reviewSignals after anti-AI-scent processing (SY-01)',
+        () async {
+          container = createContainer(
+            selectedFragments: [
+              Fragment(id: 'f1', text: 'test', createdAt: DateTime(2026, 1, 1)),
+            ],
+          );
+          // Two transition cliches (与此同时 + 就在这时) trigger the
+          // "转场套话偏多" review signal (count >= 2). _buildReviewSignals
+          // runs on the ORIGINAL text, so the signal fires even though
+          // the phrases are auto-deleted from processedText.
+          fakeAdapter.streamOutput = Stream.fromIterable([
+            '与此同时，他来了。就在这时，门开了。',
+          ]);
+
+          container.read(synthesisProvider.notifier).startSynthesis();
+          await _pumpAndWait();
+
+          final state = container.read(synthesisProvider);
+          // SY-01: reviewSignals must reach synthesis state (not be
+          // discarded), mirroring the editor flow.
+          expect(state.reviewSignals, isNotEmpty);
+          expect(
+            state.reviewSignals.any((s) => s.title.contains('转场套话')),
+            isTrue,
+          );
+        },
+      );
 
       test('should set error when no active provider configured', () async {
         container = createContainer(

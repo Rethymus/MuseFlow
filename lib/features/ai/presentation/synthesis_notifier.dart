@@ -47,6 +47,14 @@ class SynthesisState {
   /// Highlights from anti-AI-scent processing per AI-06.
   final List<TextHighlight> highlights;
 
+  /// Author-facing anti-AI-scent review signals per AI-06 (SY-01).
+  ///
+  /// Mirrors [EditorAiState.reviewSignals]: the processor computes these on
+  /// the synthesized text but the synthesis flow previously discarded them.
+  /// Surfacing them here lets the author see the same "套话/节奏/公式化"
+  /// feedback in the fragment→paragraph flow that the editor flow shows.
+  final List<ReviewSignal> reviewSignals;
+
   /// Optional additional instruction for regeneration per D-06.
   final String? additionalInstruction;
 
@@ -63,6 +71,7 @@ class SynthesisState {
     this.error,
     this.excludedFragmentsNotice,
     this.highlights = const [],
+    this.reviewSignals = const [],
     this.additionalInstruction,
     this.retryCount = 0,
   });
@@ -75,6 +84,7 @@ class SynthesisState {
     String? error,
     String? excludedFragmentsNotice,
     List<TextHighlight>? highlights,
+    List<ReviewSignal>? reviewSignals,
     String? additionalInstruction,
     int? retryCount,
   }) {
@@ -85,6 +95,7 @@ class SynthesisState {
       error: error,
       excludedFragmentsNotice: excludedFragmentsNotice,
       highlights: highlights ?? this.highlights,
+      reviewSignals: reviewSignals ?? this.reviewSignals,
       additionalInstruction:
           additionalInstruction ?? this.additionalInstruction,
       retryCount: retryCount ?? this.retryCount,
@@ -324,6 +335,7 @@ class SynthesisNotifier extends Notifier<SynthesisState> {
     state = state.copyWith(
       accumulatedText: result.processedText,
       highlights: result.highlights,
+      reviewSignals: result.reviewSignals,
       isStreaming: false,
       isEditing: true,
     );
