@@ -3,8 +3,8 @@ gsd_state_version: 1.0
 milestone: v1.5
 milestone_name: 真实创作验证与体验打磨
 status: active
-last_updated: "2026-06-13T00:00:00.000Z"
-last_activity: 2026-06-13
+last_updated: "2026-06-16T00:00:00.000Z"
+last_activity: 2026-06-16
 progress:
   total_phases: 8
   completed_phases: 0
@@ -97,6 +97,7 @@ Last activity: 2026-06-14 - P2 深化连发 5 项：260614-gmg（AA-02 对比减
 | 260614-aa4 | P2 AA-04 句子级 AI 味标记（SentenceAiScentAnalyzer 4 句局部信号：机械过渡词起句/AI套式/虚词占比过高/超长无断句；逐句 0-100 评分，worst/hasNotable；与 Phase 19 整体 detector 正交；1581 tests +9 零回归） | 2026-06-14 | 6233af5 | [260614-aa4-sentence-ai-scent](./quick/260614-aa4-sentence-ai-scent/) |
 | 260614-mc1 | P2 🔴P0 MC-01 动态知识库陈旧度追踪（KbStalenessChecker fresh<10/stale≥10/veryStale≥20 + null旧条目→fresh 向后兼容；CharacterCard+WorldSetting 加 lastVerifiedChapter 字段全套向后兼容；checker 与实体解耦；1602 tests +21 零回归） | 2026-06-14 | 31e9c30 | [260614-mc1-kb-staleness](./quick/260614-mc1-kb-staleness/) |
 | 260614-ci1 | P2 CI-01 PATHs 对话行为识别（DialogueAct 5行为枚举 + DialogueActClassifier 关键词信号分类纯逻辑，默认followUp，置信度/匹配词可解释；响应策略wiring留后续；1611 tests +9 零回归） | 2026-06-14 | 0525a9e | [260614-ci1-paths-dialogue-act](./quick/260614-ci1-paths-dialogue-act/) |
+| 260616-hd9 | 🔴P0 MC-01 UI wiring 收尾（KbStalenessChecker 接入 _CharacterCardTile/_WorldSettingTile：stale amber/veryStale red 徽章 + 「标记为已验证」PopupMenu 动作→save(copyWith(lastVerifiedChapter:count))；_StalenessBadge 组件；7 widget 测试三态+动作；1618 tests +7 零回归 analyze 0；红线仅触 presentation 2 文件） | 2026-06-16 | 643406a | [260616-hd9-mc-01-ui-wiring](./quick/260616-hd9-mc-01-ui-wiring/) |
 
 ## Deferred Items
 
@@ -110,6 +111,6 @@ Items acknowledged and deferred from v1.3:
 
 ## Session Continuity
 
-Last session: 2026-06-14
-Stopped at: P2 CI-01 PATHs 对话行为识别已交付（260614-ci1：DialogueAct 5行为枚举 + DialogueActClassifier 关键词信号分类纯逻辑，默认 followUp，置信度/匹配词可解释；响应策略 wiring 留后续；1611 tests +9 零回归）。本会话 P2 深化累计交付 5 项：AA-02 对比减法 / AA-03 创意度 / AA-04 句子级AI味 / 🔴P0 MC-01 KB陈旧度 / CI-01 对话行为。
-Next step: 各项 wiring 收尾（MC-01 UI 刷新按钮 / CI-01 act→prompt模板适配 / AA-04 编辑器高亮）/ MC-02 章节摘要自动刷新（需新建摘要 domain）/ AA-05 类型文反AI味，或 Phase 25 真实 API E2E（需真实 key/网络）
+Last session: 2026-06-16
+Stopped at: 🔴P0 MC-01 UI wiring 收尾已交付（260616-hd9：KbStalenessChecker 接入知识库页 _CharacterCardTile/_WorldSettingTile——stale(≥10章)/veryStale(≥20章) 中文徽章 + PopupMenu「标记为已验证」动作→save(copyWith(lastVerifiedChapter:count)) 形成「检测→提醒→校准→保鲜」闭环；7 widget 测试三态+动作全绿；1618 tests +7 零回归 analyze 0）。MC-01 核心逻辑（260614-mc1）至此端到端闭环。
+Next step: 剩余 wiring 收尾（CI-01 act→prompt 模板适配 / AA-04 编辑器句子级高亮）/ MC-02 章节摘要自动刷新（需新建摘要 domain）/ AA-05 类型文反AI味，或 Phase 25 真实 API E2E（需真实 key/网络）
