@@ -567,6 +567,33 @@ class AntiAIScentProcessor {
     '武学修为',
   ];
 
+  /// Urban (都市) genre cliches — modern business / CEO / high-society
+  /// register AI overuses in urban fiction (AA-05b). Distinct from the
+  /// xianxia/wuxia registers above.
+  static const List<String> _urbanCliches = [
+    '薄唇微抿',
+    '眉眼冷峻',
+    '气场全开',
+    '叱咤商界',
+    '高定西装',
+    '顶级会所',
+    '名门望族',
+    '雷厉风行',
+  ];
+
+  /// Sci-fi (科幻) genre cliches — hard-concept register AI overuses in
+  /// science fiction (AA-05b).
+  static const List<String> _scifiCliches = [
+    '量子纠缠',
+    '意识上传',
+    '星际航行',
+    '虚拟现实',
+    '光年之外',
+    '维度坍缩',
+    '文明等级',
+    '基因改造',
+  ];
+
   static const List<String> _formulaicEndings = [
     '一场更大的风暴',
     '真正的考验',
@@ -869,14 +896,22 @@ class AntiAIScentProcessor {
       );
     }
 
-    final xianxiaHits = _countPhraseHits(text, _xianxiaCliches);
-    final wuxiaHits = _countPhraseHits(text, _wuxiaCliches);
-    final genreClicheCount = xianxiaHits + wuxiaHits;
+    // AA-05: count cliches per genre and name the dominant one so the
+    // feedback is accurate for the author's actual register — a sci-fi
+    // writer should not be told their 修仙 phrases repeat. Insertion order
+    // sets tie-break priority (修仙 > 武侠 > 都市 > 科幻): reduce returns the
+    // earlier entry when counts are equal.
+    final genreHits = <String, int>{
+      '修仙': _countPhraseHits(text, _xianxiaCliches),
+      '武侠': _countPhraseHits(text, _wuxiaCliches),
+      '都市': _countPhraseHits(text, _urbanCliches),
+      '科幻': _countPhraseHits(text, _scifiCliches),
+    };
+    final genreClicheCount = genreHits.values.fold(0, (a, b) => a + b);
     if (genreClicheCount >= 2) {
-      // Name the dominant genre so the feedback is accurate for the author's
-      // actual register (AA-05): a wuxia writer should not be told their
-      // 修仙 phrases repeat. On a tie, xianxia wins by declaration order.
-      final genreLabel = xianxiaHits >= wuxiaHits ? '修仙' : '武侠';
+      final genreLabel = genreHits.entries
+          .reduce((a, b) => a.value >= b.value ? a : b)
+          .key;
       signals.add(
         ReviewSignal(
           title: '类型文套句偏多',

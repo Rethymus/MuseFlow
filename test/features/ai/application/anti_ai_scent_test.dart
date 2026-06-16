@@ -314,6 +314,30 @@ void main() {
         expect(genreSignal.description, isNot(contains('修仙')));
       });
 
+      test('should detect urban genre cliches (AA-05b)', () {
+        final result = processor.process(
+          '他薄唇微抿，眉眼冷峻，气场全开地走进顶级会所。'
+          '这位叱咤商界的人物，向来雷厉风行。',
+          bannedPhrases: [],
+        );
+        final genreSignal = result.reviewSignals.firstWhere(
+          (s) => s.title == '类型文套句偏多',
+        );
+        expect(genreSignal.description, contains('都市'));
+      });
+
+      test('should detect sci-fi genre cliches (AA-05b)', () {
+        final result = processor.process(
+          '意识上传完成后，他跨越光年之外的星际航行。'
+          '量子纠缠维系着维度坍缩前最后的文明等级。',
+          bannedPhrases: [],
+        );
+        final genreSignal = result.reviewSignals.firstWhere(
+          (s) => s.title == '类型文套句偏多',
+        );
+        expect(genreSignal.description, contains('科幻'));
+      });
+
       test('should flag uniform sentence rhythm for author review', () {
         final result = processor.process(
           '林风握紧木剑走过石阶。'
