@@ -129,6 +129,25 @@ class SentenceAiScentAnalyzer {
     '们',
   };
 
+  /// Hollow intensifiers (AA-04b) — empty degree adverbs AI prose pads with.
+  /// Distinct from [functionChars]: these are content-ish adverbs (真是/十分/
+  /// 非常…) so the function-word-ratio signal structurally misses them.
+  /// Flagged only on concentration (≥3 hits/sentence) to stay precise.
+  static const Set<String> emptyIntensifiers = {
+    '真是',
+    '简直',
+    '十分',
+    '非常',
+    '尤其',
+    '格外',
+    '颇为',
+    '相当',
+    '无比',
+    '极其',
+    '尤为',
+    '极为',
+  };
+
   /// Analyzes [text] sentence-by-sentence, returning scores sorted worst-first.
   ///
   /// Sentences with fewer than 2 CJK characters are skipped as fragments.
@@ -186,6 +205,25 @@ class SentenceAiScentAnalyzer {
     if (cjk.length > 40 && !RegExp(r'[、，；]').hasMatch(sentence)) {
       score += 30;
       reasons.add('超长无断句');
+    }
+
+    // Signal 5: hollow-intensifier concentration (AA-04b). Counts empty degree
+    // adverbs (真是/十分/非常…) in the sentence — classic AI padding the
+    // function-word-ratio signal misses (intensifiers aren't functionChars).
+    // ≥3 hits/sentence fires; 1-2 is normal rhetoric and stays silent.
+    var intensifierHits = 0;
+    for (final w in emptyIntensifiers) {
+      var offset = 0;
+      while (true) {
+        final idx = sentence.indexOf(w, offset);
+        if (idx == -1) break;
+        intensifierHits++;
+        offset = idx + w.length;
+      }
+    }
+    if (intensifierHits >= 3) {
+      score += 30;
+      reasons.add('空洞强调词堆砌');
     }
 
     return SentenceAiScentScore(

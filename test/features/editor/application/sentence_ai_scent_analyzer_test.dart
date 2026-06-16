@@ -52,6 +52,37 @@ void main() {
       expect(however.reasons.join(), anyOf(contains('过渡'), contains('机械')));
     });
 
+    test('flags a sentence stuffed with hollow intensifiers (AA-04b)', () {
+      // 3+ empty intensifiers (真是/非常/十分) in one sentence is classic AI
+      // padding. Distinct from all 4 existing signals: intensifiers are not
+      // functionChars (signal 3 misses them — ratio 2/8=0.25 here), no
+      // syntactic formula (signal 2), no transition start (signal 1), <40
+      // chars (signal 4). Only this 5th signal catches it.
+      const text = '她真是非常十分开心。';
+      final result = analyzer.analyze(text);
+      final padded = result.scores.firstWhere(
+        (s) => s.sentence.contains('真是'),
+      );
+      expect(
+        padded.score,
+        greaterThanOrEqualTo(SentenceAiScentAnalyzer.notableThreshold),
+      );
+      expect(padded.reasons.join(), contains('强调'));
+    });
+
+    test('does not flag a single intensifier as padding (AA-04b)', () {
+      // 1 intensifier is normal rhetoric — precision: don't annoy the author.
+      const text = '这真是很好的天气。';
+      final result = analyzer.analyze(text);
+      final sentence = result.scores.firstWhere(
+        (s) => s.sentence.contains('天气'),
+      );
+      expect(
+        sentence.score,
+        lessThan(SentenceAiScentAnalyzer.notableThreshold),
+      );
+    });
+
     test('flags an AI-tell pattern ("不仅...而且")', () {
       const text = '他不仅剑法精湛，而且心思缜密。';
       final result = analyzer.analyze(text);
