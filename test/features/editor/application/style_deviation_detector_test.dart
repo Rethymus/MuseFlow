@@ -276,5 +276,70 @@ void main() {
         expect(dev.deviationScore, lessThanOrEqualTo(1.0));
       }
     });
+
+    // Regression: bare single-char 恨/爱 entries in the inline sentiment Sets
+    // are matched as substrings by String.allMatches, over-counting sentiment
+    // inside common compounds (恨不得 = eager/positive; 可爱/爱好 = compounds
+    // that contain the bare char). See PLAN 260617-1uk.
+    group('sentiment substring overcount regression', () {
+      test(
+        'should not inflate negative sentiment via bare 恨 inside 恨不得 when text is dominated by eager 恨不得',
+        () {
+          // regression: bare '恨' substring must not match inside 恨不得.
+          // 恨不得 means "eager to / dying to" (positive sense), but the bare
+          // '恨' needle would previously add a spurious negative hit, pushing
+          // emotionalTone.intensity above the neutral band.
+          // Two 恨不得 occurrences in a short passage force pre-fix
+          // negativeCount >= 2, well above the intensity threshold.
+          const text = '他恨不得立刻出发。她恨不得马上跑去。两人恨不得飞过去。';
+
+          final result = detector.analyze(text: text, profile: _testProfile());
+
+          expect(result, isNotNull);
+          final toneDev = result!.deviations.firstWhere(
+            (d) => d.dimension == StyleDimension.emotionalTone,
+          );
+          // After fix: no genuine negative words present → intensity stays in
+          // the neutral band (< 0.6). Pre-fix: bare '恨' hits 3x → inflates.
+          expect(
+            toneDev.textValue,
+            lessThan(0.6),
+            reason:
+                'Bare 恨 substring must not match inside 恨不得 (compound = '
+                'eager/positive). intensity inflated by spurious negative hits.',
+          );
+        },
+      );
+
+      test(
+        'should not inflate positive sentiment via bare 爱 inside 可爱/爱好 compounds when no genuine positives are present',
+        () {
+          // regression: bare '爱' substring must not match inside 可爱/爱好/
+          // 爱情. These compounds contain the char 爱 but are not in the
+          // positive Set; the bare '爱' needle would previously add spurious
+          // positive hits, pushing intensity above the neutral band.
+          // Three compound occurrences in a short passage force pre-fix
+          // positiveCount >= 3, well above the threshold.
+          const text = '小女孩可爱极了。这是她的爱好。她相信爱情。';
+
+          final result = detector.analyze(text: text, profile: _testProfile());
+
+          expect(result, isNotNull);
+          final toneDev = result!.deviations.firstWhere(
+            (d) => d.dimension == StyleDimension.emotionalTone,
+          );
+          // After fix: no genuine positive words present → intensity stays in
+          // the neutral band (< 0.6). Pre-fix: bare '爱' hits 3x → inflates.
+          expect(
+            toneDev.textValue,
+            lessThan(0.6),
+            reason:
+                'Bare 爱 substring must not match inside 可爱/爱好/爱情 '
+                '(compounds containing the char). intensity inflated by '
+                'spurious positive hits.',
+          );
+        },
+      );
+    });
   });
 }
