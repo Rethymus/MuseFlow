@@ -338,6 +338,39 @@ void main() {
         expect(genreSignal.description, contains('科幻'));
       });
 
+      test('should detect xuanhuan genre cliches (AA-05c)', () {
+        // Xuanhuan-dominant text (西方魔法/异界/血脉契约 register) previously
+        // produced NO genre signal — AA-05b deferred 玄幻 citing "high overlap
+        // with xianxia", but the western-magic register is a xianxia blind
+        // spot. Now it surfaces 类型文套句偏多 naming 玄幻, not 修仙.
+        final result = processor.process(
+          '他血脉觉醒，吟唱咒语召唤魔兽。'
+          '在这座魔法学院里，他签订了契约，踏上了异界大陆的征途。',
+          bannedPhrases: [],
+        );
+        final genreSignal = result.reviewSignals.firstWhere(
+          (s) => s.title == '类型文套句偏多',
+        );
+        expect(genreSignal.description, contains('玄幻'));
+        // Proves the xuanhuan register does not collide with xianxia —
+        // refutes the AA-05b "high overlap" deferral reason.
+        expect(genreSignal.description, isNot(contains('修仙')));
+      });
+
+      test('should weight xianxia above xuanhuan on equal hits (AA-05c)', () {
+        // 玄幻 enters the genre-priority chain at lowest precedence
+        // (修仙 > 武侠 > 都市 > 科幻 > 玄幻). reduce keeps the earlier entry
+        // on a tie, so a mixed xianxia+xuanhuan text names 修仙.
+        final result = processor.process(
+          '他体内灵力翻涌，魔法元素在掌心汇聚。',
+          bannedPhrases: [],
+        );
+        final genreSignal = result.reviewSignals.firstWhere(
+          (s) => s.title == '类型文套句偏多',
+        );
+        expect(genreSignal.description, contains('修仙'));
+      });
+
       test('should flag uniform sentence rhythm for author review', () {
         final result = processor.process(
           '林风握紧木剑走过石阶。'

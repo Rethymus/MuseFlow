@@ -594,6 +594,23 @@ class AntiAIScentProcessor {
     '基因改造',
   ];
 
+  /// Xuanhuan (玄幻) genre cliches — western-magic / otherworld / bloodline-
+  /// pact register AI overuses in xuanhuan fiction (AA-05c). Closes the 5/5
+  /// preset coverage (修仙/武侠/都市/科幻/玄幻, PROJECT.md). Distinct from the
+  /// xianxia 灵力 register: xuanhuan's magic/otherworld/contract vocabulary
+  /// (魔法/异界/血脉/契约) is a xianxia blind spot — refuting the AA-05b
+  /// "high overlap with xianxia" deferral.
+  static const List<String> _xuanhuanCliches = [
+    '魔法元素',
+    '吟唱咒语',
+    '血脉觉醒',
+    '签订契约',
+    '召唤魔兽',
+    '魔法学院',
+    '圣域',
+    '异界大陆',
+  ];
+
   static const List<String> _formulaicEndings = [
     '一场更大的风暴',
     '真正的考验',
@@ -899,13 +916,14 @@ class AntiAIScentProcessor {
     // AA-05: count cliches per genre and name the dominant one so the
     // feedback is accurate for the author's actual register — a sci-fi
     // writer should not be told their 修仙 phrases repeat. Insertion order
-    // sets tie-break priority (修仙 > 武侠 > 都市 > 科幻): reduce returns the
-    // earlier entry when counts are equal.
+    // sets tie-break priority (修仙 > 武侠 > 都市 > 科幻 > 玄幻): reduce
+    // returns the earlier entry when counts are equal.
     final genreHits = <String, int>{
       '修仙': _countPhraseHits(text, _xianxiaCliches),
       '武侠': _countPhraseHits(text, _wuxiaCliches),
       '都市': _countPhraseHits(text, _urbanCliches),
       '科幻': _countPhraseHits(text, _scifiCliches),
+      '玄幻': _countPhraseHits(text, _xuanhuanCliches),
     };
     final genreClicheCount = genreHits.values.fold(0, (a, b) => a + b);
     if (genreClicheCount >= 2) {
