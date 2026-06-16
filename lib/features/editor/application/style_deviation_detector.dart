@@ -55,11 +55,18 @@ class StyleDeviationResult {
   /// Whether the text has any significant deviations.
   final bool hasDeviations;
 
+  /// The source text that was analyzed, for downstream sentence-level tooling.
+  ///
+  /// Defaults to an empty string when not provided (backward compatibility:
+  /// no source text carried through).
+  final String text;
+
   const StyleDeviationResult({
     required this.deviations,
     required this.aiScentScore,
     required this.summary,
     required this.hasDeviations,
+    this.text = '',
   });
 }
 
@@ -126,6 +133,7 @@ class StyleDeviationDetector {
       aiScentScore: aiScentScore,
       summary: summary,
       hasDeviations: hasDeviations,
+      text: text,
     );
   }
 
