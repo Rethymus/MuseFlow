@@ -99,6 +99,7 @@ Last activity: 2026-06-14 - P2 深化连发 5 项：260614-gmg（AA-02 对比减
 | 260614-ci1 | P2 CI-01 PATHs 对话行为识别（DialogueAct 5行为枚举 + DialogueActClassifier 关键词信号分类纯逻辑，默认followUp，置信度/匹配词可解释；响应策略wiring留后续；1611 tests +9 零回归） | 2026-06-14 | 0525a9e | [260614-ci1-paths-dialogue-act](./quick/260614-ci1-paths-dialogue-act/) |
 | 260616-hd9 | 🔴P0 MC-01 UI wiring 收尾（KbStalenessChecker 接入 _CharacterCardTile/_WorldSettingTile：stale amber/veryStale red 徽章 + 「标记为已验证」PopupMenu 动作→save(copyWith(lastVerifiedChapter:count))；_StalenessBadge 组件；7 widget 测试三态+动作；1618 tests +7 零回归 analyze 0；红线仅触 presentation 2 文件） | 2026-06-16 | 643406a | [260616-hd9-mc-01-ui-wiring](./quick/260616-hd9-mc-01-ui-wiring/) |
 | 260616-ht9 | AA-04 句子级 AI 痕迹面板（反AI味产品灵魂）：StyleDeviationResult 加 text 字段贯通→StyleThermometerDashboard 加「最可疑的句子」section（SentenceAiScentAnalyzer 取 top3 句子+分数徽章+reasons，hasNotable 才渲染避免噪音）；3 widget 测试（AI套式句渲染/fresh不渲染/空文本不渲染）；1621 tests +3 零回归 analyze 0；红线守住 sentence_analyzer 本体） | 2026-06-16 | fe53b0d | [260616-ht9-aa-04-ai-wiring](./quick/260616-ht9-aa-04-ai-wiring/) |
+| 260616-ci2 | CI-01 PATHs 响应策略路由 wiring（收尾 260614-ci1 纯逻辑）：新建 DialogueActMiddleware 接入 prompt pipeline——读 additionalInstruction→DialogueActClassifier 分类→按 4 actionable 行为（风格调整/内容探索/意图修订/内容注入）注入中文响应策略系统消息（merge 进 messages[0]，与 PersonaInjection/BannedList 约定一致）；followUp/无信号/confidence0 三态 no-op 避免噪音；管线注册紧随 SystemPromptMiddleware；11 测试（4 注入+5 no-op+2 集成）；1632 tests +11 零回归 analyze 0；红线守住 classifier/dialogue_act/synthesis_notifier | 2026-06-16 | (本提交) | [260616-ci2-dialogue-act-middleware](./quick/260616-ci2-dialogue-act-middleware/) |
 
 ## Deferred Items
 
@@ -113,5 +114,5 @@ Items acknowledged and deferred from v1.3:
 ## Session Continuity
 
 Last session: 2026-06-16
-Stopped at: 本会话 GSD-quick 交付 2 项 wiring 收尾：① 🔴P0 MC-01（260616-hd9）KbStalenessChecker 接入知识库页——stale/veryStale 徽章+「标记为已验证」动作，7 测试；② AA-04（260616-ht9）句子级 AI 痕迹面板——StyleDeviationResult.text 贯通→dashboard「最可疑的句子」section，3 测试。累计 1621 tests（基线 1611→+10）零回归 analyze 0。MC-01 与 AA-04 核心逻辑（260614-mc1/aa4）均至此端到端闭环。
-Next step: 剩余 wiring（CI-01 DialogueAct→prompt 模板适配，需先定位 synthesis/chat prompt 构建管线）/ MC-02 章节摘要自动刷新（需新建摘要 domain）/ AA-05 类型文反AI味，或 Phase 25 真实 API E2E（需真实 key/网络）。注：kimi-webbridge daemon 本沙箱未运行（需用户浏览器活跃），视觉 UAT 留待真机。
+Stopped at: 本会话 GSD-quick 连发 3 项 wiring 收尾：① 🔴P0 MC-01（260616-hd9）KbStalenessChecker 接入知识库页——stale/veryStale 徽章+「标记为已验证」动作，7 测试；② AA-04（260616-ht9）句子级 AI 痕迹面板——StyleDeviationResult.text 贯通→dashboard「最可疑的句子」section，3 测试；③ CI-01（260616-ci2）PATHs 响应策略路由——DialogueActMiddleware 接入 prompt pipeline，按对话行为注入中文响应策略，merge 进 messages[0]（与 PersonaInjection/BannedList 约定一致），11 测试。累计 1632 tests（基线 1611→+21）零回归 analyze 0。MC-01/AA-04/CI-01 三项核心逻辑（260614-mc1/aa4/ci1）均至此端到端闭环——P2 三项悬空纯逻辑全部接入。
+Next step: MC-02 章节摘要自动刷新（需新建摘要 domain）/ AA-05 类型文反AI味 / Phase 25 真实 API E2E（需真实 key/网络）。注：kimi-webbridge daemon 本沙箱未运行（需用户浏览器活跃），视觉 UAT 留待真机。
