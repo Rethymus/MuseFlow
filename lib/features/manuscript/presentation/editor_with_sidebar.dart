@@ -1,3 +1,11 @@
+/// Manuscript editor with chapter sidebar.
+///
+/// Wraps SuperEditor with chapter management. Split across 2 part files
+/// (editor_with_sidebar_intents/layout.dart) to satisfy the
+/// 03-flutter-standards.md file-size cap. All symbols live in the same
+/// library — consumers import this file unchanged.
+library;
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -22,26 +30,8 @@ import 'package:museflow/features/manuscript/presentation/chapter_sidebar.dart';
 import 'package:museflow/shared/constants/app_constants.dart';
 import 'package:super_editor/super_editor.dart';
 
-/// Builds a theme-aware provenance stylesheet for the manuscript editor.
-///
-/// Converts the former top-level variable to a function so text color
-/// follows the current theme's onSurface color (dark mode fix, P14-07-UI-01).
-Stylesheet _buildManuscriptStylesheet(BuildContext context) {
-  final textColor = Theme.of(context).colorScheme.onSurface;
-  final fontFamily = Theme.of(context).textTheme.bodyMedium?.fontFamily;
-
-  return defaultStylesheet.copyWith(
-    inlineTextStyler: (attributions, existingStyle) {
-      var style = defaultInlineTextStyler(attributions, existingStyle);
-      // Ensure text color follows the theme (dark mode fix).
-      style = style.copyWith(color: textColor, fontFamily: fontFamily);
-      if (attributions.contains(aiProvenanceAttribution)) {
-        style = style.copyWith(backgroundColor: provenanceColor);
-      }
-      return style;
-    },
-  );
-}
+part 'editor_with_sidebar_intents.dart';
+part 'editor_with_sidebar_layout.dart';
 
 /// Full-screen editor with a chapter navigation sidebar.
 ///
@@ -608,191 +598,6 @@ class _EditorWithSidebarState extends ConsumerState<EditorWithSidebar>
     );
   }
 
-  /// Desktop layout: sidebar + divider + editor in a Row.
-  Widget _buildDesktopLayout({
-    required ColorScheme colorScheme,
-    required String manuscriptTitle,
-    required List<Chapter> chapters,
-    required int currentWordCount,
-    required int targetWordCount,
-    required bool hasSelection,
-  }) {
-    final isLastChapter =
-        chapters.isEmpty || _currentChapterId == chapters.last.id;
-    return Row(
-      children: [
-        ChapterSidebar(
-          manuscriptId: widget.manuscriptId,
-          manuscriptTitle: manuscriptTitle,
-          activeChapterId: _currentChapterId,
-          onChapterTap: _switchChapter,
-          onNewChapter: _showCreateChapterDialog,
-          onReorder: (manuscriptId, oldIndex, newIndex) {
-            ref
-                .read(chapterNotifierProvider.notifier)
-                .reorder(manuscriptId, oldIndex, newIndex);
-          },
-          onChapterContextMenu: (chapter) {
-            final isCurrent = chapter.id == _currentChapterId;
-            showChapterContextMenu(
-              context: context,
-              position: _getMenuPosition(chapter),
-              isSplitEnabled: isCurrent && hasSelection,
-              isMergeEnabled: !isLastChapter || chapter.id != chapters.last.id,
-              onAction: (action) => _handleContextMenuAction(chapter, action),
-            );
-          },
-        ),
-        VerticalDivider(width: 1, thickness: 1, color: colorScheme.outline),
-        Expanded(
-          child: _buildEditorArea(
-            colorScheme,
-            currentWordCount,
-            targetWordCount,
-          ),
-        ),
-      ],
-    );
-  }
-
-  /// Mobile layout: editor with drawer for chapter navigation.
-  Widget _buildMobileLayout({
-    required BuildContext context,
-    required ColorScheme colorScheme,
-    required String manuscriptTitle,
-    required List<Chapter> chapters,
-    required int currentWordCount,
-    required int targetWordCount,
-    required bool hasSelection,
-  }) {
-    final isLastChapter =
-        chapters.isEmpty || _currentChapterId == chapters.last.id;
-    return Scaffold(
-      drawer: Drawer(
-        child: ChapterSidebar(
-          manuscriptId: widget.manuscriptId,
-          manuscriptTitle: manuscriptTitle,
-          activeChapterId: _currentChapterId,
-          onChapterTap: (chapter) {
-            _switchChapter(chapter);
-            Navigator.of(context).pop(); // close drawer
-          },
-          onNewChapter: () {
-            Navigator.of(context).pop();
-            _showCreateChapterDialog();
-          },
-          onReorder: (manuscriptId, oldIndex, newIndex) {
-            ref
-                .read(chapterNotifierProvider.notifier)
-                .reorder(manuscriptId, oldIndex, newIndex);
-          },
-          onChapterContextMenu: (chapter) {
-            final isCurrent = chapter.id == _currentChapterId;
-            showChapterContextMenu(
-              context: context,
-              position: _getMenuPosition(chapter),
-              isSplitEnabled: isCurrent && hasSelection,
-              isMergeEnabled: !isLastChapter || chapter.id != chapters.last.id,
-              onAction: (action) => _handleContextMenuAction(chapter, action),
-            );
-          },
-        ),
-      ),
-      body: _buildEditorArea(colorScheme, currentWordCount, targetWordCount),
-    );
-  }
-
-  /// Builds the main editor area with toolbar, editor, and status bar.
-  Widget _buildEditorArea(
-    ColorScheme colorScheme,
-    int currentWordCount,
-    int targetWordCount,
-  ) {
-    if (_editor == null) {
-      return const Center(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(Icons.edit_note, size: 48, color: Colors.grey),
-            SizedBox(height: 8),
-            Text('选择或创建一个章节开始写作'),
-          ],
-        ),
-      );
-    }
-
-    return Column(
-      children: [
-        // Editor toolbar
-        EditorToolbar(editor: _editor!),
-        const DeviationWarningWidget(),
-        const StyleThermometerCard(),
-        const ForeshadowingReminderWidget(),
-        Divider(height: 1, thickness: 1, color: colorScheme.outline),
-        // Editor content
-        Expanded(
-          child: Padding(
-            padding: const EdgeInsets.all(24.0),
-            child: Center(
-              child: ConstrainedBox(
-                constraints: const BoxConstraints(
-                  maxWidth: AppConstants.editorMaxWidth,
-                ),
-                // ValueKey forces rebuild on chapter switch (per RESEARCH.md)
-                child: SuperEditor(
-                  key: ValueKey(_currentChapterId),
-                  editor: _editor!,
-                  autofocus: true,
-                  stylesheet: _buildManuscriptStylesheet(context),
-                  selectionLayerLinks: _selectionLinks,
-                  documentOverlayBuilders: [
-                    _SelectionLeadersLayerBuilder(links: _selectionLinks!),
-                    const ContextAnchorOverlayBuilder(),
-                    const DiffOverlayBuilder(),
-                    FunctionalSuperEditorLayerBuilder((context, editContext) {
-                      return ContentLayerProxyWidget(
-                        child: FloatingToolbar(
-                          editor: _editor!,
-                          selectionLayerLinks: _selectionLinks!,
-                          manuscriptId: widget.manuscriptId,
-                          chapterId: _currentChapterId,
-                        ),
-                      );
-                    }),
-                    FunctionalSuperEditorLayerBuilder((context, editContext) {
-                      return ContentLayerProxyWidget(
-                        child: AcceptRejectBar(
-                          editor: _editor!,
-                          selectionLayerLinks: _selectionLinks!,
-                        ),
-                      );
-                    }),
-                    const DefaultCaretOverlayBuilder(),
-                  ],
-                ),
-              ),
-            ),
-          ),
-        ),
-        // Status bar with manuscript progress
-        StatusBar(
-          currentWordCount: currentWordCount,
-          targetWordCount: targetWordCount,
-        ),
-      ],
-    );
-  }
-
-  /// Computes the position for a context menu relative to a chapter row.
-  RelativeRect _getMenuPosition(Chapter chapter) {
-    final renderBox = context.findRenderObject() as RenderBox?;
-    if (renderBox == null) {
-      return const RelativeRect.fromLTRB(32, 200, 0, 0);
-    }
-    final size = renderBox.size;
-    return RelativeRect.fromLTRB(260, 200, size.width - 260, 0);
-  }
-
   // --- Editor Shortcuts ---
 
   void _toggleBold() {
@@ -831,57 +636,5 @@ class _EditorWithSidebarState extends ConsumerState<EditorWithSidebar>
 
   void _undoLastAIChange() {
     ref.read(editorAINotifierProvider.notifier).undoLastAIChange();
-  }
-}
-
-// --- Keyboard shortcut intents ---
-
-class _PreviousChapterIntent extends Intent {
-  const _PreviousChapterIntent();
-}
-
-class _NextChapterIntent extends Intent {
-  const _NextChapterIntent();
-}
-
-class _NewChapterIntent extends Intent {
-  const _NewChapterIntent();
-}
-
-class _BoldIntent extends Intent {
-  const _BoldIntent();
-}
-
-class _ItalicIntent extends Intent {
-  const _ItalicIntent();
-}
-
-class _UndoAIIntent extends Intent {
-  const _UndoAIIntent();
-}
-
-class _QuickInsertIntent extends Intent {
-  const _QuickInsertIntent();
-}
-
-/// Layer builder that positions leader widgets at selection bounds.
-///
-/// Provides the [LeaderLink]s that the [FloatingToolbar] uses
-/// via [Follower.withOffset] to position itself relative to the selection.
-class _SelectionLeadersLayerBuilder implements SuperEditorLayerBuilder {
-  const _SelectionLeadersLayerBuilder({required this.links});
-
-  final SelectionLayerLinks links;
-
-  @override
-  ContentLayerWidget build(
-    BuildContext context,
-    SuperEditorContext editContext,
-  ) {
-    return SelectionLeadersDocumentLayer(
-      document: editContext.document,
-      selection: editContext.composer.selectionNotifier,
-      links: links,
-    );
   }
 }
