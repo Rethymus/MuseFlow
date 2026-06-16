@@ -3,9 +3,9 @@ gsd_state_version: 1.0
 milestone: v1.5
 milestone_name: milestone
 status: v1.4 shipped (24 phases, 1468 tests), 6项功能改进完成，待真实API验证
-stopped_at: context exhaustion at 75% (2026-06-16)
-last_updated: "2026-06-16T14:42:00.000Z"
-last_activity: "2026-06-16 — quick-260616-vdw refactor: 拆分 provider_management_page.dart（uho 模式复刻，737→329 行达 200-400 推荐区）；单 part 文件 extension on _ProviderManagementPageStateLayout 承载 3 个 build 辅助方法；零行为变更 analyze 0 / 1647 tests 零回归"
+stopped_at: context exhaustion at 78% (2026-06-16)
+last_updated: "2026-06-16T16:06:26.143Z"
+last_activity: "2026-06-16 — quick-260616-wao refactor: 抽取 app.dart 路由表到 app_routes.dart part 文件（800 红线战役末块，复刻 uho/vdw 模式；关键差异 MuseFlowApp 是 ConsumerWidget 无 State 类，extension 直接 on MuseFlowApp 承载 createRouter()）；app.dart 307→98 行；零行为变更 analyze 0 / 1647 tests 零回归"
 progress:
   total_phases: 8
   completed_phases: 0
@@ -27,7 +27,7 @@ See: .planning/PROJECT.md (updated 2026-06-12)
 
 Phase: Pre-25 of 32 (v1.5 — 真实创作验证与体验打磨) 🟡 PLANNING
 Status: v1.4 shipped (24 phases, 1468 tests), 6项功能改进完成，待真实API验证
-Last activity: 2026-06-16 — quick-260616-wao refactor: 抽取 app.dart 路由表到 app_routes.dart part 文件（800 红线战役末块，复刻 uho/vdw 模式；关键差异 MuseFlowApp 是 ConsumerWidget 无 State 类，extension 直接 on MuseFlowApp 承载 createRouter()）；app.dart 307→98 行；零行为变更 analyze 0 / 1647 tests 零回归
+Last activity: 2026-06-17 — quick-260617-05c fix: 修复 style_deviation_detector 情感词双计 bug（_countPositive/NegativeSentiment 用 const List 含重复词条 喜悦/痛苦/愤怒/恐惧 各×2，计数循环把重复词命中算两次虚高 positive/negative 计数扭曲 warmth/intensity→_classifyTone）；两 List 改 const Set 字面量+移除 4 dup 条目（与 sentiment_lexicon.dart Set 先例一致，结构上杜绝复发）；analyze 0 / detector 13 测试全绿
 
 Progress: [░░░░░░░░░░░░░░░░░░░░] 0%
 
@@ -112,6 +112,7 @@ Last activity: 2026-06-14 - P2 深化连发 5 项：260614-gmg（AA-02 对比减
 | 260616-uho | refactor 拆分 editor_with_sidebar.dart 为 part 文件（qxe/rj4 800 红线消除战役收尾，拆后全仓零文件超 800）：主文件 887→640 行；Dart 无 partial class 故用同库私有 extension _EditorWithSidebarStateLayout 承载 4 个 layout 辅助方法（_buildDesktopLayout/_buildMobileLayout/_buildEditorArea/_getMenuPosition，build() 内裸调用经 extension-on-this 解析零改动）+ editor_with_sidebar_intents.dart part（7 个 _XxxIntent 类 + _SelectionLeadersLayerBuilder + _buildManuscriptStylesheet 函数）；part/part of 同库机制零行为变更，2 消费方（app.dart + editor_with_sidebar_test）零改动；analyze 0 / 1647 tests 零回归 | 2026-06-16 | 159d58a | [260616-uho-refactor-editor-with-sidebar-dart-part-s](./quick/260616-uho-refactor-editor-with-sidebar-dart-part-s/) |
 | 260616-vdw | refactor 拆分 provider_management_page.dart（uho 模式复刻，全仓最大文件 737→329 行，达 200-400 推荐区）：单 part 文件 provider_management_page_layout.dart 用同库私有 extension _ProviderManagementPageStateLayout 承载 3 个 build 辅助方法（_buildMobileSwitcher/_buildLeftPanel/_buildRightPanel，Dart 无 partial class，build() 裸调用经 extension-on-this 解析零改动）；part/part of 同库机制零行为变更，消费方零改动；analyze 0 / 1647 tests 零回归 | 2026-06-16 | afc9e23 | [260616-vdw-refactor-provider-management-page-dart-p](./quick/260616-vdw-refactor-provider-management-page-dart-p/) |
 | 260616-wao | refactor 抽取 app.dart 路由表到 part 文件（800 红线战役末块，复刻 uho/vdw 模式）：210 行 _createRouter GoRouter 路由表搬入新建 app_routes.dart（part of 'app.dart' + extension _MuseFlowAppRoutes on MuseFlowApp 承载 createRouter()；关键差异：MuseFlowApp 是 ConsumerWidget 无 State 类，extension 直接 on MuseFlowApp 本身而非 _State）；主文件加 library; + part 指令，build() _createRouter()→createRouter()（extension-on-this 裸调用解析），_handleRedirect 留主文件经同库 part 可见性被 redirect 引用；35 import 全留主文件（part 文件禁止 import 的 Dart 规则）；app.dart 307→98 行；零行为变更零消费方改动（main.dart/token_audit_route_test 透明）；analyze 0 / 1647 tests 零回归 | 2026-06-16 | 1fb0e19 | [260616-wao-extract-app-routes-partfile](./quick/260616-wao-extract-app-routes-partfile/) |
+| 260617-05c | fix 修复 style_deviation_detector 情感词双计 bug：_countPositive/NegativeSentiment 用 const List 含重复词条（positives 喜悦×2；negatives 痛苦/愤怒/恐惧 各×2），计数循环 for(word in list) count+=word.allMatches(text).length 把重复词命中算两次，虚高 positive/negative 计数扭曲 warmth/intensity→_classifyTone 与偏差检测（lines 317-347）；两 List 改 const Set 字面量+移除 4 dup（与 sentiment_lexicon.dart Set 先例一致，结构杜绝复发，for-in 计数等价）；私有方法局部作用域无外部引用；analyze 0 / detector 13 测试全绿 | 2026-06-17 | 9122b01 | [260617-05c-fix-sentiment-double-count](./quick/260617-05c-fix-sentiment-double-count/) |
 
 ## Deferred Items
 
@@ -125,6 +126,6 @@ Items acknowledged and deferred from v1.3:
 
 ## Session Continuity
 
-Last session: 2026-06-16T12:04:40.300Z
-Stopped at: context exhaustion at 75% (2026-06-16)
+Last session: 2026-06-16T16:06:26.138Z
+Stopped at: context exhaustion at 78% (2026-06-16)
 Next step: MC-02 章节摘要自动刷新（需新建摘要 domain）/ Phase 25 真实 API E2E（需真实 key/网络）。注：AA-05 类型套句系列已 5/5 闭合（修仙/武侠/都市/科幻/玄幻全覆盖，2026-06-16）；kimi-webbridge daemon 本沙箱未运行（4 次确认 NO_PROCESS/NO_9222，需用户浏览器活跃），视觉 UAT 留待真机。
