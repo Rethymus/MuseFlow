@@ -457,7 +457,7 @@ class StyleDeviationDetector {
   }
 
   int _countPositiveSentiment(String text) {
-    const positives = [
+    const positives = <String>{
       '温暖',
       '幸福',
       '快乐',
@@ -475,14 +475,13 @@ class StyleDeviationDetector {
       '明媚',
       '欢快',
       '欢喜',
-      '喜悦',
       '安心',
       '满足',
       '欣慰',
       '爱',
       '喜欢',
       '珍惜',
-    ];
+    };
     var count = 0;
     for (final word in positives) {
       count += word.allMatches(text).length;
@@ -491,7 +490,7 @@ class StyleDeviationDetector {
   }
 
   int _countNegativeSentiment(String text) {
-    const negatives = [
+    const negatives = <String>{
       '痛苦',
       '悲伤',
       '愤怒',
@@ -502,10 +501,8 @@ class StyleDeviationDetector {
       '黑暗',
       '忧伤',
       '心碎',
-      '恐惧',
       '不安',
       '焦虑',
-      '愤怒',
       '失望',
       '悲痛',
       '寒心',
@@ -515,8 +512,7 @@ class StyleDeviationDetector {
       '害怕',
       '恨',
       '厌恶',
-      '痛苦',
-    ];
+    };
     var count = 0;
     for (final word in negatives) {
       count += word.allMatches(text).length;
