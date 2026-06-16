@@ -4,8 +4,8 @@ milestone: v1.5
 milestone_name: milestone
 status: v1.4 shipped (24 phases, 1468 tests), 6项功能改进完成，待真实API验证
 stopped_at: context exhaustion at 75% (2026-06-16)
-last_updated: "2026-06-16T11:41:14.000Z"
-last_activity: "2026-06-16 — quick-260616-qxe refactor: 抽取 anti_ai_scent_processor 13 个数据表到 part 文件 anti_ai_scent_lexicon.dart（主文件 1091→555 行，消除 800 行红线；零行为变更零调用点改动零消费方影响；1647 tests 零回归 analyze 0）"
+last_updated: "2026-06-16T12:04:40.306Z"
+last_activity: "2026-06-16 — quick-260616-qxe refactor: 抽取 anti_ai_scent_processor 13 个数据表到 part 文件 anti_ai_scent_lexicon.dart（主文件 1091→555 行，消除 03-flutter-standards.md 800 行红线；part/part of 同库机制零行为变更零调用点改动零消费方影响；1647 tests 零回归 analyze 0）"
 progress:
   total_phases: 8
   completed_phases: 0
@@ -108,6 +108,7 @@ Last activity: 2026-06-14 - P2 深化连发 5 项：260614-gmg（AA-02 对比减
 | 260616-qc5 | AA-06 叠词/程度副词堆砌信号（反AI味信号矩阵补分布性寄存器维度）：新增第 8 个 review signal——_mannerAdverbStems 10 裸词干（缓缓/微微/淡淡/轻轻/深深/默默/静静/渐渐/隐隐/悄悄）+ _buildReviewSignals count 信号（≥5 fire / ≥8 high）；与 synonym map 正交（固定短语 vs 裸词干跨任意动词的分布性过度依赖，不同失败模式）；阈值校准于 process() progressText 段落粒度；2 测试（6词干密集触发+medium / 1词干稀疏不触发精度负向）；1645 tests +2 零回归 analyze 0；红线守住既有 7 信号 | 2026-06-16 | (本提交) | [260616-qc5-aa-06-manner-adverb-stem-overuse-signal-](./quick/260616-qc5-aa-06-manner-adverb-stem-overuse-signal-/) |
 | 260616-qmq | AA-04b 句子级空洞强调词堆砌信号（SentenceAiScentAnalyzer 第 5 信号）：emptyIntensifiers Set（12 词：真是/简直/十分/非常/尤其/格外/颇为/相当/无比/极其/尤为/极为）+ _score 信号5（句内 ≥3 hit → +30，reason '空洞强调词堆砌'）；正交性已验证——强调词非 functionChars 故信号3结构性漏检（'她真是非常十分开心' ratio 2/8<0.4），4 既有信号全漏唯独新信号能捕；喂「最可疑的句子」面板；与 AA-06 整体叠词正交（不同词族/粒度/消费者）；2 测试（3词触发+notable / 1词不触发精度负向）；1647 tests +2 零回归 analyze 0；红线守住既有 4 信号与 hasNotable 人工文本测试 | 2026-06-16 | (本提交) | [260616-qmq-aa-04b-sentence-level-empty-intensifier-](./quick/260616-qmq-aa-04b-sentence-level-empty-intensifier-/) |
 | 260616-qxe | refactor 抽取 anti_ai_scent_processor 数据表到 part 文件（消除 03-flutter-standards.md 800 行红线违规）：主文件 1091→555 行；13 个 static const/final 词库表（_synonymMap 20类~300词 / _highlightOnlyPhrases / _structuralPatterns 12正则 / 5 类 _xCliches xianxia·wuxia·urban·scifi·xuanhuan / _mannerAdverbStems / _formulaicEndings / _emotionalCliches / _descriptionFormulas）转同库顶级私有常量搬入新建 anti_ai_scent_lexicon.dart（part of anti_ai_scent_processor.dart）；part/part of 同库机制保证零行为变更零调用点改动（方法体裸名引用自动解析到顶级私有常量，Dart _ 为库级私有非文件级）；2 枚举+3 值类+AntiAIScentProcessor 类+synonymKeys getter 留主文件，8+ 消费方（editor_ai_state/status_bar/synthesis_panel/synthesis_notifier/banned_phrase_settings/intent_preservation_analyzer/providers）导入路径与公共类型导出零变更；analyze 0 / anti_ai_scent_test 57 测试全绿 / git diff 仅 2 文件 | 2026-06-16 | f204855 | [260616-qxe-anti-ai-scent-processor-dart-part-anti-a](./quick/260616-qxe-anti-ai-scent-processor-dart-part-anti-a/) |
+| 260616-rj4 | refactor 拆分 providers.dart 为 feature 分组 part 文件（消除 03-flutter-standards.md 800 红线）：主文件 856→103 行（仅留 ~50 import + library; + 5 part 指令）；~45 provider 声明 + 2 Notifier 类（AutoDeviationCheck/CreativityLevel）按域分入 5 part——providers_core(101)/providers_ai(199)/providers_knowledge(174)/providers_structure(254)/providers_stats(59)，各首行 part of 'providers.dart'; 且零 import（part 不能有 import 的 Dart 规则，所有 import 留主库文件）；part/part of 同库机制保 provider 间相互引用（activeAdapterProvider 读 openai/claudeAdapter）与裸名解析不变；114 消费方 import 路径与 provider 导出零变更；flutter analyze 全仓 0 issues（编译全部 114 消费方证零破坏，机械重构零逻辑改动，能编译即行为等价；全量 test 因 context 收紧以 analyze-0 替代）| 2026-06-16 | 3a6a13f | [260616-rj4-providers-dart-feature-part](./quick/260616-rj4-providers-dart-feature-part/) |
 
 ## Deferred Items
 
@@ -121,6 +122,6 @@ Items acknowledged and deferred from v1.3:
 
 ## Session Continuity
 
-Last session: 2026-06-16T07:10:53.987Z
+Last session: 2026-06-16T12:04:40.300Z
 Stopped at: context exhaustion at 75% (2026-06-16)
 Next step: MC-02 章节摘要自动刷新（需新建摘要 domain）/ Phase 25 真实 API E2E（需真实 key/网络）。注：AA-05 类型套句系列已 5/5 闭合（修仙/武侠/都市/科幻/玄幻全覆盖，2026-06-16）；kimi-webbridge daemon 本沙箱未运行（4 次确认 NO_PROCESS/NO_9222，需用户浏览器活跃），视觉 UAT 留待真机。
