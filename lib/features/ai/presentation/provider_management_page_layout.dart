@@ -23,7 +23,7 @@ extension _ProviderManagementPageStateLayout on _ProviderManagementPageState {
         child: Row(
           children: [
             TextButton.icon(
-              onPressed: () => setState(() => _showList = true),
+              onPressed: _showListOnNarrow,
               icon: const Icon(Icons.arrow_back),
               label: const Text('返回列表'),
             ),
@@ -89,10 +89,7 @@ extension _ProviderManagementPageStateLayout on _ProviderManagementPageState {
             ),
             onTap: () {
               _clearForm();
-              setState(() {
-                _selectedType = AiProviderType.custom;
-                _showList = false;
-              });
+              _selectCustomProviderType();
             },
           ),
         ),
@@ -208,7 +205,7 @@ extension _ProviderManagementPageStateLayout on _ProviderManagementPageState {
               ],
               selected: {_selectedType},
               onSelectionChanged: (types) {
-                setState(() => _selectedType = types.first);
+                _selectProviderType(types.first);
               },
             ),
           ),
@@ -304,9 +301,7 @@ extension _ProviderManagementPageStateLayout on _ProviderManagementPageState {
                   icon: Icon(
                     _obscureApiKey ? Icons.visibility_off : Icons.visibility,
                   ),
-                  onPressed: () {
-                    setState(() => _obscureApiKey = !_obscureApiKey);
-                  },
+                  onPressed: _toggleApiKeyVisibility,
                 ),
               ),
             ),
