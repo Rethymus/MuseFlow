@@ -611,6 +611,24 @@ class AntiAIScentProcessor {
     '异界大陆',
   ];
 
+  /// Manner-adverb stems (AA-06) — bare 2-char reduplicated softeners AI prose
+  /// over-relies on (缓缓/微微/淡淡…). Distinct from the synonym map, which
+  /// catches fixed phrases ('缓缓说道'): these bare stems fire across ANY verb
+  /// (缓缓起身/推门/抬手), exposing distributional register over-reliance the
+  /// phrase lists miss. Threshold ≥5 (progressText is paragraph-scale).
+  static const List<String> _mannerAdverbStems = [
+    '缓缓',
+    '微微',
+    '淡淡',
+    '轻轻',
+    '深深',
+    '默默',
+    '静静',
+    '渐渐',
+    '隐隐',
+    '悄悄',
+  ];
+
   static const List<String> _formulaicEndings = [
     '一场更大的风暴',
     '真正的考验',
@@ -1008,6 +1026,24 @@ class AntiAIScentProcessor {
           description: '场景描写使用了通用形容词组合，建议加入具体感官细节让画面更独特。',
           severity: ReviewSignalSeverity.medium,
           evidence: '$descriptionFormulaCount 处',
+        ),
+      );
+    }
+
+    // AA-06: manner-adverb stem over-reliance. Counts bare 叠词 softeners
+    // (缓缓/微微/淡淡…) across the whole text — a distributional AI-register
+    // tell the fixed-phrase synonym map cannot surface. ≥5 fires (paragraph-
+    // scale progressText); ≥8 escalates to high.
+    final mannerAdverbCount = _countPhraseHits(text, _mannerAdverbStems);
+    if (mannerAdverbCount >= 5) {
+      signals.add(
+        ReviewSignal(
+          title: '叠词/程度副词堆砌',
+          description: '大量叠词/程度副词（缓缓/微微/淡淡…）堆砌是典型的AI叙述腔，建议精简或替换为更具体的动作与感官描写。',
+          severity: mannerAdverbCount >= 8
+              ? ReviewSignalSeverity.high
+              : ReviewSignalSeverity.medium,
+          evidence: '$mannerAdverbCount 次',
         ),
       );
     }

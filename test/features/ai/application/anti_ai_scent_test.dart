@@ -371,6 +371,36 @@ void main() {
         expect(genreSignal.description, contains('修仙'));
       });
 
+      test('should detect manner-adverb stem over-reliance (AA-06)', () {
+        // 叠词/程度副词 (缓缓/微微/淡淡…) piling is a classic AI register tell
+        // the fixed-phrase synonym map misses — it fires on bare stems across
+        // ANY verb (缓缓起身/推门/抬手), not just fixed phrases like '缓缓说道'.
+        final result = processor.process(
+          '他微微点头，缓缓起身，轻轻推开房门。'
+          '淡淡的光线下，他静静站在窗前，深深叹了口气。',
+          bannedPhrases: [],
+        );
+        final signal = result.reviewSignals.firstWhere(
+          (s) => s.title == '叠词/程度副词堆砌',
+        );
+        // 6 stems (微微/缓缓/轻轻/淡淡/静静/深深) → medium (< 8 high).
+        expect(signal.severity, ReviewSignalSeverity.medium);
+        expect(signal.evidence, contains('次'));
+      });
+
+      test('should not flag sparse manner-adverb use as over-reliance (AA-06)', () {
+        // 1-2 叠词 in natural prose is normal — the signal must stay quiet
+        // to avoid false-positive noise (product soul: don't annoy the author).
+        final result = processor.process(
+          '他微微一笑，转身走出了房间。窗外阳光正好。',
+          bannedPhrases: [],
+        );
+        expect(
+          result.reviewSignals.where((s) => s.title == '叠词/程度副词堆砌'),
+          isEmpty,
+        );
+      });
+
       test('should flag uniform sentence rhythm for author review', () {
         final result = processor.process(
           '林风握紧木剑走过石阶。'
