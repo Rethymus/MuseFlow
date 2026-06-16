@@ -12,6 +12,7 @@ import 'package:museflow/core/domain/fragment.dart';
 import 'package:museflow/features/ai/domain/creativity_level.dart';
 import 'package:museflow/features/ai/application/prompt_middlewares/banned_list_middleware.dart';
 import 'package:museflow/features/ai/application/prompt_middlewares/contrastive_subtraction_middleware.dart';
+import 'package:museflow/features/ai/application/prompt_middlewares/dialogue_act_middleware.dart';
 import 'package:museflow/features/ai/application/prompt_middlewares/dynamic_persona_middleware.dart';
 import 'package:museflow/features/ai/application/prompt_middlewares/few_shot_middleware.dart';
 import 'package:museflow/features/ai/application/prompt_middlewares/persona_injection_middleware.dart';
@@ -262,6 +263,7 @@ class PromptPipeline {
     return PromptPipeline(
       middlewares: [
         SystemPromptMiddleware(),
+        const DialogueActMiddleware(),
         PersonaInjectionMiddleware(),
         const DynamicPersonaMiddleware(),
         const FewShotMiddleware(),
