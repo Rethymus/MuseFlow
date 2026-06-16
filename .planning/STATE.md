@@ -4,8 +4,8 @@ milestone: v1.5
 milestone_name: milestone
 status: v1.4 shipped (24 phases, 1468 tests), 6项功能改进完成，待真实API验证
 stopped_at: context exhaustion at 75% (2026-06-16)
-last_updated: "2026-06-16T12:04:40.306Z"
-last_activity: "2026-06-16 — quick-260616-qxe refactor: 抽取 anti_ai_scent_processor 13 个数据表到 part 文件 anti_ai_scent_lexicon.dart（主文件 1091→555 行，消除 03-flutter-standards.md 800 行红线；part/part of 同库机制零行为变更零调用点改动零消费方影响；1647 tests 零回归 analyze 0）"
+last_updated: "2026-06-16T14:19:32.000Z"
+last_activity: "2026-06-16 — quick-260616-uho refactor: 拆分 editor_with_sidebar.dart 为 part 文件（887→640 行）消除 800 红线战役收尾，全仓零文件超 800；extension on _EditorWithSidebarState 承载 4 layout 辅助方法（Dart 无 partial class，build() 裸调用经 extension-on-this 解析零改动）+ intents part（7 Intent 类 + layer builder + stylesheet 函数）；零行为变更 analyze 0 / 1647 tests 零回归"
 progress:
   total_phases: 8
   completed_phases: 0
@@ -27,7 +27,7 @@ See: .planning/PROJECT.md (updated 2026-06-12)
 
 Phase: Pre-25 of 32 (v1.5 — 真实创作验证与体验打磨) 🟡 PLANNING
 Status: v1.4 shipped (24 phases, 1468 tests), 6项功能改进完成，待真实API验证
-Last activity: 2026-06-16 — quick-260616-qxe refactor: 抽取 anti_ai_scent_processor 13 个数据表到 part 文件 anti_ai_scent_lexicon.dart（主文件 1091→555 行，消除 03-flutter-standards.md 800 行红线；part/part of 同库机制零行为变更零调用点改动零消费方影响；1647 tests 零回归 analyze 0）
+Last activity: 2026-06-16 — quick-260616-uho refactor: 拆分 editor_with_sidebar.dart 为 part 文件（887→640 行）消除 800 红线战役收尾，全仓零文件超 800；extension on _EditorWithSidebarState 承载 4 layout 辅助方法（Dart 无 partial class，build() 裸调用经 extension-on-this 解析零改动）+ intents part（7 Intent 类 + layer builder + stylesheet 函数）；零行为变更 analyze 0 / 1647 tests 零回归
 
 Progress: [░░░░░░░░░░░░░░░░░░░░] 0%
 
@@ -109,6 +109,7 @@ Last activity: 2026-06-14 - P2 深化连发 5 项：260614-gmg（AA-02 对比减
 | 260616-qmq | AA-04b 句子级空洞强调词堆砌信号（SentenceAiScentAnalyzer 第 5 信号）：emptyIntensifiers Set（12 词：真是/简直/十分/非常/尤其/格外/颇为/相当/无比/极其/尤为/极为）+ _score 信号5（句内 ≥3 hit → +30，reason '空洞强调词堆砌'）；正交性已验证——强调词非 functionChars 故信号3结构性漏检（'她真是非常十分开心' ratio 2/8<0.4），4 既有信号全漏唯独新信号能捕；喂「最可疑的句子」面板；与 AA-06 整体叠词正交（不同词族/粒度/消费者）；2 测试（3词触发+notable / 1词不触发精度负向）；1647 tests +2 零回归 analyze 0；红线守住既有 4 信号与 hasNotable 人工文本测试 | 2026-06-16 | (本提交) | [260616-qmq-aa-04b-sentence-level-empty-intensifier-](./quick/260616-qmq-aa-04b-sentence-level-empty-intensifier-/) |
 | 260616-qxe | refactor 抽取 anti_ai_scent_processor 数据表到 part 文件（消除 03-flutter-standards.md 800 行红线违规）：主文件 1091→555 行；13 个 static const/final 词库表（_synonymMap 20类~300词 / _highlightOnlyPhrases / _structuralPatterns 12正则 / 5 类 _xCliches xianxia·wuxia·urban·scifi·xuanhuan / _mannerAdverbStems / _formulaicEndings / _emotionalCliches / _descriptionFormulas）转同库顶级私有常量搬入新建 anti_ai_scent_lexicon.dart（part of anti_ai_scent_processor.dart）；part/part of 同库机制保证零行为变更零调用点改动（方法体裸名引用自动解析到顶级私有常量，Dart _ 为库级私有非文件级）；2 枚举+3 值类+AntiAIScentProcessor 类+synonymKeys getter 留主文件，8+ 消费方（editor_ai_state/status_bar/synthesis_panel/synthesis_notifier/banned_phrase_settings/intent_preservation_analyzer/providers）导入路径与公共类型导出零变更；analyze 0 / anti_ai_scent_test 57 测试全绿 / git diff 仅 2 文件 | 2026-06-16 | f204855 | [260616-qxe-anti-ai-scent-processor-dart-part-anti-a](./quick/260616-qxe-anti-ai-scent-processor-dart-part-anti-a/) |
 | 260616-rj4 | refactor 拆分 providers.dart 为 feature 分组 part 文件（消除 03-flutter-standards.md 800 红线）：主文件 856→103 行（仅留 ~50 import + library; + 5 part 指令）；~45 provider 声明 + 2 Notifier 类（AutoDeviationCheck/CreativityLevel）按域分入 5 part——providers_core(101)/providers_ai(199)/providers_knowledge(174)/providers_structure(254)/providers_stats(59)，各首行 part of 'providers.dart'; 且零 import（part 不能有 import 的 Dart 规则，所有 import 留主库文件）；part/part of 同库机制保 provider 间相互引用（activeAdapterProvider 读 openai/claudeAdapter）与裸名解析不变；114 消费方 import 路径与 provider 导出零变更；flutter analyze 全仓 0 issues（编译全部 114 消费方证零破坏，机械重构零逻辑改动，能编译即行为等价；全量 test 因 context 收紧以 analyze-0 替代）| 2026-06-16 | 3a6a13f | [260616-rj4-providers-dart-feature-part](./quick/260616-rj4-providers-dart-feature-part/) |
+| 260616-uho | refactor 拆分 editor_with_sidebar.dart 为 part 文件（qxe/rj4 800 红线消除战役收尾，拆后全仓零文件超 800）：主文件 887→640 行；Dart 无 partial class 故用同库私有 extension _EditorWithSidebarStateLayout 承载 4 个 layout 辅助方法（_buildDesktopLayout/_buildMobileLayout/_buildEditorArea/_getMenuPosition，build() 内裸调用经 extension-on-this 解析零改动）+ editor_with_sidebar_intents.dart part（7 个 _XxxIntent 类 + _SelectionLeadersLayerBuilder + _buildManuscriptStylesheet 函数）；part/part of 同库机制零行为变更，2 消费方（app.dart + editor_with_sidebar_test）零改动；analyze 0 / 1647 tests 零回归 | 2026-06-16 | 159d58a | [260616-uho-refactor-editor-with-sidebar-dart-part-s](./quick/260616-uho-refactor-editor-with-sidebar-dart-part-s/) |
 
 ## Deferred Items
 
