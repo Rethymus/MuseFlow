@@ -281,6 +281,39 @@ void main() {
         );
       });
 
+      test('should name the genre in the genre-cliche description (AA-05)', () {
+        // Xianxia-dominant text → description names 修仙 (not hardcoded
+        // beyond xianxia). Verifies the genre label is accurate.
+        final xianxiaResult = processor.process(
+          '林风体内灵力翻涌，周身气息骤然拔高，磅礴的力量震开石阶。',
+          bannedPhrases: [],
+        );
+        final xianxiaSignal = xianxiaResult.reviewSignals.firstWhere(
+          (s) => s.title == '类型文套句偏多',
+        );
+        expect(xianxiaSignal.description, contains('修仙'));
+      });
+
+      test('should detect wuxia genre cliches (AA-05)', () {
+        // Wuxia-dominant text previously produced NO genre signal (only
+        // xianxia was covered). Now it surfaces 类型文套句偏多 naming 武侠.
+        final result = processor.process(
+          '楚云内力运转一周，施展轻功掠上屋脊。'
+          '只见剑光一闪，刀光剑影间，他身法如电避开三招。',
+          bannedPhrases: [],
+        );
+
+        final genreSignal = result.reviewSignals.firstWhere(
+          (s) => s.title == '类型文套句偏多',
+        );
+        // Evidence counts hits across genre sets (5 here: 内力运转/施展轻功/
+        // 剑光一闪/刀光剑影/身法如电).
+        expect(genreSignal.evidence, contains('次'));
+        // Wuxia dominates → description names 武侠, not 修仙.
+        expect(genreSignal.description, contains('武侠'));
+        expect(genreSignal.description, isNot(contains('修仙')));
+      });
+
       test('should flag uniform sentence rhythm for author review', () {
         final result = processor.process(
           '林风握紧木剑走过石阶。'

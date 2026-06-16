@@ -549,6 +549,24 @@ class AntiAIScentProcessor {
     '剑气纵横',
   ];
 
+  /// Wuxia (武侠) genre cliches — martial-arts / jianghu vocabulary that AI
+  /// overuses in wuxia fiction (AA-05). Sibling to [_xianxiaCliches]; the
+  /// product supports 修仙/武侠/都市/科幻/玄幻 preset packs (PROJECT.md), so
+  /// genre-cliche feedback should not be xianxia-only.
+  ///
+  /// Phrases pick the martial/jianghu register (内力/轻功/剑光/刀光/真气/身法/
+  /// 招式/武学) to stay distinct from the xianxi灵力 register above.
+  static const List<String> _wuxiaCliches = [
+    '内力运转',
+    '施展轻功',
+    '剑光一闪',
+    '刀光剑影',
+    '真气鼓荡',
+    '身法如电',
+    '招式凌厉',
+    '武学修为',
+  ];
+
   static const List<String> _formulaicEndings = [
     '一场更大的风暴',
     '真正的考验',
@@ -851,12 +869,18 @@ class AntiAIScentProcessor {
       );
     }
 
-    final genreClicheCount = _countPhraseHits(text, _xianxiaCliches);
+    final xianxiaHits = _countPhraseHits(text, _xianxiaCliches);
+    final wuxiaHits = _countPhraseHits(text, _wuxiaCliches);
+    final genreClicheCount = xianxiaHits + wuxiaHits;
     if (genreClicheCount >= 2) {
+      // Name the dominant genre so the feedback is accurate for the author's
+      // actual register (AA-05): a wuxia writer should not be told their
+      // 修仙 phrases repeat. On a tie, xianxia wins by declaration order.
+      final genreLabel = xianxiaHits >= wuxiaHits ? '修仙' : '武侠';
       signals.add(
         ReviewSignal(
           title: '类型文套句偏多',
-          description: '修仙常见短语重复出现，可能削弱作者自己的画面感。',
+          description: '$genreLabel常见短语重复出现，可能削弱作者自己的画面感。',
           severity: genreClicheCount >= 4
               ? ReviewSignalSeverity.high
               : ReviewSignalSeverity.medium,
