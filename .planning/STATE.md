@@ -3,9 +3,9 @@ gsd_state_version: 1.0
 milestone: v1.5
 milestone_name: milestone
 status: v1.4 shipped (24 phases, 1468 tests), 6项功能改进完成，待真实API验证
-stopped_at: context exhaustion at 79% (2026-06-16)
-last_updated: "2026-06-16T17:43:49.291Z"
-last_activity: 2026-06-17 — quick-260617-f7l refactor 根治 style_deviation_detector 情感基调双量尺漂移（闭合 05c/1uk 同族 bug 链根因）：detector._computeEmotionalTone 自带 42 词内联表+自创公式，与权威方 StyleAnalyzer 用 SentimentLexicon 不一致——两套量尺比较→emotionalTone 偏差分扭曲（反AI味核心信号）；改为全部委托 SentimentLexicon（countPositive/Negative indexOf 安全计数+warmthScore/intensityScore/classifyTone），删 _countPositive/NegativeSentiment/_classifyTone 三方法+内联表 ~95 行（net -48）；isFlat 边界 0.35-0.65→<0.3 适配新公式语义；2 RED→GREEN（T1 123CJK lexicon独有词强制 RED / T2 公式同源 closeTo 1e-9）；TDD RED(2a4c340)→GREEN(49dc61c)；analyze 0 / 17 detector + 287 editor feature 零回归
+stopped_at: context exhaustion at 77% (2026-06-17)
+last_updated: "2026-06-17T04:42:42.643Z"
+last_activity: 2026-06-17 — quick-260617-hnl fix 根治 style_deviation_detector rhythm 维度双量尺门槛 bug（双量尺消除战役第 5 维，与 260617-f7l emotionalTone 同族同源）：detector._computeRhythmScore 最低句数门槛 < 3 对齐基线方 StyleAnalyzer 的 < 5（rhythm 公式两文件原本完全一致，唯一差异即此门槛）；pre-fix < 3 让 3-4 句 AI 文本稀薄测量（4 句均匀→cv≈0→rhythm≈1.0）对比 analyzer 5+ 句稳健基线→rhythm 偏差分失真（反AI味核心信号）；单行 + 8 行注释（测量 ruler == 基线 ruler）；2 RED→GREEN（T1 4 句均匀 textValue==0.5 pre-fix 实际 1.0 强制 RED / T2 6 句均匀 >0.7 护栏）；0 fixture 扩写；TDD RED(ff06779)→GREEN(10fbae5)；analyze 0 / 19 detector + 289 editor feature 全量零回归
 progress:
   total_phases: 8
   completed_phases: 0
@@ -116,6 +116,7 @@ Last activity: 2026-06-14 - P2 深化连发 5 项：260614-gmg（AA-02 对比减
 | 260617-140 | refactor 拆分 format_cleaner.dart 为 part 文件（800 红线战役末块复刻 uho/vdw/wao 模式，全仓最大手写文件 680→71 行）：3 part 文件按 4 section 注释横幅切分——format_cleaner_punctuation.dart(249/11 方法)/format_cleaner_markdown.dart(278/7 方法)/format_cleaner_whitespace.dart(97/whitespace+段落 3 方法)，各首行 part of 'format_cleaner.dart'; + extension _FormatCleanerPunctuation|Markdown|Whitespace on FormatCleaner 承载私有实例方法（普通 const 类非 Widget/State，与 wao ConsumerWidget 同理）；主文件加 library; 首行 + 3 part 指令，clean() 编排顺序(空白→标点→markdown→段落 load-bearing 不变)裸调用经 extension-on-this 解析零改动；唯一消费方 format_clean_preview_dialog.dart:38 仅用 const FormatCleaner()+clean() 零改动；零行为变更；analyze 0 / 38 targeted(format_cleaner_test 21+format_cleaning journey 17) + 全量 1647 零回归 | 2026-06-17 | cf0d69c | [260617-140-lib-features-story-structure-application](./quick/260617-140-lib-features-story-structure-application/) |
 | 260617-1uk | fix 修复 style_deviation_detector 情感词裸单字子串过计 bug（260617-05c 同族延续）：_countPositive/NegativeSentiment 内联 Set 含裸单字 '爱'(pos)/'恨'(neg)，被 String.allMatches 当子串匹配——'恨' 命中 '恨不得'(急切想，正面)极性反转 + '爱' 命中 可爱/爱好/爱情/爱不释手 过计，扭曲 warmth/intensity→emotionalTone 维度偏差分（产品灵魂反AI味）；移除裸 '爱'/'恨' 两行（与共享 SentimentLexicon 刻意不收录裸单字设计一致；application→infrastructure 架构禁止反向依赖故就地修内联词表而非 import）+ 加设计注释 + 2 回归测试（公开 analyze() 断言 textValue<0.6，fixture 3×恨不得/3×可爱·爱好·爱情 强制 pre-fix RED）；TDD RED→GREEN；零行为变更；analyze 0 / 15 targeted(13+2) + 全量 1649 tests +2 零回归 | 2026-06-17 | 4a004d0 | [260617-1uk-fix-sentiment-bare-char-overcount](./quick/260617-1uk-fix-sentiment-bare-char-overcount/) |
 | 260617-f7l | refactor 根治 style_deviation_detector 情感基调双量尺漂移（闭合 05c/1uk 同族 bug 链根因）：detector._computeEmotionalTone 自带 42 词内联表+自创 warmth/intensity/classifyTone 公式，与 profile 构建权威方 StyleAnalyzer 用 SentimentLexicon（~240 词 indexOf 安全计数+ratio/density 公式）不一致——两套量尺比较→emotionalTone 维度偏差分系统扭曲（反AI味核心信号）；改为镜像 style_analyzer.dart:254-272 全部委托 SentimentLexicon.countPositive/countNegative/warmthScore/intensityScore/classifyTone（indexOf 循环从结构上杜绝裸单字子串过计）；删除 _countPositiveSentiment(22词)/_countNegativeSentiment(20词)/_classifyTone(5类自创) 三私有方法+内联 Set 字面量+自创公式（共 ~95 行，net -48）；application→infrastructure 依赖先例同 style_analyzer.dart:19（纯 Dart const 数据类非真 infra 副作用）；isFlat 边界从 0.35-0.65 中性带改为 <0.3 适配新公式语义（无情感词→intensity 0 而非旧 0.5，与 classifyTone <0.3→平静/冷静 截止一致）；2 RED→GREEN 回归测试（T1 123 CJK 命中 23 lexicon 独有词 0 内联→post intensity 1.0 vs pre 0.5，门槛 >0.6 强制 RED；T2 公式同源 closeTo(intensityScore,1e-9) 精确相等）；flat-emotion fixture 重写 117 CJK 零 lexicon 命中（pre-fix 83 CJK 含 '阳光' 不再触发 isFlat）；TDD RED(2a4c340)→GREEN(49dc61c)；analyze 0 / 17 detector + 287 editor feature 全量零回归 | 2026-06-17 | 49dc61c | [260617-f7l-styledeviationdetector-sentimentlexicon](./quick/260617-f7l-styledeviationdetector-sentimentlexicon/) |
+| 260617-hnl | fix 根治 style_deviation_detector rhythm 维度双量尺门槛 bug（双量尺消除战役第 5 维，与 260617-f7l emotionalTone 同族同源）：detector._computeRhythmScore 最低句数门槛 < 3 对齐到基线方 StyleAnalyzer._computeRhythmScore 的 < 5——rhythm 公式（avg/variance/stdDev/cv/`(1.0-(cv-0.3)/0.5).clamp`）两文件原本完全一致，唯一差异即此门槛；pre-fix < 3 让 3-4 句 AI 文本用稀薄数据算真实节奏方差分（4 句均匀→cv≈0→rhythm≈1.0），去对比 analyzer 用 5+ 句稳健数据构建的 profile.rhythmScore——稀薄测量 vs 稳健基线，rhythm 维度偏差分失真（反AI味核心信号）；单行修复 + 8 行注释（260617-f7l 同源原理：测量 ruler 必须 == 基线 ruler）；2 RED→GREEN 回归测试（T1 4 句均匀长度断言 rhythmDev.textValue==0.5，pre-fix 实际 1.0 强制 RED；T2 6 句均匀断言 >0.7 护栏确认 ≥5 句路径未破坏）；0 个既有 fixture 需扩写（全用 ≥5 句或不强断 rhythm textValue）；TDD RED(ff06779)→GREEN(10fbae5)；analyze 0 / 19 detector + 289 editor feature 全量零回归 | 2026-06-17 | 10fbae5 | [260617-hnl-style-deviation-detector-rhythm-bug-anal](./quick/260617-hnl-style-deviation-detector-rhythm-bug-anal/) |
 
 ## Deferred Items
 
@@ -129,6 +130,6 @@ Items acknowledged and deferred from v1.3:
 
 ## Session Continuity
 
-Last session: 2026-06-16T17:43:49.287Z
-Stopped at: context exhaustion at 79% (2026-06-16)
+Last session: 2026-06-17T04:42:42.639Z
+Stopped at: context exhaustion at 77% (2026-06-17)
 Next step: MC-02 章节摘要自动刷新（需新建摘要 domain）/ Phase 25 真实 API E2E（需真实 key/网络）。注：AA-05 类型套句系列已 5/5 闭合（修仙/武侠/都市/科幻/玄幻全覆盖，2026-06-16）；kimi-webbridge daemon 本沙箱未运行（4 次确认 NO_PROCESS/NO_9222，需用户浏览器活跃），视觉 UAT 留待真机。
