@@ -2,10 +2,10 @@
 gsd_state_version: 1.0
 milestone: v1.5
 milestone_name: milestone
-status: v1.4 shipped (24 phases, 1678 tests), 真实 GLM API E2E 验证启动（journey 测试解锁），双量尺战役闭合
-stopped_at: resume 2026-06-17, running full flutter test to close rj4 loose end
-last_updated: "2026-06-17T08:10:00.000Z"
-last_activity: 2026-06-17 — quick-260617-1uk fix 修复 style_deviation_detector 情感词裸单字子串过计 bug（260617-05c 同族延续）：_countPositive/NegativeSentiment 内联 Set 含裸单字 '爱'/'恨'，被 String.allMatches 当子串匹配——'恨' 命中 '恨不得'(急切想·正面)极性反转、'爱' 命中 可爱/爱好/爱情 过计，扭曲 emotionalTone 维度偏差分（反AI味特性）；移除裸 '爱'/'恨' 两行（与共享 SentimentLexicon 不收录裸单字设计一致；application→infrastructure 架构禁止反向依赖故就地修）+ 2 回归测试（公开 analyze() 断言 textValue<0.6，fixture 复合词密集强制 RED）；TDD RED→GREEN；analyze 0 / 1649 tests +2 零回归
+status: v1.4 shipped (24 phases, 1468 tests), 6项功能改进完成，待真实API验证
+stopped_at: context exhaustion at 80% (2026-06-17)
+last_updated: "2026-06-17T15:33:58.036Z"
+last_activity: 2026-06-17 — 真实 BigModel key E2E 验证（闭合 STATE #1 blocker「端到端数据流实测验证」）+ quick-260617-wma 修复真实 API 暴露的可靠性双缺口：GLM_API_KEY 注入跑通 GLM smoke(484字符)+serial journey 真实生成 1-5 章(409-469字符,知识库注入链路通)；第 6 章 AIStreamException 中断，探针同窗口 8 连发全过→确诊瞬时错误(5xx/连接抖动/SSE解析)非限流非鉴权。修：①AIException 基类加 toString()=>`$runtimeType: $message` 解诊断黑箱("Instance of..."→外露 _safeDiagnostic)；②OpenAIAdapter 抽 static retryStream(factory,{maxRetries=3,backoff}) async*——仅零 token 早失败且可重试(AIRateLimit/AINetwork/AIStream)时退避重试(100/200/400ms)，发射过 token/不可重试(AIAuth)透传，createStream 委托之→9 调用方+journey 单一咽喉全受益(与「单一量尺」一致)；TDD 7 确定性测试全绿 backoff Duration.zero / analyze 0 / commit b9347bd
 progress:
   total_phases: 8
   completed_phases: 0
@@ -118,6 +118,7 @@ Last activity: 2026-06-14 - P2 深化连发 5 项：260614-gmg（AA-02 对比减
 | 260617-f7l | refactor 根治 style_deviation_detector 情感基调双量尺漂移（闭合 05c/1uk 同族 bug 链根因）：detector._computeEmotionalTone 自带 42 词内联表+自创 warmth/intensity/classifyTone 公式，与 profile 构建权威方 StyleAnalyzer 用 SentimentLexicon（~240 词 indexOf 安全计数+ratio/density 公式）不一致——两套量尺比较→emotionalTone 维度偏差分系统扭曲（反AI味核心信号）；改为镜像 style_analyzer.dart:254-272 全部委托 SentimentLexicon.countPositive/countNegative/warmthScore/intensityScore/classifyTone（indexOf 循环从结构上杜绝裸单字子串过计）；删除 _countPositiveSentiment(22词)/_countNegativeSentiment(20词)/_classifyTone(5类自创) 三私有方法+内联 Set 字面量+自创公式（共 ~95 行，net -48）；application→infrastructure 依赖先例同 style_analyzer.dart:19（纯 Dart const 数据类非真 infra 副作用）；isFlat 边界从 0.35-0.65 中性带改为 <0.3 适配新公式语义（无情感词→intensity 0 而非旧 0.5，与 classifyTone <0.3→平静/冷静 截止一致）；2 RED→GREEN 回归测试（T1 123 CJK 命中 23 lexicon 独有词 0 内联→post intensity 1.0 vs pre 0.5，门槛 >0.6 强制 RED；T2 公式同源 closeTo(intensityScore,1e-9) 精确相等）；flat-emotion fixture 重写 117 CJK 零 lexicon 命中（pre-fix 83 CJK 含 '阳光' 不再触发 isFlat）；TDD RED(2a4c340)→GREEN(49dc61c)；analyze 0 / 17 detector + 287 editor feature 全量零回归 | 2026-06-17 | 49dc61c | [260617-f7l-styledeviationdetector-sentimentlexicon](./quick/260617-f7l-styledeviationdetector-sentimentlexicon/) |
 | 260617-hnl | fix 根治 style_deviation_detector rhythm 维度双量尺门槛 bug（双量尺消除战役第 5 维，与 260617-f7l emotionalTone 同族同源）：detector._computeRhythmScore 最低句数门槛 < 3 对齐到基线方 StyleAnalyzer._computeRhythmScore 的 < 5——rhythm 公式（avg/variance/stdDev/cv/`(1.0-(cv-0.3)/0.5).clamp`）两文件原本完全一致，唯一差异即此门槛；pre-fix < 3 让 3-4 句 AI 文本用稀薄数据算真实节奏方差分（4 句均匀→cv≈0→rhythm≈1.0），去对比 analyzer 用 5+ 句稳健数据构建的 profile.rhythmScore——稀薄测量 vs 稳健基线，rhythm 维度偏差分失真（反AI味核心信号）；单行修复 + 8 行注释（260617-f7l 同源原理：测量 ruler 必须 == 基线 ruler）；2 RED→GREEN 回归测试（T1 4 句均匀长度断言 rhythmDev.textValue==0.5，pre-fix 实际 1.0 强制 RED；T2 6 句均匀断言 >0.7 护栏确认 ≥5 句路径未破坏）；0 个既有 fixture 需扩写（全用 ≥5 句或不强断 rhythm textValue）；TDD RED(ff06779)→GREEN(10fbae5)；analyze 0 / 19 detector + 289 editor feature 全量零回归 | 2026-06-17 | 10fbae5 | [260617-hnl-style-deviation-detector-rhythm-bug-anal](./quick/260617-hnl-style-deviation-detector-rhythm-bug-anal/) |
 | 260617-j0z | fix 根治 style_deviation_detector vocabulary 维度双量尺门槛 bug（双量尺消除战役第 6 维，与 hnl rhythm/f7l emotionalTone 同族同源）：detector._analyzeVocabulary 最低字数门槛 < 20 对齐到基线方 StyleAnalyzer._computeVocabularyRichness 的 < 50——vocabulary 公式（unique CJK type-token ratio 经 ((ratio-0.25)/0.30).clamp 归一化）两文件原本完全一致，唯一差异即此门槛；pre-fix < 20 让 20-49 字 AI 文本用稀薄样本算真实词汇丰富度（30 全异字→ratio 1.0→richness 1.0），对比 analyzer 50+ 字稳健基线→vocabulary 偏差分失真（反AI味核心信号）；单行修复 + 注释（测量 ruler == 基线 ruler）；2 RED→GREEN（T1 30 全异字断言 textValue==0.5 pre-fix 实际 1.0 强制 RED / T2 60+ 字 >0.6 护栏）；0 fixture 扩写；TDD RED(19797a4)→GREEN(84e7c27)；analyze 0 / 21 detector + 291 editor feature 全量零回归 | 2026-06-17 | 84e7c27 | [260617-j0z-style-deviation-detector-vocabulary-bug](./quick/260617-j0z-style-deviation-detector-vocabulary-bug/) |
+| 260617-wma | fix 真实 GLM API 暴露的可靠性双缺口（闭合 STATE #1 blocker 后的优化）：真实 BigModel key E2E journey 第 6 章 AIStreamException 杀死整批，探针同窗口 8 连发全过→确诊瞬时错误非限流；修①AIException 基类加 toString()=>`$rt: $msg` 解诊断黑箱 ②OpenAIAdapter 抽 static retryStream(factory,{maxRetries=3,backoff}) async*——零 token 早失败且可重试(AIRateLimit/AINetwork/AIStream)退避重试(100/200/400ms)，发射过 token/AIAuth 透传，createStream 委托→9 调用方+journey 单一咽喉全受益；TDD 7 确定性测试全绿/analyze 0 | 2026-06-17 | b9347bd | [260617-wma-fix-aiexception-tostring-and-adapter-tra](./quick/260617-wma-fix-aiexception-tostring-and-adapter-tra/) |
 
 ## Deferred Items
 
@@ -131,7 +132,7 @@ Items acknowledged and deferred from v1.3:
 
 ## Session Continuity
 
-Last session: 2026-06-17T09:00:00.000Z
-Stopped at: 真实 GLM API E2E 验证——用临时 BigModel key 解锁 STATE.md #1 blocker。journey 测试层 HttpOverrides mock 修复落地（commit 97301d6）。
-Next step: 视觉 UAT（需 Windows 真机或用户浏览器连 kimi-webbridge；当前 tabs:[] 浏览器未连，CLI 已修）；百章真实全量生成（机制已证，省 quota 未跑全）；MC-02 章节摘要自动刷新（需新建摘要 domain，纯代码无人工依赖）。
-Next step: MC-02 章节摘要自动刷新（需新建摘要 domain）/ Phase 25 真实 API E2E（需真实 key/网络）。注：双量尺战役全闭合（05c/1uk/f7l/hnl/j0z 点修复 + jgd StyleAnalysisUtils 结构根治，detector/analyzer 共用单一 ruler）；AA-05 类型套句系列 5/5 闭合；全量 1678 tests 零回归 verify；kimi-webbridge daemon 本沙箱在跑(PID 166349, 端口10086)但 kimi CLI 断链(python3 symlink broken)待修，且需用户浏览器/扩展在线(经扩展中继)，视觉 UAT 留待 Windows 真机。
+Last session: 2026-06-17T15:33:58.032Z
+Stopped at: context exhaustion at 80% (2026-06-17)
+Next step: adapter 瞬断重试（零 token 早失败退避重试，9 调用方单一咽喉）+ AIException.toString 诊断黑箱修复（当前错误日志全 "Instance of..."）——真实 key 暴露、合成测试永远抓不到的可靠性缺口。验证用确定性 fake（失败 N-1 次后成功）+ 真实 smoke 回归，不烧 quota 等随机瞬断。
+Next step: MC-02 章节摘要自动刷新（需新建摘要 domain，纯代码无人工依赖）/ 视觉 UAT（需 Windows 真机或用户浏览器连 kimi-webbridge）。注：双量尺战役全闭合；AA-05 类型套句 5/5 闭合；全量 1678 tests 零回归；kimi-webbridge daemon 在跑(PID 166349,端口10086,kimi symlink 已修)，视觉 UAT 仍受 WSL2 CanvasKit 渲染边界限制留待 Windows 真机。
