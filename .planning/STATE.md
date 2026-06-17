@@ -2,7 +2,7 @@
 gsd_state_version: 1.0
 milestone: v1.5
 milestone_name: milestone
-status: v1.4 shipped (24 phases, 1678 tests verified full-run green), 双量尺战役闭合，待真实API验证
+status: v1.4 shipped (24 phases, 1678 tests), 真实 GLM API E2E 验证启动（journey 测试解锁），双量尺战役闭合
 stopped_at: resume 2026-06-17, running full flutter test to close rj4 loose end
 last_updated: "2026-06-17T08:10:00.000Z"
 last_activity: 2026-06-17 — quick-260617-1uk fix 修复 style_deviation_detector 情感词裸单字子串过计 bug（260617-05c 同族延续）：_countPositive/NegativeSentiment 内联 Set 含裸单字 '爱'/'恨'，被 String.allMatches 当子串匹配——'恨' 命中 '恨不得'(急切想·正面)极性反转、'爱' 命中 可爱/爱好/爱情 过计，扭曲 emotionalTone 维度偏差分（反AI味特性）；移除裸 '爱'/'恨' 两行（与共享 SentimentLexicon 不收录裸单字设计一致；application→infrastructure 架构禁止反向依赖故就地修）+ 2 回归测试（公开 analyze() 断言 textValue<0.6，fixture 复合词密集强制 RED）；TDD RED→GREEN；analyze 0 / 1649 tests +2 零回归
@@ -131,6 +131,7 @@ Items acknowledged and deferred from v1.3:
 
 ## Session Continuity
 
-Last session: 2026-06-17T08:12:00.000Z
-Stopped at: Full flutter test PASSED (1678 +0 fail, 12 skip GLM-gated) — closes rj4 .continue-here loose end (providers part-split 114 consumers zero regression on full run, not just analyze-0). Removed stale rj4-era .continue-here.md.
+Last session: 2026-06-17T09:00:00.000Z
+Stopped at: 真实 GLM API E2E 验证——用临时 BigModel key 解锁 STATE.md #1 blocker。journey 测试层 HttpOverrides mock 修复落地（commit 97301d6）。
+Next step: 视觉 UAT（需 Windows 真机或用户浏览器连 kimi-webbridge；当前 tabs:[] 浏览器未连，CLI 已修）；百章真实全量生成（机制已证，省 quota 未跑全）；MC-02 章节摘要自动刷新（需新建摘要 domain，纯代码无人工依赖）。
 Next step: MC-02 章节摘要自动刷新（需新建摘要 domain）/ Phase 25 真实 API E2E（需真实 key/网络）。注：双量尺战役全闭合（05c/1uk/f7l/hnl/j0z 点修复 + jgd StyleAnalysisUtils 结构根治，detector/analyzer 共用单一 ruler）；AA-05 类型套句系列 5/5 闭合；全量 1678 tests 零回归 verify；kimi-webbridge daemon 本沙箱在跑(PID 166349, 端口10086)但 kimi CLI 断链(python3 symlink broken)待修，且需用户浏览器/扩展在线(经扩展中继)，视觉 UAT 留待 Windows 真机。
