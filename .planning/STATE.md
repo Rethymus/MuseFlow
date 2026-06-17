@@ -2,10 +2,10 @@
 gsd_state_version: 1.0
 milestone: v1.5
 milestone_name: milestone
-status: v1.4 shipped (24 phases, 1468 tests), 6项功能改进完成，待真实API验证
-stopped_at: context exhaustion at 80% (2026-06-17)
-last_updated: "2026-06-18T16:30:00.000Z"
-last_activity: 2026-06-18 — 真实 GLM key 复验 wma 重试修复（30 章 serial journey `All tests passed!` exit 0，30/30 生成 0 错误，重试修复对真实 API 完全验证）+ quick-260618-0ae 修偏差检测合规确认假警报（wma「真实 key 暴露」同族）：journey 偏差阶段跑在真实 GLM 文本上 `[DEVIATION] Warnings: 80`，Ch1 全部 11 条"clear"都是"符合/并未违反…设定"合规陈述、零真实违背→假警报淹没信号；根因 _buildPrompt 未禁报合规 + _parseResult 只过滤 low 不识合规语义；双保险 prompt 显式禁报（保"只报告 medium 或 clear"零破坏）+ parser _isComplianceNoise 兜底（合规 符合\|未违反\|并未违反\|没有违反\|未违背 且不含 违背\|违反了；"违反了"带"了"≠"未违反"否定式）；TDD 2 RED→GREEN / analyze 0 / deviation service+6 widget+5 零回归。2026-06-17 — 真实 BigModel key E2E 验证（闭合 STATE #1 blocker「端到端数据流实测验证」）+ quick-260617-wma 修复真实 API 暴露的可靠性双缺口：GLM_API_KEY 注入跑通 GLM smoke(484字符)+serial journey 真实生成 1-5 章(409-469字符,知识库注入链路通)；第 6 章 AIStreamException 中断，探针同窗口 8 连发全过→确诊瞬时错误(5xx/连接抖动/SSE解析)非限流非鉴权。修：①AIException 基类加 toString()=>`$runtimeType: $message` 解诊断黑箱("Instance of..."→外露 _safeDiagnostic)；②OpenAIAdapter 抽 static retryStream(factory,{maxRetries=3,backoff}) async*——仅零 token 早失败且可重试(AIRateLimit/AINetwork/AIStream)时退避重试(100/200/400ms)，发射过 token/不可重试(AIAuth)透传，createStream 委托之→9 调用方+journey 单一咽喉全受益(与「单一量尺」一致)；TDD 7 确定性测试全绿 backoff Duration.zero / analyze 0 / commit b9347bd
+status: v1.4 shipped (24 phases, 1468 tests), 6项功能改进完成，真实 GLM API 已端到端验证（journey 全过）+ 补 GLM preset
+stopped_at: context exhaustion at 84% (2026-06-17)
+last_updated: "2026-06-18T00:00:00.000Z"
+last_activity: 2026-06-18 — quick-260618-1g3 feat 补 GLM/BigModel preset provider + 修复 preset 暴露的左面板溢出 bug：用临时 BigModel key（GLM-4-flash）真实 API 跑通 3 个 journey 集成测试（fragment 合成 501 字 / 3 种开篇风格 / 30 章连写 13395 字 + Skill guardian 71 条真实剧情偏差告警 + token 审计），兑现 STATE "待真实API验证"；preset_providers.dart 加 preset-glm（复用 AiProviderType.openai OpenAI 兼容适配器，journey wiring 同源）；第 5 个 preset 卡片致左面板 Column 底部溢出 78px→Expanded(SingleChildScrollView) 根治可滚动；TDD RED→GREEN / preset 15 + responsive 2 全过 / analyze 0；零新增回归（openai_adapter 2 缓存测试为 clean HEAD 预存遗留，已记录非本次引入）
 progress:
   total_phases: 8
   completed_phases: 0
@@ -120,6 +120,7 @@ Last activity: 2026-06-14 - P2 深化连发 5 项：260614-gmg（AA-02 对比减
 | 260617-j0z | fix 根治 style_deviation_detector vocabulary 维度双量尺门槛 bug（双量尺消除战役第 6 维，与 hnl rhythm/f7l emotionalTone 同族同源）：detector._analyzeVocabulary 最低字数门槛 < 20 对齐到基线方 StyleAnalyzer._computeVocabularyRichness 的 < 50——vocabulary 公式（unique CJK type-token ratio 经 ((ratio-0.25)/0.30).clamp 归一化）两文件原本完全一致，唯一差异即此门槛；pre-fix < 20 让 20-49 字 AI 文本用稀薄样本算真实词汇丰富度（30 全异字→ratio 1.0→richness 1.0），对比 analyzer 50+ 字稳健基线→vocabulary 偏差分失真（反AI味核心信号）；单行修复 + 注释（测量 ruler == 基线 ruler）；2 RED→GREEN（T1 30 全异字断言 textValue==0.5 pre-fix 实际 1.0 强制 RED / T2 60+ 字 >0.6 护栏）；0 fixture 扩写；TDD RED(19797a4)→GREEN(84e7c27)；analyze 0 / 21 detector + 291 editor feature 全量零回归 | 2026-06-17 | 84e7c27 | [260617-j0z-style-deviation-detector-vocabulary-bug](./quick/260617-j0z-style-deviation-detector-vocabulary-bug/) |
 | 260617-wma | fix 真实 GLM API 暴露的可靠性双缺口（闭合 STATE #1 blocker 后的优化）：真实 BigModel key E2E journey 第 6 章 AIStreamException 杀死整批，探针同窗口 8 连发全过→确诊瞬时错误非限流；修①AIException 基类加 toString()=>`$rt: $msg` 解诊断黑箱 ②OpenAIAdapter 抽 static retryStream(factory,{maxRetries=3,backoff}) async*——零 token 早失败且可重试(AIRateLimit/AINetwork/AIStream)退避重试(100/200/400ms)，发射过 token/AIAuth 透传，createStream 委托→9 调用方+journey 单一咽喉全受益；TDD 7 确定性测试全绿/analyze 0 | 2026-06-17 | b9347bd | [260617-wma-fix-aiexception-tostring-and-adapter-tra](./quick/260617-wma-fix-aiexception-tostring-and-adapter-tra/) |
 | 260618-0ae | fix 偏差检测过滤合规确认假警报（真实 GLM key 暴露）：真实 key 复验 wma 重试修复时 30 章 journey 偏差阶段跑在真实 GLM 文本上，Ch1 全部 11 条"clear"警告都是"符合/并未违反…设定"合规陈述、零真实违背→假警报淹没信号；根因 _buildPrompt 未禁报合规项 + _parseResult 只过滤 severity==low 不识别合规语义；双保险修：①prompt 显式禁报合规（保留"只报告 medium 或 clear"子串零破坏）②parser _isComplianceNoise 兜底过滤（合规标记 符合\|未违反\|并未违反\|没有违反\|未违背 且不含真违规 违背\|违反了；"违反了"带"了"肯定句≠"未违反"否定式精准区分）；TDD 2 RED→GREEN / analyze 0 / deviation service+6 widget+5 零回归 | 2026-06-18 | 4b452d3 | [260618-0ae-fix-deviation-compliance-false-positive](./quick/260618-0ae-fix-deviation-compliance-false-positive/) |
+| 260618-1g3 | feat 补 GLM/BigModel preset provider + 修复 preset 暴露的左面板溢出 bug：用临时 BigModel key（GLM-4-flash）真实 API 跑通 3 个 journey 集成测试（fragment 合成 501 字 / 3 种开篇风格 / 30 章连写 13395 字 + Skill guardian 71 条真实剧情偏差告警 + token 审计 30 调用）兑现 STATE "待真实API验证"；preset_providers.dart 加 preset-glm（复用 AiProviderType.openai OpenAI 兼容适配器，与 journey wiring 同源，配置逐字一致→真实调用已证）；第 5 个 preset 卡片致左面板 Column 底部溢出 78px→Expanded(SingleChildScrollView) 根治可滚动；TDD RED→GREEN / preset 15 + responsive 2 全过 / analyze 0；零新增回归（openai_adapter 2 缓存测试 clean HEAD 预存遗留，已记录非本次引入） | 2026-06-18 | d5db5e0 | [260618-1g3-add-glm-preset](./quick/260618-1g3-add-glm-preset/) |
 
 ## Deferred Items
 
@@ -133,7 +134,7 @@ Items acknowledged and deferred from v1.3:
 
 ## Session Continuity
 
-Last session: 2026-06-17T15:33:58.032Z
-Stopped at: context exhaustion at 80% (2026-06-17)
+Last session: 2026-06-17T16:27:09.324Z
+Stopped at: context exhaustion at 84% (2026-06-17)
 Next step: adapter 瞬断重试（零 token 早失败退避重试，9 调用方单一咽喉）+ AIException.toString 诊断黑箱修复（当前错误日志全 "Instance of..."）——真实 key 暴露、合成测试永远抓不到的可靠性缺口。验证用确定性 fake（失败 N-1 次后成功）+ 真实 smoke 回归，不烧 quota 等随机瞬断。
 Next step: MC-02 章节摘要自动刷新（需新建摘要 domain，纯代码无人工依赖）/ 视觉 UAT（需 Windows 真机或用户浏览器连 kimi-webbridge）。注：双量尺战役全闭合；AA-05 类型套句 5/5 闭合；全量 1678 tests 零回归；kimi-webbridge daemon 在跑(PID 166349,端口10086,kimi symlink 已修)，视觉 UAT 仍受 WSL2 CanvasKit 渲染边界限制留待 Windows 真机。
