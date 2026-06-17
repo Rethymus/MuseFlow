@@ -13,11 +13,16 @@ library;
 import 'dart:math';
 
 import 'package:museflow/features/editor/application/lexical_signature_extractor.dart';
+import 'package:museflow/features/editor/application/style_analysis_utils.dart';
 import 'package:museflow/features/editor/domain/author_style_profile.dart';
 import 'package:museflow/features/editor/domain/style_dimension.dart';
 import 'package:museflow/features/editor/domain/style_sample.dart';
 import 'package:museflow/features/editor/infrastructure/sentiment_lexicon.dart';
 import 'package:museflow/features/manuscript/domain/chapter.dart';
+
+// Shared ruler: CJK/sentence-length/rhythm/vocabulary math now lives in
+// [StyleAnalysisUtils]. Both StyleAnalyzer (baseline) and
+// StyleDeviationDetector (measurement) call it — see PLAN quick-260617-jgd.
 
 /// Analyzes author writing style from chapters.
 ///
@@ -99,13 +104,10 @@ class StyleAnalyzer {
 
   /// Splits text into sentences by Chinese/standard punctuation and returns
   /// the CJK character count of each sentence.
-  List<int> _extractSentenceLengths(String text) {
-    final sentences = text.split(RegExp(r'[。！？；\n]+'));
-    return sentences
-        .map((s) => _cjkCharCount(s.trim()))
-        .where((len) => len > 0)
-        .toList();
-  }
+  ///
+  /// Delegates to [StyleAnalysisUtils] — the shared ruler.
+  List<int> _extractSentenceLengths(String text) =>
+      StyleAnalysisUtils.extractSentenceLengths(text);
 
   SentenceLengthStats _computeSentenceStats(List<int> lengths) {
     if (lengths.isEmpty) {
@@ -137,42 +139,17 @@ class StyleAnalyzer {
 
   /// Computes rhythm score (0.0 = very varied/bursty, 1.0 = very uniform).
   ///
-  /// Uses coefficient of variation (CV) of sentence lengths.
-  /// High CV = high burstiness = low score (good, human-like).
-  /// Low CV = low burstiness = high score (AI-like, uniform).
-  double _computeRhythmScore(List<int> lengths) {
-    if (lengths.length < 5) return 0.5;
-
-    final avg = lengths.reduce((a, b) => a + b) / lengths.length;
-    if (avg == 0) return 0.5;
-
-    final variance =
-        lengths.map((l) => (l - avg) * (l - avg)).reduce((a, b) => a + b) /
-        lengths.length;
-    final stdDev = sqrt(variance);
-    final cv = stdDev / avg;
-
-    // CV > 0.8 = very varied (human-like), CV < 0.3 = very uniform (AI-like)
-    // Normalize to 0.0 (varied) – 1.0 (uniform)
-    return (1.0 - (cv - 0.3) / 0.5).clamp(0.0, 1.0);
-  }
+  /// Delegates to [StyleAnalysisUtils] — the shared ruler.
+  double _computeRhythmScore(List<int> lengths) =>
+      StyleAnalysisUtils.computeRhythmScore(lengths);
 
   // ── Dimension 3: Vocabulary Richness ─────────────────────────────────
 
   /// Computes vocabulary richness (0.0 = repetitive, 1.0 = very diverse).
   ///
-  /// Uses unique CJK character ratio (type-token ratio).
-  double _computeVocabularyRichness(String text) {
-    final cjkChars = _extractCjkChars(text);
-    if (cjkChars.length < 50) return 0.5;
-
-    final uniqueChars = cjkChars.toSet().length;
-    final ratio = uniqueChars / cjkChars.length;
-
-    // Typical Chinese prose: 30-50% unique ratio
-    // < 25% = very repetitive, > 55% = extremely diverse
-    return ((ratio - 0.25) / 0.30).clamp(0.0, 1.0);
-  }
+  /// Delegates to [StyleAnalysisUtils] — the shared ruler.
+  double _computeVocabularyRichness(String text) =>
+      StyleAnalysisUtils.computeVocabularyRichness(text);
 
   // ── Dimension 4: Rhetoric Habits ─────────────────────────────────────
 
@@ -374,20 +351,10 @@ class StyleAnalyzer {
   // ── CJK Character Utilities ──────────────────────────────────────────
 
   /// Counts CJK characters (Chinese, Japanese, Korean) in text.
-  static int _cjkCharCount(String text) => _extractCjkChars(text).length;
-
-  /// Extracts all CJK characters from text as a list.
-  static List<String> _extractCjkChars(String text) {
-    return text.runes
-        .where(
-          (r) =>
-              (r >= 0x4E00 && r <= 0x9FFF) || // CJK Unified
-              (r >= 0x3400 && r <= 0x4DBF) || // CJK Extension A
-              (r >= 0x3000 && r <= 0x303F),
-        ) // CJK Symbols
-        .map((r) => String.fromCharCode(r))
-        .toList();
-  }
+  ///
+  /// Delegates to [StyleAnalysisUtils] — the shared ruler.
+  static int _cjkCharCount(String text) =>
+      StyleAnalysisUtils.cjkCharCount(text);
 }
 
 /// Internal candidate for paragraph scoring.

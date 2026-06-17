@@ -10,8 +10,7 @@
 /// 1.0 = extreme deviation) with human-readable explanations.
 library;
 
-import 'dart:math';
-
+import 'package:museflow/features/editor/application/style_analysis_utils.dart';
 import 'package:museflow/features/editor/domain/author_style_profile.dart';
 import 'package:museflow/features/editor/domain/style_dimension.dart';
 import 'package:museflow/features/editor/infrastructure/sentiment_lexicon.dart';
@@ -98,7 +97,8 @@ class StyleDeviationDetector {
     required String text,
     required AuthorStyleProfile profile,
   }) {
-    if (_extractCjkChars(text).length < _minChars || !profile.hasData) {
+    if (StyleAnalysisUtils.cjkCharCount(text) < _minChars ||
+        !profile.hasData) {
       return null;
     }
 
@@ -185,7 +185,7 @@ class StyleDeviationDetector {
 
   DimensionDeviation _analyzeRhythm(String text, AuthorStyleProfile profile) {
     final lengths = _extractSentenceLengths(text);
-    final textRhythm = _computeRhythmScore(lengths);
+    final textRhythm = StyleAnalysisUtils.computeRhythmScore(lengths);
 
     // Author's rhythm is stored directly in profile
     final profileRhythm = profile.rhythmScore;
@@ -220,14 +220,20 @@ class StyleDeviationDetector {
     String text,
     AuthorStyleProfile profile,
   ) {
-    final cjkChars = _extractCjkChars(text);
-    // Minimum-CJK-char threshold must match StyleAnalyzer._computeVocabularyRichness
-    // (<50). Measurement ruler == baseline ruler (260617-hnl/f7l 同源原理):
-    // pre-fix <20 let 20-49 char AI text compute a real type-token richness
-    // score from a thin sample, then compare it against the analyzer's robust
-    // 50+ char baseline → vocabulary dimension deviation distorted
-    // (反AI味核心信号). See PLAN 260617-j0z.
-    if (cjkChars.length < 50) {
+    // Vocabulary richness is computed via the shared ruler
+    // [StyleAnalysisUtils.computeVocabularyRichness] — identical formula
+    // AND identical <50-CJK-char neutral-band threshold as the analyzer's
+    // baseline builder. Pre-fix detector held its own inline copy of this
+    // formula+threshold, which drifted twice (260617-j0z: <20 vs <50).
+    // Delegating to StyleAnalysisUtils makes the measurement side call the
+    // SAME function as the baseline side (structural dual-ruler fix,
+    // PLAN quick-260617-jgd).
+    final normalizedRichness = StyleAnalysisUtils.computeVocabularyRichness(text);
+
+    // The util returns neutral 0.5 for sub-threshold (<50 CJK) text. Map
+    // that to the detector's "too short to analyze" branch.
+    final cjkCount = StyleAnalysisUtils.cjkCharCount(text);
+    if (cjkCount < 50) {
       return DimensionDeviation(
         dimension: StyleDimension.vocabulary,
         deviationScore: 0.5,
@@ -236,11 +242,6 @@ class StyleDeviationDetector {
         textValue: 0.5,
       );
     }
-
-    final uniqueChars = cjkChars.toSet().length;
-    final textRichness = uniqueChars / cjkChars.length;
-    // Normalize to 0-1 scale (same as StyleAnalyzer)
-    final normalizedRichness = ((textRichness - 0.25) / 0.30).clamp(0.0, 1.0);
 
     final profileRichness = profile.vocabularyRichness;
     final diff = (normalizedRichness - profileRichness).abs();
@@ -392,33 +393,16 @@ class StyleDeviationDetector {
     return buffer.toString();
   }
 
-  // ── Shared Analysis Utilities (mirrors StyleAnalyzer) ─────────────
+  // ── Shared Analysis Utilities (delegates to StyleAnalysisUtils) ───
+  //
+  // The detector no longer holds its OWN ruler for CJK extraction, sentence-
+  // length extraction, rhythm scoring, or vocabulary richness. All four
+  // delegate to [StyleAnalysisUtils] — the same function the analyzer
+  // (baseline side) calls. This structurally eliminates the dual-ruler
+  // drift class (PLAN quick-260617-jgd, closing 05c/1uk/f7l/hnl/j0z).
 
-  List<int> _extractSentenceLengths(String text) {
-    final sentences = text.split(RegExp(r'[。！？；\n]+'));
-    return sentences
-        .map((s) => _extractCjkChars(s.trim()).length)
-        .where((len) => len > 0)
-        .toList();
-  }
-
-  double _computeRhythmScore(List<int> lengths) {
-    // Minimum-sentence threshold must match StyleAnalyzer._computeRhythmScore
-    // (<5). Measurement ruler == baseline ruler (260617-f7l 同源原理):
-    // pre-fix <3 let 3-4 sentence AI text compute a real rhythm-variance
-    // score from thin data and compare it against the analyzer's robust
-    // 5+ sentence baseline → rhythm dimension deviation distorted
-    // (反AI味核心信号). See PLAN 260617-hnl.
-    if (lengths.length < 5) return 0.5;
-    final avg = lengths.reduce((a, b) => a + b) / lengths.length;
-    if (avg == 0) return 0.5;
-    final variance =
-        lengths.map((l) => (l - avg) * (l - avg)).reduce((a, b) => a + b) /
-        lengths.length;
-    final stdDev = sqrt(variance);
-    final cv = stdDev / avg;
-    return (1.0 - (cv - 0.3) / 0.5).clamp(0.0, 1.0);
-  }
+  List<int> _extractSentenceLengths(String text) =>
+      StyleAnalysisUtils.extractSentenceLengths(text);
 
   RhetoricHabits _computeRhetoricHabits(String text) {
     final sentences = text.split(RegExp(r'[。！？\n]+'));
@@ -464,7 +448,7 @@ class StyleDeviationDetector {
     // bare 爱/恨 substring over-count + polarity inversion).
     final positiveCount = SentimentLexicon.countPositive(text);
     final negativeCount = SentimentLexicon.countNegative(text);
-    final totalCjk = _extractCjkChars(text).length;
+    final totalCjk = StyleAnalysisUtils.cjkCharCount(text);
 
     final warmth = SentimentLexicon.warmthScore(positiveCount, negativeCount);
     final intensity = SentimentLexicon.intensityScore(
@@ -496,7 +480,7 @@ class StyleDeviationDetector {
   }
 
   bool _isDescription(String sentence) {
-    final cjkCount = _extractCjkChars(sentence).length;
+    final cjkCount = StyleAnalysisUtils.cjkCharCount(sentence);
     final adjCount = RegExp(r'[一-鿿]{2}(的|地|得)').allMatches(sentence).length;
     return adjCount >= 2 || (cjkCount > 20 && adjCount >= 1);
   }
@@ -509,17 +493,5 @@ class StyleDeviationDetector {
         sentence.contains('犹如') ||
         sentence.contains('似的') ||
         sentence.contains('一般');
-  }
-
-  List<String> _extractCjkChars(String text) {
-    return text.runes
-        .where(
-          (r) =>
-              (r >= 0x4E00 && r <= 0x9FFF) ||
-              (r >= 0x3400 && r <= 0x4DBF) ||
-              (r >= 0x3000 && r <= 0x303F),
-        )
-        .map((r) => String.fromCharCode(r))
-        .toList();
   }
 }
