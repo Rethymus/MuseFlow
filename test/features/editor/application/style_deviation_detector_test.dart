@@ -8,6 +8,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:museflow/features/editor/application/style_deviation_detector.dart';
 import 'package:museflow/features/editor/domain/author_style_profile.dart';
 import 'package:museflow/features/editor/domain/style_dimension.dart';
+import 'package:museflow/features/editor/infrastructure/sentiment_lexicon.dart';
 
 AuthorStyleProfile _testProfile({
   double avgSentenceLen = 18,
@@ -337,6 +338,126 @@ void main() {
                 'Bare 爱 substring must not match inside 可爱/爱好/爱情 '
                 '(compounds containing the char). intensity inflated by '
                 'spurious positive hits.',
+          );
+        },
+      );
+    });
+
+    // Regression: detector._computeEmotionalTone must reuse the shared
+    // SentimentLexicon (same ruler as StyleAnalyzer) instead of an inline
+    // 22-word table + custom warmth/intensity formulas. Pre-fix detector
+    // silently drifts from the authoritative profile-builder ruler,扭曲
+    // emotionalTone 偏差分 (反AI味核心信号). See PLAN 260617-f7l.
+    group('sentiment lexicon consistency (260617-f7l)', () {
+      test(
+        'should compute emotionalTone using SentimentLexicon, not an inline table (lexicon-only words must register)',
+        () {
+          // Fixture deliberately uses lexicon-ONLY positive words
+          // (温馨/慈爱/相伴/相守/携手/守护/依偎/微笑/春风/陪伴/并肩/庇护/
+          // 兰花/碧空/花香/清风/鸟鸣/溪流/山峦/云朵/悠然/晨曦/暮色/繁星)
+          // that are NOT in the detector's pre-fix 22-word inline table.
+          // Pre-fix: positiveCount=0 → intensity falls to neutral-band
+          // baseline formula (≈0.5). Post-fix: SentimentLexicon matches
+          // 23 occurrences → intensity climbs to density-band (≈1.0).
+          // CJK count is 123 (>=100) so SentimentLexicon.intensityScore
+          // takes the density path instead of the <100 early-return 0.3.
+          const text =
+              '她微笑着走来，眼中满是温馨与慈爱。'
+              '两人相伴相守，携手走过四季的每一个清晨与黄昏，相互陪伴彼此守护。'
+              '他依偎在她的身旁，并肩迎接每一阵春风与晨曦。'
+              '庭院里的兰花悄然盛开，碧空下飘来阵阵花香与清风，鸟鸣声声入耳。'
+              '溪流潺潺流过山峦之间，云朵悠然飘荡在繁星点点的暮色之中。';
+
+          // Use neutral profile warmth/intensity so the deviation score is
+          // driven primarily by textValue (detector-measured intensity).
+          final profile = _testProfile(warmth: 0.5, intensity: 0.5);
+          final result = detector.analyze(text: text, profile: profile);
+
+          expect(result, isNotNull);
+          final toneDev = result!.deviations.firstWhere(
+            (d) => d.dimension == StyleDimension.emotionalTone,
+          );
+
+          // Guard: fixture must hit lexicon独有词 ≥5 (forces RED — pre-fix
+          // inline table 0 matches).
+          final expectedPositive = SentimentLexicon.countPositive(text);
+          expect(
+            expectedPositive,
+            greaterThanOrEqualTo(5),
+            reason:
+                'fixture 必须命中 SentimentLexicon 独有词（温馨/慈爱/相伴/相守/'
+                '携手/守护/依偎/微笑/春风 等）中至少 5 个',
+          );
+
+          // Pre-fix: inline table 0 matches → intensity = (0+0)/(cjk*0.03+1)*0.5+0.5
+          //                = 0.5 (neutral-band baseline)
+          // Post-fix: SentimentLexicon matches ≥5 → density-band intensity ≈1.0
+          // Threshold > 0.6 cleanly separates the two states (pre 0.5 < 0.6, post 1.0 > 0.6).
+          expect(
+            toneDev.textValue,
+            greaterThan(0.6),
+            reason:
+                'pre-fix 内联表对此文本 0 命中（温馨/慈爱/相伴/相守/携手/守护/'
+                '依偎/微笑/春风 均不在 22 词内联表中）→ intensity 落到中性带 0.5；'
+                'post-fix 复用 SentimentLexicon 命中 ≥5 → intensity 升至密度带，'
+                '与 StyleAnalyzer 对同文本测量一致',
+          );
+        },
+      );
+
+      test(
+        'should compute intensity via SentimentLexicon.intensityScore (same formula as StyleAnalyzer)',
+        () {
+          // Structural-equivalence guard: detector must compute intensity
+          // with EXACTLY SentimentLexicon.intensityScore — not a custom
+          // formula. Pre-fix detector uses
+          //   (pos+neg)/(cjk*0.03+1)*0.5+0.5  (always ≥0.5, never 0)
+          // Post-fix uses SentimentLexicon.intensityScore:
+          //   <100 cjk → 0.3 ; else density/4 clamp
+          // Fixture is >100 CJK so density path runs, ensuring the two
+          // formulas produce observably different values.
+          const text =
+              '温暖阳光下的幸福时光，微风拂面，岁月静好。'
+              '我们走在小路上，看着远方的青山与绿水，听着鸟鸣声声。'
+              '兰花的清香在空气中弥漫，溪流缓缓流过翠竹掩映的山峦之间。'
+              '繁星点点映照着碧空，清晨的露珠在叶片上闪着晶莹的光。'
+              '晚风轻轻吹过暮色中的小村庄，云朵悠然飘荡在远方的天空。';
+
+          final profile = _testProfile();
+          final result = detector.analyze(text: text, profile: profile);
+
+          expect(result, isNotNull);
+          final toneDev = result!.deviations.firstWhere(
+            (d) => d.dimension == StyleDimension.emotionalTone,
+          );
+
+          // Mirror StyleAnalyzer's exact computation:
+          //   totalCjk = CJK rune count (Unified + Ext A + Symbols)
+          //   intensity = SentimentLexicon.intensityScore(pos, neg, totalCjk)
+          final cjkLen = text.runes
+              .where(
+                (r) =>
+                    (r >= 0x4E00 && r <= 0x9FFF) ||
+                    (r >= 0x3400 && r <= 0x4DBF) ||
+                    (r >= 0x3000 && r <= 0x303F),
+              )
+              .length;
+          final expectedIntensity = SentimentLexicon.intensityScore(
+            SentimentLexicon.countPositive(text),
+            SentimentLexicon.countNegative(text),
+            cjkLen,
+          );
+
+          // Exact floating-point equality (1e-9 tolerance for FP noise).
+          // Pre-fix detector uses a different formula → textValue ≠
+          // expectedIntensity → RED. Post-fix delegates directly → GREEN.
+          expect(
+            toneDev.textValue,
+            closeTo(expectedIntensity, 1e-9),
+            reason:
+                'detector 必须复用 SentimentLexicon.intensityScore 公式，'
+                '与 StyleAnalyzer 同源；pre-fix 用自创 (pos+neg)/(cjk*0.03+1)*0.5+0.5 '
+                '公式 → 不等',
           );
         },
       );
