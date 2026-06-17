@@ -55,6 +55,40 @@ class OpenAIAdapter implements AIAdapter {
     // Validate baseUrl per T-02-08
     _validateBaseUrl(baseUrl);
 
+    // Retry transient EARLY failures (5xx / connection blip / SSE parse /
+    // rate-limit) so a single hiccup no longer kills a long serial
+    // generation (root-caused via the real BigModel key: one transient
+    // AIStreamException aborted a 30-chapter journey at chapter 6).
+    // Mid-stream failures (tokens already emitted) are NOT retried —
+    // restarting would duplicate the partial output. See quick-260617-wma.
+    return retryStream(
+      () => _attemptStream(
+        apiKey: apiKey,
+        baseUrl: baseUrl,
+        model: model,
+        messages: messages,
+        temperature: temperature,
+        topP: topP,
+        maxTokens: maxTokens,
+        onUsage: onUsage,
+      ),
+    );
+  }
+
+  /// One non-retried attempt: maps the openai_dart stream to text deltas,
+  /// classifies errors into the [AIException] hierarchy, and reports usage on
+  /// completion. Extracted from [createStream] so [retryStream] can re-invoke
+  /// it cleanly on each retry.
+  Stream<String> _attemptStream({
+    required String apiKey,
+    required String baseUrl,
+    required String model,
+    required List<ChatMessage> messages,
+    double? temperature,
+    double? topP,
+    int? maxTokens,
+    void Function(Usage?)? onUsage,
+  }) {
     // Get or create cached client
     final client = _getOrCreateClient(apiKey, baseUrl);
 
@@ -92,6 +126,59 @@ class OpenAIAdapter implements AIAdapter {
           ),
         );
   }
+
+  /// Whether [error] is worth retrying. Transient stream/network/rate-limit
+  /// errors are retryable; auth errors are not (retrying a bad key wastes
+  /// quota and never succeeds).
+  static bool _isRetryable(AIException error) =>
+      error is AIRateLimitException ||
+      error is AINetworkException ||
+      error is AIStreamException;
+
+  /// Maximum retry attempts after the initial call (so up to 4 total calls).
+  static const int defaultMaxRetries = 3;
+
+  /// Retries [factory] on early transient failures with exponential backoff.
+  ///
+  /// Retry ONLY fires when ALL hold:
+  /// - [factory] throws a retryable [AIException] (rate-limit / network /
+  ///   stream),
+  /// - no tokens were emitted on the current attempt (an EARLY failure such
+  ///   as a connection reset before the first byte). Once a single delta has
+  ///   been emitted the stream is committed and an error is surfaced to the
+  ///   caller — restarting would duplicate the partial output already
+  ///   delivered.
+  ///
+  /// Exposed (static, factory-injected) for deterministic unit testing with a
+  /// fake factory — no network, no quota burn. The real OpenAI path is
+  /// exercised by the GLM integration smoke test.
+  static Stream<String> retryStream(
+    Stream<String> Function() factory, {
+    int maxRetries = defaultMaxRetries,
+    Duration Function(int attempt)? backoff,
+  }) async* {
+    final delay = backoff ?? _defaultBackoff;
+    var attempt = 0;
+    while (true) {
+      var emitted = false;
+      try {
+        await for (final delta in factory()) {
+          emitted = true;
+          yield delta;
+        }
+        return;
+      } on AIException catch (error) {
+        if (emitted || !_isRetryable(error) || attempt >= maxRetries) {
+          rethrow;
+        }
+        attempt++;
+        await Future<void>.delayed(delay(attempt));
+      }
+    }
+  }
+
+  static Duration _defaultBackoff(int attempt) =>
+      Duration(milliseconds: 100 * (1 << attempt));
 
   /// Classifies an openai_dart exception into the appropriate [AIException].
   ///

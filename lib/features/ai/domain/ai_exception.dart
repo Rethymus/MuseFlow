@@ -9,6 +9,15 @@ sealed class AIException implements Exception {
 
   /// User-friendly error message in Chinese per D-14.
   String get userMessage;
+
+  /// Surfaces [message] so logs/diagnostics show the real classified detail
+  /// (e.g. "AIStreamException: ApiException: ...") instead of the default
+  /// opaque "Instance of 'AIStreamException'". Without this override the
+  /// OpenAIAdapter._safeDiagnostic redaction work is invisible — every
+  /// real-API failure logged as a typeless black box (root-caused via the
+  /// real BigModel key, 2026-06-17).
+  @override
+  String toString() => '$runtimeType: $message';
 }
 
 /// Thrown when API key authentication fails (401/403).
