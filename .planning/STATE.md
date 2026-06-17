@@ -4,8 +4,8 @@ milestone: v1.5
 milestone_name: milestone
 status: v1.4 shipped (24 phases, 1468 tests), 6项功能改进完成，待真实API验证
 stopped_at: context exhaustion at 77% (2026-06-17)
-last_updated: "2026-06-17T04:42:42.643Z"
-last_activity: 2026-06-17 — quick-260617-j0z fix 根治 style_deviation_detector vocabulary 维度双量尺门槛 bug（双量尺消除战役第 6 维，与 hnl rhythm/f7l emotionalTone 同族同源）：detector._analyzeVocabulary 最低字数门槛 < 20 对齐基线方 StyleAnalyzer 的 < 50（vocabulary 公式两文件原本完全一致，唯一差异即此门槛）；pre-fix < 20 让 20-49 字 AI 文本稀薄测量（30 全异字→ratio 1.0→richness 1.0）对比 analyzer 50+ 字稳健基线→vocabulary 偏差分失真（反AI味核心信号）；单行 + 注释（测量 ruler == 基线 ruler）；2 RED→GREEN（T1 30 全异字 textValue==0.5 pre-fix 实际 1.0 强制 RED / T2 60+ 字 >0.6 护栏）；0 fixture 扩写；TDD RED(19797a4)→GREEN(84e7c27)；analyze 0 / 21 detector + 291 editor feature 全量零回归
+last_updated: "2026-06-17T06:02:43.422Z"
+last_activity: 2026-06-17 — quick-260617-1uk fix 修复 style_deviation_detector 情感词裸单字子串过计 bug（260617-05c 同族延续）：_countPositive/NegativeSentiment 内联 Set 含裸单字 '爱'/'恨'，被 String.allMatches 当子串匹配——'恨' 命中 '恨不得'(急切想·正面)极性反转、'爱' 命中 可爱/爱好/爱情 过计，扭曲 emotionalTone 维度偏差分（反AI味特性）；移除裸 '爱'/'恨' 两行（与共享 SentimentLexicon 不收录裸单字设计一致；application→infrastructure 架构禁止反向依赖故就地修）+ 2 回归测试（公开 analyze() 断言 textValue<0.6，fixture 复合词密集强制 RED）；TDD RED→GREEN；analyze 0 / 1649 tests +2 零回归
 progress:
   total_phases: 8
   completed_phases: 0
@@ -131,6 +131,6 @@ Items acknowledged and deferred from v1.3:
 
 ## Session Continuity
 
-Last session: 2026-06-17T04:42:42.639Z
+Last session: 2026-06-17T06:02:43.418Z
 Stopped at: context exhaustion at 77% (2026-06-17)
 Next step: MC-02 章节摘要自动刷新（需新建摘要 domain）/ Phase 25 真实 API E2E（需真实 key/网络）。注：AA-05 类型套句系列已 5/5 闭合（修仙/武侠/都市/科幻/玄幻全覆盖，2026-06-16）；kimi-webbridge daemon 本沙箱未运行（4 次确认 NO_PROCESS/NO_9222，需用户浏览器活跃），视觉 UAT 留待真机。
