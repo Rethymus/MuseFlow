@@ -14,6 +14,7 @@ import 'dart:math';
 
 import 'package:museflow/features/editor/domain/author_style_profile.dart';
 import 'package:museflow/features/editor/domain/style_dimension.dart';
+import 'package:museflow/features/editor/infrastructure/sentiment_lexicon.dart';
 
 /// A single dimension's deviation result.
 class DimensionDeviation {
@@ -320,8 +321,16 @@ class StyleDeviationDetector {
     final avgDiff = (warmthDiff + intensityDiff) / 2;
     final normalizedDev = (avgDiff * 2).clamp(0.0, 1.0);
 
-    // AI pattern: flat emotion curve (intensity near 0.5, low variance)
-    final isFlat = textTone.intensity > 0.35 && textTone.intensity < 0.65;
+    // AI pattern: flat emotion curve (low sentiment-word density).
+    // lexicon 统一后数值变化（260617-f7l）: SentimentLexicon.intensityScore
+    // returns ~0 for text with no sentiment words (density 0/4), unlike the
+    // pre-fix custom formula which returned 0.5 (neutral-band baseline).
+    // The isFlat semantic — "情感曲线平淡，缺乏起伏" — correctly maps to LOW
+    // intensity under the new ruler, so the boundary shifts from the old
+    // 0.35–0.65 mid-band to a single < 0.3 threshold (matches
+    // SentimentLexicon.classifyTone's own "intensity < 0.3 → 平静/冷静"
+    // cutoff, keeping detector and lexicon rulings consistent).
+    final isFlat = textTone.intensity < 0.3;
 
     final effectiveDev = isFlat && profileTone.intensity.abs() > 0.2
         ? normalizedDev *
@@ -435,101 +444,29 @@ class StyleDeviationDetector {
   }
 
   EmotionalTone _computeEmotionalTone(String text) {
-    // Simplified emotion analysis without sentiment lexicon dependency
-    final positiveCount = _countPositiveSentiment(text);
-    final negativeCount = _countNegativeSentiment(text);
+    // Unified with StyleAnalyzer._computeEmotionalTone — both rulers now
+    // share SentimentLexicon for warmth/intensity/classifyTone, so the
+    // detector's "measurement" is byte-for-byte consistent with the
+    // profile-builder's "baseline". This eliminates the inline-table drift
+    // that caused 3 prior bugs (260617-05c dup double-count, 260617-1uk
+    // bare 爱/恨 substring over-count + polarity inversion).
+    final positiveCount = SentimentLexicon.countPositive(text);
+    final negativeCount = SentimentLexicon.countNegative(text);
     final totalCjk = _extractCjkChars(text).length;
 
-    final warmth = totalCjk > 0
-        ? ((positiveCount - negativeCount) / (totalCjk * 0.05 + 1) * 0.5 + 0.5)
-              .clamp(0.0, 1.0)
-        : 0.5;
-    final intensity = totalCjk > 0
-        ? ((positiveCount + negativeCount) / (totalCjk * 0.03 + 1) * 0.5 + 0.5)
-              .clamp(0.0, 1.0)
-        : 0.5;
+    final warmth = SentimentLexicon.warmthScore(positiveCount, negativeCount);
+    final intensity = SentimentLexicon.intensityScore(
+      positiveCount,
+      negativeCount,
+      totalCjk,
+    );
+    final overall = SentimentLexicon.classifyTone(warmth, intensity);
 
     return EmotionalTone(
-      overall: _classifyTone(warmth, intensity),
+      overall: overall,
       warmth: warmth,
       intensity: intensity,
     );
-  }
-
-  int _countPositiveSentiment(String text) {
-    // NOTE: omit bare single-char entries (e.g. 爱) — String.allMatches does
-    // substring matching and would over-count inside compounds such as
-    // 可爱/爱好/爱情/亲爱, distorting warmth/intensity.
-    const positives = <String>{
-      '温暖',
-      '幸福',
-      '快乐',
-      '美好',
-      '希望',
-      '光明',
-      '温柔',
-      '甜蜜',
-      '感动',
-      '欣喜',
-      '安宁',
-      '喜悦',
-      '欢笑',
-      '灿烂',
-      '明媚',
-      '欢快',
-      '欢喜',
-      '安心',
-      '满足',
-      '欣慰',
-      '喜欢',
-      '珍惜',
-    };
-    var count = 0;
-    for (final word in positives) {
-      count += word.allMatches(text).length;
-    }
-    return count;
-  }
-
-  int _countNegativeSentiment(String text) {
-    // NOTE: omit bare single-char entries (e.g. 恨) — String.allMatches does
-    // substring matching and would over-count inside compounds such as
-    // 恨不得 (eager/positive sense) / 悔恨/愤恨, inverting polarity.
-    const negatives = <String>{
-      '痛苦',
-      '悲伤',
-      '愤怒',
-      '恐惧',
-      '绝望',
-      '孤独',
-      '寒冷',
-      '黑暗',
-      '忧伤',
-      '心碎',
-      '不安',
-      '焦虑',
-      '失望',
-      '悲痛',
-      '寒心',
-      '凄凉',
-      '寂寞',
-      '难过',
-      '害怕',
-      '厌恶',
-    };
-    var count = 0;
-    for (final word in negatives) {
-      count += word.allMatches(text).length;
-    }
-    return count;
-  }
-
-  String _classifyTone(double warmth, double intensity) {
-    if (intensity < 0.3) return '平淡克制';
-    if (warmth > 0.6 && intensity > 0.5) return '热烈奔放';
-    if (warmth > 0.6) return '温暖柔和';
-    if (warmth < 0.4) return '冷峻深沉';
-    return '张弛有度';
   }
 
   bool _isDialogue(String sentence) {

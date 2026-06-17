@@ -180,13 +180,28 @@ void main() {
         warmth: 0.6,
       );
 
-      // Emotionally flat text
+      // Emotionally flat text. lexicon 统一后数值变化（260617-f7l）:
+      // SentimentLexicon.intensityScore returns 0.3 early-exit for text
+      // with <100 CJK chars (the pre-fix fixture was 83 CJK and 1 lexicon
+      // hit on '阳光'). Rewrote the fixture to a >100-CJK passage with
+      // zero lexicon matches so the density formula returns intensity=0
+      // and isFlat (intensity < 0.3) fires, triggering the '平淡' branch.
       final text =
           '林风走在路上。'
-          '路边的树木郁郁葱葱，阳光透过树叶洒下斑驳的光影。'
-          '他继续向前走去，步履平稳而从容。'
-          '远处的山峦在云雾中若隐若现，景色宜人。'
-          '他到达了目的地，一座古朴的客栈矗立在路旁。';
+          '他看着前方的路。'
+          '路边的树很多。'
+          '他继续向前走去。'
+          '走到了一个地方。'
+          '那里有一间屋子。'
+          '门口挂着灯笼。'
+          '他推开门走进去。'
+          '屋里没什么东西。'
+          '他坐下来喝口水。'
+          '天色慢慢暗下来。'
+          '他点燃了灯油。'
+          '屋外传来几声狗叫。'
+          '他靠着墙坐着。'
+          '没有什么事情发生。';
 
       final result = detector.analyze(text: text, profile: profile);
 
