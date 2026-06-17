@@ -565,5 +565,110 @@ void main() {
         },
       );
     });
+
+    // Regression: detector._analyzeVocabulary minimum-CJK-char threshold must
+    // match StyleAnalyzer._computeVocabularyRichness (<50). Pre-fix detector
+    // used <20, so 20-49 char AI text got a real type-token richness score
+    // computed from a thin sample, compared against the analyzer's robust
+    // 50+ char baseline → vocabulary dimension deviation distorted
+    // (反AI味核心信号). Same class as 260617-hnl (rhythm) and 260617-f7l
+    // (emotionalTone) — measurement ruler must equal baseline ruler.
+    // See PLAN 260617-j0z.
+    group('vocabulary ruler consistency (260617-j0z)', () {
+      test(
+        'should return neutral vocabulary for sub-threshold char counts, matching StyleAnalyzer',
+        () {
+          // Fixture: EXACTLY 30 distinct CJK characters (type-token ratio =
+          // 1.0). 30 ≥ 10 (top-level guard) so the text REACHES
+          // _analyzeVocabulary. Pre-fix detector threshold <20 → 30 ≥ 20 so
+          // it computes real richness: ratio 1.0 → normalizedRichness =
+          // ((1.0-0.25)/0.30).clamp = 1.0 → textValue 1.0 ≠ 0.5 → RED.
+          // Post-fix detector threshold <50 → 30 < 50 → return 0.5,
+          // matching StyleAnalyzer._computeVocabularyRichness on the same
+          // input → textValue == 0.5 → GREEN.
+          const text = '春风拂过青石板巷尾飘来桂花香我独自漫步那座老旧的小桥流水人家';
+
+          // Sanity: verify the fixture is genuinely 30 distinct CJK chars.
+          final cjkChars = text.runes
+              .where(
+                (r) =>
+                    (r >= 0x4E00 && r <= 0x9FFF) ||
+                    (r >= 0x3400 && r <= 0x4DBF) ||
+                    (r >= 0x3000 && r <= 0x303F),
+              )
+              .map((r) => String.fromCharCode(r))
+              .toList();
+          assert(
+            cjkChars.length == 30 && cjkChars.toSet().length == 30,
+            'fixture must be exactly 30 distinct CJK chars',
+          );
+
+          final profile = _testProfile();
+          final result = detector.analyze(text: text, profile: profile);
+
+          expect(result, isNotNull);
+          final vocabDev = result!.deviations.firstWhere(
+            (d) => d.dimension == StyleDimension.vocabulary,
+          );
+
+          // Post-fix: 30 chars < 50 robust threshold → neutral 0.5, matching
+          // StyleAnalyzer._computeVocabularyRichness on the same input.
+          // Pre-fix: 30 chars >= 20 → all-distinct ratio 1.0 → richness 1.0.
+          expect(
+            vocabDev.textValue,
+            0.5,
+            reason:
+                'detector._analyzeVocabulary 必须与 StyleAnalyzer 同门槛 <50；'
+                'pre-fix <20 对 30 字稀薄样本算真实丰富度（全异字→ratio 1.0→'
+                'normalizedRichness 1.0），与 analyzer 50+ 字稳健基线比较 → '
+                'vocabulary 维度偏差分失真',
+          );
+        },
+      );
+
+      test(
+        'should still compute vocabulary for 50+ chars (guardrail against over-broad threshold)',
+        () {
+          // Guardrail: bumping the threshold to <50 must NOT break the
+          // legitimate 50+ char path. 63 CJK chars with high diversity
+          // (type-token ratio ≈ 0.94) → normalizedRichness clamp = 1.0
+          // → textValue 1.0 > 0.6.
+          const text =
+              '春风拂过青石板巷尾飘来阵阵桂花清香独自漫步那座老旧的小桥流水人家'
+              '两岸杨柳依依远山在暮色里渐渐隐去几只归鸟掠过天际霞光映照着村庄';
+
+          // Sanity: verify fixture is 50+ CJK chars.
+          final cjkCount = text.runes
+              .where(
+                (r) =>
+                    (r >= 0x4E00 && r <= 0x9FFF) ||
+                    (r >= 0x3400 && r <= 0x4DBF) ||
+                    (r >= 0x3000 && r <= 0x303F),
+              )
+              .length;
+          assert(cjkCount >= 50, 'fixture must have >=50 CJK chars');
+
+          final profile = _testProfile();
+          final result = detector.analyze(text: text, profile: profile);
+
+          expect(result, isNotNull);
+          final vocabDev = result!.deviations.firstWhere(
+            (d) => d.dimension == StyleDimension.vocabulary,
+          );
+
+          // 63 chars ≥ 50 robust threshold → real richness computed.
+          // High diversity → normalizedRichness clamp = 1.0 > 0.6.
+          // Pre-fix and post-fix both pass this test; it guards against
+          // accidentally bumping threshold too far (e.g. <70).
+          expect(
+            vocabDev.textValue,
+            greaterThan(0.6),
+            reason:
+                '63 字高多样（ratio ≈0.94→normalizedRichness 1.0）应触发真实词汇'
+                '丰富度计算，证明 <50 门槛没破坏 ≥50 字的正常路径',
+          );
+        },
+      );
+    });
   });
 }
