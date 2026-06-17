@@ -477,5 +477,93 @@ void main() {
         },
       );
     });
+
+    // Regression: detector._computeRhythmScore minimum-sentence threshold must
+    // match StyleAnalyzer._computeRhythmScore (>=5). Pre-fix detector used <3,
+    // so 3-4 sentence AI text got a real rhythm-variance score from thin data,
+    // compared against the analyzer's robust 5+ sentence baseline → rhythm
+    // dimension deviation distorted (反AI味核心信号). Same class as 260617-f7l
+    // (emotionalTone) — measurement ruler must equal baseline ruler.
+    // See PLAN 260617-hnl.
+    group('rhythm ruler consistency (260617-hnl)', () {
+      test(
+        'should return neutral rhythm for sub-threshold sentence counts, matching StyleAnalyzer',
+        () {
+          // Fixture: EXACTLY 4 sentences, each 12 CJK chars (uniform length).
+          // Pre-fix detector threshold <3 → 4 sentences compute real variance:
+          //   uniform → cv≈0 → rhythm = (1.0-(0-0.3)/0.5).clamp = clamp(1.6) = 1.0
+          //   textValue ≈ 1.0 ≠ 0.5 → RED.
+          // Post-fix detector threshold <5 → 4 sentences < 5 → return 0.5,
+          // matching StyleAnalyzer's <5 early return → textValue == 0.5 → GREEN.
+          const text =
+              '林风站在山门前。'
+              '他静静看着远方。'
+              '钟声悠悠地传来。'
+              '夜色缓缓地降临。';
+
+          // Verify fixture is genuinely sub-threshold (<5 sentences, ≥3 so
+          // pre-fix <3 does NOT early-return — it computes real variance).
+          // 4 sentences with non-zero CJK lengths each.
+          // (Sanity comment, not an assertion on the bug itself.)
+
+          final profile = _testProfile(rhythmScore: 0.5);
+          final result = detector.analyze(text: text, profile: profile);
+
+          expect(result, isNotNull);
+          final rhythmDev = result!.deviations.firstWhere(
+            (d) => d.dimension == StyleDimension.rhythm,
+          );
+
+          // Post-fix: 4 sentences < 5 robust threshold → neutral 0.5,
+          // matching StyleAnalyzer._computeRhythmScore on the same input.
+          // Pre-fix: 4 sentences >= 3 → uniform-length variance → ≈1.0.
+          expect(
+            rhythmDev.textValue,
+            0.5,
+            reason:
+                'detector._computeRhythmScore 必须与 StyleAnalyzer 同门槛 <5；'
+                'pre-fix <3 对 4 句稀薄数据算真实方差（均匀→cv≈0→rhythm≈1.0），'
+                '与 analyzer 5+ 句稳健基线比较 → rhythm 维度偏差分失真',
+          );
+        },
+      );
+
+      test(
+        'should still compute rhythm for 5+ sentences (guardrail against over-broad threshold)',
+        () {
+          // Guardrail: bumping the threshold to <5 must NOT break the
+          // legitimate 5+ sentence path. 6 sentences, highly uniform length
+          // (each 10 CJK chars) → cv≈0 → rhythm≈1.0 (high AI-scent).
+          const text =
+              '林风站在山门前。'
+              '他静静看着远方。'
+              '钟声悠悠地传来。'
+              '夜色缓缓降临了。'
+              '远山隐隐约约现。'
+              '明月缓缓升起来。';
+
+          final profile = _testProfile(rhythmScore: 0.3);
+          final result = detector.analyze(text: text, profile: profile);
+
+          expect(result, isNotNull);
+          final rhythmDev = result!.deviations.firstWhere(
+            (d) => d.dimension == StyleDimension.rhythm,
+          );
+
+          // 6 sentences ≥ 5 robust threshold → real variance computed.
+          // Uniform length → cv≈0 → rhythm clamp(1.6) = 1.0 → > 0.7.
+          // Pre-fix and post-fix both pass this test (both compute real
+          // variance for ≥5 sentences); it guards against accidentally
+          // bumping threshold too far (e.g. <7).
+          expect(
+            rhythmDev.textValue,
+            greaterThan(0.7),
+            reason:
+                '6 句均匀长度应触发真实节奏方差计算（cv≈0→rhythm≈1.0），'
+                '证明 <5 门槛没破坏 ≥5 句的正常路径',
+          );
+        },
+      );
+    });
   });
 }
