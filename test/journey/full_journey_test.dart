@@ -84,16 +84,34 @@ void main() {
     () async {
       debugPrint('[E2E] Starting full xianxia journey validation');
 
-      await _phaseAWorldBuilding(container!);
+      // The deterministic local test above initializes TestWidgetsFlutterBinding
+      // (via createJourneyContainer when apiKey == 'journey-local-test-key'),
+      // which installs a process-global HttpClient mock that returns 400 for
+      // every request (see the flutter_test warning) and would poison these
+      // real GLM calls with AIStreamException. Disable the global override for
+      // the duration of the real-API phases so dart:io HttpClient uses its
+      // genuine implementation, then restore it so later tests keep their mock.
+      //
+      // NOTE: cannot use HttpOverrides.runZoned(createHttpClient: (_)=>HttpClient())
+      // here — constructing HttpClient() inside that zone re-enters the same
+      // override and recurses to a Stack Overflow. Nulling HttpOverrides.global
+      // makes HttpClient() fall through to the real _HttpClient with no recursion.
+      final HttpOverrides? previousOverrides = HttpOverrides.current;
+      HttpOverrides.global = null;
+      try {
+        await _phaseAWorldBuilding(container!);
 
-      final synthesisOutput = await _phaseBFragmentSynthesis(container!);
-      expect(synthesisOutput.length, greaterThan(50));
+        final synthesisOutput = await _phaseBFragmentSynthesis(container!);
+        expect(synthesisOutput.length, greaterThan(50));
 
-      final manuscript = await _phaseCOpeningGuide(container!);
+        final manuscript = await _phaseCOpeningGuide(container!);
 
-      await _phaseDSerialGeneration(container!, manuscript, useDelay: true);
+        await _phaseDSerialGeneration(container!, manuscript, useDelay: true);
 
-      await _phaseETokenAudit(container!);
+        await _phaseETokenAudit(container!);
+      } finally {
+        HttpOverrides.global = previousOverrides;
+      }
     },
     skip: apiKey == null ? 'GLM_API_KEY not set' : null,
     timeout: const Timeout(Duration(minutes: 60)),

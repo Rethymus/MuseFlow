@@ -51,7 +51,19 @@ void main() {
   test(
     'should pass GLM streaming smoke test',
     () async {
-      await _runGlmSmokeTest(container!);
+      // The deterministic tests below initialize TestWidgetsFlutterBinding
+      // (via createJourneyContainer when apiKey == 'journey-local-test-key'),
+      // installing a process-global HttpClient mock that returns 400 and would
+      // poison this real GLM call. Null the override for the smoke test so
+      // dart:io HttpClient uses its genuine implementation. See full_journey_test
+      // for the recursion footgun in the HttpOverrides.runZoned alternative.
+      final HttpOverrides? previous = HttpOverrides.current;
+      HttpOverrides.global = null;
+      try {
+        await _runGlmSmokeTest(container!);
+      } finally {
+        HttpOverrides.global = previous;
+      }
     },
     skip: apiKey == null ? 'GLM_API_KEY not set' : null,
     timeout: const Timeout(Duration(seconds: 120)),
@@ -100,25 +112,31 @@ void main() {
   test(
     'should generate 30 chapters with knowledge injection and Skill guardian',
     () async {
-      await _setupWorldBuilding(container!);
-      final result = await _generateThirtyChapterJourney(
-        container: container!,
-        manuscriptId: 'ms-serial-generation',
-        useDelay: true,
-        runDeviationDetection: true,
-      );
+      final HttpOverrides? previous = HttpOverrides.current;
+      HttpOverrides.global = null;
+      try {
+        await _setupWorldBuilding(container!);
+        final result = await _generateThirtyChapterJourney(
+          container: container!,
+          manuscriptId: 'ms-serial-generation',
+          useDelay: true,
+          runDeviationDetection: true,
+        );
 
-      expect(result.chapters, hasLength(30));
-      expect(result.chaptersWithNames, greaterThanOrEqualTo(2));
-      expect(result.deviationChecks, equals(30));
-      expect(result.snapshot.totalCalls, greaterThanOrEqualTo(30));
-      expect(result.snapshot.totalInputTokens, greaterThan(0));
-      expect(result.snapshot.totalOutputTokens, greaterThan(0));
-      debugPrint(
-        '[AUDIT] Total calls: ${result.snapshot.totalCalls}, '
-        'input: ${result.snapshot.totalInputTokens}, '
-        'output: ${result.snapshot.totalOutputTokens}',
-      );
+        expect(result.chapters, hasLength(30));
+        expect(result.chaptersWithNames, greaterThanOrEqualTo(2));
+        expect(result.deviationChecks, equals(30));
+        expect(result.snapshot.totalCalls, greaterThanOrEqualTo(30));
+        expect(result.snapshot.totalInputTokens, greaterThan(0));
+        expect(result.snapshot.totalOutputTokens, greaterThan(0));
+        debugPrint(
+          '[AUDIT] Total calls: ${result.snapshot.totalCalls}, '
+          'input: ${result.snapshot.totalInputTokens}, '
+          'output: ${result.snapshot.totalOutputTokens}',
+        );
+      } finally {
+        HttpOverrides.global = previous;
+      }
     },
     skip: apiKey == null ? 'GLM_API_KEY not set' : null,
     timeout: const Timeout(Duration(minutes: 20)),
@@ -169,25 +187,31 @@ void main() {
   test(
     'should generate chapters 31-100 with knowledge injection and stage prompts',
     () async {
-      await _setupWorldBuilding(container!);
-      final result = await _generateHundredChapterJourney(
-        container: container!,
-        manuscriptId: 'ms-hundred-generation',
-        useDelay: true,
-        runDeviationDetection: true,
-      );
+      final HttpOverrides? previous = HttpOverrides.current;
+      HttpOverrides.global = null;
+      try {
+        await _setupWorldBuilding(container!);
+        final result = await _generateHundredChapterJourney(
+          container: container!,
+          manuscriptId: 'ms-hundred-generation',
+          useDelay: true,
+          runDeviationDetection: true,
+        );
 
-      expect(result.chapters, hasLength(100));
-      expect(result.chaptersWithNames, equals(5));
-      expect(result.deviationChecks, equals(100));
-      expect(result.snapshot.totalCalls, greaterThanOrEqualTo(100));
-      expect(result.snapshot.totalInputTokens, greaterThan(0));
-      expect(result.snapshot.totalOutputTokens, greaterThan(0));
-      debugPrint(
-        '[AUDIT] 100-chapter total calls: ${result.snapshot.totalCalls}, '
-        'input: ${result.snapshot.totalInputTokens}, '
-        'output: ${result.snapshot.totalOutputTokens}',
-      );
+        expect(result.chapters, hasLength(100));
+        expect(result.chaptersWithNames, equals(5));
+        expect(result.deviationChecks, equals(100));
+        expect(result.snapshot.totalCalls, greaterThanOrEqualTo(100));
+        expect(result.snapshot.totalInputTokens, greaterThan(0));
+        expect(result.snapshot.totalOutputTokens, greaterThan(0));
+        debugPrint(
+          '[AUDIT] 100-chapter total calls: ${result.snapshot.totalCalls}, '
+          'input: ${result.snapshot.totalInputTokens}, '
+          'output: ${result.snapshot.totalOutputTokens}',
+        );
+      } finally {
+        HttpOverrides.global = previous;
+      }
     },
     skip: apiKey == null ? 'GLM_API_KEY not set' : null,
     timeout: const Timeout(Duration(minutes: 60)),
