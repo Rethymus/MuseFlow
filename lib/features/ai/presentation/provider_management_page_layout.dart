@@ -66,31 +66,42 @@ extension _ProviderManagementPageStateLayout on _ProviderManagementPageState {
             ),
           ),
         ),
-        ...presets.map(
-          (preset) => Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-            child: ProviderCard(
-              provider: preset,
-              onTap: () => _fillFromPreset(preset),
+        // Preset cards scroll to prevent vertical overflow as more presets are
+        // added (the panel hosts multiple preset providers + a custom option).
+        Expanded(
+          child: SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                ...presets.map(
+                  (preset) => Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                    child: ProviderCard(
+                      provider: preset,
+                      onTap: () => _fillFromPreset(preset),
+                    ),
+                  ),
+                ),
+                // Custom provider option
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                  child: ProviderCard(
+                    provider: AIProvider(
+                      id: 'preset-custom',
+                      name: '自定义',
+                      baseUrl: '',
+                      type: AiProviderType.custom,
+                      model: '',
+                      createdAt: DateTime.now(),
+                    ),
+                    onTap: () {
+                      _clearForm();
+                      _selectCustomProviderType();
+                    },
+                  ),
+                ),
+              ],
             ),
-          ),
-        ),
-        // Custom provider option
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-          child: ProviderCard(
-            provider: AIProvider(
-              id: 'preset-custom',
-              name: '自定义',
-              baseUrl: '',
-              type: AiProviderType.custom,
-              model: '',
-              createdAt: DateTime.now(),
-            ),
-            onTap: () {
-              _clearForm();
-              _selectCustomProviderType();
-            },
           ),
         ),
         const Divider(height: 24),

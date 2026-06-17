@@ -4,8 +4,8 @@ import 'package:museflow/features/ai/infrastructure/preset_providers.dart';
 
 void main() {
   group('PresetProviders', () {
-    test('should return exactly 4 preset providers', () {
-      expect(PresetProviders.all.length, 4);
+    test('should return exactly 5 preset providers', () {
+      expect(PresetProviders.all.length, 5);
     });
 
     test('OpenAI preset should have correct configuration', () {
@@ -89,6 +89,24 @@ void main() {
 
     test('requiresApiKey should be true for Claude', () {
       expect(PresetProviders.requiresApiKey(AiProviderType.claude), true);
+    });
+
+    test('GLM (BigModel) preset should have correct configuration', () {
+      final glm = PresetProviders.getById('preset-glm');
+      expect(glm, isNotNull);
+      expect(glm!.id, 'preset-glm');
+      expect(glm.name, 'GLM (智谱)');
+      // GLM exposes an OpenAI-compatible endpoint — reuses the openai adapter
+      // (same wiring as journey_container.dart's real-API harness).
+      expect(glm.type, AiProviderType.openai);
+      expect(glm.baseUrl, 'https://open.bigmodel.cn/api/paas/v4');
+      expect(glm.model, 'glm-4-flash');
+    });
+
+    test('requiresApiKey should be true for GLM preset (openai type)', () {
+      final glm = PresetProviders.getById('preset-glm');
+      expect(glm, isNotNull);
+      expect(PresetProviders.requiresApiKey(glm!.type), true);
     });
   });
 }

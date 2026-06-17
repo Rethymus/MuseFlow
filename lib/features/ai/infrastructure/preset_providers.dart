@@ -10,9 +10,10 @@ class PresetProviders {
 
   /// Returns the list of preset AI provider templates.
   ///
-  /// Each preset has a stable ID (preset-openai, preset-deepseek, preset-ollama)
-  /// for reliable reference. Ollama uses http://localhost and does not require
-  /// an API key.
+  /// Each preset has a stable ID (preset-openai, preset-deepseek, preset-ollama,
+  /// preset-claude, preset-glm) for reliable reference. Ollama uses
+  /// http://localhost and does not require an API key. GLM (智谱AI) is
+  /// OpenAI-compatible and reuses the openai adapter type.
   static List<AIProvider> get all {
     final now = DateTime.now();
     return [
@@ -46,6 +47,17 @@ class PresetProviders {
         baseUrl: 'https://api.anthropic.com/v1/',
         type: AiProviderType.claude,
         model: 'claude-sonnet-4-20250514',
+        createdAt: now,
+      ),
+      AIProvider(
+        id: 'preset-glm',
+        name: 'GLM (智谱)',
+        // GLM (BigModel / 智谱AI) exposes an OpenAI-compatible endpoint, so it
+        // reuses the openai adapter type — same wiring as the real-API journey
+        // test harness (see test/journey/helpers/journey_container.dart).
+        baseUrl: 'https://open.bigmodel.cn/api/paas/v4',
+        type: AiProviderType.openai,
+        model: 'glm-4-flash',
         createdAt: now,
       ),
     ];
