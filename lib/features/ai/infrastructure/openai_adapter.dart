@@ -55,6 +55,15 @@ class OpenAIAdapter implements AIAdapter {
     // Validate baseUrl per T-02-08
     _validateBaseUrl(baseUrl);
 
+    // Eagerly create+cache the client so the lifecycle invariant (isActive
+    // reflects a live client immediately after createStream) holds. The
+    // retryStream factory below reuses this cached client on each (re)attempt
+    // via _attemptStream's _getOrCreateClient (idempotent for same params).
+    // Restored after quick-260617-wma deferred creation into the factory
+    // closure, which accidentally made client creation lazy-on-subscription
+    // and broke the caching tests' isActive invariant.
+    _getOrCreateClient(apiKey, baseUrl);
+
     // Retry transient EARLY failures (5xx / connection blip / SSE parse /
     // rate-limit) so a single hiccup no longer kills a long serial
     // generation (root-caused via the real BigModel key: one transient
