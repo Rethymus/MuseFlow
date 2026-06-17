@@ -116,6 +116,10 @@ class DeviationDetectionService {
       '只返回 JSON 数组，每项包含 description、severity(low|medium|clear)、skillName、suggestedFix。',
     );
     buffer.writeln('只报告 medium 或 clear 级别的问题；低置信度不要报告。');
+    buffer.writeln(
+      '只报告【真实违背】设定的问题；符合 / 未违反 / 并未违反的合规项一律不要报告'
+      '（那是正常情况，不是问题）。',
+    );
     buffer.writeln('\n【待检查文本】\n$text');
     buffer.writeln('\n【激活设定】');
     for (final skill in activeSkills) {
@@ -140,10 +144,32 @@ class DeviationDetectionService {
                 DeviationWarning.fromJson(Map<String, dynamic>.from(item)),
           )
           .where((warning) => warning.severity != DeviationSeverity.low)
+          .where((warning) => !_isComplianceNoise(warning.description))
           .toList();
       return DeviationResult(warnings: warnings);
     } catch (_) {
       return const DeviationResult(warnings: []);
     }
+  }
+
+  /// Real LLMs (observed via the real BigModel key journey, quick-260618-0ae)
+  /// sometimes return compliance confirmations — "符合X的设定" / "并未违反X" —
+  /// as if they were deviations, flooding the user with false alarms (Ch1
+  /// returned 11 "clear" entries that were all compliance, zero real
+  /// violations). Genuine deviations state a breach using 违背/违反; compliance
+  /// uses 符合/未违反. Defense-in-depth alongside the prompt instruction, since
+  /// real models do not always obey the prompt (mirrors the defensive
+  /// `catch (_)` fallback already used here).
+  static final _complianceMarkers = RegExp(
+    r'符合|未违反|并未违反|没有违反|未违背',
+  );
+  static final _violationMarkers = RegExp(r'违背|违反了');
+
+  static bool _isComplianceNoise(String description) {
+    if (description.isEmpty) return false;
+    // A genuine violation explicitly states a breach — keep it even if it
+    // incidentally contains a compliance word.
+    if (_violationMarkers.hasMatch(description)) return false;
+    return _complianceMarkers.hasMatch(description);
   }
 }
