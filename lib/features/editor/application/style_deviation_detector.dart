@@ -397,7 +397,13 @@ class StyleDeviationDetector {
   }
 
   double _computeRhythmScore(List<int> lengths) {
-    if (lengths.length < 3) return 0.5;
+    // Minimum-sentence threshold must match StyleAnalyzer._computeRhythmScore
+    // (<5). Measurement ruler == baseline ruler (260617-f7l 同源原理):
+    // pre-fix <3 let 3-4 sentence AI text compute a real rhythm-variance
+    // score from thin data and compare it against the analyzer's robust
+    // 5+ sentence baseline → rhythm dimension deviation distorted
+    // (反AI味核心信号). See PLAN 260617-hnl.
+    if (lengths.length < 5) return 0.5;
     final avg = lengths.reduce((a, b) => a + b) / lengths.length;
     if (avg == 0) return 0.5;
     final variance =
