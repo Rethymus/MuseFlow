@@ -221,7 +221,13 @@ class StyleDeviationDetector {
     AuthorStyleProfile profile,
   ) {
     final cjkChars = _extractCjkChars(text);
-    if (cjkChars.length < 20) {
+    // Minimum-CJK-char threshold must match StyleAnalyzer._computeVocabularyRichness
+    // (<50). Measurement ruler == baseline ruler (260617-hnl/f7l 同源原理):
+    // pre-fix <20 let 20-49 char AI text compute a real type-token richness
+    // score from a thin sample, then compare it against the analyzer's robust
+    // 50+ char baseline → vocabulary dimension deviation distorted
+    // (反AI味核心信号). See PLAN 260617-j0z.
+    if (cjkChars.length < 50) {
       return DimensionDeviation(
         dimension: StyleDimension.vocabulary,
         deviationScore: 0.5,
