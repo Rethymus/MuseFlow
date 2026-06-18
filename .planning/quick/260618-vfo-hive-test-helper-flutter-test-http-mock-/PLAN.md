@@ -2,7 +2,7 @@
 quick_id: 260618-vfo
 slug: hive-test-helper-flutter-test-http-mock-
 date: 2026-06-18
-status: in-progress
+status: complete
 type: test-infrastructure-hardening
 ---
 
