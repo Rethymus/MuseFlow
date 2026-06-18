@@ -107,23 +107,38 @@ class ProviderService {
   /// Throws [AIAuthException] on authentication failure (401/403).
   /// Throws [AIRateLimitException] on rate limiting (429).
   /// Throws [AINetworkException] on network/connectivity errors.
+  /// Tests the connection to an AI provider by sending a minimal request.
+  ///
+  /// Routes to [ClaudeAdapter]-style test for Claude providers, or
+  /// [OpenAI]-style test for all other OpenAI-compatible providers.
+  ///
+  /// [timeout] bounds the probe (default 30s) so a dead/unresponsive baseUrl
+  /// fails fast instead of hanging on the client's default request timeout.
+  /// Exposed as a parameter so tests can inject a short timeout deterministically.
+  ///
+  /// Throws [AIAuthException] on authentication failure (401/403).
+  /// Throws [AIRateLimitException] on rate limiting (429).
+  /// Throws [AINetworkException] on network/connectivity errors.
   Future<void> testConnection({
     required String apiKey,
     required String baseUrl,
     required AiProviderType type,
     String model = 'gpt-4o-mini',
+    Duration timeout = const Duration(seconds: 30),
   }) async {
     if (type == AiProviderType.claude) {
       await _testClaudeConnection(
         apiKey: apiKey,
         baseUrl: baseUrl,
         model: model,
+        timeout: timeout,
       );
     } else {
       await _testOpenAIConnection(
         apiKey: apiKey,
         baseUrl: baseUrl,
         model: model,
+        timeout: timeout,
       );
     }
   }
@@ -133,6 +148,7 @@ class ProviderService {
     required String apiKey,
     required String baseUrl,
     required String model,
+    required Duration timeout,
   }) async {
     try {
       String normalizedUrl = baseUrl;
@@ -147,7 +163,7 @@ class ProviderService {
         config: anthropic.AnthropicConfig(
           authProvider: anthropic.ApiKeyProvider(apiKey),
           baseUrl: normalizedUrl,
-          timeout: const Duration(seconds: 30),
+          timeout: timeout,
         ),
       );
 
@@ -184,9 +200,21 @@ class ProviderService {
     required String apiKey,
     required String baseUrl,
     required String model,
+    required Duration timeout,
   }) async {
     try {
-      final client = OpenAIClient.withApiKey(apiKey, baseUrl: baseUrl);
+      // Build the client via OpenAIConfig (not the withApiKey factory) so the
+      // probe is bounded by [timeout] instead of OpenAIConfig's default
+      // Duration(minutes: 10). maxRetries: 0 because a connection test is a
+      // single quick probe — it should not back off and retry 4 times.
+      final client = OpenAIClient(
+        config: OpenAIConfig(
+          authProvider: ApiKeyProvider(apiKey),
+          baseUrl: baseUrl,
+          timeout: timeout,
+          retryPolicy: const RetryPolicy(maxRetries: 0),
+        ),
+      );
 
       await client.chat.completions.create(
         ChatCompletionCreateRequest(
