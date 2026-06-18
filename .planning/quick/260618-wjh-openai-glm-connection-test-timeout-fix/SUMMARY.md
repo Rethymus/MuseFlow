@@ -3,7 +3,7 @@ quick_id: 260618-wjh
 slug: openai-glm-connection-test-timeout-fix
 date: 2026-06-18
 status: complete
-commits: []
+commits: [fd9aadf]
 ---
 
 # OpenAI/GLM 连接测试 timeout 修复
