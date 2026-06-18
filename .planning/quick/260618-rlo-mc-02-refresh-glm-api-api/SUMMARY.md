@@ -3,7 +3,7 @@ quick_id: 260618-rlo
 slug: mc-02-refresh-glm-api-api
 date: 2026-06-18
 status: complete
-commit: TBD
+commit: dbde38a
 files_changed:
   - test/features/manuscript/application/chapter_summary_refresh_service_real_glm_test.dart (new)
 ---
