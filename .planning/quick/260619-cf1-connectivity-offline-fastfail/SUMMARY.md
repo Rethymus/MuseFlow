@@ -3,7 +3,7 @@ quick_id: 260619-cf1
 slug: connectivity-offline-fastfail
 date: 2026-06-19
 status: complete
-commits: []
+commits: [cf76664]
 ---
 
 # 离线感知 fast-fail：接入 connectivity_plus（Phase 30.3）
