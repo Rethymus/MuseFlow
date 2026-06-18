@@ -2,6 +2,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive_ce/hive.dart';
 import 'package:museflow/core/presentation/providers.dart';
+import 'package:museflow/features/manuscript/application/chapter_summary_refresh_service.dart';
 import 'package:museflow/features/manuscript/domain/chapter.dart';
 import 'package:museflow/features/manuscript/infrastructure/chapter_repository.dart';
 import 'package:museflow/features/manuscript/infrastructure/manuscript_repository.dart';
@@ -272,4 +273,174 @@ void main() {
     final shifted = chapters.firstWhere((c) => c.id == 'ch-3');
     expect(shifted.sortOrder, equals(1));
   });
+
+  // ===========================================================================
+  // MC-02 slice 4 — trigger-surface wiring tests. The existing tests above do
+  // NOT override chapterSummaryRefreshServiceProvider, so the service is null
+  // (no AI provider configured in test container) and the helpers no-op. Here
+  // we override with a recording fake to verify the trigger surface fires for
+  // add/duplicate/split/merge/delete.
+  // ===========================================================================
+
+  test(
+    'T-wire-1: delete(id) triggers _deleteSummary -> recordingService.deleteSummaryCalls contains id',
+    () async {
+      await chapterBox.put('ch-1', createChapter(id: 'ch-1').toJson());
+      final recording = _RecordingRefreshService();
+      final wiredContainer = ProviderContainer(
+        overrides: [
+          chapterRepositoryProvider.overrideWithValue(AsyncData(chapterRepo)),
+          manuscriptRepositoryProvider.overrideWithValue(
+            AsyncData(ManuscriptRepository(manuscriptBox)),
+          ),
+          chapterSummaryRefreshServiceProvider.overrideWith(
+            (ref) async => recording,
+          ),
+        ],
+      );
+      addTearDown(wiredContainer.dispose);
+
+      final notifier = wiredContainer.read(chapterNotifierProvider.notifier);
+      await notifier.loadChapters('ms-1');
+      await notifier.delete('ch-1');
+
+      // Fire-and-forget — give it a microtask cycle to settle.
+      await Future<void>.delayed(Duration.zero);
+
+      expect(recording.deleteSummaryCalls, contains('ch-1'));
+      expect(recording.refreshIfNeededCalls, isEmpty);
+      expect(recording.refreshCalls, isEmpty);
+    },
+  );
+
+  test(
+    'T-wire-2: splitChapter FORCE-refreshes BOTH original (beforeContent) and '
+    'created (afterContent) — 2 refreshCalls, 0 refreshIfNeededCalls',
+    () async {
+      await chapterBox.put(
+        'ch-1',
+        createChapter(
+          id: 'ch-1',
+          sortOrder: 0,
+          title: 'Long Chapter',
+          documentContent: 'Part One Content',
+        ).toJson(),
+      );
+      final recording = _RecordingRefreshService();
+      final wiredContainer = ProviderContainer(
+        overrides: [
+          chapterRepositoryProvider.overrideWithValue(AsyncData(chapterRepo)),
+          manuscriptRepositoryProvider.overrideWithValue(
+            AsyncData(ManuscriptRepository(manuscriptBox)),
+          ),
+          chapterSummaryRefreshServiceProvider.overrideWith(
+            (ref) async => recording,
+          ),
+        ],
+      );
+      addTearDown(wiredContainer.dispose);
+
+      final notifier = wiredContainer.read(chapterNotifierProvider.notifier);
+      await notifier.loadChapters('ms-1');
+      await notifier.splitChapter('ch-1', 'Part One', 'Part Two');
+      // Fire-and-forget — give it a microtask cycle to settle.
+      await Future<void>.delayed(Duration.zero);
+
+      // FORCE path uses service.refresh, not refreshIfNeeded.
+      expect(recording.refreshCalls.length, equals(2));
+      expect(recording.refreshIfNeededCalls, isEmpty);
+      // The two refreshed chapters carry the split contents.
+      final refreshedContents = recording.refreshCalls
+          .map((c) => c.documentContent)
+          .toList();
+      expect(refreshedContents, containsAll(['Part One', 'Part Two']));
+    },
+  );
+
+  test(
+    'T-wire-3: mergeChapters FORCE-refreshes chapter1 (combined content) and '
+    'calls _deleteSummary on chapter2 (orphan cleanup)',
+    () async {
+      await chapterBox.put(
+        'ch-1',
+        createChapter(
+          id: 'ch-1',
+          sortOrder: 0,
+          title: 'First',
+          documentContent: 'Hello',
+        ).toJson(),
+      );
+      await chapterBox.put(
+        'ch-2',
+        createChapter(
+          id: 'ch-2',
+          sortOrder: 1,
+          title: 'Second',
+          documentContent: 'World',
+        ).toJson(),
+      );
+      final recording = _RecordingRefreshService();
+      final wiredContainer = ProviderContainer(
+        overrides: [
+          chapterRepositoryProvider.overrideWithValue(AsyncData(chapterRepo)),
+          manuscriptRepositoryProvider.overrideWithValue(
+            AsyncData(ManuscriptRepository(manuscriptBox)),
+          ),
+          chapterSummaryRefreshServiceProvider.overrideWith(
+            (ref) async => recording,
+          ),
+        ],
+      );
+      addTearDown(wiredContainer.dispose);
+
+      final notifier = wiredContainer.read(chapterNotifierProvider.notifier);
+      await notifier.loadChapters('ms-1');
+      await notifier.mergeChapters('ch-1', 'ch-2');
+      await Future<void>.delayed(Duration.zero);
+
+      // FORCE-refresh of chapter1 with combined content.
+      expect(recording.refreshCalls.length, equals(1));
+      expect(recording.refreshCalls.first.documentContent, equals('Hello\n\nWorld'));
+      expect(recording.refreshIfNeededCalls, isEmpty);
+      // Orphan cleanup for chapter2.
+      expect(recording.deleteSummaryCalls, contains('ch-2'));
+    },
+  );
+}
+
+/// Recording fake for [ChapterSummaryRefreshService] used by the wiring tests.
+///
+/// Uses `implements` on the concrete class (mirrors `_FakeSummaryRepository`
+/// in chapter_summary_refresh_service_test.dart) so we bypass the real ctor
+/// (which needs a live AI adapter + Hive box). Only the three methods
+/// exercised by the trigger surface (refreshIfNeeded, refresh, deleteSummary)
+/// are stubbed; everything else routes through [noSuchMethod] as a tripwire.
+class _RecordingRefreshService implements ChapterSummaryRefreshService {
+  final List<Chapter> refreshIfNeededCalls = [];
+  final List<Chapter> refreshCalls = [];
+  final List<String> deleteSummaryCalls = [];
+
+  @override
+  Future<RefreshOutcome> refreshIfNeeded(Chapter chapter, {DateTime? now}) async {
+    refreshIfNeededCalls.add(chapter);
+    return const RefreshOutcome(refreshed: false);
+  }
+
+  @override
+  Future<RefreshOutcome> refresh(Chapter chapter, {DateTime? now}) async {
+    refreshCalls.add(chapter);
+    return const RefreshOutcome(refreshed: true);
+  }
+
+  @override
+  Future<void> deleteSummary(String chapterId) async {
+    deleteSummaryCalls.add(chapterId);
+  }
+
+  @override
+  dynamic noSuchMethod(Invocation invocation) {
+    throw StateError(
+      '_RecordingRefreshService.${invocation.memberName} not stubbed',
+    );
+  }
 }
