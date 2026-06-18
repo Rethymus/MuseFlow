@@ -214,7 +214,10 @@ void main() {
       }
     },
     skip: apiKey == null ? 'GLM_API_KEY not set' : null,
-    timeout: const Timeout(Duration(minutes: 60)),
+    // Real GLM 100-chapter generation measured ~78min (260618-h4h probe, ran
+    // ch31→80 before the old 60min ceiling killed it). 120min gives headroom;
+    // skipped entirely without GLM_API_KEY so CI never hits this.
+    timeout: const Timeout(Duration(minutes: 120)),
   );
 }
 
