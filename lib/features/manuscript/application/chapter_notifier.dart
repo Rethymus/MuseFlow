@@ -30,8 +30,13 @@ class ChapterNotifier extends AsyncNotifier<List<Chapter>> {
   /// Adds a new chapter and refreshes the state.
   Future<void> add(Chapter chapter) async {
     final repository = await ref.read(chapterRepositoryProvider.future);
-    await repository.add(chapter);
+    // Capture the persisted chapter — repository.add assigns a real uuid when
+    // the input id is empty; refresh MUST use the persisted id, not the
+    // possibly-empty input id (MC-02 slice 4 trigger-surface completion).
+    final persisted = await repository.add(chapter);
     _refreshWith(repository, chapter.manuscriptId);
+    // MC-02 slice 4: refresh on the persisted chapter (real id + content).
+    unawaited(_maybeRefreshSummary(persisted));
   }
 
   /// Updates an existing chapter and refreshes the state.
@@ -44,18 +49,46 @@ class ChapterNotifier extends AsyncNotifier<List<Chapter>> {
     unawaited(_maybeRefreshSummary(chapter));
   }
 
-  /// Fire-and-forget MC-02 summary refresh (slice 3). NEVER throws into save().
+  /// Fire-and-forget MC-02 summary refresh (slice 3+4). NEVER throws into the
+  /// calling op.
+  ///
+  /// [force] bypasses the staleness check (calls [ChapterSummaryRefreshService.refresh]
+  /// instead of refreshIfNeeded). Used by splitChapter/mergeChapters where the
+  /// content was REPLACED, not grown — the staleness check would mark the
+  /// original fresh (growth negative) and inject the now-factually-wrong
+  /// whole-chapter summary on the next editor AI call (MC-02 slice 4 bug 1).
   ///
   /// Reliability posture (wma/0ae): the SERVICE rethrows AIException/StateError;
   /// HERE we catch+log+drop because this is an async side-effect, not the main
-  /// save contract. A failed AI summary MUST NOT kill the user's chapter save.
-  Future<void> _maybeRefreshSummary(Chapter chapter) async {
+  /// save contract. A failed AI summary MUST NOT kill the user's chapter op.
+  Future<void> _maybeRefreshSummary(Chapter chapter, {bool force = false}) async {
     try {
       final service = await ref.read(chapterSummaryRefreshServiceProvider.future);
       if (service == null) return; // no provider/apiKey/repo configured
-      await service.refreshIfNeeded(chapter);
+      if (force) {
+        await service.refresh(chapter);
+      } else {
+        await service.refreshIfNeeded(chapter);
+      }
     } catch (e) {
       debugPrint('ChapterSummaryRefresh skipped for ${chapter.id}: $e');
+    }
+  }
+
+  /// Fire-and-forget MC-02 orphan-summary cleanup (slice 4). NEVER throws into
+  /// the calling delete/merge op.
+  ///
+  /// Used by delete(id) and mergeChapters(chapter2) to remove orphan
+  /// ChapterSummary rows left behind when a chapter is destroyed — otherwise
+  /// ChapterSummaryRepository.getByManuscriptId would return summaries for
+  /// chapters that no longer exist (MC-02 slice 4 bug 2).
+  Future<void> _deleteSummary(String chapterId) async {
+    try {
+      final service = await ref.read(chapterSummaryRefreshServiceProvider.future);
+      if (service == null) return; // no provider/apiKey/repo configured
+      await service.deleteSummary(chapterId);
+    } catch (e) {
+      debugPrint('ChapterSummary delete skipped for $chapterId: $e');
     }
   }
 
@@ -64,6 +97,9 @@ class ChapterNotifier extends AsyncNotifier<List<Chapter>> {
     final repository = await ref.read(chapterRepositoryProvider.future);
     final chapter = repository.getById(id);
     await repository.delete(id);
+    // MC-02 slice 4: orphan-summary cleanup — fire-and-forget, never throws
+    // into delete().
+    unawaited(_deleteSummary(id));
     if (chapter != null) {
       final chapters = repository.getByManuscriptId(chapter.manuscriptId);
       for (var i = 0; i < chapters.length; i++) {
@@ -122,7 +158,9 @@ class ChapterNotifier extends AsyncNotifier<List<Chapter>> {
     );
 
     final now = DateTime.now();
-    await repository.add(
+    // Capture the persisted chapter — repository.add assigns a real uuid;
+    // refresh MUST use the persisted id (MC-02 slice 4).
+    final created = await repository.add(
       Chapter(
         id: '',
         manuscriptId: existing.manuscriptId,
@@ -135,6 +173,8 @@ class ChapterNotifier extends AsyncNotifier<List<Chapter>> {
     );
 
     _refreshWith(repository, existing.manuscriptId);
+    // MC-02 slice 4: refresh on the created duplicate (real id + content).
+    unawaited(_maybeRefreshSummary(created));
   }
 
   /// Splits a chapter at a content boundary.
@@ -158,6 +198,16 @@ class ChapterNotifier extends AsyncNotifier<List<Chapter>> {
 
     // Update original with beforeContent
     await repository.update(existing.copyWith(documentContent: beforeContent));
+    // MC-02 slice 4: FORCE-refresh the original's summary. beforeContent is a
+    // SUBSET (shorter); staleness check would mark the now-factually-wrong
+    // whole-chapter summary "fresh" (growth negative) and re-inject it on the
+    // next editor AI call.
+    unawaited(
+      _maybeRefreshSummary(
+        existing.copyWith(documentContent: beforeContent),
+        force: true,
+      ),
+    );
 
     // Get all chapters after updating to calculate sortOrder
     final chapters = repository.getByManuscriptId(existing.manuscriptId);
@@ -173,7 +223,8 @@ class ChapterNotifier extends AsyncNotifier<List<Chapter>> {
 
     // Create new chapter with afterContent inserted right after original
     final now = DateTime.now();
-    await repository.add(
+    // Capture the persisted chapter — refresh MUST use the persisted id.
+    final created = await repository.add(
       Chapter(
         id: '',
         manuscriptId: existing.manuscriptId,
@@ -186,6 +237,8 @@ class ChapterNotifier extends AsyncNotifier<List<Chapter>> {
     );
 
     _refreshWith(repository, existing.manuscriptId);
+    // MC-02 slice 4: FORCE-refresh the new chapter's summary (new content).
+    unawaited(_maybeRefreshSummary(created, force: true));
   }
 
   /// Merges two chapters by combining their content.
@@ -207,6 +260,8 @@ class ChapterNotifier extends AsyncNotifier<List<Chapter>> {
 
     // Delete second chapter
     await repository.delete(chapterId2);
+    // MC-02 slice 4: orphan-summary cleanup for the deleted chapter2.
+    unawaited(_deleteSummary(chapterId2));
 
     // Recalculate sortOrder for remaining chapters
     final chapters = repository.getByManuscriptId(chapter1.manuscriptId);
@@ -217,6 +272,15 @@ class ChapterNotifier extends AsyncNotifier<List<Chapter>> {
     }
 
     _refreshWith(repository, chapter1.manuscriptId);
+    // MC-02 slice 4: FORCE-refresh chapter1's summary — content was replaced
+    // (combined), not grown; staleness check would mark the old (chapter1-only)
+    // summary fresh.
+    unawaited(
+      _maybeRefreshSummary(
+        chapter1.copyWith(documentContent: combinedContent),
+        force: true,
+      ),
+    );
   }
 
   /// Refreshes the state by reading the repository again.
