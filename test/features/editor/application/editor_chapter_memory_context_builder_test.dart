@@ -2,7 +2,9 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:hive_ce/hive.dart';
 import 'package:museflow/features/editor/application/editor_chapter_memory_context_builder.dart';
 import 'package:museflow/features/manuscript/domain/chapter.dart';
+import 'package:museflow/features/manuscript/domain/chapter_summary.dart';
 import 'package:museflow/features/manuscript/infrastructure/chapter_repository.dart';
+import 'package:museflow/features/manuscript/infrastructure/chapter_summary_repository.dart';
 
 import '../../../helpers/hive_test_helper.dart';
 
@@ -191,6 +193,120 @@ void main() {
         expect(context.chapterContextChain, contains('有内容的章节'));
         expect(context.chapterContextChain, isNot(contains('前2章')));
       });
+    });
+
+    group('stored summary injection (MC-02 slice 2)', () {
+      test(
+        'uses fresh stored AI summary instead of truncating chapter text',
+        () async {
+          final summaryBox = await Hive.openBox<dynamic>(
+            'mc02_summaries_fresh',
+          );
+          final summaryRepo = ChapterSummaryRepository(summaryBox);
+          final builder = EditorChapterMemoryContextBuilder(
+            chapterRepository: repository,
+            chapterSummaryRepository: summaryRepo,
+          );
+
+          await repository.add(
+            _chapter(
+              id: 'c1',
+              sortOrder: 1,
+              text: '上一章林风在灵草谷触动古玉获得功法，与赵天磊争执被苏雪晴化解。',
+            ),
+          );
+          await repository.add(_chapter(id: 'c2', sortOrder: 2, text: '当前。'));
+
+          // Fresh: sourceWordCount matches the chapter's current length.
+          final prev = repository.getById('c1')!;
+          final sourceCount = prev.documentContent.replaceAll(
+            RegExp(r'\s'),
+            '',
+          ).length;
+          const freshSummary = '林风获古玉功法，冲突被苏雪晴调停。';
+          await summaryRepo.put(
+            ChapterSummary(
+              id: 'summary-c1',
+              chapterId: 'c1',
+              manuscriptId: 'm1',
+              summary: freshSummary,
+              sourceWordCount: sourceCount,
+              createdAt: DateTime(2026, 6, 1),
+              updatedAt: DateTime(2026, 6, 1),
+            ),
+          );
+
+          final context = builder.build(manuscriptId: 'm1', chapterId: 'c2');
+
+          expect(context.previousChapterSummary, freshSummary);
+          // Not the raw chapter text (the AI recap omits 灵草谷).
+          expect(context.previousChapterSummary, isNot(contains('灵草谷')));
+        },
+      );
+
+      test(
+        'falls back to truncation when stored summary is stale',
+        () async {
+          final summaryBox = await Hive.openBox<dynamic>(
+            'mc02_summaries_stale',
+          );
+          final summaryRepo = ChapterSummaryRepository(summaryBox);
+          final builder = EditorChapterMemoryContextBuilder(
+            chapterRepository: repository,
+            chapterSummaryRepository: summaryRepo,
+            summaryCharacterLimit: 20,
+          );
+
+          // ~100-char chapter; summary was generated for a 10-char stub.
+          final longText =
+              '林风在灵草谷采药触发古玉异变获得功法，赵天磊厉声问罪，苏雪晴以长老令牌压下争执，暗中警告林风。' *
+              2;
+          await repository.add(_chapter(id: 'c1', sortOrder: 1, text: longText));
+          await repository.add(_chapter(id: 'c2', sortOrder: 2, text: '当前。'));
+
+          await summaryRepo.put(
+            ChapterSummary(
+              id: 'summary-c1',
+              chapterId: 'c1',
+              manuscriptId: 'm1',
+              summary: '陈旧的概括',
+              sourceWordCount: 10, // chapter grew ~90 chars → stale
+              createdAt: DateTime(2026, 6, 1),
+              updatedAt: DateTime(2026, 6, 1),
+            ),
+          );
+
+          final context = builder.build(manuscriptId: 'm1', chapterId: 'c2');
+
+          // Stale summary ignored → fallback to truncated live text.
+          expect(context.previousChapterSummary, isNot(equals('陈旧的概括')));
+          expect(context.previousChapterSummary, contains('林风'));
+        },
+      );
+
+      test(
+        'falls back to truncation when no summary stored for chapter',
+        () async {
+          final summaryBox = await Hive.openBox<dynamic>(
+            'mc02_summaries_missing',
+          );
+          final summaryRepo = ChapterSummaryRepository(summaryBox);
+          final builder = EditorChapterMemoryContextBuilder(
+            chapterRepository: repository,
+            chapterSummaryRepository: summaryRepo,
+          );
+
+          await repository.add(
+            _chapter(id: 'c1', sortOrder: 1, text: '上一章林风守住山门。'),
+          );
+          await repository.add(_chapter(id: 'c2', sortOrder: 2, text: '当前。'));
+
+          final context = builder.build(manuscriptId: 'm1', chapterId: 'c2');
+
+          // No stored summary → live text truncation.
+          expect(context.previousChapterSummary, '上一章林风守住山门。');
+        },
+      );
     });
   });
 }

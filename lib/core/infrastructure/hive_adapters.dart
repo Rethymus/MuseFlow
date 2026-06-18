@@ -5,6 +5,7 @@ import 'package:museflow/features/knowledge/domain/character_card.dart';
 import 'package:museflow/features/knowledge/domain/skill_document.dart';
 import 'package:museflow/features/knowledge/domain/world_setting.dart';
 import 'package:museflow/features/manuscript/domain/chapter.dart';
+import 'package:museflow/features/manuscript/domain/chapter_summary.dart';
 import 'package:museflow/features/manuscript/domain/manuscript.dart';
 import 'package:museflow/features/stats/domain/token_audit_record.dart';
 import 'package:museflow/features/story_structure/domain/foreshadowing_entry.dart';
@@ -25,6 +26,34 @@ abstract class HiveTypeIds {
   static const int guardianAnnotation = 8;
   static const int chapter = 9;
   static const int tokenAuditRecord = 10;
+  static const int chapterSummary = 11;
+}
+
+/// Manual Hive TypeAdapter for [ChapterSummary].
+class ChapterSummaryAdapter extends TypeAdapter<ChapterSummary> {
+  @override
+  final int typeId = HiveTypeIds.chapterSummary;
+
+  @override
+  ChapterSummary read(BinaryReader reader) {
+    final json = reader.readMap() as Map<String, dynamic>;
+    return ChapterSummary.fromJson(json);
+  }
+
+  @override
+  void write(BinaryWriter writer, ChapterSummary obj) {
+    writer.writeMap(obj.toJson());
+  }
+
+  @override
+  int get hashCode => typeId.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is ChapterSummaryAdapter &&
+          runtimeType == other.runtimeType &&
+          typeId == other.typeId;
 }
 
 /// Manual Hive TypeAdapter for [Fragment].

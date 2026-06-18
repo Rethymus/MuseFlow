@@ -207,6 +207,14 @@ final chapterRepositoryProvider = FutureProvider<ChapterRepository>((
   return ChapterRepository(box);
 });
 
+/// Provides a [ChapterSummaryRepository] backed by a Hive 'chapter_summaries'
+/// box (MC-02 slice 2). Keyed by chapterId (1:1 chapter→summary).
+final chapterSummaryRepositoryProvider =
+    FutureProvider<ChapterSummaryRepository>((ref) async {
+      final box = await Hive.openBox<dynamic>('chapter_summaries');
+      return ChapterSummaryRepository(box);
+    });
+
 /// Provides a [ManuscriptNotifier] for manuscript CRUD operations.
 final manuscriptNotifierProvider =
     AsyncNotifierProvider<ManuscriptNotifier, List<Manuscript>>(

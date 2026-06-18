@@ -78,6 +78,7 @@ void main() async {
   Hive.registerAdapter(ManuscriptAdapter());
   Hive.registerAdapter(ChapterAdapter());
   Hive.registerAdapter(TokenAuditRecordAdapter());
+  Hive.registerAdapter(ChapterSummaryAdapter());
   setTraceMarker('4.purge');
 
   // Purge soft-deleted manuscripts older than 30 days (D-21).

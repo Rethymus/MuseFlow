@@ -1,6 +1,9 @@
 import 'package:museflow/features/editor/application/chapter_memory_warning_builder.dart';
+import 'package:museflow/features/manuscript/application/chapter_summary_staleness_checker.dart';
 import 'package:museflow/features/manuscript/domain/chapter.dart';
+import 'package:museflow/features/manuscript/domain/chapter_summary.dart';
 import 'package:museflow/features/manuscript/infrastructure/chapter_repository.dart';
+import 'package:museflow/features/manuscript/infrastructure/chapter_summary_repository.dart';
 
 /// Adjacent chapter memory prepared for editor AI prompts.
 class EditorChapterMemoryContext {
@@ -36,18 +39,24 @@ class EditorChapterMemoryContext {
 
 /// Builds adjacent chapter context for real editor AI calls.
 ///
-/// The app does not persist a separate chapter-summary field yet, so this
-/// builder derives a bounded prompt summary from the current neighboring
-/// chapter text. The freshness warning still matters when the bounded summary
-/// is too front-loaded or stale-looking compared with the full adjacent text.
+/// Prefers a stored AI-generated [ChapterSummary] (MC-02 slice 2) when one is
+/// available and fresh — a compact plot recap beats a raw-text truncation.
+/// Falls back to deriving a bounded summary from the neighboring chapter text
+/// when no summary is stored, the stored one is stale (the chapter grew since
+/// it was summarized), or no [chapterSummaryRepository] is wired (preserves
+/// the pre-slice-2 truncation contract for existing callers/tests).
 class EditorChapterMemoryContextBuilder {
   const EditorChapterMemoryContextBuilder({
     required this.chapterRepository,
+    this.chapterSummaryRepository,
+    this.stalenessChecker = const ChapterSummaryStalenessChecker(),
     this.warningBuilder = const ChapterMemoryWarningBuilder(),
     this.summaryCharacterLimit = 220,
   });
 
   final ChapterRepository chapterRepository;
+  final ChapterSummaryRepository? chapterSummaryRepository;
+  final ChapterSummaryStalenessChecker stalenessChecker;
   final ChapterMemoryWarningBuilder warningBuilder;
   final int summaryCharacterLimit;
 
@@ -82,8 +91,28 @@ class EditorChapterMemoryContextBuilder {
     );
   }
 
+  /// Returns the stored AI summary for [chapter] when it is fresh, else null.
+  ///
+  /// Freshness is decided by [stalenessChecker] against the chapter's current
+  /// non-blank char count — a summary generated against a shorter source text
+  /// is treated as stale once the chapter grew past both thresholds.
+  ChapterSummary? _storedFreshSummary(Chapter chapter) {
+    final stored = chapterSummaryRepository?.getByChapterId(chapter.id);
+    if (stored == null) return null;
+    if (stalenessChecker.isStale(
+      stored,
+      _nonBlankCount(chapter.documentContent),
+    )) {
+      return null;
+    }
+    return stored;
+  }
+
   String? _summary(Chapter? chapter) {
     if (chapter == null) return null;
+    final stored = _storedFreshSummary(chapter);
+    if (stored != null) return stored.summary;
+    // Fallback: truncate the live chapter text (pre-slice-2 behavior).
     final text = _compactWhitespace(chapter.documentContent);
     if (text.isEmpty) return null;
     if (text.length <= summaryCharacterLimit) return text;
@@ -92,6 +121,18 @@ class EditorChapterMemoryContextBuilder {
 
   String? _warning(Chapter? chapter, ChapterMemoryDirection direction) {
     if (chapter == null) return null;
+    // Stored AI summaries are compact plot recaps, not truncations — the
+    // "missing terms from truncation" warning is meaningless for them. Only
+    // the front-load/staleness warning (ChapterMemoryWarningBuilder) applies.
+    final stored = _storedFreshSummary(chapter);
+    if (stored != null) {
+      return warningBuilder.buildWarning(
+        summary: stored.summary,
+        adjacentChapterText: chapter.documentContent,
+        direction: direction,
+      );
+    }
+    // Truncation path: front-load warning, then missing-terms-from-truncation.
     final summary = _summary(chapter);
     if (summary == null) return null;
     final staleWarning = warningBuilder.buildWarning(
@@ -106,6 +147,8 @@ class EditorChapterMemoryContextBuilder {
       direction: direction,
     );
   }
+
+  int _nonBlankCount(String text) => text.replaceAll(RegExp(r'\s'), '').length;
 
   String? _truncationWarning({
     required String summary,

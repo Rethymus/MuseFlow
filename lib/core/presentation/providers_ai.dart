@@ -177,8 +177,12 @@ final editorChapterMemoryContextBuilderProvider =
       final chapterRepository = await ref.watch(
         chapterRepositoryProvider.future,
       );
+      final chapterSummaryRepository = await ref.watch(
+        chapterSummaryRepositoryProvider.future,
+      );
       return EditorChapterMemoryContextBuilder(
         chapterRepository: chapterRepository,
+        chapterSummaryRepository: chapterSummaryRepository,
       );
     });
 

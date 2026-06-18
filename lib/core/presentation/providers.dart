@@ -65,6 +65,7 @@ import 'package:museflow/features/manuscript/application/chapter_auto_save.dart'
 import 'package:museflow/features/manuscript/application/chapter_notifier.dart';
 import 'package:museflow/features/manuscript/application/manuscript_notifier.dart';
 import 'package:museflow/features/manuscript/infrastructure/chapter_repository.dart';
+import 'package:museflow/features/manuscript/infrastructure/chapter_summary_repository.dart';
 import 'package:museflow/features/manuscript/infrastructure/manuscript_purge_service.dart';
 import 'package:museflow/features/manuscript/infrastructure/manuscript_repository.dart';
 import 'package:museflow/features/manuscript/domain/manuscript.dart';
