@@ -200,6 +200,57 @@ void main() {
       expect(repository.putCallCount, 0);
     });
   });
+
+  group('ChapterSummaryRefreshService.deleteSummary', () {
+    test(
+      'T7: deleteSummary(chapterId) removes the stored row -> '
+      'getByChapterId returns null after',
+      () async {
+        final adapter = _FakeAdapter(['unused']);
+        final stored = ChapterSummary(
+          id: 'summary-ch-1',
+          chapterId: 'ch-1',
+          manuscriptId: 'ms-1',
+          summary: '旧概括',
+          sourceWordCount: 100,
+          createdAt: DateTime(2026, 6, 1),
+          updatedAt: DateTime(2026, 6, 1),
+        );
+        final repository = _FakeSummaryRepository(initial: {'ch-1': stored});
+        final service = buildService(adapter: adapter, repository: repository);
+
+        // Precondition: row exists.
+        expect(repository.getByChapterId('ch-1'), isNotNull);
+
+        await service.deleteSummary('ch-1');
+
+        expect(repository.deleteCallCount, 1);
+        expect(repository.getByChapterId('ch-1'), isNull);
+        // Adapter must NEVER be called by deleteSummary (no LLM touch).
+        expect(adapter.callCount, 0);
+      },
+    );
+
+    test(
+      'T8 (reliability): repository.delete throws StateError -> service '
+      'RE-THROWS (same surfacing posture as put/summarize)',
+      () async {
+        final adapter = _FakeAdapter(['unused']);
+        final repository = _FakeSummaryRepository();
+        repository.deleteError = StateError('hive boom');
+        final service = buildService(adapter: adapter, repository: repository);
+
+        await expectLater(
+          service.deleteSummary('ch-1'),
+          throwsA(isA<StateError>()),
+        );
+
+        expect(repository.deleteCallCount, 1);
+        // Adapter must never be called even on the throw path.
+        expect(adapter.callCount, 0);
+      },
+    );
+  });
 }
 
 /// In-memory fake of [ChapterSummaryRepository] using `implements` so we
@@ -215,6 +266,8 @@ class _FakeSummaryRepository implements ChapterSummaryRepository {
   final Map<String, ChapterSummary> _store;
   int putCallCount = 0;
   int getCallCount = 0;
+  int deleteCallCount = 0;
+  Object? deleteError;
 
   @override
   Future<ChapterSummary> put(ChapterSummary summary) async {
@@ -227,6 +280,14 @@ class _FakeSummaryRepository implements ChapterSummaryRepository {
   ChapterSummary? getByChapterId(String chapterId) {
     getCallCount++;
     return _store[chapterId];
+  }
+
+  @override
+  Future<void> delete(String chapterId) async {
+    deleteCallCount++;
+    final e = deleteError;
+    if (e != null) throw e;
+    _store.remove(chapterId);
   }
 
   @override

@@ -77,6 +77,19 @@ class ChapterSummaryRefreshService {
     return _summarizeAndPut(chapter, storedId: stored?.id, now: now);
   }
 
+  /// Deletes the stored summary for [chapterId], if any (MC-02 slice 4
+  /// orphan-cleanup write side).
+  ///
+  /// Called by [ChapterNotifier.delete] / [ChapterNotifier.mergeChapters]
+  /// (chapter2) to avoid leaving orphan [ChapterSummary] rows that
+  /// [ChapterSummaryRepository.getByManuscriptId] would otherwise still
+  /// return. Reliability posture mirrors put/summarize: the repository's
+  /// StateError is RE-THROWN; the fire-and-forget trigger in ChapterNotifier
+  /// is where errors are caught+logged+dropped.
+  Future<void> deleteSummary(String chapterId) async {
+    await summaryRepository.delete(chapterId);
+  }
+
   Future<RefreshOutcome> _summarizeAndPut(
     Chapter chapter, {
     String? storedId,
