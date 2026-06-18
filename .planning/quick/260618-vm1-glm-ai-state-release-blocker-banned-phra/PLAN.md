@@ -2,7 +2,7 @@
 quick_id: 260618-vm1
 slug: glm-ai-state-release-blocker-banned-phra
 date: 2026-06-18
-status: in-progress
+status: complete
 type: real-api-validation-test
 ---
 
