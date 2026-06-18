@@ -199,6 +199,31 @@ void main() {
       // No partial put should have happened before the throw.
       expect(repository.putCallCount, 0);
     });
+
+    test(
+      'T9 (reliability): concurrent refreshIfNeeded for the SAME chapter '
+      'coalesces -> adapter called ONCE, put ONCE (rapid-autosave guard)',
+      () async {
+        final adapter = _FakeAdapter(['林风入门', '青云宗，', '与苏雪晴初识。']);
+        final repository = _FakeSummaryRepository();
+        final service = buildService(adapter: adapter, repository: repository);
+
+        // Fire two refreshIfNeeded for the same chapter concurrently — the
+        // second must see the first as in-flight and coalesce (no-op).
+        final outcomes = await Future.wait([
+          service.refreshIfNeeded(chapter(), now: DateTime(2026, 6, 2)),
+          service.refreshIfNeeded(chapter(), now: DateTime(2026, 6, 2)),
+        ]);
+
+        // Exactly ONE LLM call + ONE persist — the duplicate was coalesced.
+        expect(adapter.callCount, 1);
+        expect(repository.putCallCount, 1);
+        // Exactly one outcome reports a refresh; the other is the no-op coalesce.
+        final refreshedCount =
+            outcomes.where((o) => o.refreshed).length;
+        expect(refreshedCount, 1);
+      },
+    );
   });
 
   group('ChapterSummaryRefreshService.deleteSummary', () {

@@ -47,6 +47,14 @@ class ChapterSummaryRefreshService {
   final ChapterSummaryRepository summaryRepository;
   final ChapterSummaryStalenessChecker stalenessChecker;
 
+  /// Chapter ids whose summarize+put is currently in-flight. Used to coalesce
+  /// concurrent refreshes for the SAME chapter (MC-02 reliability): rapid
+  /// autosave fires several `refreshIfNeeded` before the first completes, each
+  /// of which would otherwise issue its own LLM call (wasted quota + last-write
+  /// wins). A second concurrent refresh for an in-flight chapter returns a
+  /// no-op outcome; the in-flight call persists the freshest summary.
+  final Set<String> _inFlightChapterIds = {};
+
   /// Minimum non-blank char count at which a chapter is worth summarizing.
   /// Chapters below this (stubs, half-formed notes) are skipped to avoid
   /// wasting LLM tokens and producing noise summaries.
@@ -95,14 +103,26 @@ class ChapterSummaryRefreshService {
     String? storedId,
     DateTime? now,
   }) async {
-    // summarize() rethrows AIException — SURFACED per wma/0ae.
-    final summary = await summarizationService.summarize(
-      chapter,
-      summaryId: storedId,
-      now: now,
-    );
-    // put() wraps Hive errors in StateError — also surfaced.
-    await summaryRepository.put(summary);
-    return RefreshOutcome(refreshed: true, summary: summary);
+    // Coalesce concurrent refreshes for the same chapter (MC-02 reliability —
+    // rapid autosave can fire several refreshIfNeeded before the first
+    // completes). The in-flight call will persist the freshest summary, so a
+    // second concurrent attempt is a no-op rather than a duplicate LLM call.
+    if (_inFlightChapterIds.contains(chapter.id)) {
+      return const RefreshOutcome(refreshed: false, summary: null);
+    }
+    _inFlightChapterIds.add(chapter.id);
+    try {
+      // summarize() rethrows AIException — SURFACED per wma/0ae.
+      final summary = await summarizationService.summarize(
+        chapter,
+        summaryId: storedId,
+        now: now,
+      );
+      // put() wraps Hive errors in StateError — also surfaced.
+      await summaryRepository.put(summary);
+      return RefreshOutcome(refreshed: true, summary: summary);
+    } finally {
+      _inFlightChapterIds.remove(chapter.id);
+    }
   }
 }
