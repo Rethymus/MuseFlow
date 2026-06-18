@@ -23,6 +23,8 @@ import 'package:museflow/features/manuscript/application/chapter_summary_refresh
 import 'package:museflow/features/manuscript/domain/chapter.dart';
 import 'package:museflow/features/manuscript/infrastructure/chapter_summary_repository.dart';
 
+import '../../../helpers/hive_test_helper.dart';
+
 void main() {
   final apiKey = Platform.environment['GLM_API_KEY'];
   final baseUrl =
@@ -30,32 +32,21 @@ void main() {
       'https://open.bigmodel.cn/api/paas/v4';
   final model = Platform.environment['GLM_MODEL'] ?? 'glm-4-flash';
 
-  late Directory tempDir;
   late Box<dynamic> box;
   late ChapterSummaryRepository repository;
 
   setUp(() async {
-    // Direct Hive init with an explicit temp path — do NOT call
-    // TestWidgetsFlutterBinding.ensureInitialized() (as helpers/hive_test_helper
-    // does). flutter_test's binding installs an HttpOverrides mock that returns
-    // HTTP 400 for ALL requests ("all HTTP requests will return status code 400,
-    // and no network request"), which would intercept the real GLM streaming
-    // call and mask it as a provider error. Hive.init with an explicit path
-    // needs no Flutter binding. Mirrors test/journey/helpers/journey_container.dart,
-    // where real-API journey tests open Hive boxes without ensureInitialized for
-    // exactly this reason.
-    tempDir = Directory.systemTemp.createTempSync('chapter_summary_refresh_real_');
-    Hive.init(tempDir.path);
+    // Real GLM HTTP must NOT be mocked: use the network-safe Hive helper, NOT
+    // setUpHiveTest (whose ensureInitialized installs flutter_test's
+    // HttpOverrides mock that returns HTTP 400 for all real requests, masking
+    // live API calls as provider errors). See hive_test_helper.dart doc.
+    await setUpHiveForNetworkTest();
     box = await Hive.openBox<dynamic>('chapter_summaries_real');
     repository = ChapterSummaryRepository(box);
   });
 
   tearDown(() async {
-    await box.close();
-    await Hive.close();
-    if (await tempDir.exists()) {
-      await tempDir.delete(recursive: true);
-    }
+    await tearDownHiveTest();
   });
 
   Chapter chapter() => Chapter(
