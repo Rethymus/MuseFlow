@@ -2,10 +2,10 @@
 gsd_state_version: 1.0
 milestone: v1.5
 milestone_name: milestone
-status: v1.4 shipped (24 phases, 1712 tests), MC-02 章节摘要回路闭合，待真实API验证
-stopped_at: context exhaustion at 78% (2026-06-18)
-last_updated: "2026-06-18T06:35:00.000Z"
-last_activity: 2026-06-18 — quick-260618-jn6 feat MC-02 slice 3 WRITE SIDE 闭合死循环：诊断发现 slice 1（summarize 真实 GLM 已证）+ slice 2（persist+inject）留 summarize() ZERO production callers → EditorChapterMemoryContextBuilder 永远 fallback 截断原文（长篇三章链+相邻章记忆拿不到紧凑 AI 概括）。新增 ChapterSummaryRefreshService（refreshIfNeeded 决策树：minSummaryChars=20 跳 stub / fresh 快路径 no-op / missing|stale 走 summarize+put；refresh force 变体；_summarizeAndPut 编排）+ RefreshOutcome 值类 + chapterSummarizationServiceProvider/chapterSummaryRefreshServiceProvider 双 provider 链（null-safe，镜像 editor_ai_notifier activeProviderProvider+activeApiKeyProvider+activeAdapterProvider 解析）+ ChapterNotifier.save unawaited fire-and-forget 触发（try/catch+debugPrint 隔离，wma/0ae posture：service SURFACES AIException，trigger SWALLOWS 不杀主 save 流）。grep 证 summarize() 现有生产调用方 chapter_summary_refresh_service.dart:86 → write→persist→read 活循环。TDD RED(d0d9c6c)→GREEN(a656136)→Wiring(4173b4d) 三原子提交；6 新测试 GREEN / 全量 1712 tests 零回归 / analyze 0。kimi-webbridge daemon 活跃但用户浏览器扩展未连（list_tabs 空）→ 视觉 UAT 仍待用户浏览器活跃或 Windows 真机
+status: v1.4 shipped (24 phases, 1717 tests), MC-02 章节摘要回路+触发面全闭合，待真实API验证
+stopped_at: context exhaustion at 82% (2026-06-18)
+last_updated: "2026-06-18T09:26:22.386Z"
+last_activity: 2026-06-18 — quick-260618-s4 feat MC-02 slice 4 触发面收尾（闭合 jn6 遗留：仅 save 触发，split/merge/delete/add/dup 未接）。修 splitChapter 正确性 bug（force 绕 staleness）+ delete/merge 孤儿摘要清理 + add/dup 捕获 repository.add 真实 id。MC-02 完整闭环（slice1-4）。manuscript 146 GREEN / analyze 0 零回归
 progress:
   total_phases: 8
   completed_phases: 0
@@ -26,8 +26,8 @@ See: .planning/PROJECT.md (updated 2026-06-12)
 ## Current Position
 
 Phase: Pre-25 of 32 (v1.5 — 真实创作验证与体验打磨) 🟡 PLANNING
-Status: v1.4 shipped (24 phases, 1712 tests), MC-02 章节摘要回路闭合，待真实API验证
-Last activity: 2026-06-18 — quick-260618-jn6 feat MC-02 slice 3 WRITE SIDE 闭合 summarize() 死循环（slice 1+2 留 ZERO production callers → builder 永远 fallback 截断）。新增 ChapterSummaryRefreshService（决策树+force 变体+minSummaryChars=20 跳 stub）+ 双 provider 链（null-safe 镜像 editor_ai_notifier）+ ChapterNotifier.save unawaited fire-and-forget 触发（wma/0ae posture：service SURFACES，trigger SWALLOWS）。grep 证 summarize() 现有生产调用方。TDD RED→GREEN→Wiring 三原子提交；6 新测试 GREEN / 全量 1712 tests 零回归 / analyze 0
+Status: v1.4 shipped (24 phases, 1717 tests), MC-02 章节摘要回路+触发面全闭合，待真实API验证
+Last activity: 2026-06-18 — quick-260618-s4 feat MC-02 slice 4 触发面收尾（闭合 jn6 遗留：仅 save 触发，split/merge/delete/add/dup 未接）。修 splitChapter 正确性 bug（force 绕 staleness）+ delete/merge 孤儿摘要清理 + add/dup 捕获 repository.add 真实 id。MC-02 完整闭环（slice1-4）。manuscript 146 GREEN / analyze 0 零回归
 
 Progress: [░░░░░░░░░░░░░░░░░░░░] 0%
 
@@ -124,6 +124,7 @@ Last activity: 2026-06-14 - P2 深化连发 5 项：260614-gmg（AA-02 对比减
 | 260618-1g4 | fix 修复 openai_adapter client caching 测试回归（闭合 1g3 遗留）：wma 可靠性重构把 createStream 的 _attemptStream 包进 retryStream(()=>...) 闭包，OpenAIClient 创建延迟到首次流订阅（async* 惰性），fire-and-forget createStream 不订阅时 _client 恒 null→isActive=false，2 caching 测试 clean HEAD 即红；根因修复（非改测试打补丁）：createStream 里 _validateBaseUrl 后 eager _getOrCreateClient 还原回归前行为，retryStream factory 经 _attemptStream 幂等 _getOrCreateClient 复用缓存 client，retry 语义不变；openai_adapter+resilience 30/30、全 AI 目录 313/313（311 -2→313 -0 闭合预存遗留）、analyze 0；真实 GLM journey 此前已证实战复用正常 | 2026-06-18 | ce1512b | [260618-1g4-fix-openai-adapter-caching](./quick/260618-1g4-fix-openai-adapter-caching/) |
 | 260618-h4h | feat MC-02 slice 2 章节摘要持久化+注入闭环：ChapterSummaryStalenessChecker（isStale 增长绝对≥50且相对≥20%，对称 KbStalenessChecker，AND 避免误报）+ ChapterSummaryRepository（CRUD key=chapterId 1:1 upsert）+ ChapterSummaryAdapter（HiveTypeIds.chapterSummary=11）+ main 注册 + EditorChapterMemoryContextBuilder 注入（优先 fresh stored AI summary，缺失/stale/无 repository fallback 截断原文向后兼容；_warning 对 stored 跳过截断警告）+ providers wiring（chapterSummaryRepositoryProvider + builder 注入）；TDD 14 新测试 GREEN（staleness 6+repository 5+builder 注入 3）+ manuscript 75 回归零回归 + analyze 0；slice 1 真实 GLM 已证 summarize（34字/300字源） | 2026-06-18 | (本提交) | [260618-h4h-mc02-slice2-summary-persist-inject](./quick/260618-h4h-mc02-slice2-summary-persist-inject/) |
 | 260618-jn6 | feat MC-02 slice 3 WRITE SIDE 闭合死循环：ChapterSummaryRefreshService（refreshIfNeeded 决策树+refresh force 变体+_summarizeAndPut 编排）+ RefreshOutcome 值类 + chapterSummarizationServiceProvider/chapterSummaryRefreshServiceProvider 两 provider 链（null-safe，activeProviderProvider+activeApiKeyProvider+activeAdapterProvider 镜像 editor_ai_notifier）+ ChapterNotifier.save unawaited fire-and-forget 触发（try/catch+debugPrint 隔离，wma/0ae posture：service SURFACES，trigger SWALLOWS）；前 slice 1+2 留 summarize() ZERO production callers 死循环（EditorChapterMemoryContextBuilder 永远 fallback 截断原文）→ 现闭合为 write→persist→read 活循环；minSummaryChars=20 跳过 stub；T6 GREEN 验证 AIException 透传无 partial put；TDD RED(d0d9c6c)→GREEN(a656136)→Wiring(4173b4d) 三原子提交；6 新测试 GREEN / manuscript/application 55 / manuscript 全量 141 / analyze 0 零回归 | 2026-06-18 | 4173b4d | [260618-jn6-mc-02-chaptersummaryrefreshservice-decis](./quick/260618-jn6-mc-02-chaptersummaryrefreshservice-decis/) |
+| 260618-s4 | feat MC-02 slice 4 触发面收尾（闭合 jn6 遗留：仅 save 触发，split/merge/delete/add/duplicate 未接）。两真问题：① splitChapter 正确性 bug——原章内容替换为 beforeContent（子集，更短），旧"整章摘要"因 growth 负被 staleness 判 fresh → 注入描述整章但章节只剩前半的错误摘要；② delete/merge 留孤儿摘要被 getByManuscriptId 返回。修：ChapterSummaryRefreshService.deleteSummary(chapterId)（委托 repository.delete，rethrow StateError，T7/T8 RED→GREEN）；ChapterNotifier 全面接线——add/duplicate 捕获 repository.add 返回的真实 id 章节（原来丢弃返回值！）触发 refreshIfNeeded；splitChapter/mergeChapters 用 force=true 走 service.refresh 绕过 staleness（内容被替换非增长）；delete(id)+mergeChapters(chapter2) 调 _deleteSummary 孤儿清理；_maybeRefreshSummary 加 {force} 参数+_deleteSummary 辅助，皆 fire-and-forget try/catch+debugPrint 不杀主流程（wma/0ae posture 延续）；3 wiring 测试用 _RecordingRefreshService（implements 绕过真实 ctor）override 验证 split 2×force-refresh / merge 1×force+1×delete / delete 1×deleteSummary；TDD 三原子提交(baab7b9/edf0497/f14d775)；manuscript 全量 146 GREEN / analyze 0 零回归 | 2026-06-18 | f14d775 | [260618-s4-mc02-trigger-surface-completion](./quick/260618-s4-mc02-trigger-surface-completion/) |
 
 ## Deferred Items
 
@@ -137,7 +138,7 @@ Items acknowledged and deferred from v1.3:
 
 ## Session Continuity
 
-Last session: 2026-06-18T04:37:43.366Z
-Stopped at: context exhaustion at 78% (2026-06-18)
+Last session: 2026-06-18T09:26:22.382Z
+Stopped at: context exhaustion at 82% (2026-06-18)
 Next step: adapter 瞬断重试（零 token 早失败退避重试，9 调用方单一咽喉）+ AIException.toString 诊断黑箱修复（当前错误日志全 "Instance of..."）——真实 key 暴露、合成测试永远抓不到的可靠性缺口。验证用确定性 fake（失败 N-1 次后成功）+ 真实 smoke 回归，不烧 quota 等随机瞬断。
-Next step: ✅ MC-02 章节摘要回路已闭合（260618-jn6，write→persist→read 活循环）。新候选：① MC-02 触发扩展到 splitChapter/mergeChapters（内容变更亦应刷新摘要，当前仅 save 触发，留 follow-up）② 真实 GLM 端到端验证 refresh 触发链（save→summarize→store→下次 builder 读 fresh，需用户浏览器/真机）③ 视觉 UAT（需 Windows 真机或用户浏览器连 kimi-webbridge——本次探活 daemon 活跃但 list_tabs 空，扩展未连，自主会话不可用）。注：双量尺战役全闭合；AA-05 类型套句 5/5 闭合；全量 1712 tests 零回归。
+Next step: ✅✅ MC-02 章节摘要回路+触发面全闭合（260618-jn6 slice3 write-side + 260618-s4 slice4 trigger-surface：save/add/dup/split/merge 触发刷新 + delete/merge 孤儿清理）。新候选：① 真实 GLM 端到端验证 refresh 触发链（save→summarize→store→下次 builder 读 fresh，需用户浏览器/真机）② 视觉 UAT（需 Windows 真机或用户浏览器连 kimi-webbridge——daemon 活跃但 list_tabs 空，扩展未连，自主会话不可用）③ 其他 v1.5 体验打磨项。注：双量尺战役全闭合；AA-05 类型套句 5/5 闭合；全量 1717 tests 零回归。
