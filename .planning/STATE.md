@@ -2,10 +2,10 @@
 gsd_state_version: 1.0
 milestone: v1.5
 milestone_name: milestone
-status: v1.4 shipped (24 phases, 1468 tests), 6项功能改进完成，待真实API验证
+status: v1.4 shipped (24 phases, 1712 tests), MC-02 章节摘要回路闭合，待真实API验证
 stopped_at: context exhaustion at 78% (2026-06-18)
-last_updated: "2026-06-18T04:37:43.371Z"
-last_activity: 2026-06-17 — quick-260617-1uk fix 修复 style_deviation_detector 情感词裸单字子串过计 bug（260617-05c 同族延续）：_countPositive/NegativeSentiment 内联 Set 含裸单字 '爱'/'恨'，被 String.allMatches 当子串匹配——'恨' 命中 '恨不得'(急切想·正面)极性反转、'爱' 命中 可爱/爱好/爱情 过计，扭曲 emotionalTone 维度偏差分（反AI味特性）；移除裸 '爱'/'恨' 两行（与共享 SentimentLexicon 不收录裸单字设计一致；application→infrastructure 架构禁止反向依赖故就地修）+ 2 回归测试（公开 analyze() 断言 textValue<0.6，fixture 复合词密集强制 RED）；TDD RED→GREEN；analyze 0 / 1649 tests +2 零回归
+last_updated: "2026-06-18T06:35:00.000Z"
+last_activity: 2026-06-18 — quick-260618-jn6 feat MC-02 slice 3 WRITE SIDE 闭合死循环：诊断发现 slice 1（summarize 真实 GLM 已证）+ slice 2（persist+inject）留 summarize() ZERO production callers → EditorChapterMemoryContextBuilder 永远 fallback 截断原文（长篇三章链+相邻章记忆拿不到紧凑 AI 概括）。新增 ChapterSummaryRefreshService（refreshIfNeeded 决策树：minSummaryChars=20 跳 stub / fresh 快路径 no-op / missing|stale 走 summarize+put；refresh force 变体；_summarizeAndPut 编排）+ RefreshOutcome 值类 + chapterSummarizationServiceProvider/chapterSummaryRefreshServiceProvider 双 provider 链（null-safe，镜像 editor_ai_notifier activeProviderProvider+activeApiKeyProvider+activeAdapterProvider 解析）+ ChapterNotifier.save unawaited fire-and-forget 触发（try/catch+debugPrint 隔离，wma/0ae posture：service SURFACES AIException，trigger SWALLOWS 不杀主 save 流）。grep 证 summarize() 现有生产调用方 chapter_summary_refresh_service.dart:86 → write→persist→read 活循环。TDD RED(d0d9c6c)→GREEN(a656136)→Wiring(4173b4d) 三原子提交；6 新测试 GREEN / 全量 1712 tests 零回归 / analyze 0。kimi-webbridge daemon 活跃但用户浏览器扩展未连（list_tabs 空）→ 视觉 UAT 仍待用户浏览器活跃或 Windows 真机
 progress:
   total_phases: 8
   completed_phases: 0
@@ -26,8 +26,8 @@ See: .planning/PROJECT.md (updated 2026-06-12)
 ## Current Position
 
 Phase: Pre-25 of 32 (v1.5 — 真实创作验证与体验打磨) 🟡 PLANNING
-Status: v1.4 shipped (24 phases, 1468 tests), 6项功能改进完成，待真实API验证
-Last activity: 2026-06-17 — quick-260617-1uk fix 修复 style_deviation_detector 情感词裸单字子串过计 bug（260617-05c 同族延续）：_countPositive/NegativeSentiment 内联 Set 含裸单字 '爱'/'恨'，被 String.allMatches 当子串匹配——'恨' 命中 '恨不得'(急切想·正面)极性反转、'爱' 命中 可爱/爱好/爱情 过计，扭曲 emotionalTone 维度偏差分（反AI味特性）；移除裸 '爱'/'恨' 两行（与共享 SentimentLexicon 不收录裸单字设计一致；application→infrastructure 架构禁止反向依赖故就地修）+ 2 回归测试（公开 analyze() 断言 textValue<0.6，fixture 复合词密集强制 RED）；TDD RED→GREEN；analyze 0 / 1649 tests +2 零回归
+Status: v1.4 shipped (24 phases, 1712 tests), MC-02 章节摘要回路闭合，待真实API验证
+Last activity: 2026-06-18 — quick-260618-jn6 feat MC-02 slice 3 WRITE SIDE 闭合 summarize() 死循环（slice 1+2 留 ZERO production callers → builder 永远 fallback 截断）。新增 ChapterSummaryRefreshService（决策树+force 变体+minSummaryChars=20 跳 stub）+ 双 provider 链（null-safe 镜像 editor_ai_notifier）+ ChapterNotifier.save unawaited fire-and-forget 触发（wma/0ae posture：service SURFACES，trigger SWALLOWS）。grep 证 summarize() 现有生产调用方。TDD RED→GREEN→Wiring 三原子提交；6 新测试 GREEN / 全量 1712 tests 零回归 / analyze 0
 
 Progress: [░░░░░░░░░░░░░░░░░░░░] 0%
 
@@ -140,4 +140,4 @@ Items acknowledged and deferred from v1.3:
 Last session: 2026-06-18T04:37:43.366Z
 Stopped at: context exhaustion at 78% (2026-06-18)
 Next step: adapter 瞬断重试（零 token 早失败退避重试，9 调用方单一咽喉）+ AIException.toString 诊断黑箱修复（当前错误日志全 "Instance of..."）——真实 key 暴露、合成测试永远抓不到的可靠性缺口。验证用确定性 fake（失败 N-1 次后成功）+ 真实 smoke 回归，不烧 quota 等随机瞬断。
-Next step: MC-02 章节摘要自动刷新（需新建摘要 domain，纯代码无人工依赖）/ 视觉 UAT（需 Windows 真机或用户浏览器连 kimi-webbridge）。注：双量尺战役全闭合；AA-05 类型套句 5/5 闭合；全量 1678 tests 零回归；kimi-webbridge daemon 在跑(PID 166349,端口10086,kimi symlink 已修)，视觉 UAT 仍受 WSL2 CanvasKit 渲染边界限制留待 Windows 真机。
+Next step: ✅ MC-02 章节摘要回路已闭合（260618-jn6，write→persist→read 活循环）。新候选：① MC-02 触发扩展到 splitChapter/mergeChapters（内容变更亦应刷新摘要，当前仅 save 触发，留 follow-up）② 真实 GLM 端到端验证 refresh 触发链（save→summarize→store→下次 builder 读 fresh，需用户浏览器/真机）③ 视觉 UAT（需 Windows 真机或用户浏览器连 kimi-webbridge——本次探活 daemon 活跃但 list_tabs 空，扩展未连，自主会话不可用）。注：双量尺战役全闭合；AA-05 类型套句 5/5 闭合；全量 1712 tests 零回归。
