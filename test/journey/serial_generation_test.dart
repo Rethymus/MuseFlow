@@ -139,7 +139,16 @@ void main() {
       }
     },
     skip: apiKey == null ? 'GLM_API_KEY not set' : null,
-    timeout: const Timeout(Duration(minutes: 20)),
+    // Real GLM-4-flash latency: 30 chapters × (generation + per-chapter Skill
+    // guardian deviation call) ≈ 60 GLM requests, plus the 3s rate-limit pacing
+    // between chapters (useDelay) ≈ another ~90s. Measured ~ch23 of 30 at the
+    // 20-min mark → ~26 min wall-clock for the full run. 20 min was too tight
+    // and timed out even in isolation (concurrent runs saturate further — run
+    // real-API journey tests with --concurrency=1). The Skill guardian's
+    // per-chapter cost here is exactly why deviation detection is optional /
+    // default-off in the product (BUG-3, dfe3198); this test deliberately
+    // exercises that expensive path against a live model. 40 min gives margin.
+    timeout: const Timeout(Duration(minutes: 40)),
   );
   test(
     'deterministic 100-chapter journey should generate with stage prompts and summary injection',
