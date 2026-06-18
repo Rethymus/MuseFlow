@@ -3,8 +3,8 @@ gsd_state_version: 1.0
 milestone: v1.5
 milestone_name: milestone
 status: v1.4 shipped (24 phases, 1468 tests), 6项功能改进完成，待真实API验证
-stopped_at: context exhaustion at 82% (2026-06-17)
-last_updated: "2026-06-17T17:45:40.419Z"
+stopped_at: context exhaustion at 78% (2026-06-18)
+last_updated: "2026-06-18T04:37:43.371Z"
 last_activity: 2026-06-17 — quick-260617-1uk fix 修复 style_deviation_detector 情感词裸单字子串过计 bug（260617-05c 同族延续）：_countPositive/NegativeSentiment 内联 Set 含裸单字 '爱'/'恨'，被 String.allMatches 当子串匹配——'恨' 命中 '恨不得'(急切想·正面)极性反转、'爱' 命中 可爱/爱好/爱情 过计，扭曲 emotionalTone 维度偏差分（反AI味特性）；移除裸 '爱'/'恨' 两行（与共享 SentimentLexicon 不收录裸单字设计一致；application→infrastructure 架构禁止反向依赖故就地修）+ 2 回归测试（公开 analyze() 断言 textValue<0.6，fixture 复合词密集强制 RED）；TDD RED→GREEN；analyze 0 / 1649 tests +2 零回归
 progress:
   total_phases: 8
@@ -123,6 +123,7 @@ Last activity: 2026-06-14 - P2 深化连发 5 项：260614-gmg（AA-02 对比减
 | 260618-1g3 | feat 补 GLM/BigModel preset provider + 修复 preset 暴露的左面板溢出 bug：用临时 BigModel key（GLM-4-flash）真实 API 跑通 3 个 journey 集成测试（fragment 合成 501 字 / 3 种开篇风格 / 30 章连写 13395 字 + Skill guardian 71 条真实剧情偏差告警 + token 审计 30 调用）兑现 STATE "待真实API验证"；preset_providers.dart 加 preset-glm（复用 AiProviderType.openai OpenAI 兼容适配器，与 journey wiring 同源，配置逐字一致→真实调用已证）；第 5 个 preset 卡片致左面板 Column 底部溢出 78px→Expanded(SingleChildScrollView) 根治可滚动；TDD RED→GREEN / preset 15 + responsive 2 全过 / analyze 0；零新增回归（openai_adapter 2 缓存测试 clean HEAD 预存遗留，已记录非本次引入） | 2026-06-18 | d5db5e0 | [260618-1g3-add-glm-preset](./quick/260618-1g3-add-glm-preset/) |
 | 260618-1g4 | fix 修复 openai_adapter client caching 测试回归（闭合 1g3 遗留）：wma 可靠性重构把 createStream 的 _attemptStream 包进 retryStream(()=>...) 闭包，OpenAIClient 创建延迟到首次流订阅（async* 惰性），fire-and-forget createStream 不订阅时 _client 恒 null→isActive=false，2 caching 测试 clean HEAD 即红；根因修复（非改测试打补丁）：createStream 里 _validateBaseUrl 后 eager _getOrCreateClient 还原回归前行为，retryStream factory 经 _attemptStream 幂等 _getOrCreateClient 复用缓存 client，retry 语义不变；openai_adapter+resilience 30/30、全 AI 目录 313/313（311 -2→313 -0 闭合预存遗留）、analyze 0；真实 GLM journey 此前已证实战复用正常 | 2026-06-18 | ce1512b | [260618-1g4-fix-openai-adapter-caching](./quick/260618-1g4-fix-openai-adapter-caching/) |
 | 260618-h4h | feat MC-02 slice 2 章节摘要持久化+注入闭环：ChapterSummaryStalenessChecker（isStale 增长绝对≥50且相对≥20%，对称 KbStalenessChecker，AND 避免误报）+ ChapterSummaryRepository（CRUD key=chapterId 1:1 upsert）+ ChapterSummaryAdapter（HiveTypeIds.chapterSummary=11）+ main 注册 + EditorChapterMemoryContextBuilder 注入（优先 fresh stored AI summary，缺失/stale/无 repository fallback 截断原文向后兼容；_warning 对 stored 跳过截断警告）+ providers wiring（chapterSummaryRepositoryProvider + builder 注入）；TDD 14 新测试 GREEN（staleness 6+repository 5+builder 注入 3）+ manuscript 75 回归零回归 + analyze 0；slice 1 真实 GLM 已证 summarize（34字/300字源） | 2026-06-18 | (本提交) | [260618-h4h-mc02-slice2-summary-persist-inject](./quick/260618-h4h-mc02-slice2-summary-persist-inject/) |
+| 260618-jn6 | feat MC-02 slice 3 WRITE SIDE 闭合死循环：ChapterSummaryRefreshService（refreshIfNeeded 决策树+refresh force 变体+_summarizeAndPut 编排）+ RefreshOutcome 值类 + chapterSummarizationServiceProvider/chapterSummaryRefreshServiceProvider 两 provider 链（null-safe，activeProviderProvider+activeApiKeyProvider+activeAdapterProvider 镜像 editor_ai_notifier）+ ChapterNotifier.save unawaited fire-and-forget 触发（try/catch+debugPrint 隔离，wma/0ae posture：service SURFACES，trigger SWALLOWS）；前 slice 1+2 留 summarize() ZERO production callers 死循环（EditorChapterMemoryContextBuilder 永远 fallback 截断原文）→ 现闭合为 write→persist→read 活循环；minSummaryChars=20 跳过 stub；T6 GREEN 验证 AIException 透传无 partial put；TDD RED(d0d9c6c)→GREEN(a656136)→Wiring(4173b4d) 三原子提交；6 新测试 GREEN / manuscript/application 55 / manuscript 全量 141 / analyze 0 零回归 | 2026-06-18 | 4173b4d | [260618-jn6-mc-02-chaptersummaryrefreshservice-decis](./quick/260618-jn6-mc-02-chaptersummaryrefreshservice-decis/) |
 
 ## Deferred Items
 
@@ -136,7 +137,7 @@ Items acknowledged and deferred from v1.3:
 
 ## Session Continuity
 
-Last session: 2026-06-17T17:45:40.414Z
-Stopped at: context exhaustion at 82% (2026-06-17)
+Last session: 2026-06-18T04:37:43.366Z
+Stopped at: context exhaustion at 78% (2026-06-18)
 Next step: adapter 瞬断重试（零 token 早失败退避重试，9 调用方单一咽喉）+ AIException.toString 诊断黑箱修复（当前错误日志全 "Instance of..."）——真实 key 暴露、合成测试永远抓不到的可靠性缺口。验证用确定性 fake（失败 N-1 次后成功）+ 真实 smoke 回归，不烧 quota 等随机瞬断。
 Next step: MC-02 章节摘要自动刷新（需新建摘要 domain，纯代码无人工依赖）/ 视觉 UAT（需 Windows 真机或用户浏览器连 kimi-webbridge）。注：双量尺战役全闭合；AA-05 类型套句 5/5 闭合；全量 1678 tests 零回归；kimi-webbridge daemon 在跑(PID 166349,端口10086,kimi symlink 已修)，视觉 UAT 仍受 WSL2 CanvasKit 渲染边界限制留待 Windows 真机。
