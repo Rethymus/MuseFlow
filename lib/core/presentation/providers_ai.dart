@@ -186,6 +186,40 @@ final editorChapterMemoryContextBuilderProvider =
       );
     });
 
+/// Provides a [ChapterSummarizationService] bound to the active AI provider
+/// (MC-02 slice 1 capability, slice 3 wiring). Returns null when no provider
+/// is active or no API key is configured — callers MUST null-check.
+final chapterSummarizationServiceProvider = Provider<ChapterSummarizationService?>((ref) {
+  final provider = ref.watch(activeProviderProvider);
+  if (provider == null) return null;
+  final apiKey = ref.watch(activeApiKeyProvider);
+  if (apiKey == null || apiKey.isEmpty) return null;
+  final adapter = ref.watch(activeAdapterProvider);
+  return ChapterSummarizationService(
+    openAIAdapter: adapter,
+    apiKey: apiKey,
+    baseUrl: provider.baseUrl,
+    model: provider.model,
+  );
+});
+
+/// Provides a [ChapterSummaryRefreshService] for fire-and-forget summary
+/// refresh on chapter save (MC-02 slice 3 write side). Returns null when
+/// the summarization service (no provider/apiKey) or repository is
+/// unavailable — ChapterNotifier.save skips cleanly.
+final chapterSummaryRefreshServiceProvider =
+    FutureProvider<ChapterSummaryRefreshService?>((ref) async {
+  final summarizationService = ref.watch(chapterSummarizationServiceProvider);
+  if (summarizationService == null) return null;
+  final summaryRepository = await ref.watch(
+    chapterSummaryRepositoryProvider.future,
+  );
+  return ChapterSummaryRefreshService(
+    summarizationService: summarizationService,
+    summaryRepository: summaryRepository,
+  );
+});
+
 /// Provides a [DiffCalculator] instance for sentence-level diff computation.
 ///
 /// Stateless utility, but registered as a provider for consistency

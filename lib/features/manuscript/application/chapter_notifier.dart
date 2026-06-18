@@ -1,3 +1,6 @@
+import 'dart:async';
+
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:museflow/core/presentation/providers.dart';
 import 'package:museflow/features/manuscript/domain/chapter.dart';
@@ -36,6 +39,24 @@ class ChapterNotifier extends AsyncNotifier<List<Chapter>> {
     final repository = await ref.read(chapterRepositoryProvider.future);
     await repository.update(chapter);
     _refreshWith(repository, chapter.manuscriptId);
+    // MC-02 slice 3 write-side: fire-and-forget AI summary refresh. NEVER
+    // throws into save() — the saved chapter is persisted regardless.
+    unawaited(_maybeRefreshSummary(chapter));
+  }
+
+  /// Fire-and-forget MC-02 summary refresh (slice 3). NEVER throws into save().
+  ///
+  /// Reliability posture (wma/0ae): the SERVICE rethrows AIException/StateError;
+  /// HERE we catch+log+drop because this is an async side-effect, not the main
+  /// save contract. A failed AI summary MUST NOT kill the user's chapter save.
+  Future<void> _maybeRefreshSummary(Chapter chapter) async {
+    try {
+      final service = await ref.read(chapterSummaryRefreshServiceProvider.future);
+      if (service == null) return; // no provider/apiKey/repo configured
+      await service.refreshIfNeeded(chapter);
+    } catch (e) {
+      debugPrint('ChapterSummaryRefresh skipped for ${chapter.id}: $e');
+    }
   }
 
   /// Deletes a chapter by ID and refreshes the state.

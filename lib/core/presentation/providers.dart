@@ -63,6 +63,8 @@ import 'package:museflow/features/stats/infrastructure/writing_stats_repository.
 import 'package:museflow/features/stats/infrastructure/token_audit_repository.dart';
 import 'package:museflow/features/manuscript/application/chapter_auto_save.dart';
 import 'package:museflow/features/manuscript/application/chapter_notifier.dart';
+import 'package:museflow/features/manuscript/application/chapter_summary_refresh_service.dart';
+import 'package:museflow/features/manuscript/application/chapter_summarization_service.dart';
 import 'package:museflow/features/manuscript/application/manuscript_notifier.dart';
 import 'package:museflow/features/manuscript/infrastructure/chapter_repository.dart';
 import 'package:museflow/features/manuscript/infrastructure/chapter_summary_repository.dart';
