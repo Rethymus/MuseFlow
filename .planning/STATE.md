@@ -4,8 +4,8 @@ milestone: v1.5
 milestone_name: milestone
 status: v1.4 shipped (24 phases, 1717 tests), MC-02 章节摘要回路+触发面全闭合，待真实API验证
 stopped_at: context exhaustion at 82% (2026-06-18)
-last_updated: "2026-06-18T09:26:22.386Z"
-last_activity: 2026-06-18 — quick-260618-s4 feat MC-02 slice 4 触发面收尾（闭合 jn6 遗留：仅 save 触发，split/merge/delete/add/dup 未接）。修 splitChapter 正确性 bug（force 绕 staleness）+ delete/merge 孤儿摘要清理 + add/dup 捕获 repository.add 真实 id。MC-02 完整闭环（slice1-4）。manuscript 146 GREEN / analyze 0 零回归
+last_updated: "2026-06-18T12:10:00.000Z"
+last_activity: 2026-06-18 — quick-260618-rlo test MC-02 refresh 写侧链路真实 GLM API 集成测试（闭合「待真实API验证: refresh 触发链」headless 缺口）。真实 GLM-4-flash 下 T1 首次刷新→summarize→put+读回一致 / T2 幂等不烧 quota。深挖根因=setUpHiveTest 的 ensureInitialized 装 flutter_test HTTP mock 拦截真实调用（400）→ 改 journey_container 模式直接 Hive.init 修复。全仓 analyze 0 + manuscript 61 GREEN 零回归
 progress:
   total_phases: 8
   completed_phases: 0
@@ -26,8 +26,8 @@ See: .planning/PROJECT.md (updated 2026-06-12)
 ## Current Position
 
 Phase: Pre-25 of 32 (v1.5 — 真实创作验证与体验打磨) 🟡 PLANNING
-Status: v1.4 shipped (24 phases, 1717 tests), MC-02 章节摘要回路+触发面全闭合，待真实API验证
-Last activity: 2026-06-18 — quick-260618-s4 feat MC-02 slice 4 触发面收尾（闭合 jn6 遗留：仅 save 触发，split/merge/delete/add/dup 未接）。修 splitChapter 正确性 bug（force 绕 staleness）+ delete/merge 孤儿摘要清理 + add/dup 捕获 repository.add 真实 id。MC-02 完整闭环（slice1-4）。manuscript 146 GREEN / analyze 0 零回归
+Status: v1.4 shipped (24 phases, 1717 tests), MC-02 章节摘要回路+触发面全闭合，服务层全链路真实 GLM 已验证（260618-rlo），UI wiring 待真机 UAT
+Last activity: 2026-06-18 — quick-260618-rlo test MC-02 refresh 写侧链路真实 GLM API 集成测试（闭合「待真实API验证: refresh 触发链」headless）。真实 GLM-4-flash 下 T1 首次刷新→summarize→put+读回一致 / T2 幂等不烧 quota。深挖根因=setUpHiveTest 的 ensureInitialized 装 flutter_test HTTP mock 拦截真实调用→改 journey_container 模式修复。全仓 analyze 0 + manuscript 61 GREEN 零回归
 
 Progress: [░░░░░░░░░░░░░░░░░░░░] 0%
 
@@ -125,6 +125,7 @@ Last activity: 2026-06-14 - P2 深化连发 5 项：260614-gmg（AA-02 对比减
 | 260618-h4h | feat MC-02 slice 2 章节摘要持久化+注入闭环：ChapterSummaryStalenessChecker（isStale 增长绝对≥50且相对≥20%，对称 KbStalenessChecker，AND 避免误报）+ ChapterSummaryRepository（CRUD key=chapterId 1:1 upsert）+ ChapterSummaryAdapter（HiveTypeIds.chapterSummary=11）+ main 注册 + EditorChapterMemoryContextBuilder 注入（优先 fresh stored AI summary，缺失/stale/无 repository fallback 截断原文向后兼容；_warning 对 stored 跳过截断警告）+ providers wiring（chapterSummaryRepositoryProvider + builder 注入）；TDD 14 新测试 GREEN（staleness 6+repository 5+builder 注入 3）+ manuscript 75 回归零回归 + analyze 0；slice 1 真实 GLM 已证 summarize（34字/300字源） | 2026-06-18 | (本提交) | [260618-h4h-mc02-slice2-summary-persist-inject](./quick/260618-h4h-mc02-slice2-summary-persist-inject/) |
 | 260618-jn6 | feat MC-02 slice 3 WRITE SIDE 闭合死循环：ChapterSummaryRefreshService（refreshIfNeeded 决策树+refresh force 变体+_summarizeAndPut 编排）+ RefreshOutcome 值类 + chapterSummarizationServiceProvider/chapterSummaryRefreshServiceProvider 两 provider 链（null-safe，activeProviderProvider+activeApiKeyProvider+activeAdapterProvider 镜像 editor_ai_notifier）+ ChapterNotifier.save unawaited fire-and-forget 触发（try/catch+debugPrint 隔离，wma/0ae posture：service SURFACES，trigger SWALLOWS）；前 slice 1+2 留 summarize() ZERO production callers 死循环（EditorChapterMemoryContextBuilder 永远 fallback 截断原文）→ 现闭合为 write→persist→read 活循环；minSummaryChars=20 跳过 stub；T6 GREEN 验证 AIException 透传无 partial put；TDD RED(d0d9c6c)→GREEN(a656136)→Wiring(4173b4d) 三原子提交；6 新测试 GREEN / manuscript/application 55 / manuscript 全量 141 / analyze 0 零回归 | 2026-06-18 | 4173b4d | [260618-jn6-mc-02-chaptersummaryrefreshservice-decis](./quick/260618-jn6-mc-02-chaptersummaryrefreshservice-decis/) |
 | 260618-s4 | feat MC-02 slice 4 触发面收尾（闭合 jn6 遗留：仅 save 触发，split/merge/delete/add/duplicate 未接）。两真问题：① splitChapter 正确性 bug——原章内容替换为 beforeContent（子集，更短），旧"整章摘要"因 growth 负被 staleness 判 fresh → 注入描述整章但章节只剩前半的错误摘要；② delete/merge 留孤儿摘要被 getByManuscriptId 返回。修：ChapterSummaryRefreshService.deleteSummary(chapterId)（委托 repository.delete，rethrow StateError，T7/T8 RED→GREEN）；ChapterNotifier 全面接线——add/duplicate 捕获 repository.add 返回的真实 id 章节（原来丢弃返回值！）触发 refreshIfNeeded；splitChapter/mergeChapters 用 force=true 走 service.refresh 绕过 staleness（内容被替换非增长）；delete(id)+mergeChapters(chapter2) 调 _deleteSummary 孤儿清理；_maybeRefreshSummary 加 {force} 参数+_deleteSummary 辅助，皆 fire-and-forget try/catch+debugPrint 不杀主流程（wma/0ae posture 延续）；3 wiring 测试用 _RecordingRefreshService（implements 绕过真实 ctor）override 验证 split 2×force-refresh / merge 1×force+1×delete / delete 1×deleteSummary；TDD 三原子提交(baab7b9/edf0497/f14d775)；manuscript 全量 146 GREEN / analyze 0 零回归 | 2026-06-18 | f14d775 | [260618-s4-mc02-trigger-surface-completion](./quick/260618-s4-mc02-trigger-surface-completion/) |
+| 260618-rlo | test MC-02 refresh 写侧链路真实 GLM API 集成测试（闭合 STATE「待真实API验证: refresh 触发链」headless 缺口）：新增 chapter_summary_refresh_service_real_glm_test.dart 镜像 slice1（GLM_API_KEY env 门控无 key skip CI 安全）；真实 GLM-4-flash 下 T1 首次 refreshIfNeeded→summarize→put 持久化+content-faithful(含林风)+bounded+compressed+repository 读回一致(52字/300字源) / T2 幂等二次调用 refreshed==false 返回 stored 不烧 quota；深挖 30min HTTP 400 根因=setUpHiveTest 的 TestWidgetsFlutterBinding.ensureInitialized 装 HttpOverrides mock 拦截所有真实 HTTP（slice1/opening_guide/curl 不调均 200）→ setUp 改 journey_container 模式直接 Hive.init(显式tempPath) 不调 ensureInitialized 修复；教训：真实 API 测试禁用 setUpHiveTest；次要观察 openai_dart ApiException.body 对 GLM 400 为 null 黑箱待评估；全仓 analyze 0 + manuscript application 61 GREEN 零回归 | 2026-06-18 | (本提交) | [260618-rlo-mc-02-refresh-glm-api-api](./quick/260618-rlo-mc-02-refresh-glm-api-api/) |
 
 ## Deferred Items
 
