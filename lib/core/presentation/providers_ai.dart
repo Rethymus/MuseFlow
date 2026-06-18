@@ -68,7 +68,12 @@ class CreativityLevelNotifier extends Notifier<CreativityLevel> {
 /// Client caching prevents memory leaks. Typed as [AIAdapter] so tests can
 /// override with FakeAdapter.
 final openaiAdapterProvider = Provider<AIAdapter>((ref) {
-  return OpenAIAdapter();
+  return OpenAIAdapter(
+    // Offline fast-fail: if the device is definitively offline, the adapter
+    // surfaces AINetworkException before any network call instead of waiting
+    // out the bounded timeout. Best-effort — never blocks when uncertain.
+    onlineCheck: () => ref.read(connectivityServiceProvider).isProbablyOffline(),
+  );
 });
 
 /// Provides a singleton [ClaudeAdapter] for Claude/Anthropic API streaming.
@@ -76,7 +81,9 @@ final openaiAdapterProvider = Provider<AIAdapter>((ref) {
 /// Uses anthropic_sdk_dart for native Claude Messages API with streaming.
 /// Messages are converted from OpenAI format to Anthropic format internally.
 final claudeAdapterProvider = Provider<AIAdapter>((ref) {
-  return ClaudeAdapter();
+  return ClaudeAdapter(
+    onlineCheck: () => ref.read(connectivityServiceProvider).isProbablyOffline(),
+  );
 });
 
 /// Routes to the correct AI adapter based on the active provider type.

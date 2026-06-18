@@ -23,6 +23,48 @@ void main() {
       adapter.dispose();
     });
 
+    group('offline fast-fail (onlineCheck gate)', () {
+      test('fast-fails with offline AINetworkException, no network call', () async {
+        // Symmetric with OpenAIAdapter: gate probe offline → error before any
+        // network attempt.
+        final gated = ClaudeAdapter(onlineCheck: () async => true);
+        addTearDown(gated.dispose);
+        final sw = Stopwatch()..start();
+        final stream = gated.createStream(
+          apiKey: 'test-key',
+          baseUrl: 'https://api.anthropic.com/v1',
+          model: 'claude-sonnet-4-20250514',
+          messages: [ChatMessage.user('hi')],
+        );
+        await expectLater(
+          stream,
+          emitsError(
+            predicate<Object>(
+              (e) => e is AINetworkException && e.message.contains('离线'),
+            ),
+          ),
+        );
+        sw.stop();
+        // Instant fast-fail, not a network timeout.
+        expect(sw.elapsed, lessThan(const Duration(seconds: 5)));
+      });
+
+      test('no onlineCheck (null gate) preserves legacy no-gate behavior', () {
+        final legacy = ClaudeAdapter();
+        addTearDown(legacy.dispose);
+        expect(
+          () => legacy.createStream(
+            apiKey: 'test-key',
+            baseUrl: 'https://api.anthropic.com/v1',
+            model: 'claude-sonnet-4-20250514',
+            messages: [ChatMessage.user('hi')],
+          ),
+          returnsNormally,
+        );
+        expect(legacy.isActive, isTrue);
+      });
+    });
+
     group('lifecycle', () {
       test('should start inactive', () {
         expect(adapter.isActive, isFalse);

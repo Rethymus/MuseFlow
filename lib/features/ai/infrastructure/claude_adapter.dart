@@ -33,6 +33,14 @@ class ClaudeAdapter implements AIAdapter {
   String? _cachedBaseUrl;
   bool _disposed = false;
 
+  /// Optional offline pre-flight — see [OpenAIAdapter.onlineCheck]. Symmetric
+  /// gate so Claude users get the same offline fast-fail as OpenAI-compatible
+  /// providers. Null (default) preserves legacy no-gate behavior.
+  final Future<bool> Function()? onlineCheck;
+
+  /// Creates an adapter. Pass [onlineCheck] to enable offline fast-fail.
+  ClaudeAdapter({this.onlineCheck});
+
   /// Creates a stream of text deltas from the Claude API.
   ///
   /// Accepts OpenAI-format [ChatMessage] and converts them to Anthropic
@@ -77,7 +85,7 @@ class ClaudeAdapter implements AIAdapter {
     anthropic.MessageDeltaUsage? deltaUsage;
 
     // Map the Claude stream to text deltas
-    return client.messages
+    final inner = client.messages
         .createStream(request)
         .map((event) {
           // Capture INPUT tokens from message_start events (prompt)
@@ -104,6 +112,11 @@ class ClaudeAdapter implements AIAdapter {
             },
           ),
         );
+    // Offline fast-fail pre-flight runs OUTSIDE the stream chain — an offline
+    // device must surface the error without any network attempt. Skipped when
+    // no probe is injected (legacy path).
+    if (onlineCheck == null) return inner;
+    return _guardOnline(inner);
   }
 
   /// Extracts system prompt text from OpenAI system messages.
@@ -303,6 +316,19 @@ class ClaudeAdapter implements AIAdapter {
 
   /// Whether the adapter has an active client.
   bool get isActive => _client != null && !_disposed;
+
+  /// Wraps [inner] with a one-shot offline pre-flight before the first byte.
+  ///
+  /// Throws [AINetworkException] BEFORE `yield* inner` so the caller receives
+  /// it directly — no network call is attempted for a known-offline device.
+  /// Symmetric with [OpenAIAdapter._guardOnline]. Called only when
+  /// [onlineCheck] is non-null.
+  Stream<String> _guardOnline(Stream<String> inner) async* {
+    if (await onlineCheck!()) {
+      throw const AINetworkException('当前处于离线状态，请检查网络连接');
+    }
+    yield* inner;
+  }
 
   /// Disposes the current client and releases resources.
   void dispose() {

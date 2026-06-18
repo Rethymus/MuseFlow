@@ -23,6 +23,49 @@ void main() {
       adapter.dispose();
     });
 
+    group('offline fast-fail (onlineCheck gate)', () {
+      test('fast-fails with offline AINetworkException, no network call', () async {
+        // Gate probe reports offline → stream errors BEFORE any network call.
+        final gated = OpenAIAdapter(onlineCheck: () async => true);
+        addTearDown(gated.dispose);
+        final sw = Stopwatch()..start();
+        final stream = gated.createStream(
+          apiKey: 'test-key',
+          baseUrl: 'https://api.openai.com/v1',
+          model: 'gpt-4o-mini',
+          messages: [ChatMessage.user('hi')],
+        );
+        await expectLater(
+          stream,
+          emitsError(
+            predicate<Object>(
+              (e) => e is AINetworkException && e.message.contains('离线'),
+            ),
+          ),
+        );
+        sw.stop();
+        // The gate fired instantly — not after a multi-second network timeout.
+        expect(sw.elapsed, lessThan(const Duration(seconds: 5)));
+      });
+
+      test('no onlineCheck (null gate) preserves legacy no-gate behavior', () {
+        // Backward compat: adapters without a probe behave exactly as before.
+        final legacy = OpenAIAdapter();
+        addTearDown(legacy.dispose);
+        expect(
+          () => legacy.createStream(
+            apiKey: 'test',
+            baseUrl: 'https://api.openai.com/v1',
+            model: 'gpt-4o-mini',
+            messages: [ChatMessage.user('test')],
+          ),
+          returnsNormally,
+        );
+        // Eager client creation keeps the isActive invariant (quick-260618-1g4).
+        expect(legacy.isActive, isTrue);
+      });
+    });
+
     group('createStream', () {
       test(
         'should return Stream<String> of text deltas from streaming events',

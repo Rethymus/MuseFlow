@@ -63,6 +63,15 @@ final secureStorageServiceProvider = Provider<SecureStorageService>((ref) {
   return SecureStorageService();
 });
 
+/// Provides a singleton [ConnectivityService] for offline fast-fail probes.
+///
+/// Injected into the AI adapter providers so streaming calls fast-fail with
+/// [AINetworkException] when the device is definitively offline, instead of
+/// waiting out the bounded network timeout. Best-effort (see [ConnectivityService]).
+final connectivityServiceProvider = Provider<ConnectivityService>((ref) {
+  return ConnectivityService();
+});
+
 /// Provides a [ProviderRepository] backed by a Hive 'ai_providers' box.
 ///
 /// Opens the box without encryption (API keys go to SecureStorage).

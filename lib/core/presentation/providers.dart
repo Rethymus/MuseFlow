@@ -12,6 +12,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive_ce/hive.dart';
 import 'package:hive_ce_flutter/hive_flutter.dart';
 import 'package:museflow/core/domain/fragment.dart';
+import 'package:museflow/core/infrastructure/connectivity_service.dart';
 import 'package:museflow/core/infrastructure/fragment_repository.dart';
 import 'package:museflow/core/infrastructure/secure_storage_service.dart';
 import 'package:museflow/core/infrastructure/settings_repository.dart';
