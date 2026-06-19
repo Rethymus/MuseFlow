@@ -1,0 +1,30 @@
+noto_sans_sc_subset.ttf — Noto Sans CJK SC subset (test-only)
+=============================================================
+
+This font is a SUBSET of "Noto Sans CJK SC" (Regular), produced with
+`pyftsubset` (fonttools) from NotoSansCJK-Regular.ttc (font index 2 = SC),
+restricted to only the CJK glyphs the README golden screenshot tests render
+(~33 KB). It is used solely by test/readme_screenshots/* to render Chinese
+text deterministically in flutter_test (which does not use system fonts).
+
+Source font:    Noto Sans CJK SC
+                 https://fonts.google.com/noto/specimen/Noto+Sans+SC
+                 https://github.com/notofonts/noto-cjk
+Designers:      Google / Adobe (Noto is a trademark of Google LLC)
+License:        SIL Open Font License 1.1 (OFL)
+                 https://openfontlicense.org/open-font-license-official-text/
+                 https://scripts.sil.org/OFL
+
+The OFL permits redistribution and modification (including subsetting) of the
+font, provided the license is retained. The full OFL 1.1 text is available at
+the canonical URL above.
+
+Regenerate (requires `pyftsubset` + a Noto Sans CJK SC source):
+
+  pyftsubset <NotoSansCJK-Regular.ttc> --font-number=2 \
+    --text="<glyphs the tests render>" \
+    --output-file=test_assets/noto_sans_sc_subset.ttf \
+    --no-hinting --desubroutinize
+
+This asset is NOT shipped in release builds — it lives under test_assets/ and
+is consumed only by golden screenshot tests.
