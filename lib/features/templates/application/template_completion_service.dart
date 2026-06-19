@@ -56,12 +56,18 @@ class TemplateCompletionService {
           buffer.write(chunk);
         }
       } else {
-        // Production path with audit
+        // Production path with audit.
+        // temperature 0.3 (aligned with LogicGuardianService /
+        // GuardianCheckService structured-JSON calls): structured JSON output
+        // is far less likely to malform (unescaped quotes / truncation) at low
+        // temperature, which keeps the completion reliably parseable on real
+        // providers like GLM-4-flash.
         final stream = openAIAdapter!.createStream(
           apiKey: apiKey!,
           baseUrl: baseUrl!,
           model: model!,
           messages: messages,
+          temperature: 0.3,
           onUsage: (usage) {
             // Only record if audit service is provided
             auditService?.recordAudit(
@@ -103,7 +109,12 @@ class TemplateCompletionService {
   List<ChatMessage> _buildMessages(TemplateDraft draft) {
     return [
       ChatMessage.system(
-        '你是 MuseFlow 模板补全助手。只返回严格 JSON，不要返回 Markdown。只补全空白字段，保留模板默认值和用户编辑值。',
+        '你是 MuseFlow 模板补全助手。根据故事概念，为模板中【值为空】的字段生成具体、丰富的中文内容'
+        '（每处空白都必须填入生成的设定，禁止返回空字符串，禁止原样复制输入）。'
+        '已有值的字段（如 name/rules/backstory）保持原值不变。'
+        '只返回严格 JSON，不要 Markdown。'
+        '输出顶层结构：{"world":{...},"characters":[{...}]}（world 对象 + characters 数组），'
+        '不要包裹在 draft 或 responseShape 键下。',
       ),
       ChatMessage.user(
         jsonEncode({

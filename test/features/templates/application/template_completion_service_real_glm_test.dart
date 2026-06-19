@@ -100,6 +100,81 @@ void main() {
       skip: apiKey == null ? 'GLM_API_KEY not set' : null,
       timeout: const Timeout(Duration(seconds: 120)),
     );
+
+    test(
+      'partial-fill draft fills blanks and preserves non-blank (real user flow)',
+      () async {
+        final adapter = OpenAIAdapter();
+        addTearDown(adapter.dispose);
+
+        final service = TemplateCompletionService(
+          openAIAdapter: adapter,
+          apiKey: apiKey!,
+          baseUrl: baseUrl,
+          model: model,
+        );
+
+        // Real user flow: the template ships defaults (world.name/rules) and
+        // the user edited one field (character backstory), leaving the rest
+        // blank. Under the old prompt GLM-4-flash echoed the blanks; the
+        // improved prompt must force generation for blanks while preserving
+        // the pre-filled values.
+        final result = await service.completeBlankFields(_partialFillDraft());
+
+        if (!result.succeeded) {
+          print('[TEMPLATE-PARTIAL] FAILED: ${result.errorMessage}');
+        }
+        expect(
+          result.succeeded,
+          isTrue,
+          reason:
+              'partial-fill completion must succeed; error=${result.errorMessage}',
+        );
+
+        // world.description was '' (blank) → MUST be filled. The echo bug
+        // under the old prompt left it empty; the improved prompt forces
+        // generation for blanks.
+        expect(
+          result.draft.world.description.value,
+          isNotEmpty,
+          reason: 'blank world.description must be GENERATED, not echoed empty',
+        );
+        expect(
+          result.draft.world.description.source,
+          TemplateFieldSource.aiCompleted,
+        );
+        print(
+          '[TEMPLATE-PARTIAL] world.description='
+          '"${result.draft.world.description.value}"',
+        );
+
+        // world.name was '青云界' (pre-filled default) → MUST be preserved.
+        expect(result.draft.world.name.value, '青云界');
+        expect(
+          result.draft.world.name.source,
+          TemplateFieldSource.templateDefault,
+        );
+
+        // character.personality was '' (blank) → filled; backstory was
+        // '出身寒微' (userEdited) → preserved.
+        expect(
+          result.draft.characters.single.personality.value,
+          isNotEmpty,
+          reason: 'blank character personality must be generated',
+        );
+        expect(result.draft.characters.single.backstory.value, '出身寒微');
+        expect(
+          result.draft.characters.single.backstory.source,
+          TemplateFieldSource.userEdited,
+        );
+        print(
+          '[TEMPLATE-PARTIAL] personality='
+          '"${result.draft.characters.single.personality.value}"',
+        );
+      },
+      skip: apiKey == null ? 'GLM_API_KEY not set' : null,
+      timeout: const Timeout(Duration(seconds: 120)),
+    );
   });
 }
 
@@ -139,6 +214,56 @@ TemplateDraft _blankDraft() {
         personality: blank,
         appearance: blank,
         backstory: blank,
+        aliases: blank,
+      ),
+    ],
+  );
+}
+
+/// A partially-filled draft mirroring the real user flow: the template ships
+/// defaults (world.name='青云界', world.rules='灵气修炼法则'), the user edited one
+/// field (character backstory='出身寒微'), and the rest are blank (must be
+/// AI-generated). Under the old prompt GLM-4-flash echoed the blanks; the
+/// improved prompt must force generation while preserving these pre-filled
+/// values (validated end-to-end against real GLM output).
+TemplateDraft _partialFillDraft() {
+  const blank = DraftTextField(
+    value: '',
+    source: TemplateFieldSource.templateDefault,
+  );
+  return TemplateDraft(
+    templateId: 'xianxia',
+    storyConcept: '一个名叫林风的少年在青云峰修仙，意外觉醒祖传古玉血脉，卷入消失百年的天玄宗谜案',
+    world: const WorldSettingDraft(
+      selected: true,
+      name: DraftTextField(
+        value: '青云界',
+        source: TemplateFieldSource.templateDefault,
+      ),
+      description: blank,
+      rules: DraftTextField(
+        value: '灵气修炼法则',
+        source: TemplateFieldSource.templateDefault,
+      ),
+      factions: blank,
+      geography: blank,
+      techLevel: blank,
+      aliases: blank,
+    ),
+    characters: const [
+      CharacterCardDraft(
+        draftId: 'character-0',
+        selected: true,
+        name: DraftTextField(
+          value: '林风',
+          source: TemplateFieldSource.templateDefault,
+        ),
+        personality: blank,
+        appearance: blank,
+        backstory: DraftTextField(
+          value: '出身寒微',
+          source: TemplateFieldSource.userEdited,
+        ),
         aliases: blank,
       ),
     ],
