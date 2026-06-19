@@ -80,7 +80,13 @@ class TemplateCompletionService {
         }
       }
 
-      final decoded = jsonDecode(buffer.toString()) as Map<String, dynamic>;
+      // Real LLMs (notably GLM-4-flash) wrap JSON in ```json fences despite
+      // the "only JSON" instruction; a raw jsonDecode would throw and silently
+      // fail the whole AI-completion. Defensive extraction mirrors
+      // LogicGuardianService / GuardianCheckService / EditorialReview.
+      final decoded = jsonDecode(
+        _extractJsonObject(buffer.toString()),
+      ) as Map<String, dynamic>;
       return TemplateCompletionResult(
         draft: _applyCompletion(draft, decoded),
         succeeded: true,
@@ -155,12 +161,72 @@ class TemplateCompletionService {
     };
   }
 
+  /// Resolves the {world, characters} shape from a model response that may
+  /// nest it under a wrapper key instead of returning it flat at the top level.
+  ///
+  /// The prompt's `responseShape` hint shows the model a `{storyConcept,
+  /// draft, responseShape}` envelope, so real LLMs (notably GLM-4-flash)
+  /// frequently echo that envelope and nest `world`/`characters` under `draft`
+  /// or `responseShape` rather than returning the flat shape the canned
+  /// contract assumes. Prefer top-level, then fall back to `draft` then
+  /// `responseShape`. Returns [root] unchanged if no nested shape is found.
+  Map<String, dynamic> _resolveShape(Map<String, dynamic> root) {
+    if (root['world'] != null || root['characters'] != null) {
+      return root;
+    }
+    for (final key in const ['draft', 'responseShape']) {
+      final nested = root[key];
+      if (nested is Map<String, dynamic> &&
+          (nested['world'] != null || nested['characters'] != null)) {
+        return nested;
+      }
+    }
+    return root;
+  }
+
+  /// Extracts a JSON object from a model response that may wrap it in a
+  /// markdown code fence (```json ... ```) or surround it with prose.
+  ///
+  /// Mirrors the defensive extraction in LogicGuardianService._extractJson /
+  /// GuardianCheckService._extractJson / EditorialReview.parseFromLLM: real
+  /// LLMs routinely ignore "only JSON" instructions and wrap structured output
+  /// in fences, which would make a raw [jsonDecode] throw and silently fail
+  /// the whole AI-completion. Isolates the first `{` ... last `}` when no
+  /// fence is present so leading/trailing prose is also tolerated.
+  String _extractJsonObject(String response) {
+    final trimmed = response.trim();
+
+    // Handle ```json ... ``` code-block wrapping.
+    if (trimmed.startsWith('```')) {
+      var withoutOpen = trimmed.replaceFirst(
+        RegExp(r'^```(?:json)?\s*\n?'),
+        '',
+      );
+      withoutOpen = withoutOpen.replaceFirst(RegExp(r'\n?```\s*$'), '');
+      return withoutOpen.trim();
+    }
+
+    // Fall back to isolating the JSON object from surrounding prose.
+    final startIndex = trimmed.indexOf('{');
+    final endIndex = trimmed.lastIndexOf('}');
+    if (startIndex != -1 && endIndex > startIndex) {
+      return trimmed.substring(startIndex, endIndex + 1);
+    }
+
+    return trimmed;
+  }
+
   TemplateDraft _applyCompletion(
     TemplateDraft draft,
     Map<String, dynamic> json,
   ) {
-    final worldJson = json['world'] as Map<String, dynamic>? ?? const {};
-    final characterItems = json['characters'] as List<dynamic>? ?? const [];
+    // Real LLMs (notably GLM-4-flash) frequently echo the input payload
+    // envelope, nesting world/characters under 'draft' / 'responseShape'
+    // instead of returning the flat shape. Resolve to whichever level holds
+    // the shape; canned callers that pass flat JSON are unaffected.
+    final shape = _resolveShape(json);
+    final worldJson = shape['world'] as Map<String, dynamic>? ?? const {};
+    final characterItems = shape['characters'] as List<dynamic>? ?? const [];
 
     final updatedWorld = draft.world.copyWith(
       name: draft.world.name.aiFill(worldJson['name'] as String? ?? ''),
