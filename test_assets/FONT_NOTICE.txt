@@ -3,9 +3,14 @@ noto_sans_sc_subset.ttf — Noto Sans CJK SC subset (test-only)
 
 This font is a SUBSET of "Noto Sans CJK SC" (Regular), produced with
 `pyftsubset` (fonttools) from NotoSansCJK-Regular.ttc (font index 2 = SC),
-restricted to only the CJK glyphs the README golden screenshot tests render
-(~33 KB). It is used solely by test/readme_screenshots/* to render Chinese
-text deterministically in flutter_test (which does not use system fonts).
+covering the FULL GB2312 character set (~7161 chars incl. ASCII + CJK
+punctuation + fullwidth, ~2.9 MB). It is a FIXED universal subset: any Chinese
+UI text the screenshot tests render is already covered, so migrating a new
+page never requires re-subsetting the font — which would otherwise cause
+golden pixel drift across all existing pages (pyftsubset re-emits slightly
+different glyph outlines per character-set input). Used solely by
+test/readme_screenshots/* to render Chinese deterministically in flutter_test
+(which does not use system fonts).
 
 Source font:    Noto Sans CJK SC
                  https://fonts.google.com/noto/specimen/Noto+Sans+SC
@@ -21,10 +26,22 @@ the canonical URL above.
 
 Regenerate (requires `pyftsubset` + a Noto Sans CJK SC source):
 
+  # 1. emit the GB2312 universal character set (level 1+2 ~6763 + ASCII + punctuation)
+  python3 -c "import sys; chars=set()
+for b1 in range(0xB0,0xF8):
+  for b2 in range(0xA1,0xFF):
+    chars.add(bytes([b1,b2]).decode('gb2312'))
+for c in range(0x20,0x7F): chars.add(chr(c))
+for c in list(range(0x3000,0x3040))+list(range(0xFF00,0xFFEF)): chars.add(chr(c))
+open('/tmp/gb2312.txt','w',encoding='utf-8').write(''.join(sorted(chars)))"
+  # 2. subset
   pyftsubset <NotoSansCJK-Regular.ttc> --font-number=2 \
-    --text="<glyphs the tests render>" \
+    --text-file=/tmp/gb2312.txt \
     --output-file=test_assets/noto_sans_sc_subset.ttf \
     --no-hinting --desubroutinize
+
+Rationale (fixed universal subset vs per-page subset): see
+.planning/quick/260619-rs3-reports-hub-real-screenshot/SUMMARY.md
 
 This asset is NOT shipped in release builds — it lives under test_assets/ and
 is consumed only by golden screenshot tests.
