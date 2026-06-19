@@ -1,4 +1,19 @@
 #!/usr/bin/env node
+/**
+ * README 界面示意图生成器（design mockups，非应用运行时真实截图）
+ *
+ * 这些图片是程序化绘制的 SVG 设计示意图，由 ImageMagick `magick` 转 PNG，
+ * **不是** Flutter 应用渲染或截图。每张图用硬编码矩形/文本拼出某一功能
+ * 模块的布局与交互形态，数据为离线示例（含显式 fake-model / FakeAdapter
+ * 标注），不读取任何真实密钥。
+ *
+ * 诚实约定：真实截图需 Windows 桌面 / Android 设备 UAT（见 STATE Phase 00/14
+ * uat_gap human_needed），沙箱与 CI 无法生成。在补齐真实截图前，这些示意图
+ * 仅作概念展示；README prose 与图片内 disclosure 均须显式标注「非真实截图」，
+ * 避免被误读为真实产品输出（项目灵魂=反欺骗/反 AI 味，对内对外一致）。
+ *
+ * 再生成：`node scripts/generate_readme_screenshots.mjs`（需 ImageMagick 7 `magick`）
+ */
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import { execFileSync } from 'node:child_process';
@@ -98,8 +113,12 @@ function svg([file, navIndex, title, subtitle, metrics, rows]) {
     });
     parts.push(rect(268, 680, 350, 180, '#1d1e27'), rect(650, 680, 350, 180, '#1d1e27'), rect(1032, 680, 354, 180, '#1d1e27'));
     parts.push(text(298, 742, '离线演示', 24, 800), text(680, 742, 'FakeAdapter', 24, 800), text(1062, 742, '安全存储未展示', 24, 800));
-    parts.push(text(298, 786, '截图由可复现脚本生成', 17, 400, '#c9c3d0'), text(680, 786, '不访问真实 API 密钥', 17, 400, '#c9c3d0'), text(1062, 786, '生产安全策略不变', 17, 400, '#c9c3d0'));
+    parts.push(text(298, 786, '示意图由脚本绘制', 17, 400, '#c9c3d0'), text(680, 786, '不访问真实 API 密钥', 17, 400, '#c9c3d0'), text(1062, 786, '生产安全策略不变', 17, 400, '#c9c3d0'));
   }
+  // 持久诚实标注：脱离 README 语境（单图被截图/转载）也不可误读为真实截图。
+  // 放在内容区底部（x≥268，避开侧栏），尺寸 14 muted，与 editor 918 行/非编辑器
+  // 860 卡片底均留有间距。
+  parts.push(text(268, 968, '设计示意图 · 脚本生成 · 非应用真实截图（非运行时渲染）', 14, 400, '#9a94a5'));
   parts.push('</svg>');
   return parts.join('\n');
 }
