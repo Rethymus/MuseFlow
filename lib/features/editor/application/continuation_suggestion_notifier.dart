@@ -239,6 +239,7 @@ class ContinuationSuggestionNotifier
 
   String _mapError(AIException e) {
     if (e is AIAuthException) return 'API Key 无效，请检查设置';
+    if (e is AIOfflineException) return '当前处于离线状态，请检查网络连接';
     if (e is AIRateLimitException) return '请求太快，请稍后再试';
     if (e is AINetworkException) return '网络连接失败，请检查网络';
     return '生成中断，请重试';

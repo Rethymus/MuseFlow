@@ -520,6 +520,8 @@ class EditorAINotifier extends Notifier<EditorAIState> {
     String errorMessage;
     if (e is AIAuthException) {
       errorMessage = 'API Key 无效，请检查设置';
+    } else if (e is AIOfflineException) {
+      errorMessage = '当前处于离线状态，请检查网络连接';
     } else if (e is AIRateLimitException) {
       errorMessage = '请求太快，请稍后再试';
     } else if (e is AINetworkException) {

@@ -28,7 +28,7 @@ class OpenAIAdapter implements AIAdapter {
   bool _disposed = false;
 
   /// Optional offline pre-flight. When injected, [createStream] fast-fails with
-  /// [AINetworkException] BEFORE any network call if the probe reports the
+  /// [AIOfflineException] BEFORE any network call if the probe reports the
   /// device offline — saving the user the bounded-timeout wait and avoiding
   /// futile quota burn on a known-bad state. Null (default) preserves legacy
   /// no-gate behavior (e.g. the connection-test probe, which IS the probe).
@@ -207,14 +207,14 @@ class OpenAIAdapter implements AIAdapter {
 
   /// Wraps [inner] with a one-shot offline pre-flight before the first byte.
   ///
-  /// The [AINetworkException] is thrown BEFORE `yield* inner`, so the caller
+  /// The [AIOfflineException] is thrown BEFORE `yield* inner`, so the caller
   /// receives it directly and never enters [retryStream] — an offline device is
   /// a known-bad state and must not be retried. Called only when [onlineCheck]
   /// is non-null; the eager `_getOrCreateClient` in [createStream] already ran,
   /// so the `isActive` invariant (quick-260618-1g4) is preserved.
   Stream<String> _guardOnline(Stream<String> inner) async* {
     if (await onlineCheck!()) {
-      throw const AINetworkException('当前处于离线状态，请检查网络连接');
+      throw const AIOfflineException();
     }
     yield* inner;
   }

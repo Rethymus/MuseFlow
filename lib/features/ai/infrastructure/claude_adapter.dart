@@ -319,13 +319,13 @@ class ClaudeAdapter implements AIAdapter {
 
   /// Wraps [inner] with a one-shot offline pre-flight before the first byte.
   ///
-  /// Throws [AINetworkException] BEFORE `yield* inner` so the caller receives
+  /// Throws [AIOfflineException] BEFORE `yield* inner` so the caller receives
   /// it directly — no network call is attempted for a known-offline device.
   /// Symmetric with [OpenAIAdapter._guardOnline]. Called only when
   /// [onlineCheck] is non-null.
   Stream<String> _guardOnline(Stream<String> inner) async* {
     if (await onlineCheck!()) {
-      throw const AINetworkException('当前处于离线状态，请检查网络连接');
+      throw const AIOfflineException();
     }
     yield* inner;
   }

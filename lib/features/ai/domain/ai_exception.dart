@@ -44,6 +44,27 @@ class AINetworkException extends AIException {
   String get userMessage => '网络连接失败';
 }
 
+/// Thrown when the device is definitively offline (pre-flight fast-fail).
+///
+/// A distinct subtype of [AINetworkException] so the UI can surface a precise
+/// "offline" message instead of the generic "网络连接失败" — the user should
+/// know to check their connection, not suspect the endpoint is down. Existing
+/// `is AINetworkException` / `on AINetworkException` catch sites still match
+/// via polymorphism, so unrelated handlers (e.g. the connection-test probe)
+/// need no changes.
+///
+/// Offline is a **known-bad state**, not a transient blip: callers must not
+/// retry it (mirrors the adapter-level gate sitting outside `retryStream`).
+/// See `SynthesisNotifier` retry gate and [ConnectivityService].
+class AIOfflineException extends AINetworkException {
+  const AIOfflineException([
+    super.message = '当前处于离线状态，请检查网络连接',
+  ]);
+
+  @override
+  String get userMessage => '当前处于离线状态，请检查网络连接';
+}
+
 /// Thrown when AI stream generation is interrupted.
 class AIStreamException extends AIException {
   const AIStreamException([super.message = '生成中断，可继续编辑或重试']);

@@ -24,7 +24,7 @@ void main() {
     });
 
     group('offline fast-fail (onlineCheck gate)', () {
-      test('fast-fails with offline AINetworkException, no network call', () async {
+      test('fast-fails with AIOfflineException, no network call', () async {
         // Gate probe reports offline → stream errors BEFORE any network call.
         final gated = OpenAIAdapter(onlineCheck: () async => true);
         addTearDown(gated.dispose);
@@ -39,7 +39,9 @@ void main() {
           stream,
           emitsError(
             predicate<Object>(
-              (e) => e is AINetworkException && e.message.contains('离线'),
+              // Distinct subtype so the UI can surface a precise "offline"
+              // message instead of generic "网络连接失败" (see AIOfflineException).
+              (e) => e is AIOfflineException,
             ),
           ),
         );

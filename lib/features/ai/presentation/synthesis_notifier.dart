@@ -291,8 +291,12 @@ class SynthesisNotifier extends Notifier<SynthesisState> {
       } on AIException catch (e) {
         if (!ref.mounted) return;
 
-        // Auth errors are permanent — don't retry
-        if (e is AIAuthException || retryAttempt >= SynthesisState.maxRetries) {
+        // Auth errors and offline are permanent / known-bad states — don't retry.
+        // Offline won't resolve during a backoff window, so retrying only burns
+        // time (mirrors the adapter-level gate sitting outside retryStream).
+        if (e is AIAuthException ||
+            e is AIOfflineException ||
+            retryAttempt >= SynthesisState.maxRetries) {
           _handleStreamError(e);
           return;
         }
@@ -346,6 +350,8 @@ class SynthesisNotifier extends Notifier<SynthesisState> {
     String errorMessage;
     if (e is AIAuthException) {
       errorMessage = 'API Key 无效，请检查设置';
+    } else if (e is AIOfflineException) {
+      errorMessage = '当前处于离线状态，请检查网络连接';
     } else if (e is AIRateLimitException) {
       errorMessage = '请求太快，请稍后再试';
     } else if (e is AINetworkException) {

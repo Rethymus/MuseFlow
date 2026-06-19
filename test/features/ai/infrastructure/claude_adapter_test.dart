@@ -40,7 +40,9 @@ void main() {
           stream,
           emitsError(
             predicate<Object>(
-              (e) => e is AINetworkException && e.message.contains('离线'),
+              // Distinct subtype so the UI can surface a precise "offline"
+              // message instead of generic "网络连接失败" (see AIOfflineException).
+              (e) => e is AIOfflineException,
             ),
           ),
         );
