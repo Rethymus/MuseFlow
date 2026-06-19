@@ -154,10 +154,14 @@ class OpenAIAdapter implements AIAdapter {
 
   /// Whether [error] is worth retrying. Transient stream/network/rate-limit
   /// errors are retryable; auth errors are not (retrying a bad key wastes
-  /// quota and never succeeds).
+  /// quota and never succeeds). Offline is explicitly excluded — it is a
+  /// known-bad state that won't resolve during a backoff window, so retrying
+  /// only burns time/quota. The offline gate normally sits OUTSIDE retryStream
+  /// (see _guardOnline) so this exclusion is defense-in-depth: it keeps the
+  /// no-retry-offline contract correct even if that wiring changes.
   static bool _isRetryable(AIException error) =>
       error is AIRateLimitException ||
-      error is AINetworkException ||
+      (error is AINetworkException && error is! AIOfflineException) ||
       error is AIStreamException;
 
   /// Maximum retry attempts after the initial call (so up to 4 total calls).
