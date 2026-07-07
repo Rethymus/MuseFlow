@@ -79,7 +79,8 @@ void main() {
         expect(
           stopwatch.elapsed,
           lessThan(const Duration(seconds: 15)),
-          reason: 'connection test must respect the injected timeout, not the '
+          reason:
+              'connection test must respect the injected timeout, not the '
               '10-minute OpenAI default',
         );
       },

@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:museflow/core/infrastructure/secure_storage_service.dart';
 import 'package:path/path.dart' as p;
@@ -92,6 +93,39 @@ void main() {
       }
 
       expect(fallbackDir.existsSync(), isFalse);
+    });
+  });
+
+  group('SecureStorageService key boundary', () {
+    late Map<String, String> secureStorageData;
+    late SecureStorageService service;
+
+    setUp(() {
+      secureStorageData = {};
+      FlutterSecureStorage.setMockInitialValues(secureStorageData);
+      service = SecureStorageService();
+    });
+
+    test('stores API keys only under the documented api_key_ prefix', () async {
+      await service.saveApiKey('openai', 'sk-openai-test');
+
+      expect(secureStorageData, {'api_key_openai': 'sk-openai-test'});
+      expect(
+        secureStorageData,
+        isNot(containsPair('openai', 'sk-openai-test')),
+      );
+      expect(secureStorageData.keys, isNot(contains('apiKey')));
+      expect(secureStorageData.keys, isNot(contains('key')));
+    });
+
+    test('reads and deletes the same prefixed API key alias', () async {
+      secureStorageData['api_key_claude'] = 'sk-claude-test';
+
+      expect(await service.getApiKey('claude'), 'sk-claude-test');
+
+      await service.deleteApiKey('claude');
+
+      expect(secureStorageData, isNot(contains('api_key_claude')));
     });
   });
 }

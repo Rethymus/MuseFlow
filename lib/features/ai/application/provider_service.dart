@@ -45,8 +45,17 @@ class ProviderService {
       topP: topP,
       maxTokens: maxTokens,
     );
-    await _repository.save(provider);
     await _secureStorage.saveApiKey(provider.id, apiKey);
+    try {
+      await _repository.save(provider);
+    } catch (error, stackTrace) {
+      try {
+        await _secureStorage.deleteApiKey(provider.id);
+      } catch (_) {
+        // Preserve the repository failure; cleanup is best-effort here.
+      }
+      Error.throwWithStackTrace(error, stackTrace);
+    }
     return provider;
   }
 
@@ -96,17 +105,12 @@ class ProviderService {
 
   /// Updates the API key for an existing provider in secure storage.
   Future<void> updateApiKey(String providerId, String apiKey) async {
+    if (_repository.getById(providerId) == null) {
+      throw StateError('provider not found: $providerId');
+    }
     await _secureStorage.saveApiKey(providerId, apiKey);
   }
 
-  /// Tests the connection to an AI provider by sending a minimal request.
-  ///
-  /// Routes to [ClaudeAdapter]-style test for Claude providers, or
-  /// [OpenAI]-style test for all other OpenAI-compatible providers.
-  ///
-  /// Throws [AIAuthException] on authentication failure (401/403).
-  /// Throws [AIRateLimitException] on rate limiting (429).
-  /// Throws [AINetworkException] on network/connectivity errors.
   /// Tests the connection to an AI provider by sending a minimal request.
   ///
   /// Routes to [ClaudeAdapter]-style test for Claude providers, or
@@ -150,6 +154,7 @@ class ProviderService {
     required String model,
     required Duration timeout,
   }) async {
+    anthropic.AnthropicClient? client;
     try {
       String normalizedUrl = baseUrl;
       if (normalizedUrl.endsWith('/')) {
@@ -159,7 +164,7 @@ class ProviderService {
         normalizedUrl = normalizedUrl.substring(0, normalizedUrl.length - 3);
       }
 
-      final client = anthropic.AnthropicClient(
+      client = anthropic.AnthropicClient(
         config: anthropic.AnthropicConfig(
           authProvider: anthropic.ApiKeyProvider(apiKey),
           baseUrl: normalizedUrl,
@@ -174,7 +179,6 @@ class ProviderService {
           messages: [anthropic.InputMessage.user('Hi')],
         ),
       );
-      client.close();
     } on anthropic.AuthenticationException {
       throw const AIAuthException();
     } on anthropic.RateLimitException {
@@ -192,6 +196,8 @@ class ProviderService {
       throw const AINetworkException();
     } catch (_) {
       throw const AINetworkException();
+    } finally {
+      client?.close();
     }
   }
 
@@ -202,12 +208,13 @@ class ProviderService {
     required String model,
     required Duration timeout,
   }) async {
+    OpenAIClient? client;
     try {
       // Build the client via OpenAIConfig (not the withApiKey factory) so the
       // probe is bounded by [timeout] instead of OpenAIConfig's default
       // Duration(minutes: 10). maxRetries: 0 because a connection test is a
       // single quick probe — it should not back off and retry 4 times.
-      final client = OpenAIClient(
+      client = OpenAIClient(
         config: OpenAIConfig(
           authProvider: ApiKeyProvider(apiKey),
           baseUrl: baseUrl,
@@ -223,7 +230,6 @@ class ProviderService {
           maxTokens: 5,
         ),
       );
-      client.close();
     } on AuthenticationException {
       throw const AIAuthException();
     } on RateLimitException {
@@ -248,6 +254,8 @@ class ProviderService {
       throw const AINetworkException();
     } catch (_) {
       throw const AINetworkException();
+    } finally {
+      client?.close();
     }
   }
 }
