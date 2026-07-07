@@ -50,5 +50,5 @@ lib/
 ## 关键约束
 
 - AI 适配器统一接口，兼容 OpenAI/Claude/DeepSeek/Ollama
-- 本地存储优先（Hive + JSON），API Key 加密存储
+- 本地存储优先（Hive + JSON）；API Key 通过平台安全存储保存，不写入 Hive
 - 强制分段交互，不提供"一键生成"功能
