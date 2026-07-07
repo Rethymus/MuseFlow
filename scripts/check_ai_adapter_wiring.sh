@@ -20,9 +20,12 @@ require_at_least_occurrences() {
   fi
 }
 
+# NOTE: this guard must stay portable across minimal CI runners (ubuntu-latest
+# does not ship ripgrep). Use grep -rEn / grep -qF instead of rg.
+
 mapfile -t direct_adapter_refs < <(
-  rg -n 'openaiAdapterProvider|claudeAdapterProvider' lib \
-    --glob '!lib/core/presentation/providers_ai.dart' || true
+  grep -rEn --exclude='providers_ai.dart' \
+    'openaiAdapterProvider|claudeAdapterProvider' lib || true
 )
 
 if [[ "${#direct_adapter_refs[@]}" -gt 0 ]]; then
@@ -32,8 +35,8 @@ if [[ "${#direct_adapter_refs[@]}" -gt 0 ]]; then
 fi
 
 mapfile -t direct_openai_client_refs < <(
-  rg -n 'OpenAIClient\.withApiKey|OpenAIClient\(' lib \
-    --glob '!lib/features/ai/infrastructure/openai_adapter.dart' || true
+  grep -rEn --exclude='openai_adapter.dart' \
+    'OpenAIClient\.withApiKey|OpenAIClient\(' lib || true
 )
 
 for ref in "${direct_openai_client_refs[@]}"; do
@@ -50,9 +53,8 @@ for ref in "${direct_openai_client_refs[@]}"; do
 done
 
 mapfile -t direct_openai_adapter_refs < <(
-  rg -n 'OpenAIAdapter\(' lib \
-    --glob '!lib/core/presentation/providers_ai.dart' \
-    --glob '!lib/features/ai/infrastructure/openai_adapter.dart' || true
+  grep -rEn --exclude='providers_ai.dart' --exclude='openai_adapter.dart' \
+    'OpenAIAdapter\(' lib || true
 )
 
 if [[ "${#direct_openai_adapter_refs[@]}" -gt 0 ]]; then
@@ -62,9 +64,8 @@ if [[ "${#direct_openai_adapter_refs[@]}" -gt 0 ]]; then
 fi
 
 mapfile -t direct_claude_adapter_refs < <(
-  rg -n 'ClaudeAdapter\(' lib \
-    --glob '!lib/core/presentation/providers_ai.dart' \
-    --glob '!lib/features/ai/infrastructure/claude_adapter.dart' || true
+  grep -rEn --exclude='providers_ai.dart' --exclude='claude_adapter.dart' \
+    'ClaudeAdapter\(' lib || true
 )
 
 if [[ "${#direct_claude_adapter_refs[@]}" -gt 0 ]]; then
@@ -74,8 +75,8 @@ if [[ "${#direct_claude_adapter_refs[@]}" -gt 0 ]]; then
 fi
 
 mapfile -t direct_anthropic_client_refs < <(
-  rg -n 'anthropic\.AnthropicClient\(' lib \
-    --glob '!lib/features/ai/infrastructure/claude_adapter.dart' || true
+  grep -rEn --exclude='claude_adapter.dart' \
+    'anthropic\.AnthropicClient\(' lib || true
 )
 
 for ref in "${direct_anthropic_client_refs[@]}"; do
@@ -91,7 +92,7 @@ for ref in "${direct_anthropic_client_refs[@]}"; do
   status=1
 done
 
-if ! rg -q 'final activeAdapterProvider = Provider<AIAdapter>' lib/core/presentation/providers_ai.dart; then
+if ! grep -qF 'final activeAdapterProvider = Provider<AIAdapter>' lib/core/presentation/providers_ai.dart; then
   echo "providers_ai.dart must keep activeAdapterProvider as the central AI adapter dispatch point" >&2
   status=1
 fi
@@ -111,7 +112,7 @@ if ! grep -Fq 'return ref.watch(openaiAdapterProvider);' lib/core/presentation/p
   status=1
 fi
 
-if ! rg -q 'final modelListFetcherProvider = Provider<OpenAIAdapter>' lib/core/presentation/providers_ai.dart; then
+if ! grep -qF 'final modelListFetcherProvider = Provider<OpenAIAdapter>' lib/core/presentation/providers_ai.dart; then
   echo "providers_ai.dart must keep modelListFetcherProvider as the dedicated OpenAI-compatible model-list fetcher" >&2
   status=1
 fi
@@ -122,7 +123,7 @@ if ! grep -Fq 'ref.read(modelListFetcherProvider)' lib/features/ai/presentation/
 fi
 
 mapfile -t model_management_streaming_adapter_refs < <(
-  rg -n 'ref\.(read|watch)\((activeAdapterProvider|openaiAdapterProvider|claudeAdapterProvider)\)' \
+  grep -En 'ref\.(read|watch)\((activeAdapterProvider|openaiAdapterProvider|claudeAdapterProvider)\)' \
     lib/features/ai/presentation/provider_management_notifier.dart || true
 )
 
