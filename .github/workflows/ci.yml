@@ -63,6 +63,24 @@ jobs:
       - name: Check repository hygiene
         run: scripts/check_repo_hygiene.sh
 
+      - name: Check shell scripts
+        run: scripts/check_shell_scripts.sh
+
+      - name: Check AI adapter wiring
+        run: scripts/check_ai_adapter_wiring.sh
+
+      - name: Check editor docs
+        run: scripts/check_editor_docs.sh
+
+      - name: Check dependency docs
+        run: scripts/check_dependency_docs.sh
+
+      - name: Check storage architecture docs
+        run: scripts/check_storage_architecture.sh
+
+      - name: Validate platform support claims
+        run: scripts/validate_platform_support.sh
+
   build-smoke:
     name: Build Smoke
     runs-on: ubuntu-latest

@@ -8,7 +8,7 @@
 
 ## 1. 架构概览
 
-MuseFlow 采用**三层本地优先存储**，无任何云端依赖（符合 PROJECT.md「所有配置与文稿仅存本地」约束）。
+MuseFlow 采用**三层本地优先存储**，无任何云端依赖（符合 `.planning/PROJECT.md`「所有配置与文稿仅存本地」约束）。
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
@@ -18,7 +18,7 @@ MuseFlow 采用**三层本地优先存储**，无任何云端依赖（符合 PRO
         ┌───────▼────────┐          ┌─────────▼─────────┐
         │  ① Hive 主库    │          │ ② 密钥存储         │
         │  (hive_ce)      │          │ (flutter_secure_  │
-        │  18 个 Box       │          │   storage)        │
+        │  19 个 Box       │          │   storage)        │
         │  业务数据全部     │          │ API Key + 主密钥  │
         └───────┬────────┘          └─────────┬─────────┘
                 │                             │
@@ -27,7 +27,7 @@ MuseFlow 采用**三层本地优先存储**，无任何云端依赖（符合 PRO
         ├──────────────┬──────────────┬────────┬─────────┤
         │   Windows    │   Android    │ Linux  │   Web   │
         │  .hive 文件   │ 沙箱 .hive   │ .hive  │IndexedDB│
-        │ Credential Mgr│ Keystore+Prefs│libsecret│ (绕过) │
+        │ Credential Mgr│ Keystore+Prefs│libsecret│WebCrypto│
         └──────────────┴──────────────┴────────┴─────────┘
                 │
         ┌───────▼────────┐
@@ -49,7 +49,7 @@ MuseFlow 采用**三层本地优先存储**，无任何云端依赖（符合 PRO
 | **Windows** | 本地文件系统 `.hive` 文件（`path_provider` 文档目录下） | **Windows Credential Manager** | `file_picker` 选路径 → `File.writeAsString` | `window_manager` 控制原生窗口；TSF 原生 IME |
 | **Android** | 应用私有沙箱 `.hive` 文件 | **Android Keystore + 加密 SharedPreferences** | 本地保存 / `share_plus` 分享 | Android Keystore 硬件级隔离 |
 | **Linux** | 本地文件系统 `.hive` 文件 | **Secret Service / libsecret** | `file_picker` 选路径 → `File.writeAsString` | ⚠️ 需 GNOME Keyring / KDE Wallet；无 keyring 时抛平台异常 |
-| **Web** | **IndexedDB**（非文件系统） | ⚠️ **无原生安全后端，被代码主动绕过** | 浏览器 `Blob` + `<a download>` 触发下载 | `kIsWeb` 分支跳过加密读取、清理任务、窗口配置 |
+| **Web** | **IndexedDB**（非文件系统） | ⚠️ `flutter_secure_storage` Web 后端非 OS 级隔离 | 浏览器 `Blob` + `<a download>` 触发下载 | `kIsWeb` 分支跳过启动前窗口配置读取、清理任务、原生窗口配置 |
 
 后端声明见 `lib/core/infrastructure/secure_storage_service.dart:4-11`；导出分流见 `lib/core/platform/export_file_writer.dart`（条件导出 `io.dart` / `web.dart`）。
 
@@ -63,7 +63,7 @@ MuseFlow 采用**三层本地优先存储**，无任何云端依赖（符合 PRO
 
 1. `WidgetsFlutterBinding.ensureInitialized()`
 2. `Hive.initFlutter()` — 按平台初始化存储后端
-3. 注册 11 个 TypeAdapter（`hive_adapters.dart`，TypeId 0–10）
+3. 注册 12 个 TypeAdapter（`hive_adapters.dart`，TypeId 0–11）
 4. `!kIsWeb` 时执行 30 天软删除清理（`ManuscriptPurgeService`）
 5. `!kIsWeb` 时读取加密 `settings` box 的窗口几何
 6. `!kIsWeb` 时配置原生窗口
@@ -81,41 +81,42 @@ Manuscript read(BinaryReader reader) =>
 void write(BinaryWriter writer, Manuscript obj) => writer.writeMap(obj.toJson());
 ```
 
-TypeId 集中注册于 `HiveTypeIds`（`hive_adapters.dart:16-28`），避免冲突。
+TypeId 集中注册于 `HiveTypeIds`（`hive_adapters.dart:17-30`），避免冲突。
 
 ### 3.3 加密边界（重要）
 
 | 加密状态 | Box | 说明 |
 |---------|-----|------|
 | 🔒 **AES-256 CBC 加密** | `settings` | 唯一加密 box。`HiveAesCipher(encryptionKey)` 包裹。存窗口几何、用户偏好、禁用词、上次导出路径等配置 |
-| 🔓 **明文存储** | 其余 17 个 box | `Hive.openBox('xxx')` 不带 `encryptionCipher`。**文稿正文（`chapters.documentContent`）为明文本地存储** |
+| 🔓 **明文存储** | 其余 18 个 box | `Hive.openBox('xxx')` 不带 `encryptionCipher`。**文稿正文（`chapters.documentContent`）为明文本地存储** |
 
-> **隐私边界澄清**：API Key 与 Hive 主密钥通过 OS 安全后端加密；文稿正文靠「仅存本地」而非「加密」保证隐私。这与 CLAUDE.md「API Key 加密、文稿仅存本地」一致。
+> **隐私边界澄清**：API Key 与 Hive 主密钥通过 OS 安全后端加密；API Key 不写入 Hive 数据库。文稿正文靠「仅存本地」而非「加密」保证隐私。这与 CLAUDE.md 的数据隐私目标一致。
 
 ---
 
-## 4. Box 清单总览（18 个）
+## 4. Box 清单总览（19 个）
 
 | # | Box 名 | 加密 | Value 类型 | TypeId | 用途 | 实体/定义文件 |
 |---|--------|------|-----------|--------|------|--------------|
 | 1 | `settings` | 🔒 | Map (k-v) | 1 | 窗口几何、默认标签、创造力等级、禁用词、上次导出路径 | `app_settings.dart` / `settings_repository.dart` |
 | 2 | `manuscripts` | 🔓 | Manuscript | 2 | 文稿（作品）容器 | `manuscript/domain/manuscript.dart` |
 | 3 | `chapters` | 🔓 | Chapter | 9 | 章节与正文 | `manuscript/domain/chapter.dart` |
-| 4 | `fragments` | 🔓 | Fragment | 0 | 灵感碎片 | `core/domain/fragment.dart` |
-| 5 | `character_cards` | 🔓 | CharacterCard | 3 | 角色卡 | `knowledge/domain/character_card.dart` |
-| 6 | `world_settings` | 🔓 | WorldSetting | 4 | 世界观设定 | `knowledge/domain/world_setting.dart` |
-| 7 | `skill_documents` | 🔓 | SkillDocument | 5 | Skill 规则文档 | `knowledge/domain/skill_document.dart` |
-| 8 | `foreshadowing_entries` | 🔓 | ForeshadowingEntry | 6 | 伏笔追踪 | `story_structure/domain/foreshadowing_entry.dart` |
-| 9 | `plot_nodes` | 🔓 | PlotNode | 7 | 剧情节点 | `story_structure/domain/plot_node.dart` |
-| 10 | `guardian_annotations` | 🔓 | GuardianAnnotation | 8 | 逻辑守护批注 | `story_structure/domain/guardian_annotation.dart` |
-| 11 | `token_audit` | 🔓 | TokenAuditRecord | 10 | Token 消费审计 | `stats/domain/token_audit_record.dart` |
-| 12 | `ai_providers` | 🔓 | Map (dynamic) | — | AI 模型供应商配置（**API Key 另存 SecureStorage**） | `presentation/providers.dart:216` |
-| 13 | `writing_stats` | 🔓 | Map (dynamic) | — | 写作统计聚合 | `stats` 模块 |
-| 14 | `daily_writing_stats` | 🔓 | Map (dynamic) | — | 每日写作统计 | `stats` 模块 |
-| 15 | `achievement_badges` | 🔓 | Map (dynamic) | — | 成就徽章 | `stats` 模块 |
-| 16 | `character_relationships` | 🔓 | Map (dynamic) | — | 角色关系图 | `knowledge` 模块 |
-| 17 | `graph_positions` | 🔓 | Map (dynamic) | — | 故事弧图节点坐标 | `story_structure` 模块 |
-| 18 | `style_profiles` | 🔓 | Map (dynamic) | — | 文风配置 | `presentation/providers.dart:854` |
+| 4 | `chapter_summaries` | 🔓 | ChapterSummary | 11 | AI 生成的章节摘要，按 chapterId 1:1 缓存 | `manuscript/domain/chapter_summary.dart` |
+| 5 | `fragments` | 🔓 | Fragment | 0 | 灵感碎片 | `core/domain/fragment.dart` |
+| 6 | `character_cards` | 🔓 | CharacterCard | 3 | 角色卡 | `knowledge/domain/character_card.dart` |
+| 7 | `world_settings` | 🔓 | WorldSetting | 4 | 世界观设定 | `knowledge/domain/world_setting.dart` |
+| 8 | `skill_documents` | 🔓 | SkillDocument | 5 | Skill 规则文档 | `knowledge/domain/skill_document.dart` |
+| 9 | `foreshadowing_entries` | 🔓 | ForeshadowingEntry | 6 | 伏笔追踪 | `story_structure/domain/foreshadowing_entry.dart` |
+| 10 | `plot_nodes` | 🔓 | PlotNode | 7 | 剧情节点 | `story_structure/domain/plot_node.dart` |
+| 11 | `guardian_annotations` | 🔓 | GuardianAnnotation | 8 | 逻辑守护批注 | `story_structure/domain/guardian_annotation.dart` |
+| 12 | `token_audit` | 🔓 | TokenAuditRecord | 10 | Token 消费审计 | `stats/domain/token_audit_record.dart` |
+| 13 | `ai_providers` | 🔓 | Map (dynamic) | — | AI 模型供应商配置（**API Key 另存 SecureStorage**） | `lib/core/presentation/providers_core.dart` |
+| 14 | `writing_stats` | 🔓 | Map (dynamic) | — | 写作统计聚合 | `stats` 模块 |
+| 15 | `daily_writing_stats` | 🔓 | Map (dynamic) | — | 每日写作统计 | `stats` 模块 |
+| 16 | `achievement_badges` | 🔓 | Map (dynamic) | — | 成就徽章 | `stats` 模块 |
+| 17 | `character_relationships` | 🔓 | Map (dynamic) | — | 角色关系图 | `knowledge` 模块 |
+| 18 | `graph_positions` | 🔓 | Map (dynamic) | — | 故事弧图节点坐标 | `story_structure` 模块 |
+| 19 | `style_profiles` | 🔓 | Map (dynamic) | — | 文风配置 | `lib/core/presentation/providers_structure.dart` |
 
 > 表格中 `Map (dynamic)` 表示该 box 未注册类型化适配器，存储原始 Map 结构；具体字段由对应 feature 模块在运行期定义，详见各模块 repository。
 
@@ -152,6 +153,17 @@ TypeId 集中注册于 `HiveTypeIds`（`hive_adapters.dart:16-28`），避免冲
 | `sortOrder` | int | 必填 | 排序序号 |
 | `status` | String | 默认 `草稿` | 草稿/初稿/精修/定稿 |
 | `documentContent` | String | 默认 '' | **序列化 Markdown（非 JSON）**；`wordCount` 为派生 getter（去空白字符数） |
+| `createdAt` / `updatedAt` | DateTime | 必填 | ISO-8601 |
+
+**ChapterSummary**（TypeId 11）— AI 生成章节摘要，辅助长篇上下文注入
+
+| 字段 | 类型 | 约束 / 默认 | 说明 |
+|------|------|------------|------|
+| `id` | String | 必填 | UUID |
+| `chapterId` | String | 必填 | 所属章节；同时作为 `chapter_summaries` box key |
+| `manuscriptId` | String | 必填 | 所属文稿 |
+| `summary` | String | 必填 | AI 生成摘要 |
+| `sourceWordCount` | int | 必填 | 摘要生成时章节字数，用于陈旧度判断 |
 | `createdAt` / `updatedAt` | DateTime | 必填 | ISO-8601 |
 
 ### 5.2 灵感碎片
@@ -307,7 +319,7 @@ TypeId 集中注册于 `HiveTypeIds`（`hive_adapters.dart:16-28`），避免冲
 | Windows | Windows Credential Manager | OS 级 DPAPI 加密 |
 | Android | Android Keystore + 加密 SharedPreferences | 硬件级（TEE/StrongBox） |
 | Linux | Secret Service / libsecret | 依赖 D-Bus keyring daemon |
-| Web | ⚠️ 无原生后端（Web Crypto + localStorage 模拟） | **项目代码主动绕过**，见第 8 节 |
+| Web | ⚠️ 无原生后端（Web Crypto + localStorage 模拟） | 仅作为测试/UAT 目标，见第 8 节 |
 
 > 设计约束（`secure_storage_service.dart:8-11`）：**不回落明文文件**。平台后端不可用时向上抛平台异常，由调用方呈现可操作错误。
 
@@ -315,7 +327,7 @@ TypeId 集中注册于 `HiveTypeIds`（`hive_adapters.dart:16-28`），避免冲
 
 ## 7. 加密机制
 
-`settings` box 的加密链路（`lib/main.dart:23-58` + `presentation/providers.dart:111-120`）：
+`settings` box 的加密链路（`lib/main.dart` + `lib/core/presentation/providers_core.dart`）：
 
 ```
 首次启动:
@@ -338,9 +350,9 @@ TypeId 集中注册于 `HiveTypeIds`（`hive_adapters.dart:16-28`），避免冲
 
 Web 存在三个已知限制，代码以 `kIsWeb` 分支主动规避：
 
-1. **加密 `settings` 读取被跳过**（`main.dart:109-111`）：注释明确「SecureStorageService may hang」。Web 首次启动无法解密读取窗口几何等配置 → 退回默认值。
-2. **业务任务跳过**（`main.dart:86`）：30 天软删除清理（`ManuscriptPurgeService`）在 Web 不执行。
-3. **API Key 安全性弱**：`flutter_secure_storage` 在 Web 仅能用 Web Crypto + localStorage 模拟，非 OS 级隔离；本项目已绕过该路径 → **Web 端 API Key 存储是未妥善解决的痛点**，印证 Web 仅作测试目标。
+1. **启动前加密 `settings` 读取被跳过**（`main.dart:108-113`）：注释明确「SecureStorageService may hang」。Web 的窗口控制器是 no-op，启动前无需读取窗口几何，直接退回默认值。
+2. **业务任务跳过**（`main.dart:80-103`）：30 天软删除清理（`ManuscriptPurgeService`）在 Web 不执行。
+3. **API Key 安全性弱**：`ProviderService` 仍统一通过 `SecureStorageService` 存取 API Key；但 `flutter_secure_storage` 在 Web 仅能用 Web Crypto + localStorage 模拟，非 OS 级隔离。因此 Web 端 API Key 持久化仍是未妥善解决的痛点，Web 仅作测试/UAT 目标。
 
 ### 8.2 Linux libsecret 依赖
 
@@ -348,7 +360,7 @@ Linux 平台的 `flutter_secure_storage` 后端依赖 Secret Service / libsecret
 
 ### 8.3 软删除与清理
 
-`ManuscriptPurgeService`（`main.dart:83-103`）在桌面/移动平台每次启动时，清理 `deletedAt` 超过 30 天的软删除文稿（D-21）。Web 跳过。
+`ManuscriptPurgeService`（`main.dart:80-103`）在桌面/移动平台每次启动时，清理 `deletedAt` 超过 30 天的软删除文稿（D-21）。Web 跳过。
 
 ---
 
@@ -378,7 +390,7 @@ export 'export_file_writer_io.dart'
 | TypeAdapter 注册 | `lib/core/infrastructure/hive_adapters.dart` |
 | 密钥存储服务 | `lib/core/infrastructure/secure_storage_service.dart` |
 | 设置仓储（加密 box） | `lib/core/infrastructure/settings_repository.dart` |
-| Box 开启与 Provider 绑定 | `lib/core/presentation/providers.dart` |
+| Box 开启与 Provider 绑定 | `lib/core/presentation/providers.dart` + `providers_core.dart` / `providers_knowledge.dart` / `providers_structure.dart` / `providers_stats.dart` |
 | 导出分流 | `lib/core/platform/export_file_writer*.dart` |
 | 窗口控制（平台分流） | `lib/core/platform/window_controller*.dart` |
 

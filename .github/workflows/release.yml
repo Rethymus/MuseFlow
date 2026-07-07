@@ -60,9 +60,26 @@ jobs:
           echo "version=$version" >> "$GITHUB_OUTPUT"
           echo "prerelease=$prerelease" >> "$GITHUB_OUTPUT"
 
+  repository-checks:
+    name: Repository Release Gates
+    needs: prepare
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Check repository hygiene
+        run: scripts/check_repo_hygiene.sh
+
+      - name: Check shell scripts
+        run: scripts/check_shell_scripts.sh
+
+      - name: Check storage architecture docs
+        run: scripts/check_storage_architecture.sh
+
   android:
     name: Android Artifact
-    needs: prepare
+    needs: [prepare, repository-checks]
     runs-on: ubuntu-latest
     steps:
       - name: Check out repository
@@ -101,7 +118,7 @@ jobs:
 
   linux:
     name: Linux Artifact
-    needs: prepare
+    needs: [prepare, repository-checks]
     runs-on: ubuntu-latest
     steps:
       - name: Check out repository
@@ -142,7 +159,7 @@ jobs:
 
   windows:
     name: Windows Artifact
-    needs: prepare
+    needs: [prepare, repository-checks]
     runs-on: windows-latest
     steps:
       - name: Check out repository
@@ -178,7 +195,7 @@ jobs:
 
   web:
     name: Web Artifact
-    needs: prepare
+    needs: [prepare, repository-checks]
     runs-on: ubuntu-latest
     steps:
       - name: Check out repository

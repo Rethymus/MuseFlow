@@ -11,3 +11,6 @@ Please report security issues privately through GitHub's private vulnerability r
 ## Secret Storage Policy
 
 MuseFlow stores API keys and encryption keys through platform secure storage. Plaintext fallback storage for secrets is not allowed. If native secure storage is unavailable, the app should surface an error instead of silently weakening storage.
+
+See `docs/platform/SECRET_STORAGE_BOUNDARY.md` for the source-level boundary,
+allowed Hive metadata, and focused regression checks.

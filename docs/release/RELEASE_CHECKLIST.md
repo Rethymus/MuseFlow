@@ -16,6 +16,13 @@ Complete: Web testing target is implemented, remote CI is green on `main`, and G
 | `xvfb-run -a flutter test integration_test/app_test.dart -d linux` | PASS | Remote CI run `27206511246` passed 4 Linux desktop smoke tests via xvfb; local shell lacks `xvfb-run`, and direct WSL Linux run built the test app but hung without output |
 | `scripts/check_readme_assets.sh` | PASS | Current 21 screenshot references are consistent |
 | `scripts/check_repo_hygiene.sh` | PASS | No tracked generated/local/secret-like artifacts or obvious secret regex hits |
+| `scripts/check_shell_scripts.sh` | PASS | Guards repository shell scripts with syntax checks and shared safety options |
+| `scripts/check_ai_adapter_wiring.sh` | PASS | Guards production provider wiring so feature services route through `activeAdapterProvider` |
+| `scripts/check_editor_docs.sh` | PASS | Guards README/CLAUDE editor dependency claims against `pubspec.yaml` drift |
+| `scripts/check_dependency_docs.sh` | PASS | Guards key dependency constraints in `CLAUDE.md` against `pubspec.yaml` drift |
+| `flutter test test/core/presentation/active_adapter_wiring_test.dart` | PASS | Focused regression confirms Claude providers inject the Claude adapter into feature AI services |
+| `scripts/check_storage_architecture.sh` | PASS | Guards storage architecture docs against Hive box, TypeAdapter, and secure-storage boundary drift |
+| `scripts/validate_platform_support.sh` | PASS | Guards README and `docs/platform/PLATFORM_SUPPORT.md` platform-tier claims against runner-directory drift |
 | `flutter build apk --release` | PASS | Built `build/app/outputs/flutter-apk/app-release.apk` (65.3 MB); Flutter emitted a non-blocking Kotlin Gradle Plugin migration warning for transitive plugins |
 | `flutter build linux --release` | PASS | Built `build/linux/x64/release/bundle/museflow` |
 | `flutter build web --release` | PASS | Built `build/web`; Web is a testing/UAT target, not a production secure-storage target |
@@ -45,6 +52,13 @@ xvfb-run -a flutter test integration_test/app_test.dart -d linux
 flutter build web --release
 scripts/check_readme_assets.sh
 scripts/check_repo_hygiene.sh
+scripts/check_shell_scripts.sh
+scripts/check_ai_adapter_wiring.sh
+scripts/check_editor_docs.sh
+scripts/check_dependency_docs.sh
+flutter test test/core/presentation/active_adapter_wiring_test.dart
+scripts/check_storage_architecture.sh
+scripts/validate_platform_support.sh
 ```
 
 ## Residual Non-Blocking Notes
