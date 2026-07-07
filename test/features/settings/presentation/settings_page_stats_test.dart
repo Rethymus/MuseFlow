@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -64,4 +66,24 @@ void main() {
       expect(tester.takeException(), isNull);
     },
   );
+
+  testWidgets('about section displays the pubspec semantic version', (
+    tester,
+  ) async {
+    final pubspec = File('pubspec.yaml').readAsStringSync();
+    final versionMatch = RegExp(
+      r'^version:\s*([0-9]+\.[0-9]+\.[0-9]+)',
+      multiLine: true,
+    ).firstMatch(pubspec);
+    expect(versionMatch, isNotNull);
+    final semanticVersion = versionMatch!.group(1)!;
+
+    await tester.pumpWidget(
+      ProviderScope(child: MaterialApp(home: SettingsPage())),
+    );
+
+    await tester.scrollUntilVisible(find.text('MuseFlow 灵韵'), 100.0);
+
+    expect(find.text('版本 $semanticVersion'), findsOneWidget);
+  });
 }

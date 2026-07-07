@@ -1,5 +1,8 @@
+// ignore_for_file: prefer_initializing_formals
+
 import 'dart:convert';
 
+import 'package:museflow/features/ai/domain/ai_adapter.dart';
 import 'package:museflow/features/story_structure/application/guardian_context_builder.dart';
 import 'package:museflow/features/story_structure/domain/guardian_annotation.dart';
 import 'package:openai_dart/openai_dart.dart';
@@ -17,16 +20,21 @@ import 'package:uuid/uuid.dart';
 /// - Suggestions are advisory only; never auto-apply to manuscript text.
 /// - No editor mutation methods in the API (pure data-in/data-out).
 class LogicGuardianService {
+  final AIAdapter _aiAdapter;
   final String _apiKey;
   final String _baseUrl;
   final String _model;
   final _uuid = const Uuid();
 
   LogicGuardianService({
-    required this._apiKey,
-    required this._baseUrl,
-    required this._model,
-  });
+    required AIAdapter aiAdapter,
+    required String apiKey,
+    required String baseUrl,
+    required String model,
+  }) : _aiAdapter = aiAdapter,
+       _apiKey = apiKey,
+       _baseUrl = baseUrl,
+       _model = model;
 
   /// Builds the logic guardian check prompt with bounded context.
   String buildLogicPrompt({
@@ -101,19 +109,15 @@ class LogicGuardianService {
     try {
       final prompt = buildLogicPrompt(text: text, context: context);
 
-      final client = OpenAIClient.withApiKey(_apiKey, baseUrl: _baseUrl);
-
-      final response = await client.chat.completions.create(
-        ChatCompletionCreateRequest(
-          model: _model,
-          messages: [ChatMessage.user(prompt)],
-          temperature: 0.3,
-        ),
-      );
-
-      client.close();
-
-      final content = response.choices.firstOrNull?.message.content ?? '';
+      final content = await _aiAdapter
+          .createStream(
+            apiKey: _apiKey,
+            baseUrl: _baseUrl,
+            model: _model,
+            messages: [ChatMessage.user(prompt)],
+            temperature: 0.3,
+          )
+          .join();
       if (content.isEmpty) return const [];
 
       final annotations = parseLogicResponse(content);

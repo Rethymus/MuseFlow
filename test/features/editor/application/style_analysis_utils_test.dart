@@ -34,14 +34,17 @@ void main() {
       expect(chars, contains('字'));
     });
 
-    test('should include CJK Symbols and Punctuation range (0x3000-0x303F)', () {
-      // 。(U+3002), 「(U+300C), 」(U+300D), 〔(U+3014) — all in CJK Symbols.
-      const text = '「林。」〔风〕';
-      final chars = StyleAnalysisUtils.extractCjkChars(text);
+    test(
+      'should include CJK Symbols and Punctuation range (0x3000-0x303F)',
+      () {
+        // 。(U+3002), 「(U+300C), 」(U+300D), 〔(U+3014) — all in CJK Symbols.
+        const text = '「林。」〔风〕';
+        final chars = StyleAnalysisUtils.extractCjkChars(text);
 
-      // Order preserved as runes are encountered: 「 林 。 」 〔 风 〕
-      expect(chars, equals(['「', '林', '。', '」', '〔', '风', '〕']));
-    });
+        // Order preserved as runes are encountered: 「 林 。 」 〔 风 〕
+        expect(chars, equals(['「', '林', '。', '」', '〔', '风', '〕']));
+      },
+    );
 
     test('should ignore ASCII, Latin, digits, whitespace', () {
       const text = 'hello 123 world 林风 abc!';
@@ -89,12 +92,15 @@ void main() {
       expect(lengths, equals([3])); // 林风走 = 3 CJK, abc ignored
     });
 
-    test('should return empty list for text without sentence breaks or CJK', () {
-      expect(
-        StyleAnalysisUtils.extractSentenceLengths('hello world'),
-        isEmpty,
-      );
-    });
+    test(
+      'should return empty list for text without sentence breaks or CJK',
+      () {
+        expect(
+          StyleAnalysisUtils.extractSentenceLengths('hello world'),
+          isEmpty,
+        );
+      },
+    );
 
     test('should treat consecutive delimiters as one split', () {
       const text = '林风。。走。。！跑';
@@ -180,8 +186,8 @@ void main() {
       );
       final text = distinct.join() * 3; // 20 × 3 = 60 chars, 20 distinct
       final cjkCount = StyleAnalysisUtils.cjkCharCount(text);
-      final ratio = StyleAnalysisUtils.extractCjkChars(text).toSet().length /
-          cjkCount;
+      final ratio =
+          StyleAnalysisUtils.extractCjkChars(text).toSet().length / cjkCount;
       // 60 chars, 20 distinct → ratio 1/3 = 0.333...
       expect(cjkCount, 60);
       expect(ratio, closeTo(1 / 3, 1e-9));
@@ -211,13 +217,16 @@ void main() {
       expect(StyleAnalysisUtils.computeRhythmScore([1, 2, 3, 4]), 0.5);
     });
 
-    test('vocabulary <50 guard value matches the campaign-locked 0.5 baseline', () {
-      // 49 chars (just below the threshold).
-      final text = List.generate(
-        49,
-        (i) => String.fromCharCode(0x4E00 + i),
-      ).join();
-      expect(StyleAnalysisUtils.computeVocabularyRichness(text), 0.5);
-    });
+    test(
+      'vocabulary <50 guard value matches the campaign-locked 0.5 baseline',
+      () {
+        // 49 chars (just below the threshold).
+        final text = List.generate(
+          49,
+          (i) => String.fromCharCode(0x4E00 + i),
+        ).join();
+        expect(StyleAnalysisUtils.computeVocabularyRichness(text), 0.5);
+      },
+    );
   });
 }

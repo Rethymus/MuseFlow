@@ -116,37 +116,32 @@ void main() {
       );
     });
 
-    test(
-      'should NOT report compliance confirmations as deviations '
-      '(real GLM false-positive)',
-      () async {
-        // Captured from the real BigModel key journey (quick-260618-0ae):
-        // GLM returned "clear" entries that were all compliance statements
-        // (符合/未违反), zero real violations — flooding the user with false
-        // alarms. Real deviations use 违背/违反; compliance uses 符合/未违反.
-        final adapter = _FakeOpenAIAdapter([
-          '[{"description":"林风没有学习其他峰的功法，符合未经允许不可学习其他峰的功法的设定。","severity":"clear","skillName":""},',
-          '{"description":"文本中未提及火器、枪械、现代电子设备，符合不存在火器的设定。","severity":"clear","skillName":""},',
-          '{"description":"林风并未违反外门弟子不得擅入内门禁地的设定。","severity":"clear","skillName":""}]',
-        ]);
-        final service = DeviationDetectionService(
-          openAIAdapter: adapter,
-          apiKey: 'test-key',
-          baseUrl: 'https://api.example.com/v1',
-          model: 'test-model',
-        );
+    test('should NOT report compliance confirmations as deviations '
+        '(real GLM false-positive)', () async {
+      // Captured from the real BigModel key journey (quick-260618-0ae):
+      // GLM returned "clear" entries that were all compliance statements
+      // (符合/未违反), zero real violations — flooding the user with false
+      // alarms. Real deviations use 违背/违反; compliance uses 符合/未违反.
+      final adapter = _FakeOpenAIAdapter([
+        '[{"description":"林风没有学习其他峰的功法，符合未经允许不可学习其他峰的功法的设定。","severity":"clear","skillName":""},',
+        '{"description":"文本中未提及火器、枪械、现代电子设备，符合不存在火器的设定。","severity":"clear","skillName":""},',
+        '{"description":"林风并未违反外门弟子不得擅入内门禁地的设定。","severity":"clear","skillName":""}]',
+      ]);
+      final service = DeviationDetectionService(
+        openAIAdapter: adapter,
+        apiKey: 'test-key',
+        baseUrl: 'https://api.example.com/v1',
+        model: 'test-model',
+      );
 
-        final result = await service.detectDeviations('林风入门修仙', [
-          activeSkill(),
-        ]);
+      final result = await service.detectDeviations('林风入门修仙', [activeSkill()]);
 
-        expect(
-          result.warnings,
-          isEmpty,
-          reason: 'compliance confirmations (符合/未违反) are not deviations',
-        );
-      },
-    );
+      expect(
+        result.warnings,
+        isEmpty,
+        reason: 'compliance confirmations (符合/未违反) are not deviations',
+      );
+    });
 
     test(
       'should keep real violations but drop compliance noise in a mixed response',
@@ -167,7 +162,10 @@ void main() {
         ]);
 
         expect(result.warnings, hasLength(1));
-        expect(result.warnings.single.severity, equals(DeviationSeverity.medium));
+        expect(
+          result.warnings.single.severity,
+          equals(DeviationSeverity.medium),
+        );
         expect(result.warnings.single.description, contains('违背'));
       },
     );

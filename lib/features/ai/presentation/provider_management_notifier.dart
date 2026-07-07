@@ -3,7 +3,6 @@ import 'package:museflow/core/presentation/providers.dart';
 import 'package:museflow/features/ai/application/provider_service.dart';
 import 'package:museflow/features/ai/domain/ai_exception.dart';
 import 'package:museflow/features/ai/domain/ai_provider.dart';
-import 'package:museflow/features/ai/infrastructure/openai_adapter.dart';
 import 'package:museflow/features/ai/infrastructure/preset_providers.dart';
 
 /// State for the provider management page.
@@ -277,12 +276,11 @@ class ProviderManagementNotifier extends Notifier<ProviderManagementState> {
   }) async {
     state = state.copyWith(isFetchingModels: true, clearAvailableModels: true);
     try {
-      final adapter = OpenAIAdapter();
+      final adapter = ref.read(modelListFetcherProvider);
       final models = await adapter.fetchModelList(
         apiKey: apiKey,
         baseUrl: baseUrl,
       );
-      adapter.dispose();
       state = state.copyWith(availableModels: models, isFetchingModels: false);
     } catch (_) {
       // Per D-08: silent fallback

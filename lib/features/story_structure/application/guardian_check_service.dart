@@ -1,5 +1,8 @@
+// ignore_for_file: prefer_initializing_formals
+
 import 'dart:convert';
 
+import 'package:museflow/features/ai/domain/ai_adapter.dart';
 import 'package:museflow/features/knowledge/domain/character_card.dart';
 import 'package:museflow/features/knowledge/infrastructure/character_card_repository.dart';
 import 'package:museflow/features/story_structure/domain/guardian_annotation.dart';
@@ -45,26 +48,34 @@ class RepositoryCharacterSource implements CharacterSource {
 /// not the entire knowledge base.
 class GuardianCheckService {
   final CharacterSource _characterSource;
+  final AIAdapter _aiAdapter;
   final String _apiKey;
   final String _baseUrl;
   final String _model;
   final _uuid = const Uuid();
 
   GuardianCheckService({
-    required this._characterSource,
-    required this._apiKey,
-    required this._baseUrl,
-    required this._model,
-  });
+    required CharacterSource characterSource,
+    required AIAdapter aiAdapter,
+    required String apiKey,
+    required String baseUrl,
+    required String model,
+  }) : _characterSource = characterSource,
+       _aiAdapter = aiAdapter,
+       _apiKey = apiKey,
+       _baseUrl = baseUrl,
+       _model = model;
 
   /// Convenience constructor that wraps a [CharacterCardRepository].
   GuardianCheckService.fromRepository({
     required CharacterCardRepository characterRepository,
+    required AIAdapter aiAdapter,
     required String apiKey,
     required String baseUrl,
     required String model,
   }) : this(
          characterSource: RepositoryCharacterSource(characterRepository),
+         aiAdapter: aiAdapter,
          apiKey: apiKey,
          baseUrl: baseUrl,
          model: model,
@@ -157,19 +168,15 @@ class GuardianCheckService {
     try {
       final prompt = buildPrompt(text: text);
 
-      final client = OpenAIClient.withApiKey(_apiKey, baseUrl: _baseUrl);
-
-      final response = await client.chat.completions.create(
-        ChatCompletionCreateRequest(
-          model: _model,
-          messages: [ChatMessage.user(prompt)],
-          temperature: 0.3,
-        ),
-      );
-
-      client.close();
-
-      final content = response.choices.firstOrNull?.message.content ?? '';
+      final content = await _aiAdapter
+          .createStream(
+            apiKey: _apiKey,
+            baseUrl: _baseUrl,
+            model: _model,
+            messages: [ChatMessage.user(prompt)],
+            temperature: 0.3,
+          )
+          .join();
       if (content.isEmpty) return const [];
 
       final annotations = parseResponse(content);

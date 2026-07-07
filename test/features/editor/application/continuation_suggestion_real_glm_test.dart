@@ -64,8 +64,9 @@ void main() {
         // Poll until the async generation settles (no longer loading).
         // GLM-4-flash: ~10-25s for a 3-item JSON completion.
         final deadline = DateTime.now().add(const Duration(seconds: 100));
-        while (
-            container.read(continuationSuggestionNotifierProvider).isLoading) {
+        while (container
+            .read(continuationSuggestionNotifierProvider)
+            .isLoading) {
           if (DateTime.now().isAfter(deadline)) {
             throw TimeoutException(
               'Continuation generation did not settle within 100s',

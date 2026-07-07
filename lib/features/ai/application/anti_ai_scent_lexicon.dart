@@ -433,7 +433,8 @@ const List<String> _xianxiaCliches = [
 
 /// Wuxia (武侠) genre cliches — martial-arts / jianghu vocabulary that AI
 /// overuses in wuxia fiction (AA-05). Sibling to [_xianxiaCliches]; the
-/// product supports 修仙/武侠/都市/科幻/玄幻 preset packs (PROJECT.md), so
+/// product supports 修仙/武侠/都市/科幻/玄幻 preset packs
+/// (`.planning/PROJECT.md`), so
 /// genre-cliche feedback should not be xianxia-only.
 ///
 /// Phrases pick the martial/jianghu register (内力/轻功/剑光/刀光/真气/身法/
@@ -478,8 +479,8 @@ const List<String> _scifiCliches = [
 
 /// Xuanhuan (玄幻) genre cliches — western-magic / otherworld / bloodline-
 /// pact register AI overuses in xuanhuan fiction (AA-05c). Closes the 5/5
-/// preset coverage (修仙/武侠/都市/科幻/玄幻, PROJECT.md). Distinct from the
-/// xianxia 灵力 register: xuanhuan's magic/otherworld/contract vocabulary
+/// preset coverage (修仙/武侠/都市/科幻/玄幻, `.planning/PROJECT.md`).
+/// Distinct from the xianxia 灵力 register: xuanhuan's magic/otherworld/contract vocabulary
 /// (魔法/异界/血脉/契约) is a xianxia blind spot — refuting the AA-05b
 /// "high overlap with xianxia" deferral.
 const List<String> _xuanhuanCliches = [

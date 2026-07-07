@@ -11,6 +11,7 @@ import 'dart:async';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:museflow/core/domain/fragment.dart';
+import 'package:museflow/features/ai/domain/ai_adapter.dart';
 import 'package:museflow/features/ai/domain/ai_exception.dart';
 import 'package:museflow/features/ai/domain/ai_provider.dart';
 import 'package:museflow/features/ai/infrastructure/openai_adapter.dart';
@@ -178,6 +179,49 @@ void main() {
         expect(state.isStreaming, false);
         expect(state.isEditing, true);
       });
+
+      test(
+        'should stream through Claude adapter for Claude provider',
+        () async {
+          final openAIAdapter = _MarkerAdapter('openai');
+          final claudeAdapter = _MarkerAdapter('claude');
+
+          container = ProviderContainer(
+            overrides: [
+              openaiAdapterProvider.overrideWithValue(openAIAdapter),
+              claudeAdapterProvider.overrideWithValue(claudeAdapter),
+              activeProviderProvider.overrideWithValue(
+                AIProvider(
+                  id: 'claude-provider',
+                  name: 'Claude',
+                  baseUrl: 'https://api.anthropic.com',
+                  type: AiProviderType.claude,
+                  model: 'claude-3-5-haiku-latest',
+                  isActive: true,
+                  createdAt: DateTime(2026, 1, 1),
+                ),
+              ),
+              activeApiKeyProvider.overrideWithValue('test-key'),
+              selectedFragmentsProvider.overrideWithValue([
+                Fragment(id: 'f1', text: '月光', createdAt: DateTime(2026, 1, 1)),
+              ]),
+              tokenAuditServiceProvider.overrideWith(
+                (ref) async => _RecordingTokenAuditService(),
+              ),
+            ],
+          );
+
+          container.read(synthesisProvider.notifier).startSynthesis();
+          await _pumpAndWait();
+
+          final state = container.read(synthesisProvider);
+          expect(state.accumulatedText, 'claude');
+          expect(state.isStreaming, false);
+          expect(state.isEditing, true);
+          expect(openAIAdapter.callCount, isZero);
+          expect(claudeAdapter.callCount, 1);
+        },
+      );
 
       test('should run anti-AI-scent processing after stream', () async {
         container = createContainer(
@@ -686,6 +730,29 @@ class _FakeOpenAIAdapter extends OpenAIAdapter {
         },
       ),
     );
+  }
+}
+
+class _MarkerAdapter implements AIAdapter {
+  _MarkerAdapter(this.output);
+
+  final String output;
+  int callCount = 0;
+
+  @override
+  Stream<String> createStream({
+    required String apiKey,
+    required String baseUrl,
+    required String model,
+    required List<ChatMessage> messages,
+    double? temperature,
+    double? topP,
+    int? maxTokens,
+    void Function(Usage?)? onUsage,
+  }) async* {
+    callCount++;
+    yield output;
+    onUsage?.call(null);
   }
 }
 

@@ -1,7 +1,9 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:museflow/features/ai/domain/ai_adapter.dart';
 import 'package:museflow/features/knowledge/domain/character_card.dart';
 import 'package:museflow/features/story_structure/application/guardian_check_service.dart';
 import 'package:museflow/features/story_structure/domain/guardian_annotation.dart';
+import 'package:openai_dart/openai_dart.dart';
 
 /// Simple character data holder for tests without Hive dependency.
 class TestCharacterSource implements CharacterSource {
@@ -57,6 +59,7 @@ void main() {
       test('should include character personality when name appears in text', () {
         service = GuardianCheckService(
           characterSource: characterSource,
+          aiAdapter: _FakeAdapter('[]'),
           apiKey: 'test-key',
           baseUrl: 'https://api.example.com',
           model: 'test-model',
@@ -76,6 +79,7 @@ void main() {
       test('should include character matched by alias', () {
         service = GuardianCheckService(
           characterSource: characterSource,
+          aiAdapter: _FakeAdapter('[]'),
           apiKey: 'test-key',
           baseUrl: 'https://api.example.com',
           model: 'test-model',
@@ -91,6 +95,7 @@ void main() {
       test('should not include unrelated characters', () {
         service = GuardianCheckService(
           characterSource: characterSource,
+          aiAdapter: _FakeAdapter('[]'),
           apiKey: 'test-key',
           baseUrl: 'https://api.example.com',
           model: 'test-model',
@@ -109,6 +114,7 @@ void main() {
       test('should handle text with no matching characters', () {
         service = GuardianCheckService(
           characterSource: characterSource,
+          aiAdapter: _FakeAdapter('[]'),
           apiKey: 'test-key',
           baseUrl: 'https://api.example.com',
           model: 'test-model',
@@ -127,6 +133,7 @@ void main() {
       test('should parse valid JSON array into annotations', () {
         service = GuardianCheckService(
           characterSource: characterSource,
+          aiAdapter: _FakeAdapter('[]'),
           apiKey: 'test-key',
           baseUrl: 'https://api.example.com',
           model: 'test-model',
@@ -175,6 +182,7 @@ void main() {
       test('should handle malformed JSON gracefully returning empty list', () {
         service = GuardianCheckService(
           characterSource: characterSource,
+          aiAdapter: _FakeAdapter('[]'),
           apiKey: 'test-key',
           baseUrl: 'https://api.example.com',
           model: 'test-model',
@@ -190,6 +198,7 @@ void main() {
       test('should handle JSON with missing fields gracefully', () {
         service = GuardianCheckService(
           characterSource: characterSource,
+          aiAdapter: _FakeAdapter('[]'),
           apiKey: 'test-key',
           baseUrl: 'https://api.example.com',
           model: 'test-model',
@@ -216,6 +225,7 @@ void main() {
       test('should handle empty JSON array', () {
         service = GuardianCheckService(
           characterSource: characterSource,
+          aiAdapter: _FakeAdapter('[]'),
           apiKey: 'test-key',
           baseUrl: 'https://api.example.com',
           model: 'test-model',
@@ -231,6 +241,7 @@ void main() {
       test('should handle JSON with nested code blocks', () {
         service = GuardianCheckService(
           characterSource: characterSource,
+          aiAdapter: _FakeAdapter('[]'),
           apiKey: 'test-key',
           baseUrl: 'https://api.example.com',
           model: 'test-model',
@@ -248,6 +259,7 @@ void main() {
       test('parsed annotations should have no document mutation API', () {
         service = GuardianCheckService(
           characterSource: characterSource,
+          aiAdapter: _FakeAdapter('[]'),
           apiKey: 'test-key',
           baseUrl: 'https://api.example.com',
           model: 'test-model',
@@ -274,5 +286,75 @@ void main() {
         expect(annotations[0].createdAt, isNotNull);
       });
     });
+
+    group('AI adapter wiring', () {
+      test(
+        'checkCharacterConsistency streams through injected adapter',
+        () async {
+          final adapter = _FakeAdapter('''
+[
+  {
+    "severity": "medium",
+    "kind": "characterConsistency",
+    "message": "Adapter finding",
+    "reason": "The fake adapter was used",
+    "sourceText": "Alice"
+  }
+]''');
+          service = GuardianCheckService(
+            characterSource: characterSource,
+            aiAdapter: adapter,
+            apiKey: 'test-key',
+            baseUrl: 'https://api.example.com',
+            model: 'test-model',
+          );
+
+          final annotations = await service.checkCharacterConsistency(
+            text: 'Alice spoke boldly.',
+            nodeId: 'node-1',
+            startOffset: 2,
+            endOffset: 8,
+          );
+
+          expect(adapter.calls, 1);
+          expect(adapter.lastBaseUrl, 'https://api.example.com');
+          expect(adapter.lastModel, 'test-model');
+          expect(adapter.lastTemperature, 0.3);
+          expect(annotations, hasLength(1));
+          expect(annotations.single.message, 'Adapter finding');
+          expect(annotations.single.nodeId, 'node-1');
+          expect(annotations.single.startOffset, 2);
+          expect(annotations.single.endOffset, 8);
+        },
+      );
+    });
   });
+}
+
+class _FakeAdapter implements AIAdapter {
+  _FakeAdapter(this.response);
+
+  final String response;
+  int calls = 0;
+  String? lastBaseUrl;
+  String? lastModel;
+  double? lastTemperature;
+
+  @override
+  Stream<String> createStream({
+    required String apiKey,
+    required String baseUrl,
+    required String model,
+    required List<ChatMessage> messages,
+    double? temperature,
+    double? topP,
+    int? maxTokens,
+    void Function(Usage?)? onUsage,
+  }) async* {
+    calls += 1;
+    lastBaseUrl = baseUrl;
+    lastModel = model;
+    lastTemperature = temperature;
+    yield response;
+  }
 }

@@ -108,7 +108,7 @@ class SettingsPage extends ConsumerWidget {
           const ListTile(
             leading: Icon(Icons.info_outline),
             title: Text('MuseFlow 灵韵'),
-            subtitle: Text('版本 0.1.1'),
+            subtitle: Text('版本 ${AppConstants.appVersion}'),
           ),
           const ListTile(
             leading: Icon(Icons.code_outlined),

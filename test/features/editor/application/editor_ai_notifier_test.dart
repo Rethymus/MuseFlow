@@ -46,8 +46,10 @@ void main() {
       EditorChapterMemoryContextBuilder? chapterMemoryContextBuilder,
       bool? autoDeviationCheck,
       _RecordingDeviationNotifier? deviationRecorder,
+      _FakeOpenAIAdapter? openAIAdapterOverride,
+      _FakeOpenAIAdapter? claudeAdapterOverride,
     }) {
-      fakeAdapter = _FakeOpenAIAdapter();
+      fakeAdapter = openAIAdapterOverride ?? _FakeOpenAIAdapter();
 
       final testProvider = hasActiveProvider
           ? (activeProvider ??
@@ -67,6 +69,8 @@ void main() {
       return ProviderContainer(
         overrides: [
           openaiAdapterProvider.overrideWithValue(fakeAdapter),
+          if (claudeAdapterOverride != null)
+            claudeAdapterProvider.overrideWithValue(claudeAdapterOverride),
           activeProviderProvider.overrideWithValue(testProvider),
           activeApiKeyProvider.overrideWithValue(testApiKey),
           editorPromptPipelineProvider.overrideWith(
@@ -212,6 +216,47 @@ void main() {
         expect(state.progressText, '月光下他走了');
         expect(state.isStreaming, false);
       });
+
+      test(
+        'should use Claude adapter when Claude provider is active',
+        () async {
+          final openAIAdapter = _FakeOpenAIAdapter();
+          final claudeAdapter = _FakeOpenAIAdapter()
+            ..streamOutput = Stream.fromIterable(['Claude', '结果']);
+          final provider = AIProvider(
+            id: 'claude-provider',
+            name: 'Claude',
+            baseUrl: 'https://api.anthropic.com',
+            type: AiProviderType.claude,
+            model: 'claude-3-5-haiku-latest',
+            isActive: true,
+            createdAt: DateTime(2026, 1, 1),
+          );
+          container = createContainer(
+            activeProvider: provider,
+            openAIAdapterOverride: openAIAdapter,
+            claudeAdapterOverride: claudeAdapter,
+          );
+
+          container
+              .read(editorAINotifierProvider.notifier)
+              .startOperation(
+                EditorAIOperation.paragraphPolish,
+                '原始文字',
+                'node-1',
+                0,
+                4,
+              );
+          await _pumpAndWait();
+
+          final state = container.read(editorAINotifierProvider);
+          expect(state.progressText, 'Claude结果');
+          expect(openAIAdapter.calls, isZero);
+          expect(claudeAdapter.calls, 1);
+          expect(claudeAdapter.lastBaseUrl, 'https://api.anthropic.com');
+          expect(claudeAdapter.lastModel, 'claude-3-5-haiku-latest');
+        },
+      );
 
       test(
         'should record token audit after successful stream completion',
@@ -721,6 +766,9 @@ class _FakeOpenAIAdapter extends OpenAIAdapter {
   Stream<String>? streamOutput;
   Usage? usage;
   List<ChatMessage> lastMessages = const [];
+  int calls = 0;
+  String? lastBaseUrl;
+  String? lastModel;
 
   @override
   Stream<String> createStream({
@@ -733,6 +781,9 @@ class _FakeOpenAIAdapter extends OpenAIAdapter {
     int? maxTokens,
     void Function(Usage?)? onUsage,
   }) async* {
+    calls += 1;
+    lastBaseUrl = baseUrl;
+    lastModel = model;
     lastMessages = messages;
     await for (final chunk in streamOutput ?? Stream.fromIterable(['默认文本'])) {
       yield chunk;

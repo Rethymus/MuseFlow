@@ -50,25 +50,25 @@ void main() {
   });
 
   Chapter chapter() => Chapter(
-        id: 'ch-real-refresh',
-        manuscriptId: 'ms-real',
-        title: '第十七章 灵草谷之变',
-        sortOrder: 17,
-        status: '初稿',
-        documentContent: _chapterContent,
-        createdAt: DateTime(2026, 6, 18),
-        updatedAt: DateTime(2026, 6, 18),
-      );
+    id: 'ch-real-refresh',
+    manuscriptId: 'ms-real',
+    title: '第十七章 灵草谷之变',
+    sortOrder: 17,
+    status: '初稿',
+    documentContent: _chapterContent,
+    createdAt: DateTime(2026, 6, 18),
+    updatedAt: DateTime(2026, 6, 18),
+  );
 
   ChapterSummaryRefreshService service() => ChapterSummaryRefreshService(
-        summarizationService: ChapterSummarizationService(
-          openAIAdapter: OpenAIAdapter(),
-          apiKey: apiKey!,
-          baseUrl: baseUrl,
-          model: model,
-        ),
-        summaryRepository: repository,
-      );
+    summarizationService: ChapterSummarizationService(
+      openAIAdapter: OpenAIAdapter(),
+      apiKey: apiKey!,
+      baseUrl: baseUrl,
+      model: model,
+    ),
+    summaryRepository: repository,
+  );
 
   group('ChapterSummaryRefreshService (real GLM API)', () {
     test(
@@ -76,10 +76,9 @@ void main() {
       'content-faithful + bounded + compressed; repository read-back matches',
       () async {
         final src = chapter();
-        final sourceNonBlank = src.documentContent.replaceAll(
-          RegExp(r'\s'),
-          '',
-        ).length;
+        final sourceNonBlank = src.documentContent
+            .replaceAll(RegExp(r'\s'), '')
+            .length;
 
         // Precondition: nothing stored for this chapter yet.
         expect(repository.getByChapterId(src.id), isNull);
@@ -105,7 +104,8 @@ void main() {
         expect(
           outcome.summary!.summary.length,
           lessThan(sourceNonBlank * 0.6),
-          reason: 'summary must compress source ($sourceNonBlank non-blank chars)',
+          reason:
+              'summary must compress source ($sourceNonBlank non-blank chars)',
         );
 
         // 5) sourceWordCount == current chapter wordCount (staleness contract —
@@ -121,8 +121,10 @@ void main() {
         expect(stored.chapterId, src.id);
         expect(stored.manuscriptId, src.manuscriptId);
 
-        debugPrint('[MC-02] Real GLM refresh summary (${stored.summary.length} chars, '
-            'source $sourceNonBlank): ${stored.summary}');
+        debugPrint(
+          '[MC-02] Real GLM refresh summary (${stored.summary.length} chars, '
+          'source $sourceNonBlank): ${stored.summary}',
+        );
       },
       skip: apiKey == null ? 'GLM_API_KEY not set' : null,
       timeout: const Timeout(Duration(seconds: 60)),
@@ -153,8 +155,10 @@ void main() {
         final stored = repository.getByChapterId(src.id);
         expect(stored!.summary, first.summary!.summary);
 
-        debugPrint('[MC-02] Idempotent second refresh returned stored summary: '
-            '${second.summary!.summary}');
+        debugPrint(
+          '[MC-02] Idempotent second refresh returned stored summary: '
+          '${second.summary!.summary}',
+        );
       },
       skip: apiKey == null ? 'GLM_API_KEY not set' : null,
       timeout: const Timeout(Duration(seconds: 60)),

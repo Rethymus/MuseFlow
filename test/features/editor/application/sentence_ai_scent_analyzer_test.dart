@@ -60,9 +60,7 @@ void main() {
       // chars (signal 4). Only this 5th signal catches it.
       const text = '她真是非常十分开心。';
       final result = analyzer.analyze(text);
-      final padded = result.scores.firstWhere(
-        (s) => s.sentence.contains('真是'),
-      );
+      final padded = result.scores.firstWhere((s) => s.sentence.contains('真是'));
       expect(
         padded.score,
         greaterThanOrEqualTo(SentenceAiScentAnalyzer.notableThreshold),

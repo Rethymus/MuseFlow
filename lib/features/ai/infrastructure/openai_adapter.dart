@@ -304,6 +304,7 @@ class OpenAIAdapter implements AIAdapter {
     if (apiKey.isEmpty) return [];
     OpenAIClient? client;
     try {
+      if (onlineCheck != null && await onlineCheck!()) return [];
       _validateBaseUrl(baseUrl);
       client = OpenAIClient.withApiKey(apiKey, baseUrl: baseUrl);
       final modelList = await client.models.list().timeout(

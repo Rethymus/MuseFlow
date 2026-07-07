@@ -41,7 +41,8 @@ class ChapterSummaryRefreshService {
     required this.summarizationService,
     required this.summaryRepository,
     ChapterSummaryStalenessChecker? stalenessChecker,
-  }) : stalenessChecker = stalenessChecker ?? const ChapterSummaryStalenessChecker();
+  }) : stalenessChecker =
+           stalenessChecker ?? const ChapterSummaryStalenessChecker();
 
   final ChapterSummarizationService summarizationService;
   final ChapterSummaryRepository summaryRepository;
@@ -66,7 +67,10 @@ class ChapterSummaryRefreshService {
   ///
   /// Never swallows [AIException]/[StateError] — callers (the fire-and-forget
   /// trigger in [ChapterNotifier]) MUST catch them.
-  Future<RefreshOutcome> refreshIfNeeded(Chapter chapter, {DateTime? now}) async {
+  Future<RefreshOutcome> refreshIfNeeded(
+    Chapter chapter, {
+    DateTime? now,
+  }) async {
     final wordCount = chapter.wordCount;
     if (wordCount < minSummaryChars) {
       return const RefreshOutcome(refreshed: false, summary: null);

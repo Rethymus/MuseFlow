@@ -6,14 +6,14 @@ void main() {
   const checker = ChapterSummaryStalenessChecker();
 
   ChapterSummary summary({required int sourceWordCount}) => ChapterSummary(
-        id: 's1',
-        chapterId: 'c1',
-        manuscriptId: 'm1',
-        summary: '概括',
-        sourceWordCount: sourceWordCount,
-        createdAt: DateTime(2026, 6, 1),
-        updatedAt: DateTime(2026, 6, 1),
-      );
+    id: 's1',
+    chapterId: 'c1',
+    manuscriptId: 'm1',
+    summary: '概括',
+    sourceWordCount: sourceWordCount,
+    createdAt: DateTime(2026, 6, 1),
+    updatedAt: DateTime(2026, 6, 1),
+  );
 
   group('ChapterSummaryStalenessChecker', () {
     test('fresh when chapter has not grown (current <= source)', () {

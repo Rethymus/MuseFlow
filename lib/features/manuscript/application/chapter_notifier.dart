@@ -61,9 +61,14 @@ class ChapterNotifier extends AsyncNotifier<List<Chapter>> {
   /// Reliability posture (wma/0ae): the SERVICE rethrows AIException/StateError;
   /// HERE we catch+log+drop because this is an async side-effect, not the main
   /// save contract. A failed AI summary MUST NOT kill the user's chapter op.
-  Future<void> _maybeRefreshSummary(Chapter chapter, {bool force = false}) async {
+  Future<void> _maybeRefreshSummary(
+    Chapter chapter, {
+    bool force = false,
+  }) async {
     try {
-      final service = await ref.read(chapterSummaryRefreshServiceProvider.future);
+      final service = await ref.read(
+        chapterSummaryRefreshServiceProvider.future,
+      );
       if (service == null) return; // no provider/apiKey/repo configured
       if (force) {
         await service.refresh(chapter);
@@ -84,7 +89,9 @@ class ChapterNotifier extends AsyncNotifier<List<Chapter>> {
   /// chapters that no longer exist (MC-02 slice 4 bug 2).
   Future<void> _deleteSummary(String chapterId) async {
     try {
-      final service = await ref.read(chapterSummaryRefreshServiceProvider.future);
+      final service = await ref.read(
+        chapterSummaryRefreshServiceProvider.future,
+      );
       if (service == null) return; // no provider/apiKey/repo configured
       await service.deleteSummary(chapterId);
     } catch (e) {

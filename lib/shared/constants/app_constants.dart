@@ -2,6 +2,9 @@
 abstract class AppConstants {
   AppConstants._();
 
+  // --- Release metadata ---
+  static const String appVersion = '0.1.4';
+
   // --- Layout breakpoints ---
   /// Window width at which sidebar switches to extended mode (icon + label).
   static const double sidebarExtendedBreakpoint = 1000.0;

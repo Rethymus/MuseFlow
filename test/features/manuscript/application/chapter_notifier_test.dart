@@ -400,7 +400,10 @@ void main() {
 
       // FORCE-refresh of chapter1 with combined content.
       expect(recording.refreshCalls.length, equals(1));
-      expect(recording.refreshCalls.first.documentContent, equals('Hello\n\nWorld'));
+      expect(
+        recording.refreshCalls.first.documentContent,
+        equals('Hello\n\nWorld'),
+      );
       expect(recording.refreshIfNeededCalls, isEmpty);
       // Orphan cleanup for chapter2.
       expect(recording.deleteSummaryCalls, contains('ch-2'));
@@ -421,7 +424,10 @@ class _RecordingRefreshService implements ChapterSummaryRefreshService {
   final List<String> deleteSummaryCalls = [];
 
   @override
-  Future<RefreshOutcome> refreshIfNeeded(Chapter chapter, {DateTime? now}) async {
+  Future<RefreshOutcome> refreshIfNeeded(
+    Chapter chapter, {
+    DateTime? now,
+  }) async {
     refreshIfNeededCalls.add(chapter);
     return const RefreshOutcome(refreshed: false);
   }

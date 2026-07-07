@@ -388,18 +388,21 @@ void main() {
         expect(signal.evidence, contains('次'));
       });
 
-      test('should not flag sparse manner-adverb use as over-reliance (AA-06)', () {
-        // 1-2 叠词 in natural prose is normal — the signal must stay quiet
-        // to avoid false-positive noise (product soul: don't annoy the author).
-        final result = processor.process(
-          '他微微一笑，转身走出了房间。窗外阳光正好。',
-          bannedPhrases: [],
-        );
-        expect(
-          result.reviewSignals.where((s) => s.title == '叠词/程度副词堆砌'),
-          isEmpty,
-        );
-      });
+      test(
+        'should not flag sparse manner-adverb use as over-reliance (AA-06)',
+        () {
+          // 1-2 叠词 in natural prose is normal — the signal must stay quiet
+          // to avoid false-positive noise (product soul: don't annoy the author).
+          final result = processor.process(
+            '他微微一笑，转身走出了房间。窗外阳光正好。',
+            bannedPhrases: [],
+          );
+          expect(
+            result.reviewSignals.where((s) => s.title == '叠词/程度副词堆砌'),
+            isEmpty,
+          );
+        },
+      );
 
       test('should flag uniform sentence rhythm for author review', () {
         final result = processor.process(

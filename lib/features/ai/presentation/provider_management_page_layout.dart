@@ -75,7 +75,10 @@ extension _ProviderManagementPageStateLayout on _ProviderManagementPageState {
               children: [
                 ...presets.map(
                   (preset) => Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 4,
+                    ),
                     child: ProviderCard(
                       provider: preset,
                       onTap: () => _fillFromPreset(preset),
@@ -84,7 +87,10 @@ extension _ProviderManagementPageStateLayout on _ProviderManagementPageState {
                 ),
                 // Custom provider option
                 Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 4,
+                  ),
                   child: ProviderCard(
                     provider: AIProvider(
                       id: 'preset-custom',

@@ -79,7 +79,9 @@ void main() {
           result.draft.world.description.source,
           TemplateFieldSource.aiCompleted,
         );
-        print('[TEMPLATE] world.description="${result.draft.world.description.value}"');
+        print(
+          '[TEMPLATE] world.description="${result.draft.world.description.value}"',
+        );
 
         // character-0.personality was '' (blank) → filled. Proves the
         // characters array shape also resolved through the nesting fallback.

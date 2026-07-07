@@ -37,9 +37,7 @@ class ChapterSummaryRepository {
     try {
       final json = _box.get(chapterId);
       if (json == null) return null;
-      return ChapterSummary.fromJson(
-        Map<String, dynamic>.from(json as Map),
-      );
+      return ChapterSummary.fromJson(Map<String, dynamic>.from(json as Map));
     } catch (e) {
       throw StateError('Failed to read chapter summary $chapterId: $e');
     }
@@ -50,9 +48,8 @@ class ChapterSummaryRepository {
     try {
       return _box.values
           .map(
-            (json) => ChapterSummary.fromJson(
-              Map<String, dynamic>.from(json as Map),
-            ),
+            (json) =>
+                ChapterSummary.fromJson(Map<String, dynamic>.from(json as Map)),
           )
           .where((summary) => summary.manuscriptId == manuscriptId)
           .toList();

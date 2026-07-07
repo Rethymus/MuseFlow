@@ -13,17 +13,19 @@ import 'package:museflow/features/ai/infrastructure/openai_adapter.dart';
 
 void main() {
   group('AIException.toString', () {
-    test('should surface the classified message instead of "Instance of..."',
-        () {
-      const message = 'ApiException: 502 Bad Gateway from upstream';
-      final error = AIStreamException(message);
+    test(
+      'should surface the classified message instead of "Instance of..."',
+      () {
+        const message = 'ApiException: 502 Bad Gateway from upstream';
+        final error = AIStreamException(message);
 
-      final str = error.toString();
+        final str = error.toString();
 
-      expect(str, contains('AIStreamException'));
-      expect(str, contains(message));
-      expect(str, isNot(contains('Instance of')));
-    });
+        expect(str, contains('AIStreamException'));
+        expect(str, contains(message));
+        expect(str, isNot(contains('Instance of')));
+      },
+    );
 
     test('each subclass surfaces its own runtimeType + message', () {
       expect(AIAuthException('k1').toString(), contains('k1'));
@@ -86,23 +88,24 @@ void main() {
       expect(i, 1, reason: 'auth errors are not retryable');
     });
 
-    test('should NOT retry once a token has been emitted (mid-stream failure)',
-        () async {
-      var i = 0;
-      Stream<String> factory() {
-        i++;
-        return yieldThenFail(
-          const ['partial'],
-          const AIStreamException('mid-stream'),
-        );
-      }
+    test(
+      'should NOT retry once a token has been emitted (mid-stream failure)',
+      () async {
+        var i = 0;
+        Stream<String> factory() {
+          i++;
+          return yieldThenFail(const [
+            'partial',
+          ], const AIStreamException('mid-stream'));
+        }
 
-      await expectLater(
-        OpenAIAdapter.retryStream(factory, backoff: zeroBackoff).join(),
-        throwsA(isA<AIStreamException>()),
-      );
-      expect(i, 1, reason: 'committed stream must not be restarted');
-    });
+        await expectLater(
+          OpenAIAdapter.retryStream(factory, backoff: zeroBackoff).join(),
+          throwsA(isA<AIStreamException>()),
+        );
+        expect(i, 1, reason: 'committed stream must not be restarted');
+      },
+    );
 
     test('should give up after maxRetries exhausted', () async {
       var i = 0;

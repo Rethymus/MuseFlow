@@ -42,11 +42,13 @@ void main() {
       }
     });
 
-    test('online (best-effort, never false-block) when result list is empty',
-        () async {
-      final service = ConnectivityService(() async => []);
-      expect(await service.isProbablyOffline(), isFalse);
-    });
+    test(
+      'online (best-effort, never false-block) when result list is empty',
+      () async {
+        final service = ConnectivityService(() async => []);
+        expect(await service.isProbablyOffline(), isFalse);
+      },
+    );
 
     test('online (best-effort) when connectivity backend throws', () async {
       final service = ConnectivityService(

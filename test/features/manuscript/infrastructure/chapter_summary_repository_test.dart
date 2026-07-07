@@ -70,19 +70,30 @@ void main() {
       expect(ms1.every((s) => s.manuscriptId == 'ms-1'), isTrue);
     });
 
-    test('put overwrites existing summary for same chapter (1:1 upsert)', () async {
-      await repository.put(
-        createSummary(chapterId: 'ch-1', sourceWordCount: 100, summary: '旧概括'),
-      );
-      await repository.put(
-        createSummary(chapterId: 'ch-1', sourceWordCount: 200, summary: '新概括'),
-      );
+    test(
+      'put overwrites existing summary for same chapter (1:1 upsert)',
+      () async {
+        await repository.put(
+          createSummary(
+            chapterId: 'ch-1',
+            sourceWordCount: 100,
+            summary: '旧概括',
+          ),
+        );
+        await repository.put(
+          createSummary(
+            chapterId: 'ch-1',
+            sourceWordCount: 200,
+            summary: '新概括',
+          ),
+        );
 
-      final retrieved = repository.getByChapterId('ch-1');
-      expect(retrieved!.sourceWordCount, 200);
-      expect(retrieved.summary, '新概括');
-      expect(repository.getByManuscriptId('ms-1').length, 1);
-    });
+        final retrieved = repository.getByChapterId('ch-1');
+        expect(retrieved!.sourceWordCount, 200);
+        expect(retrieved.summary, '新概括');
+        expect(repository.getByManuscriptId('ms-1').length, 1);
+      },
+    );
 
     test('delete removes the summary', () async {
       await repository.put(createSummary(chapterId: 'ch-1'));

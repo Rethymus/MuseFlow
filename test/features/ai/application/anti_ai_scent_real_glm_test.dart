@@ -88,26 +88,28 @@ void main() {
       expect(
         result.highlights.isNotEmpty || result.reviewSignals.isNotEmpty,
         isTrue,
-        reason: 'anti-AI-scent lexicon must detect real GLM-generated AI prose '
+        reason:
+            'anti-AI-scent lexicon must detect real GLM-generated AI prose '
             '(text was: $glmText)',
       );
 
       // 5) Every review signal carries a valid severity (structural integrity).
       for (final signal in result.reviewSignals) {
-        expect(
-          ReviewSignalSeverity.values.contains(signal.severity),
-          isTrue,
-        );
+        expect(ReviewSignalSeverity.values.contains(signal.severity), isTrue);
         expect(signal.title, isNotEmpty);
       }
 
       // 6) Human-readable signal breakdown for release sign-off review.
       debugPrint('[AA] Real GLM prose (${glmText.length} chars): $glmText');
-      debugPrint('[AA] highlights=${result.highlights.length}, '
-          'reviewSignals=${result.reviewSignals.length}');
+      debugPrint(
+        '[AA] highlights=${result.highlights.length}, '
+        'reviewSignals=${result.reviewSignals.length}',
+      );
       for (final signal in result.reviewSignals) {
-        debugPrint('[AA]   - [${signal.severity.name}] ${signal.title}'
-            '${signal.evidence.isNotEmpty ? ' (${signal.evidence})' : ''}');
+        debugPrint(
+          '[AA]   - [${signal.severity.name}] ${signal.title}'
+          '${signal.evidence.isNotEmpty ? ' (${signal.evidence})' : ''}',
+        );
       }
     },
     skip: apiKey == null ? 'GLM_API_KEY not set' : null,

@@ -68,12 +68,29 @@ class CreativityLevelNotifier extends Notifier<CreativityLevel> {
 /// Client caching prevents memory leaks. Typed as [AIAdapter] so tests can
 /// override with FakeAdapter.
 final openaiAdapterProvider = Provider<AIAdapter>((ref) {
-  return OpenAIAdapter(
+  final adapter = OpenAIAdapter(
     // Offline fast-fail: if the device is definitively offline, the adapter
     // surfaces AINetworkException before any network call instead of waiting
     // out the bounded timeout. Best-effort — never blocks when uncertain.
-    onlineCheck: () => ref.read(connectivityServiceProvider).isProbablyOffline(),
+    onlineCheck: () =>
+        ref.read(connectivityServiceProvider).isProbablyOffline(),
   );
+  ref.onDispose(adapter.dispose);
+  return adapter;
+});
+
+/// Provides the OpenAI-compatible model-list fetcher used by provider setup.
+///
+/// Kept separate from [openaiAdapterProvider] because the streaming adapter is
+/// intentionally typed as [AIAdapter] for broad test substitution, while model
+/// discovery is an OpenAI-compatible helper API.
+final modelListFetcherProvider = Provider<OpenAIAdapter>((ref) {
+  final adapter = OpenAIAdapter(
+    onlineCheck: () =>
+        ref.read(connectivityServiceProvider).isProbablyOffline(),
+  );
+  ref.onDispose(adapter.dispose);
+  return adapter;
 });
 
 /// Provides a singleton [ClaudeAdapter] for Claude/Anthropic API streaming.
@@ -81,9 +98,12 @@ final openaiAdapterProvider = Provider<AIAdapter>((ref) {
 /// Uses anthropic_sdk_dart for native Claude Messages API with streaming.
 /// Messages are converted from OpenAI format to Anthropic format internally.
 final claudeAdapterProvider = Provider<AIAdapter>((ref) {
-  return ClaudeAdapter(
-    onlineCheck: () => ref.read(connectivityServiceProvider).isProbablyOffline(),
+  final adapter = ClaudeAdapter(
+    onlineCheck: () =>
+        ref.read(connectivityServiceProvider).isProbablyOffline(),
   );
+  ref.onDispose(adapter.dispose);
+  return adapter;
 });
 
 /// Routes to the correct AI adapter based on the active provider type.
@@ -196,19 +216,20 @@ final editorChapterMemoryContextBuilderProvider =
 /// Provides a [ChapterSummarizationService] bound to the active AI provider
 /// (MC-02 slice 1 capability, slice 3 wiring). Returns null when no provider
 /// is active or no API key is configured — callers MUST null-check.
-final chapterSummarizationServiceProvider = Provider<ChapterSummarizationService?>((ref) {
-  final provider = ref.watch(activeProviderProvider);
-  if (provider == null) return null;
-  final apiKey = ref.watch(activeApiKeyProvider);
-  if (apiKey == null || apiKey.isEmpty) return null;
-  final adapter = ref.watch(activeAdapterProvider);
-  return ChapterSummarizationService(
-    openAIAdapter: adapter,
-    apiKey: apiKey,
-    baseUrl: provider.baseUrl,
-    model: provider.model,
-  );
-});
+final chapterSummarizationServiceProvider =
+    Provider<ChapterSummarizationService?>((ref) {
+      final provider = ref.watch(activeProviderProvider);
+      if (provider == null) return null;
+      final apiKey = ref.watch(activeApiKeyProvider);
+      if (apiKey == null || apiKey.isEmpty) return null;
+      final adapter = ref.watch(activeAdapterProvider);
+      return ChapterSummarizationService(
+        openAIAdapter: adapter,
+        apiKey: apiKey,
+        baseUrl: provider.baseUrl,
+        model: provider.model,
+      );
+    });
 
 /// Provides a [ChapterSummaryRefreshService] for fire-and-forget summary
 /// refresh on chapter save (MC-02 slice 3 write side). Returns null when
@@ -216,16 +237,18 @@ final chapterSummarizationServiceProvider = Provider<ChapterSummarizationService
 /// unavailable — ChapterNotifier.save skips cleanly.
 final chapterSummaryRefreshServiceProvider =
     FutureProvider<ChapterSummaryRefreshService?>((ref) async {
-  final summarizationService = ref.watch(chapterSummarizationServiceProvider);
-  if (summarizationService == null) return null;
-  final summaryRepository = await ref.watch(
-    chapterSummaryRepositoryProvider.future,
-  );
-  return ChapterSummaryRefreshService(
-    summarizationService: summarizationService,
-    summaryRepository: summaryRepository,
-  );
-});
+      final summarizationService = ref.watch(
+        chapterSummarizationServiceProvider,
+      );
+      if (summarizationService == null) return null;
+      final summaryRepository = await ref.watch(
+        chapterSummaryRepositoryProvider.future,
+      );
+      return ChapterSummaryRefreshService(
+        summarizationService: summarizationService,
+        summaryRepository: summaryRepository,
+      );
+    });
 
 /// Provides a [DiffCalculator] instance for sentence-level diff computation.
 ///

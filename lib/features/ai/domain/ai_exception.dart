@@ -57,9 +57,7 @@ class AINetworkException extends AIException {
 /// retry it (mirrors the adapter-level gate sitting outside `retryStream`).
 /// See `SynthesisNotifier` retry gate and [ConnectivityService].
 class AIOfflineException extends AINetworkException {
-  const AIOfflineException([
-    super.message = '当前处于离线状态，请检查网络连接',
-  ]);
+  const AIOfflineException([super.message = '当前处于离线状态，请检查网络连接']);
 
   @override
   String get userMessage => '当前处于离线状态，请检查网络连接';

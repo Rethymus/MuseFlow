@@ -98,7 +98,7 @@ final skillGenerationServiceProvider = FutureProvider<SkillGenerationService>((
     throw StateError('未配置可用的 AI 模型');
   }
   return SkillGenerationService(
-    openAIAdapter: ref.watch(openaiAdapterProvider),
+    openAIAdapter: ref.watch(activeAdapterProvider),
     apiKey: apiKey,
     baseUrl: provider.baseUrl,
     model: provider.model,
@@ -123,7 +123,7 @@ final deviationDetectionServiceProvider =
         throw StateError('未配置可用的 AI 模型');
       }
       return DeviationDetectionService(
-        openAIAdapter: ref.watch(openaiAdapterProvider),
+        openAIAdapter: ref.watch(activeAdapterProvider),
         apiKey: apiKey,
         baseUrl: provider.baseUrl,
         model: provider.model,
@@ -141,7 +141,7 @@ final editorialReviewServiceProvider = FutureProvider<EditorialReviewService>((
     throw StateError('未配置可用的 AI 模型');
   }
   return EditorialReviewService(
-    openAIAdapter: ref.watch(openaiAdapterProvider),
+    openAIAdapter: ref.watch(activeAdapterProvider),
     apiKey: apiKey,
     baseUrl: provider.baseUrl,
     model: provider.model,

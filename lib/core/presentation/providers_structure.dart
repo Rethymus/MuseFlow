@@ -33,7 +33,7 @@ final templateCompletionServiceProvider =
         throw StateError('未配置可用的 AI 模型');
       }
       return TemplateCompletionService(
-        openAIAdapter: ref.watch(openaiAdapterProvider),
+        openAIAdapter: ref.watch(activeAdapterProvider),
         apiKey: apiKey,
         baseUrl: provider.baseUrl,
         model: provider.model,
@@ -48,7 +48,7 @@ final openingGeneratorServiceProvider = FutureProvider<OpeningGeneratorService>(
       throw StateError('未配置可用的 AI 模型');
     }
     return OpeningGeneratorService(
-      openAIAdapter: ref.watch(openaiAdapterProvider),
+      openAIAdapter: ref.watch(activeAdapterProvider),
       apiKey: apiKey,
       baseUrl: provider.baseUrl,
       model: provider.model,
@@ -154,6 +154,7 @@ final guardianCheckServiceProvider = FutureProvider<GuardianCheckService>((
   );
   return GuardianCheckService.fromRepository(
     characterRepository: characterRepository,
+    aiAdapter: ref.watch(activeAdapterProvider),
     apiKey: apiKey,
     baseUrl: provider.baseUrl,
     model: provider.model,
@@ -173,6 +174,7 @@ final logicGuardianServiceProvider = FutureProvider<LogicGuardianService>((
     throw StateError('未配置可用的 AI 模型');
   }
   return LogicGuardianService(
+    aiAdapter: ref.watch(activeAdapterProvider),
     apiKey: apiKey,
     baseUrl: provider.baseUrl,
     model: provider.model,

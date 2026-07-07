@@ -91,27 +91,30 @@ void main() {
       expect(fakeAdapter.callCount, 1); // Only one attempt
     });
 
-    test('should not retry on AIOfflineException (offline is a known-bad state)', () async {
-      // Symmetric with the AIAuthException case above: retrying an offline
-      // device burns backoff time for no benefit (the device won't come back
-      // online during a 2/4/8s backoff). This mirrors the adapter-level gate
-      // being placed OUTSIDE retryStream — offline is not a transient blip.
-      container = createContainer(
-        selectedFragments: [
-          Fragment(id: 'f1', text: 'test', createdAt: DateTime(2026, 1, 1)),
-        ],
-      );
+    test(
+      'should not retry on AIOfflineException (offline is a known-bad state)',
+      () async {
+        // Symmetric with the AIAuthException case above: retrying an offline
+        // device burns backoff time for no benefit (the device won't come back
+        // online during a 2/4/8s backoff). This mirrors the adapter-level gate
+        // being placed OUTSIDE retryStream — offline is not a transient blip.
+        container = createContainer(
+          selectedFragments: [
+            Fragment(id: 'f1', text: 'test', createdAt: DateTime(2026, 1, 1)),
+          ],
+        );
 
-      fakeAdapter.nextStream = Stream.error(const AIOfflineException());
+        fakeAdapter.nextStream = Stream.error(const AIOfflineException());
 
-      container.read(synthesisProvider.notifier).startSynthesis();
-      await _pumpAndWait();
+        container.read(synthesisProvider.notifier).startSynthesis();
+        await _pumpAndWait();
 
-      final state = container.read(synthesisProvider);
-      expect(state.error, contains('离线')); // Distinct message, not generic
-      expect(state.retryCount, 0); // No retry attempted
-      expect(fakeAdapter.callCount, 1); // Only one attempt
-    });
+        final state = container.read(synthesisProvider);
+        expect(state.error, contains('离线')); // Distinct message, not generic
+        expect(state.retryCount, 0); // No retry attempted
+        expect(fakeAdapter.callCount, 1); // Only one attempt
+      },
+    );
 
     test('should retry on AIRateLimitException and succeed', () async {
       container = createContainer(

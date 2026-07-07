@@ -31,8 +31,8 @@ class ProviderRepository {
   ///
   /// Also removes the associated API key from secure storage.
   Future<void> delete(String id) async {
-    await _box.delete(id);
     await _secureStorage.deleteApiKey(id);
+    await _box.delete(id);
   }
 
   /// Returns a single provider by ID, or null if not found.

@@ -39,7 +39,8 @@ void main() {
   // A deliberately flat, AI-scented paragraph (short uniform sentences) that
   // a polish operation should meaningfully improve — so "output != input" is a
   // real signal the editor prompt is effective, not a trivial diff.
-  const sampleText = '林风站在青云峰上，看着远方的云。他想着修炼的事情。'
+  const sampleText =
+      '林风站在青云峰上，看着远方的云。他想着修炼的事情。'
       '风吹过他的脸。他觉得很平静。天空很蓝。';
 
   group('Editor AI polish (Real GLM API)', () {
@@ -101,7 +102,9 @@ void main() {
 
         final output = buffer.toString().trim();
         // ignore: avoid_print
-        print('[POLISH] in=${sampleText.length}chars out=${output.length}chars');
+        print(
+          '[POLISH] in=${sampleText.length}chars out=${output.length}chars',
+        );
         // ignore: avoid_print
         print('[POLISH] output: $output');
 

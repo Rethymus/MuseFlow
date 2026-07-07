@@ -160,9 +160,7 @@ class DeviationDetectionService {
   /// uses 符合/未违反. Defense-in-depth alongside the prompt instruction, since
   /// real models do not always obey the prompt (mirrors the defensive
   /// `catch (_)` fallback already used here).
-  static final _complianceMarkers = RegExp(
-    r'符合|未违反|并未违反|没有违反|未违背',
-  );
+  static final _complianceMarkers = RegExp(r'符合|未违反|并未违反|没有违反|未违背');
   static final _violationMarkers = RegExp(r'违背|违反了');
 
   static bool _isComplianceNoise(String description) {

@@ -21,15 +21,15 @@ void main() {
   final model = Platform.environment['GLM_MODEL'] ?? 'glm-4-flash';
 
   Chapter chapter() => Chapter(
-        id: 'ch-real-summary',
-        manuscriptId: 'ms-real',
-        title: '第十七章 灵草谷之变',
-        sortOrder: 17,
-        status: '初稿',
-        documentContent: _chapterContent,
-        createdAt: DateTime(2026, 6, 18),
-        updatedAt: DateTime(2026, 6, 18),
-      );
+    id: 'ch-real-summary',
+    manuscriptId: 'ms-real',
+    title: '第十七章 灵草谷之变',
+    sortOrder: 17,
+    status: '初稿',
+    documentContent: _chapterContent,
+    createdAt: DateTime(2026, 6, 18),
+    updatedAt: DateTime(2026, 6, 18),
+  );
 
   group('ChapterSummarizationService (real GLM API)', () {
     test(
@@ -55,14 +55,14 @@ void main() {
         );
         // 3) Real compression: a summary must be substantially shorter than its
         //    source, else it isn't summarizing.
-        final sourceNonBlank = src.documentContent.replaceAll(
-          RegExp(r'\s'),
-          '',
-        ).length;
+        final sourceNonBlank = src.documentContent
+            .replaceAll(RegExp(r'\s'), '')
+            .length;
         expect(
           result.summary.length,
           lessThan(sourceNonBlank * 0.6),
-          reason: 'summary (${result.summary.length}) must compress source ($sourceNonBlank)',
+          reason:
+              'summary (${result.summary.length}) must compress source ($sourceNonBlank)',
         );
         // 4) sourceWordCount matches the source's non-whitespace length exactly
         //    (used by slice-2 staleness detection — must be precise).
@@ -78,8 +78,10 @@ void main() {
         expect(result.chapterId, src.id);
         expect(result.manuscriptId, src.manuscriptId);
 
-        debugPrint('[MC-02] Real GLM summary (${result.summary.length} chars, '
-            'source $sourceNonBlank): ${result.summary}');
+        debugPrint(
+          '[MC-02] Real GLM summary (${result.summary.length} chars, '
+          'source $sourceNonBlank): ${result.summary}',
+        );
       },
       skip: apiKey == null ? 'GLM_API_KEY not set' : null,
       timeout: const Timeout(Duration(seconds: 60)),

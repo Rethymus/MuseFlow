@@ -1,7 +1,9 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:museflow/features/ai/domain/ai_adapter.dart';
 import 'package:museflow/features/story_structure/application/guardian_context_builder.dart';
 import 'package:museflow/features/story_structure/application/logic_guardian_service.dart';
 import 'package:museflow/features/story_structure/domain/guardian_annotation.dart';
+import 'package:openai_dart/openai_dart.dart';
 
 void main() {
   group('LogicGuardianService', () {
@@ -9,6 +11,7 @@ void main() {
 
     setUp(() {
       service = LogicGuardianService(
+        aiAdapter: _FakeAdapter('[]'),
         apiKey: 'test-key',
         baseUrl: 'https://api.example.com',
         model: 'test-model',
@@ -294,6 +297,7 @@ void main() {
         // Verify the service only has read-only/check methods.
         // No applyFix, editNode, updateAnnotation, or similar mutation methods.
         final service = LogicGuardianService(
+          aiAdapter: _FakeAdapter('[]'),
           apiKey: 'test-key',
           baseUrl: 'https://api.example.com',
           model: 'test-model',
@@ -309,5 +313,71 @@ void main() {
         expect(service, isA<LogicGuardianService>());
       });
     });
+
+    group('AI adapter wiring', () {
+      test('checkLogic streams through injected adapter', () async {
+        final adapter = _FakeAdapter('''
+[
+  {
+    "kind": "worldRuleConflict",
+    "severity": "high",
+    "message": "Adapter finding",
+    "reason": "The fake adapter was used"
+  }
+]''');
+        final service = LogicGuardianService(
+          aiAdapter: adapter,
+          apiKey: 'test-key',
+          baseUrl: 'https://api.example.com',
+          model: 'test-model',
+        );
+
+        final annotations = await service.checkLogic(
+          text: 'Text',
+          context: makeBundle(),
+          nodeId: 'node-1',
+          startOffset: 3,
+          endOffset: 9,
+        );
+
+        expect(adapter.calls, 1);
+        expect(adapter.lastBaseUrl, 'https://api.example.com');
+        expect(adapter.lastModel, 'test-model');
+        expect(adapter.lastTemperature, 0.3);
+        expect(annotations, hasLength(1));
+        expect(annotations.single.message, 'Adapter finding');
+        expect(annotations.single.nodeId, 'node-1');
+        expect(annotations.single.startOffset, 3);
+        expect(annotations.single.endOffset, 9);
+      });
+    });
   });
+}
+
+class _FakeAdapter implements AIAdapter {
+  _FakeAdapter(this.response);
+
+  final String response;
+  int calls = 0;
+  String? lastBaseUrl;
+  String? lastModel;
+  double? lastTemperature;
+
+  @override
+  Stream<String> createStream({
+    required String apiKey,
+    required String baseUrl,
+    required String model,
+    required List<ChatMessage> messages,
+    double? temperature,
+    double? topP,
+    int? maxTokens,
+    void Function(Usage?)? onUsage,
+  }) async* {
+    calls += 1;
+    lastBaseUrl = baseUrl;
+    lastModel = model;
+    lastTemperature = temperature;
+    yield response;
+  }
 }

@@ -97,8 +97,7 @@ class StyleDeviationDetector {
     required String text,
     required AuthorStyleProfile profile,
   }) {
-    if (StyleAnalysisUtils.cjkCharCount(text) < _minChars ||
-        !profile.hasData) {
+    if (StyleAnalysisUtils.cjkCharCount(text) < _minChars || !profile.hasData) {
       return null;
     }
 
@@ -228,7 +227,9 @@ class StyleDeviationDetector {
     // Delegating to StyleAnalysisUtils makes the measurement side call the
     // SAME function as the baseline side (structural dual-ruler fix,
     // PLAN quick-260617-jgd).
-    final normalizedRichness = StyleAnalysisUtils.computeVocabularyRichness(text);
+    final normalizedRichness = StyleAnalysisUtils.computeVocabularyRichness(
+      text,
+    );
 
     // The util returns neutral 0.5 for sub-threshold (<50 CJK) text. Map
     // that to the detector's "too short to analyze" branch.

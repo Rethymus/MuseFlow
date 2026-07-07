@@ -46,6 +46,35 @@ void main() {
       expect(models, isEmpty);
     });
 
+    test(
+      'should return empty list before URL validation when offline',
+      () async {
+        final gatedAdapter = OpenAIAdapter(onlineCheck: () async => true);
+        addTearDown(gatedAdapter.dispose);
+
+        final models = await gatedAdapter.fetchModelList(
+          apiKey: 'test-key',
+          baseUrl: 'not-a-valid-url',
+        );
+
+        expect(models, isEmpty);
+      },
+    );
+
+    test('should return empty list when offline probe fails', () async {
+      final gatedAdapter = OpenAIAdapter(
+        onlineCheck: () async => throw StateError('probe unavailable'),
+      );
+      addTearDown(gatedAdapter.dispose);
+
+      final models = await gatedAdapter.fetchModelList(
+        apiKey: 'test-key',
+        baseUrl: 'https://api.openai.com/v1',
+      );
+
+      expect(models, isEmpty);
+    });
+
     test('should exist as a method on OpenAIAdapter', () {
       // Verify the method exists and has the correct signature
       expect(adapter.fetchModelList, isA<Function>());

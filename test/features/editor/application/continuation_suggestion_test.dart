@@ -139,6 +139,8 @@ void main() {
       bool hasApiKey = true,
       String aiResponse = '',
       AIException? errorToThrow,
+      _FakeOpenAIAdapter? openAIAdapterOverride,
+      _FakeOpenAIAdapter? claudeAdapterOverride,
     }) {
       final testProvider = hasProvider
           ? (activeProvider ??
@@ -160,11 +162,14 @@ void main() {
           else
             activeApiKeyProvider.overrideWithValue(null),
           openaiAdapterProvider.overrideWithValue(
-            _FakeOpenAIAdapter(
-              response: aiResponse,
-              errorToThrow: errorToThrow,
-            ),
+            openAIAdapterOverride ??
+                _FakeOpenAIAdapter(
+                  response: aiResponse,
+                  errorToThrow: errorToThrow,
+                ),
           ),
+          if (claudeAdapterOverride != null)
+            claudeAdapterProvider.overrideWithValue(claudeAdapterOverride),
         ],
       );
       return container;
@@ -235,6 +240,43 @@ void main() {
       expect(state.suggestions[0].direction, '冲突升级');
       expect(state.suggestions[1].direction, '人物深入');
       expect(state.suggestions[2].direction, '转折铺垫');
+    });
+
+    test('should use Claude adapter when Claude provider is active', () async {
+      const aiResponse =
+          '[{"direction":"冲突升级","summary":"通过外部事件加剧当前矛盾","keyPoints":"引入新敌人；揭示隐藏秘密"},'
+          '{"direction":"人物深入","summary":"探索角色内心世界和情感变化","keyPoints":"回忆往事；情感独白"},'
+          '{"direction":"转折铺垫","summary":"为后续剧情埋下伏笔","keyPoints":"发现线索；角色态度转变"}]';
+      final openAIAdapter = _FakeOpenAIAdapter(response: '[]');
+      final claudeAdapter = _FakeOpenAIAdapter(response: aiResponse);
+      final provider = AIProvider(
+        id: 'claude-provider',
+        name: 'Claude',
+        baseUrl: 'https://api.anthropic.com',
+        type: AiProviderType.claude,
+        model: 'claude-3-5-haiku-latest',
+        createdAt: DateTime(2026, 1, 1),
+      );
+
+      createContainer(
+        activeProvider: provider,
+        openAIAdapterOverride: openAIAdapter,
+        claudeAdapterOverride: claudeAdapter,
+      );
+      final notifier = container.read(
+        continuationSuggestionNotifierProvider.notifier,
+      );
+
+      notifier.generateSuggestions(chapterText: '林风站在山门前。');
+
+      await Future<void>.delayed(const Duration(milliseconds: 100));
+
+      final state = container.read(continuationSuggestionNotifierProvider);
+      expect(state.suggestions.length, 3);
+      expect(openAIAdapter.calls, isZero);
+      expect(claudeAdapter.calls, 1);
+      expect(claudeAdapter.lastBaseUrl, 'https://api.anthropic.com');
+      expect(claudeAdapter.lastModel, 'claude-3-5-haiku-latest');
     });
 
     test('should handle JSON wrapped in markdown code blocks', () async {
@@ -463,6 +505,9 @@ class _FakeOpenAIAdapter extends OpenAIAdapter {
   final String response;
   final AIException? errorToThrow;
   List<ChatMessage>? lastMessages;
+  int calls = 0;
+  String? lastBaseUrl;
+  String? lastModel;
 
   _FakeOpenAIAdapter({this.response = '', this.errorToThrow});
 
@@ -477,6 +522,9 @@ class _FakeOpenAIAdapter extends OpenAIAdapter {
     int? maxTokens,
     void Function(Usage?)? onUsage,
   }) {
+    calls += 1;
+    lastBaseUrl = baseUrl;
+    lastModel = model;
     lastMessages = messages;
 
     if (errorToThrow != null) {

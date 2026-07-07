@@ -90,9 +90,9 @@ class TemplateCompletionService {
       // the "only JSON" instruction; a raw jsonDecode would throw and silently
       // fail the whole AI-completion. Defensive extraction mirrors
       // LogicGuardianService / GuardianCheckService / EditorialReview.
-      final decoded = jsonDecode(
-        _extractJsonObject(buffer.toString()),
-      ) as Map<String, dynamic>;
+      final decoded =
+          jsonDecode(_extractJsonObject(buffer.toString()))
+              as Map<String, dynamic>;
       return TemplateCompletionResult(
         draft: _applyCompletion(draft, decoded),
         succeeded: true,
