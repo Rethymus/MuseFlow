@@ -30,14 +30,17 @@ import 'package:museflow/features/story_structure/presentation/story_structure_p
 
 void main() {
   setUpAll(() async {
-    final bytes = await File('test_assets/noto_sans_sc_subset.ttf').readAsBytes();
+    final bytes = await File(
+      'test_assets/noto_sans_sc_subset.ttf',
+    ).readAsBytes();
     final loader = FontLoader('Noto Sans CJK SC');
     loader.addFont(Future.value(ByteData.sublistView(bytes)));
     await loader.load();
   });
 
-  testWidgets('StoryStructurePage (整理与导出) renders a real 1440x1000 screenshot',
-      (tester) async {
+  testWidgets('StoryStructurePage (整理与导出) renders a real 1440x1000 screenshot', (
+    tester,
+  ) async {
     tester.view.physicalSize = const Size(1440, 1000);
     tester.view.devicePixelRatio = 1.0;
     addTearDown(tester.view.resetPhysicalSize);
@@ -114,7 +117,9 @@ ThemeData _screenshotTheme() {
     seedColor: Colors.indigo,
     brightness: Brightness.dark,
   );
-  final base = Typography.material2021().white.apply(fontFamily: 'Noto Sans CJK SC');
+  final base = Typography.material2021().white.apply(
+    fontFamily: 'Noto Sans CJK SC',
+  );
   return ThemeData(
     colorScheme: colorScheme,
     useMaterial3: true,

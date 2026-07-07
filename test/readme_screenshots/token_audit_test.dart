@@ -30,14 +30,17 @@ import 'package:museflow/features/stats/presentation/token_audit_page.dart';
 
 void main() {
   setUpAll(() async {
-    final bytes = await File('test_assets/noto_sans_sc_subset.ttf').readAsBytes();
+    final bytes = await File(
+      'test_assets/noto_sans_sc_subset.ttf',
+    ).readAsBytes();
     final loader = FontLoader('Noto Sans CJK SC');
     loader.addFont(Future.value(ByteData.sublistView(bytes)));
     await loader.load();
   });
 
-  testWidgets('TokenAuditPage renders a real 1440x1000 screenshot',
-      (tester) async {
+  testWidgets('TokenAuditPage renders a real 1440x1000 screenshot', (
+    tester,
+  ) async {
     final snapshot = _buildSeedSnapshot();
 
     tester.view.physicalSize = const Size(1440, 1000);
@@ -122,7 +125,9 @@ ThemeData _screenshotTheme() {
     seedColor: Colors.indigo,
     brightness: Brightness.dark,
   );
-  final base = Typography.material2021().white.apply(fontFamily: 'Noto Sans CJK SC');
+  final base = Typography.material2021().white.apply(
+    fontFamily: 'Noto Sans CJK SC',
+  );
   return ThemeData(
     colorScheme: colorScheme,
     useMaterial3: true,

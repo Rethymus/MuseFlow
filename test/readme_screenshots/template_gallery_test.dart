@@ -32,14 +32,17 @@ import 'package:museflow/features/templates/presentation/template_gallery_page.d
 
 void main() {
   setUpAll(() async {
-    final bytes = await File('test_assets/noto_sans_sc_subset.ttf').readAsBytes();
+    final bytes = await File(
+      'test_assets/noto_sans_sc_subset.ttf',
+    ).readAsBytes();
     final loader = FontLoader('Noto Sans CJK SC');
     loader.addFont(Future.value(ByteData.sublistView(bytes)));
     await loader.load();
   });
 
-  testWidgets('TemplateGalleryPage renders a real 1440x1000 screenshot',
-      (tester) async {
+  testWidgets('TemplateGalleryPage renders a real 1440x1000 screenshot', (
+    tester,
+  ) async {
     tester.view.physicalSize = const Size(1440, 1000);
     tester.view.devicePixelRatio = 1.0;
     addTearDown(tester.view.resetPhysicalSize);
@@ -69,7 +72,9 @@ void main() {
 
     await expectLater(
       find.byType(TemplateGalleryPage),
-      matchesGoldenFile('../../docs/readme/screenshots/08-template-gallery.png'),
+      matchesGoldenFile(
+        '../../docs/readme/screenshots/08-template-gallery.png',
+      ),
     );
   });
 }
@@ -205,7 +210,9 @@ ThemeData _screenshotTheme() {
     seedColor: Colors.indigo,
     brightness: Brightness.dark,
   );
-  final base = Typography.material2021().white.apply(fontFamily: 'Noto Sans CJK SC');
+  final base = Typography.material2021().white.apply(
+    fontFamily: 'Noto Sans CJK SC',
+  );
   return ThemeData(
     colorScheme: colorScheme,
     useMaterial3: true,

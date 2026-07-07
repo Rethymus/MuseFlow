@@ -34,14 +34,17 @@ void main() {
   /// system fonts). Loaded from a File path (no pubspec asset declaration
   /// needed).
   setUpAll(() async {
-    final bytes = await File('test_assets/noto_sans_sc_subset.ttf').readAsBytes();
+    final bytes = await File(
+      'test_assets/noto_sans_sc_subset.ttf',
+    ).readAsBytes();
     final loader = FontLoader('Noto Sans CJK SC');
     loader.addFont(Future.value(ByteData.sublistView(bytes)));
     await loader.load();
   });
 
-  testWidgets('TokenCostReportPage renders a real 1440x1000 screenshot',
-      (tester) async {
+  testWidgets('TokenCostReportPage renders a real 1440x1000 screenshot', (
+    tester,
+  ) async {
     // Seed reflects the *shipped* TokenCostReport shape: a ~1万字 sample whose
     // 50× projection to 50万字 yields ~4.68M estimated tokens — the same order
     // the README mockup advertised, now rendered by the real report service's
@@ -103,7 +106,10 @@ void main() {
     // asserted: it legitimately appears twice (StatsSummaryCard title 14pt +
     // CostProjectionChart legend 12pt), which is correct, not a bug. CJK glyph
     // rasterization correctness follows from the registered universal subset.
-    expect(find.text('Token 消耗分析'), findsNWidgets(2)); // AppBar title + body headline
+    expect(
+      find.text('Token 消耗分析'),
+      findsNWidgets(2),
+    ); // AppBar title + body headline
     expect(find.text('50万字长篇推算'), findsOneWidget); // projection section title
 
     await expectLater(
@@ -122,7 +128,9 @@ ThemeData _screenshotTheme() {
     seedColor: Colors.indigo,
     brightness: Brightness.dark,
   );
-  final base = Typography.material2021().white.apply(fontFamily: 'Noto Sans CJK SC');
+  final base = Typography.material2021().white.apply(
+    fontFamily: 'Noto Sans CJK SC',
+  );
   return ThemeData(
     colorScheme: colorScheme,
     useMaterial3: true,

@@ -33,14 +33,17 @@ void main() {
   /// theme resolves, so CJK glyphs render (flutter_test does not use system
   /// fonts). Loaded from a File path (no pubspec asset declaration needed).
   setUpAll(() async {
-    final bytes = await File('test_assets/noto_sans_sc_subset.ttf').readAsBytes();
+    final bytes = await File(
+      'test_assets/noto_sans_sc_subset.ttf',
+    ).readAsBytes();
     final loader = FontLoader('Noto Sans CJK SC');
     loader.addFont(Future.value(ByteData.sublistView(bytes)));
     await loader.load();
   });
 
-  testWidgets('ManuscriptLibraryPage renders a real 1440x1000 screenshot',
-      (tester) async {
+  testWidgets('ManuscriptLibraryPage renders a real 1440x1000 screenshot', (
+    tester,
+  ) async {
     // Offsets are relative to the REAL wall clock so ManuscriptCard's
     // _relativeTime (which calls DateTime.now() internally) renders a stable
     // "2小时前 / 1天前 / 5天前" no matter when the test runs — the wall clock
@@ -113,7 +116,9 @@ void main() {
 
     await expectLater(
       find.byType(ManuscriptLibraryPage),
-      matchesGoldenFile('../../docs/readme/screenshots/01-manuscript-library.png'),
+      matchesGoldenFile(
+        '../../docs/readme/screenshots/01-manuscript-library.png',
+      ),
     );
   });
 }
@@ -127,7 +132,9 @@ ThemeData _screenshotTheme() {
     seedColor: Colors.indigo,
     brightness: Brightness.dark,
   );
-  final base = Typography.material2021().white.apply(fontFamily: 'Noto Sans CJK SC');
+  final base = Typography.material2021().white.apply(
+    fontFamily: 'Noto Sans CJK SC',
+  );
   return ThemeData(
     colorScheme: colorScheme,
     useMaterial3: true,

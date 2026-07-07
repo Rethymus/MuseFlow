@@ -28,14 +28,17 @@ import 'package:museflow/features/knowledge/presentation/skill_list_page.dart';
 
 void main() {
   setUpAll(() async {
-    final bytes = await File('test_assets/noto_sans_sc_subset.ttf').readAsBytes();
+    final bytes = await File(
+      'test_assets/noto_sans_sc_subset.ttf',
+    ).readAsBytes();
     final loader = FontLoader('Noto Sans CJK SC');
     loader.addFont(Future.value(ByteData.sublistView(bytes)));
     await loader.load();
   });
 
-  testWidgets('SkillListPage renders a real 1440x1000 screenshot',
-      (tester) async {
+  testWidgets('SkillListPage renders a real 1440x1000 screenshot', (
+    tester,
+  ) async {
     tester.view.physicalSize = const Size(1440, 1000);
     tester.view.devicePixelRatio = 1.0;
     addTearDown(tester.view.resetPhysicalSize);
@@ -82,9 +85,7 @@ class _SeededSkillListNotifier extends SkillListNotifier {
         name: '修仙境界体系',
         description: '修炼九重境界的划分、突破条件与灵气运转规则',
         content: '# 修仙境界体系\n',
-        sections: SkillSections(
-          powerHierarchy: '炼气、筑基、金丹、元婴、化神、合体、大乘、渡劫',
-        ),
+        sections: SkillSections(powerHierarchy: '炼气、筑基、金丹、元婴、化神、合体、大乘、渡劫'),
         isActive: true,
         createdAt: created,
       ),
@@ -93,9 +94,7 @@ class _SeededSkillListNotifier extends SkillListNotifier {
         name: '门派势力图谱',
         description: '青云宗、药王谷、戒律堂等势力的关系与地盘划分',
         content: '# 门派势力图谱\n',
-        sections: SkillSections(
-          factionRelations: '青云宗与药王谷结盟，戒律堂暗中掌控旧案',
-        ),
+        sections: SkillSections(factionRelations: '青云宗与药王谷结盟，戒律堂暗中掌控旧案'),
         createdAt: created,
       ),
       SkillDocument(
@@ -128,7 +127,9 @@ ThemeData _screenshotTheme() {
     seedColor: Colors.indigo,
     brightness: Brightness.dark,
   );
-  final base = Typography.material2021().white.apply(fontFamily: 'Noto Sans CJK SC');
+  final base = Typography.material2021().white.apply(
+    fontFamily: 'Noto Sans CJK SC',
+  );
   return ThemeData(
     colorScheme: colorScheme,
     useMaterial3: true,
