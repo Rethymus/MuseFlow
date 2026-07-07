@@ -747,10 +747,10 @@ packages:
     dependency: "direct main"
     description:
       name: ollama_dart
-      sha256: dd60bf042a9deeb616f2e03ff6c189fabc72ed06c2762b48363dab4cb668684f
+      sha256: "8636167784e4a24ca3d943213e891bae671379a122e6deff7d953c9f9a91894e"
       url: "https://pub.dev"
     source: hosted
-    version: "2.2.0"
+    version: "2.4.0"
   openai_dart:
     dependency: "direct main"
     description:
