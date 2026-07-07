@@ -149,14 +149,14 @@ MuseFlow 灵韵是一个人机协作的小说创作辅助工具，面向"有故�
 | Dart SDK | ^3.12.0 | Language | Matches the `environment.sdk` constraint in `pubspec.yaml`; ships with Flutter and is required for current language features. |
 | flutter_riverpod | ^3.3.1 | State management | Project baseline in `.planning/PROJECT.md`. Code-gen based providers with `@riverpod` annotation. AsyncNotifier for LLM streaming. |
 | riverpod_annotation | ^4.0.2 | Provider annotations | Pairs with riverpod_generator. Compile-time safe provider definitions. |
-| riverpod_generator | ^4.0.3 | Code generation for providers | Eliminates boilerplate. Generates `_$NotifierName` base classes. |
+| riverpod_generator | ^4.0.4 | Code generation for providers | Eliminates boilerplate. Generates `_$NotifierName` base classes. |
 | freezed | ^3.2.5 | Immutable data classes | Union types for Result/Either, copyWith generation, JSON serialization. Critical for domain entities. |
 | freezed_annotation | ^3.1.0 | Freezed annotations | Runtime companion to freezed code gen. |
 | build_runner | latest | Code generation runner | Required by riverpod_generator and freezed. Run with `dart run build_runner watch -d`. |
 ## Editor Stack
 | Technology | Version | Purpose | Why |
 |------------|---------|---------|-----|
-| **super_editor** | ^0.3.0-dev.20 | Rich text editor | Current implementation and Phase 0 benchmark winner. Used by editor, manuscript, onboarding, diff/provenance, and story-structure surfaces. Supports document-model editing, custom overlays/layers, and desktop text workflows. |
+| **super_editor** | ^0.3.0-dev.52 | Rich text editor | Current implementation and Phase 0 benchmark winner. Used by editor, manuscript, onboarding, diff/provenance, and story-structure surfaces. Supports document-model editing, custom overlays/layers, and desktop text workflows. |
 ### Why super_editor over flutter_quill
 | Criterion | super_editor | flutter_quill |
 |-----------|----------------|---------------|
@@ -259,7 +259,7 @@ MuseFlow 灵韵是一个人机协作的小说创作辅助工具，面向"有故�
 | Source | Confidence | What It Verified |
 |--------|------------|------------------|
 | pub.dev API (live queries) | HIGH | All package versions verified current as of 2026-05-31 |
-| Local pubspec + source imports | HIGH | `super_editor ^0.3.0-dev.20` is the active editor dependency and production editor import |
+| Local pubspec + source imports | HIGH | `super_editor ^0.3.0-dev.52` is the active editor dependency and production editor import |
 | Context7 / Riverpod docs | HIGH | AsyncNotifier, code generation, @riverpod annotation patterns |
 | Context7 / openai_dart docs | HIGH | Custom baseUrl for OpenAI-compatible APIs (DeepSeek, Ollama, Groq, Azure) |
 | Context7 / hive_ce docs | HIGH | Encryption, adapter generation, isolate support, transactions |
