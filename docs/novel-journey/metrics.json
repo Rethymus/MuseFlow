@@ -1,0 +1,1131 @@
+{
+  "generatedAt": "2026-07-08T07:44:20.438738",
+  "manuscriptTitle": "剑道苍穹",
+  "targetChapterCount": 100,
+  "chapterCount": 100,
+  "successCount": 100,
+  "length": {
+    "totalCjkChars": 815984,
+    "avgCjkCharsPerChapter": 8159,
+    "minCjkChars": 5146,
+    "maxCjkChars": 8974
+  },
+  "timing": {
+    "wallClockSeconds": 36234,
+    "wallClockHuman": "10h3m54s",
+    "avgSecondsPerChapter": "362.3"
+  },
+  "tokens": {
+    "total": 4218999,
+    "input": 2983607,
+    "output": 1235392,
+    "totalCalls": 513,
+    "byModel": {
+      "glm-4-flash": {
+        "calls": 495,
+        "input": 2962728,
+        "output": 1190712
+      },
+      "glm-4-plus": {
+        "calls": 18,
+        "input": 20879,
+        "output": 44680
+      }
+    },
+    "byOperation": {
+      "synthesis": {
+        "calls": 100,
+        "input": 1660471,
+        "output": 9410
+      },
+      "deviationDetect": {
+        "calls": 100,
+        "input": 684253,
+        "output": 34310
+      },
+      "expand": {
+        "calls": 213,
+        "input": 507401,
+        "output": 959248
+      },
+      "opening": {
+        "calls": 100,
+        "input": 131482,
+        "output": 232424
+      }
+    }
+  },
+  "antiAi": {
+    "totalHighlights": 8368,
+    "totalAutoReplaced": 8032,
+    "topSignals": [
+      {
+        "signal": "转场套话偏多",
+        "count": 94
+      },
+      {
+        "signal": "叠词/程度副词堆砌",
+        "count": 91
+      },
+      {
+        "signal": "类型文套句偏多",
+        "count": 83
+      },
+      {
+        "signal": "结尾悬念公式化",
+        "count": 45
+      },
+      {
+        "signal": "结构化句式重复",
+        "count": 36
+      },
+      {
+        "signal": "情感描写套路化",
+        "count": 3
+      },
+      {
+        "signal": "句长节奏过于整齐",
+        "count": 2
+      },
+      {
+        "signal": "描写公式化",
+        "count": 1
+      }
+    ]
+  },
+  "deviation": {
+    "totalWarnings": 372
+  },
+  "foreshadowing": {
+    "planted": 12,
+    "resolved": 12,
+    "fillRate": "1.000",
+    "avgChaptersToResolve": "50.1"
+  },
+  "modelStrategy": {
+    "highPerf": "glm-4-plus",
+    "lowCost": "glm-4-flash",
+    "keyChaptersOpenedWithHighPerf": [
+      1,
+      5,
+      13,
+      25,
+      30,
+      41,
+      50,
+      57,
+      60,
+      72,
+      75,
+      85,
+      90,
+      96,
+      97,
+      98,
+      99,
+      100
+    ]
+  },
+  "chapters": [
+    {
+      "chapterNo": 1,
+      "title": "第1章 凡人少年",
+      "cjkChars": 8629,
+      "segments": 3,
+      "openingModel": "glm-4-plus",
+      "elapsedSeconds": 343,
+      "antiAiHighlights": 81,
+      "deviationWarnings": 0
+    },
+    {
+      "chapterNo": 2,
+      "title": "第2章 山门试炼",
+      "cjkChars": 7116,
+      "segments": 3,
+      "openingModel": "glm-4-flash",
+      "elapsedSeconds": 301,
+      "antiAiHighlights": 44,
+      "deviationWarnings": 3
+    },
+    {
+      "chapterNo": 3,
+      "title": "第3章 入门",
+      "cjkChars": 8700,
+      "segments": 5,
+      "openingModel": "glm-4-flash",
+      "elapsedSeconds": 441,
+      "antiAiHighlights": 66,
+      "deviationWarnings": 2
+    },
+    {
+      "chapterNo": 4,
+      "title": "第4章 灵气初感",
+      "cjkChars": 8797,
+      "segments": 3,
+      "openingModel": "glm-4-flash",
+      "elapsedSeconds": 452,
+      "antiAiHighlights": 41,
+      "deviationWarnings": 3
+    },
+    {
+      "chapterNo": 5,
+      "title": "第5章 藏经阁",
+      "cjkChars": 8165,
+      "segments": 5,
+      "openingModel": "glm-4-plus",
+      "elapsedSeconds": 440,
+      "antiAiHighlights": 43,
+      "deviationWarnings": 5
+    },
+    {
+      "chapterNo": 6,
+      "title": "第6章 无名功法",
+      "cjkChars": 8735,
+      "segments": 4,
+      "openingModel": "glm-4-flash",
+      "elapsedSeconds": 336,
+      "antiAiHighlights": 58,
+      "deviationWarnings": 2
+    },
+    {
+      "chapterNo": 7,
+      "title": "第7章 练气一层",
+      "cjkChars": 8731,
+      "segments": 4,
+      "openingModel": "glm-4-flash",
+      "elapsedSeconds": 364,
+      "antiAiHighlights": 70,
+      "deviationWarnings": 5
+    },
+    {
+      "chapterNo": 8,
+      "title": "第8章 同门",
+      "cjkChars": 8403,
+      "segments": 2,
+      "openingModel": "glm-4-flash",
+      "elapsedSeconds": 338,
+      "antiAiHighlights": 136,
+      "deviationWarnings": 3
+    },
+    {
+      "chapterNo": 9,
+      "title": "第9章 丹房意外",
+      "cjkChars": 8585,
+      "segments": 3,
+      "openingModel": "glm-4-flash",
+      "elapsedSeconds": 603,
+      "antiAiHighlights": 99,
+      "deviationWarnings": 3
+    },
+    {
+      "chapterNo": 10,
+      "title": "第10章 练气三层",
+      "cjkChars": 8163,
+      "segments": 2,
+      "openingModel": "glm-4-flash",
+      "elapsedSeconds": 409,
+      "antiAiHighlights": 131,
+      "deviationWarnings": 5
+    },
+    {
+      "chapterNo": 11,
+      "title": "第11章 外门比武",
+      "cjkChars": 8026,
+      "segments": 5,
+      "openingModel": "glm-4-flash",
+      "elapsedSeconds": 387,
+      "antiAiHighlights": 61,
+      "deviationWarnings": 4
+    },
+    {
+      "chapterNo": 12,
+      "title": "第12章 首胜",
+      "cjkChars": 8196,
+      "segments": 3,
+      "openingModel": "glm-4-flash",
+      "elapsedSeconds": 456,
+      "antiAiHighlights": 204,
+      "deviationWarnings": 3
+    },
+    {
+      "chapterNo": 13,
+      "title": "第13章 引起注意",
+      "cjkChars": 7963,
+      "segments": 2,
+      "openingModel": "glm-4-plus",
+      "elapsedSeconds": 296,
+      "antiAiHighlights": 68,
+      "deviationWarnings": 4
+    },
+    {
+      "chapterNo": 14,
+      "title": "第14章 秘传",
+      "cjkChars": 8606,
+      "segments": 4,
+      "openingModel": "glm-4-flash",
+      "elapsedSeconds": 507,
+      "antiAiHighlights": 93,
+      "deviationWarnings": 2
+    },
+    {
+      "chapterNo": 15,
+      "title": "第15章 练气六层",
+      "cjkChars": 8184,
+      "segments": 3,
+      "openingModel": "glm-4-flash",
+      "elapsedSeconds": 489,
+      "antiAiHighlights": 128,
+      "deviationWarnings": 2
+    },
+    {
+      "chapterNo": 16,
+      "title": "第16章 灵兽谷",
+      "cjkChars": 8296,
+      "segments": 4,
+      "openingModel": "glm-4-flash",
+      "elapsedSeconds": 488,
+      "antiAiHighlights": 155,
+      "deviationWarnings": 2
+    },
+    {
+      "chapterNo": 17,
+      "title": "第17章 灵兽契约",
+      "cjkChars": 8752,
+      "segments": 4,
+      "openingModel": "glm-4-flash",
+      "elapsedSeconds": 322,
+      "antiAiHighlights": 61,
+      "deviationWarnings": 4
+    },
+    {
+      "chapterNo": 18,
+      "title": "第18章 内门考核",
+      "cjkChars": 7211,
+      "segments": 5,
+      "openingModel": "glm-4-flash",
+      "elapsedSeconds": 357,
+      "antiAiHighlights": 55,
+      "deviationWarnings": 2
+    },
+    {
+      "chapterNo": 19,
+      "title": "第19章 第一关",
+      "cjkChars": 8709,
+      "segments": 3,
+      "openingModel": "glm-4-flash",
+      "elapsedSeconds": 439,
+      "antiAiHighlights": 73,
+      "deviationWarnings": 3
+    },
+    {
+      "chapterNo": 20,
+      "title": "第20章 第二关",
+      "cjkChars": 8501,
+      "segments": 2,
+      "openingModel": "glm-4-flash",
+      "elapsedSeconds": 383,
+      "antiAiHighlights": 108,
+      "deviationWarnings": 4
+    },
+    {
+      "chapterNo": 21,
+      "title": "第21章 第三关",
+      "cjkChars": 8937,
+      "segments": 2,
+      "openingModel": "glm-4-flash",
+      "elapsedSeconds": 376,
+      "antiAiHighlights": 10,
+      "deviationWarnings": 2
+    },
+    {
+      "chapterNo": 22,
+      "title": "第22章 晋升内门",
+      "cjkChars": 8281,
+      "segments": 3,
+      "openingModel": "glm-4-flash",
+      "elapsedSeconds": 430,
+      "antiAiHighlights": 166,
+      "deviationWarnings": 1
+    },
+    {
+      "chapterNo": 23,
+      "title": "第23章 内门风波",
+      "cjkChars": 8503,
+      "segments": 3,
+      "openingModel": "glm-4-flash",
+      "elapsedSeconds": 371,
+      "antiAiHighlights": 98,
+      "deviationWarnings": 4
+    },
+    {
+      "chapterNo": 24,
+      "title": "第24章 斗法台",
+      "cjkChars": 8590,
+      "segments": 4,
+      "openingModel": "glm-4-flash",
+      "elapsedSeconds": 492,
+      "antiAiHighlights": 113,
+      "deviationWarnings": 2
+    },
+    {
+      "chapterNo": 25,
+      "title": "第25章 练气九层",
+      "cjkChars": 8138,
+      "segments": 3,
+      "openingModel": "glm-4-plus",
+      "elapsedSeconds": 203,
+      "antiAiHighlights": 40,
+      "deviationWarnings": 6
+    },
+    {
+      "chapterNo": 26,
+      "title": "第26章 筑基灵材",
+      "cjkChars": 8784,
+      "segments": 4,
+      "openingModel": "glm-4-flash",
+      "elapsedSeconds": 527,
+      "antiAiHighlights": 49,
+      "deviationWarnings": 6
+    },
+    {
+      "chapterNo": 27,
+      "title": "第27章 险境",
+      "cjkChars": 8549,
+      "segments": 4,
+      "openingModel": "glm-4-flash",
+      "elapsedSeconds": 528,
+      "antiAiHighlights": 122,
+      "deviationWarnings": 0
+    },
+    {
+      "chapterNo": 28,
+      "title": "第28章 脱困",
+      "cjkChars": 8221,
+      "segments": 4,
+      "openingModel": "glm-4-flash",
+      "elapsedSeconds": 352,
+      "antiAiHighlights": 59,
+      "deviationWarnings": 3
+    },
+    {
+      "chapterNo": 29,
+      "title": "第29章 筑基丹",
+      "cjkChars": 8463,
+      "segments": 2,
+      "openingModel": "glm-4-flash",
+      "elapsedSeconds": 383,
+      "antiAiHighlights": 140,
+      "deviationWarnings": 5
+    },
+    {
+      "chapterNo": 30,
+      "title": "第30章 筑基",
+      "cjkChars": 8270,
+      "segments": 4,
+      "openingModel": "glm-4-plus",
+      "elapsedSeconds": 348,
+      "antiAiHighlights": 62,
+      "deviationWarnings": 5
+    },
+    {
+      "chapterNo": 31,
+      "title": "第31章 筑基稳固",
+      "cjkChars": 8830,
+      "segments": 3,
+      "openingModel": "glm-4-flash",
+      "elapsedSeconds": 317,
+      "antiAiHighlights": 41,
+      "deviationWarnings": 5
+    },
+    {
+      "chapterNo": 32,
+      "title": "第32章 金丹功法",
+      "cjkChars": 8365,
+      "segments": 2,
+      "openingModel": "glm-4-flash",
+      "elapsedSeconds": 362,
+      "antiAiHighlights": 133,
+      "deviationWarnings": 4
+    },
+    {
+      "chapterNo": 33,
+      "title": "第33章 王磊阴谋",
+      "cjkChars": 8508,
+      "segments": 3,
+      "openingModel": "glm-4-flash",
+      "elapsedSeconds": 443,
+      "antiAiHighlights": 125,
+      "deviationWarnings": 4
+    },
+    {
+      "chapterNo": 34,
+      "title": "第34章 灵矿历练",
+      "cjkChars": 8607,
+      "segments": 3,
+      "openingModel": "glm-4-flash",
+      "elapsedSeconds": 444,
+      "antiAiHighlights": 88,
+      "deviationWarnings": 4
+    },
+    {
+      "chapterNo": 35,
+      "title": "第35章 矿脉危机",
+      "cjkChars": 7406,
+      "segments": 3,
+      "openingModel": "glm-4-flash",
+      "elapsedSeconds": 332,
+      "antiAiHighlights": 74,
+      "deviationWarnings": 6
+    },
+    {
+      "chapterNo": 36,
+      "title": "第36章 灵力凝聚",
+      "cjkChars": 8675,
+      "segments": 3,
+      "openingModel": "glm-4-flash",
+      "elapsedSeconds": 420,
+      "antiAiHighlights": 77,
+      "deviationWarnings": 1
+    },
+    {
+      "chapterNo": 37,
+      "title": "第37章 天才聚集",
+      "cjkChars": 8663,
+      "segments": 3,
+      "openingModel": "glm-4-flash",
+      "elapsedSeconds": 452,
+      "antiAiHighlights": 74,
+      "deviationWarnings": 4
+    },
+    {
+      "chapterNo": 38,
+      "title": "第38章 论道争锋",
+      "cjkChars": 8679,
+      "segments": 3,
+      "openingModel": "glm-4-flash",
+      "elapsedSeconds": 455,
+      "antiAiHighlights": 79,
+      "deviationWarnings": 3
+    },
+    {
+      "chapterNo": 39,
+      "title": "第39章 长老质疑",
+      "cjkChars": 8343,
+      "segments": 3,
+      "openingModel": "glm-4-flash",
+      "elapsedSeconds": 434,
+      "antiAiHighlights": 184,
+      "deviationWarnings": 1
+    },
+    {
+      "chapterNo": 40,
+      "title": "第40章 苏雪晴的秘密",
+      "cjkChars": 8431,
+      "segments": 2,
+      "openingModel": "glm-4-flash",
+      "elapsedSeconds": 403,
+      "antiAiHighlights": 105,
+      "deviationWarnings": 3
+    },
+    {
+      "chapterNo": 41,
+      "title": "第41章 结丹前夕",
+      "cjkChars": 8429,
+      "segments": 3,
+      "openingModel": "glm-4-plus",
+      "elapsedSeconds": 451,
+      "antiAiHighlights": 128,
+      "deviationWarnings": 6
+    },
+    {
+      "chapterNo": 42,
+      "title": "第42章 凝丹初试",
+      "cjkChars": 8779,
+      "segments": 3,
+      "openingModel": "glm-4-flash",
+      "elapsedSeconds": 474,
+      "antiAiHighlights": 54,
+      "deviationWarnings": 5
+    },
+    {
+      "chapterNo": 43,
+      "title": "第43章 结丹失败",
+      "cjkChars": 7430,
+      "segments": 2,
+      "openingModel": "glm-4-flash",
+      "elapsedSeconds": 414,
+      "antiAiHighlights": 116,
+      "deviationWarnings": 3
+    },
+    {
+      "chapterNo": 44,
+      "title": "第44章 重伤昏迷",
+      "cjkChars": 8899,
+      "segments": 3,
+      "openingModel": "glm-4-flash",
+      "elapsedSeconds": 449,
+      "antiAiHighlights": 50,
+      "deviationWarnings": 4
+    },
+    {
+      "chapterNo": 45,
+      "title": "第45章 艰难恢复",
+      "cjkChars": 7017,
+      "segments": 5,
+      "openingModel": "glm-4-flash",
+      "elapsedSeconds": 273,
+      "antiAiHighlights": 61,
+      "deviationWarnings": 3
+    },
+    {
+      "chapterNo": 46,
+      "title": "第46章 重塑经脉",
+      "cjkChars": 8844,
+      "segments": 2,
+      "openingModel": "glm-4-flash",
+      "elapsedSeconds": 352,
+      "antiAiHighlights": 36,
+      "deviationWarnings": 3
+    },
+    {
+      "chapterNo": 47,
+      "title": "第47章 修为重聚",
+      "cjkChars": 8678,
+      "segments": 2,
+      "openingModel": "glm-4-flash",
+      "elapsedSeconds": 395,
+      "antiAiHighlights": 79,
+      "deviationWarnings": 2
+    },
+    {
+      "chapterNo": 48,
+      "title": "第48章 真相浮现",
+      "cjkChars": 7628,
+      "segments": 5,
+      "openingModel": "glm-4-flash",
+      "elapsedSeconds": 399,
+      "antiAiHighlights": 69,
+      "deviationWarnings": 5
+    },
+    {
+      "chapterNo": 49,
+      "title": "第49章 神秘共鸣",
+      "cjkChars": 8317,
+      "segments": 4,
+      "openingModel": "glm-4-flash",
+      "elapsedSeconds": 394,
+      "antiAiHighlights": 133,
+      "deviationWarnings": 1
+    },
+    {
+      "chapterNo": 50,
+      "title": "第50章 二次结丹",
+      "cjkChars": 8634,
+      "segments": 3,
+      "openingModel": "glm-4-plus",
+      "elapsedSeconds": 259,
+      "antiAiHighlights": 86,
+      "deviationWarnings": 2
+    },
+    {
+      "chapterNo": 51,
+      "title": "第51章 金丹初成",
+      "cjkChars": 7199,
+      "segments": 3,
+      "openingModel": "glm-4-flash",
+      "elapsedSeconds": 284,
+      "antiAiHighlights": 79,
+      "deviationWarnings": 3
+    },
+    {
+      "chapterNo": 52,
+      "title": "第52章 金丹威力",
+      "cjkChars": 7898,
+      "segments": 5,
+      "openingModel": "glm-4-flash",
+      "elapsedSeconds": 316,
+      "antiAiHighlights": 81,
+      "deviationWarnings": 5
+    },
+    {
+      "chapterNo": 53,
+      "title": "第53章 门派暗流",
+      "cjkChars": 8554,
+      "segments": 3,
+      "openingModel": "glm-4-flash",
+      "elapsedSeconds": 452,
+      "antiAiHighlights": 100,
+      "deviationWarnings": 3
+    },
+    {
+      "chapterNo": 54,
+      "title": "第54章 禁地异动",
+      "cjkChars": 8688,
+      "segments": 4,
+      "openingModel": "glm-4-flash",
+      "elapsedSeconds": 475,
+      "antiAiHighlights": 112,
+      "deviationWarnings": 5
+    },
+    {
+      "chapterNo": 55,
+      "title": "第55章 再结金丹",
+      "cjkChars": 6229,
+      "segments": 5,
+      "openingModel": "glm-4-flash",
+      "elapsedSeconds": 298,
+      "antiAiHighlights": 72,
+      "deviationWarnings": 4
+    },
+    {
+      "chapterNo": 56,
+      "title": "第56章 外敌入侵",
+      "cjkChars": 8585,
+      "segments": 2,
+      "openingModel": "glm-4-flash",
+      "elapsedSeconds": 411,
+      "antiAiHighlights": 97,
+      "deviationWarnings": 7
+    },
+    {
+      "chapterNo": 57,
+      "title": "第57章 混乱之夜",
+      "cjkChars": 7628,
+      "segments": 2,
+      "openingModel": "glm-4-plus",
+      "elapsedSeconds": 266,
+      "antiAiHighlights": 47,
+      "deviationWarnings": 6
+    },
+    {
+      "chapterNo": 58,
+      "title": "第58章 追踪线索",
+      "cjkChars": 7580,
+      "segments": 2,
+      "openingModel": "glm-4-flash",
+      "elapsedSeconds": 397,
+      "antiAiHighlights": 109,
+      "deviationWarnings": 2
+    },
+    {
+      "chapterNo": 59,
+      "title": "第59章 深入虎穴",
+      "cjkChars": 7422,
+      "segments": 4,
+      "openingModel": "glm-4-flash",
+      "elapsedSeconds": 363,
+      "antiAiHighlights": 93,
+      "deviationWarnings": 4
+    },
+    {
+      "chapterNo": 60,
+      "title": "第60章 营救",
+      "cjkChars": 8651,
+      "segments": 4,
+      "openingModel": "glm-4-plus",
+      "elapsedSeconds": 344,
+      "antiAiHighlights": 82,
+      "deviationWarnings": 7
+    },
+    {
+      "chapterNo": 61,
+      "title": "第61章 劫后余生",
+      "cjkChars": 8232,
+      "segments": 4,
+      "openingModel": "glm-4-flash",
+      "elapsedSeconds": 397,
+      "antiAiHighlights": 43,
+      "deviationWarnings": 3
+    },
+    {
+      "chapterNo": 62,
+      "title": "第62章 新境感悟",
+      "cjkChars": 6905,
+      "segments": 2,
+      "openingModel": "glm-4-flash",
+      "elapsedSeconds": 382,
+      "antiAiHighlights": 59,
+      "deviationWarnings": 3
+    },
+    {
+      "chapterNo": 63,
+      "title": "第63章 暗影门的图谋",
+      "cjkChars": 7504,
+      "segments": 3,
+      "openingModel": "glm-4-flash",
+      "elapsedSeconds": 272,
+      "antiAiHighlights": 87,
+      "deviationWarnings": 4
+    },
+    {
+      "chapterNo": 64,
+      "title": "第64章 苏雪晴的秘密",
+      "cjkChars": 5146,
+      "segments": 5,
+      "openingModel": "glm-4-flash",
+      "elapsedSeconds": 220,
+      "antiAiHighlights": 43,
+      "deviationWarnings": 3
+    },
+    {
+      "chapterNo": 65,
+      "title": "第65章 王磊的下场",
+      "cjkChars": 8325,
+      "segments": 4,
+      "openingModel": "glm-4-flash",
+      "elapsedSeconds": 377,
+      "antiAiHighlights": 80,
+      "deviationWarnings": 6
+    },
+    {
+      "chapterNo": 66,
+      "title": "第66章 禁地探秘",
+      "cjkChars": 8517,
+      "segments": 4,
+      "openingModel": "glm-4-flash",
+      "elapsedSeconds": 483,
+      "antiAiHighlights": 117,
+      "deviationWarnings": 4
+    },
+    {
+      "chapterNo": 67,
+      "title": "第67章 上古传承",
+      "cjkChars": 7780,
+      "segments": 2,
+      "openingModel": "glm-4-flash",
+      "elapsedSeconds": 407,
+      "antiAiHighlights": 87,
+      "deviationWarnings": 5
+    },
+    {
+      "chapterNo": 68,
+      "title": "第68章 身世之谜",
+      "cjkChars": 7296,
+      "segments": 3,
+      "openingModel": "glm-4-flash",
+      "elapsedSeconds": 231,
+      "antiAiHighlights": 39,
+      "deviationWarnings": 5
+    },
+    {
+      "chapterNo": 69,
+      "title": "第69章 元婴感悟",
+      "cjkChars": 8394,
+      "segments": 4,
+      "openingModel": "glm-4-flash",
+      "elapsedSeconds": 328,
+      "antiAiHighlights": 138,
+      "deviationWarnings": 8
+    },
+    {
+      "chapterNo": 70,
+      "title": "第70章 禁地异变",
+      "cjkChars": 8728,
+      "segments": 3,
+      "openingModel": "glm-4-flash",
+      "elapsedSeconds": 369,
+      "antiAiHighlights": 66,
+      "deviationWarnings": 3
+    },
+    {
+      "chapterNo": 71,
+      "title": "第71章 风暴前夜",
+      "cjkChars": 7162,
+      "segments": 5,
+      "openingModel": "glm-4-flash",
+      "elapsedSeconds": 336,
+      "antiAiHighlights": 73,
+      "deviationWarnings": 3
+    },
+    {
+      "chapterNo": 72,
+      "title": "第72章 凝结元婴",
+      "cjkChars": 8897,
+      "segments": 3,
+      "openingModel": "glm-4-plus",
+      "elapsedSeconds": 351,
+      "antiAiHighlights": 40,
+      "deviationWarnings": 2
+    },
+    {
+      "chapterNo": 73,
+      "title": "第73章 元婴战力",
+      "cjkChars": 8564,
+      "segments": 4,
+      "openingModel": "glm-4-flash",
+      "elapsedSeconds": 317,
+      "antiAiHighlights": 83,
+      "deviationWarnings": 4
+    },
+    {
+      "chapterNo": 74,
+      "title": "第74章 战争爆发",
+      "cjkChars": 8974,
+      "segments": 2,
+      "openingModel": "glm-4-flash",
+      "elapsedSeconds": 327,
+      "antiAiHighlights": 6,
+      "deviationWarnings": 3
+    },
+    {
+      "chapterNo": 75,
+      "title": "第75章 血战南门",
+      "cjkChars": 8809,
+      "segments": 3,
+      "openingModel": "glm-4-plus",
+      "elapsedSeconds": 385,
+      "antiAiHighlights": 50,
+      "deviationWarnings": 4
+    },
+    {
+      "chapterNo": 76,
+      "title": "第76章 赵天磊的选择",
+      "cjkChars": 8612,
+      "segments": 2,
+      "openingModel": "glm-4-flash",
+      "elapsedSeconds": 431,
+      "antiAiHighlights": 107,
+      "deviationWarnings": 2
+    },
+    {
+      "chapterNo": 77,
+      "title": "第77章 友宗驰援",
+      "cjkChars": 7050,
+      "segments": 3,
+      "openingModel": "glm-4-flash",
+      "elapsedSeconds": 308,
+      "antiAiHighlights": 66,
+      "deviationWarnings": 3
+    },
+    {
+      "chapterNo": 78,
+      "title": "第78章 苏雪晴觉醒",
+      "cjkChars": 8585,
+      "segments": 3,
+      "openingModel": "glm-4-flash",
+      "elapsedSeconds": 389,
+      "antiAiHighlights": 87,
+      "deviationWarnings": 6
+    },
+    {
+      "chapterNo": 79,
+      "title": "第79章 古剑之威",
+      "cjkChars": 8318,
+      "segments": 2,
+      "openingModel": "glm-4-flash",
+      "elapsedSeconds": 357,
+      "antiAiHighlights": 148,
+      "deviationWarnings": 2
+    },
+    {
+      "chapterNo": 80,
+      "title": "第80章 暗影撤退",
+      "cjkChars": 8500,
+      "segments": 3,
+      "openingModel": "glm-4-flash",
+      "elapsedSeconds": 325,
+      "antiAiHighlights": 133,
+      "deviationWarnings": 3
+    },
+    {
+      "chapterNo": 81,
+      "title": "第81章 心魔初现",
+      "cjkChars": 8811,
+      "segments": 3,
+      "openingModel": "glm-4-flash",
+      "elapsedSeconds": 357,
+      "antiAiHighlights": 46,
+      "deviationWarnings": 3
+    },
+    {
+      "chapterNo": 82,
+      "title": "第82章 心魔加深",
+      "cjkChars": 7206,
+      "segments": 2,
+      "openingModel": "glm-4-flash",
+      "elapsedSeconds": 182,
+      "antiAiHighlights": 15,
+      "deviationWarnings": 4
+    },
+    {
+      "chapterNo": 83,
+      "title": "第83章 心魔困境",
+      "cjkChars": 7142,
+      "segments": 3,
+      "openingModel": "glm-4-flash",
+      "elapsedSeconds": 217,
+      "antiAiHighlights": 57,
+      "deviationWarnings": 3
+    },
+    {
+      "chapterNo": 84,
+      "title": "第84章 本心抉择",
+      "cjkChars": 7858,
+      "segments": 3,
+      "openingModel": "glm-4-flash",
+      "elapsedSeconds": 228,
+      "antiAiHighlights": 51,
+      "deviationWarnings": 2
+    },
+    {
+      "chapterNo": 85,
+      "title": "第85章 破心魔",
+      "cjkChars": 7114,
+      "segments": 2,
+      "openingModel": "glm-4-plus",
+      "elapsedSeconds": 189,
+      "antiAiHighlights": 84,
+      "deviationWarnings": 2
+    },
+    {
+      "chapterNo": 86,
+      "title": "第86章 心魔劫后",
+      "cjkChars": 7913,
+      "segments": 2,
+      "openingModel": "glm-4-flash",
+      "elapsedSeconds": 340,
+      "antiAiHighlights": 204,
+      "deviationWarnings": 4
+    },
+    {
+      "chapterNo": 87,
+      "title": "第87章 赵天磊和解",
+      "cjkChars": 8583,
+      "segments": 3,
+      "openingModel": "glm-4-flash",
+      "elapsedSeconds": 378,
+      "antiAiHighlights": 116,
+      "deviationWarnings": 5
+    },
+    {
+      "chapterNo": 88,
+      "title": "第88章 禁地封印崩裂",
+      "cjkChars": 8747,
+      "segments": 3,
+      "openingModel": "glm-4-flash",
+      "elapsedSeconds": 447,
+      "antiAiHighlights": 68,
+      "deviationWarnings": 5
+    },
+    {
+      "chapterNo": 89,
+      "title": "第89章 清虚真人的使命",
+      "cjkChars": 8453,
+      "segments": 3,
+      "openingModel": "glm-4-flash",
+      "elapsedSeconds": 396,
+      "antiAiHighlights": 134,
+      "deviationWarnings": 5
+    },
+    {
+      "chapterNo": 90,
+      "title": "第90章 神器现世",
+      "cjkChars": 8714,
+      "segments": 2,
+      "openingModel": "glm-4-plus",
+      "elapsedSeconds": 221,
+      "antiAiHighlights": 78,
+      "deviationWarnings": 7
+    },
+    {
+      "chapterNo": 91,
+      "title": "第91章 天衡碎片",
+      "cjkChars": 8737,
+      "segments": 3,
+      "openingModel": "glm-4-flash",
+      "elapsedSeconds": 335,
+      "antiAiHighlights": 80,
+      "deviationWarnings": 3
+    },
+    {
+      "chapterNo": 92,
+      "title": "第92章 宿命之约",
+      "cjkChars": 7763,
+      "segments": 3,
+      "openingModel": "glm-4-flash",
+      "elapsedSeconds": 222,
+      "antiAiHighlights": 69,
+      "deviationWarnings": 3
+    },
+    {
+      "chapterNo": 93,
+      "title": "第93章 最后的准备",
+      "cjkChars": 7518,
+      "segments": 3,
+      "openingModel": "glm-4-flash",
+      "elapsedSeconds": 184,
+      "antiAiHighlights": 110,
+      "deviationWarnings": 4
+    },
+    {
+      "chapterNo": 94,
+      "title": "第94章 元婴巅峰",
+      "cjkChars": 6966,
+      "segments": 2,
+      "openingModel": "glm-4-flash",
+      "elapsedSeconds": 144,
+      "antiAiHighlights": 13,
+      "deviationWarnings": 2
+    },
+    {
+      "chapterNo": 95,
+      "title": "第95章 身世最终揭秘",
+      "cjkChars": 7288,
+      "segments": 3,
+      "openingModel": "glm-4-flash",
+      "elapsedSeconds": 202,
+      "antiAiHighlights": 90,
+      "deviationWarnings": 3
+    },
+    {
+      "chapterNo": 96,
+      "title": "第96章 天劫降临",
+      "cjkChars": 8116,
+      "segments": 2,
+      "openingModel": "glm-4-plus",
+      "elapsedSeconds": 204,
+      "antiAiHighlights": 34,
+      "deviationWarnings": 5
+    },
+    {
+      "chapterNo": 97,
+      "title": "第97章 第九道天雷",
+      "cjkChars": 8683,
+      "segments": 3,
+      "openingModel": "glm-4-plus",
+      "elapsedSeconds": 267,
+      "antiAiHighlights": 88,
+      "deviationWarnings": 4
+    },
+    {
+      "chapterNo": 98,
+      "title": "第98章 上界之战",
+      "cjkChars": 8781,
+      "segments": 3,
+      "openingModel": "glm-4-plus",
+      "elapsedSeconds": 335,
+      "antiAiHighlights": 56,
+      "deviationWarnings": 13
+    },
+    {
+      "chapterNo": 99,
+      "title": "第99章 天衡重铸",
+      "cjkChars": 7098,
+      "segments": 2,
+      "openingModel": "glm-4-plus",
+      "elapsedSeconds": 265,
+      "antiAiHighlights": 83,
+      "deviationWarnings": 7
+    },
+    {
+      "chapterNo": 100,
+      "title": "第100章 飞升",
+      "cjkChars": 7395,
+      "segments": 3,
+      "openingModel": "glm-4-plus",
+      "elapsedSeconds": 192,
+      "antiAiHighlights": 42,
+      "deviationWarnings": 2
+    }
+  ]
+}
