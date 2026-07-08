@@ -204,7 +204,7 @@ def main() -> int:
     )
 
     md.append("\n### 精选章节摘录（文笔/高潮）\n")
-    md.append("完整正文托管于 Notion（见下方目录与跳转链接）。以下是机器挑选的若干段落预览：\n\n")
+    md.append("从叙事脊梁（开篇 / 各弧高潮 / 飞升）中各挑一段，完整正文见下方目录。\n\n")
     for ch in HIGHLIGHTS:
         loaded = load_chapter(ch)
         url = notion_url(index, ch)
@@ -219,8 +219,7 @@ def main() -> int:
         md.append("\n")
 
     md.append("### 章节目录与正文\n")
-    md.append("每章正文以仓库 Markdown 呈现（GitHub 可直接阅读）；提供 Notion 凭据后，"
-              "另以 Notion 页面托管。\n\n")
+    md.append("每章正文以独立 Notion 页面托管，亦可阅读仓库 Markdown。\n\n")
     md.append("| 章 | 标题 | 字数 | 正文 |\n|---:|---|---:|---|\n")
     if CHAPTERS.is_dir():
         notion_by_no = {e.get("chapterNo"): e for e in index}
