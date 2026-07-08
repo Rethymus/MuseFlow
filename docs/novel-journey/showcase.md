@@ -1,200 +1,12 @@
-# MuseFlow 灵韵
-
-[![CI](https://github.com/Rethymus/MuseFlow/actions/workflows/ci.yml/badge.svg)](https://github.com/Rethymus/MuseFlow/actions/workflows/ci.yml)
-[![Version](https://img.shields.io/badge/version-0.1.4-blue?style=flat-square)](https://github.com/Rethymus/MuseFlow/releases)
-[![Platform](https://img.shields.io/badge/platform-Android%20%7C%20Linux%20%7C%20Windows%20%7C%20Web-lightgrey?style=flat-square)](#技术栈)
-[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen?style=flat-square)](CONTRIBUTING.md)
-
-![Flutter](https://img.shields.io/badge/Flutter-02569B?style=flat-square&logo=flutter&logoColor=white)
-![Dart](https://img.shields.io/badge/Dart-0175C2?style=flat-square&logo=dart&logoColor=white)
-![Riverpod](https://img.shields.io/badge/Riverpod-FF5C7C?style=flat-square)
-![Hive CE](https://img.shields.io/badge/Hive_CE-EEB33B?style=flat-square)
-![super_editor](https://img.shields.io/badge/super__editor-4B5563?style=flat-square)
-![OpenAI](https://img.shields.io/badge/OpenAI-111111?style=flat-square&logo=openai&logoColor=white)
-![Claude](https://img.shields.io/badge/Claude-D97757?style=flat-square)
-![DeepSeek](https://img.shields.io/badge/DeepSeek-4D6BFE?style=flat-square)
-![Ollama](https://img.shields.io/badge/Ollama-111827?style=flat-square)
-![GitHub Actions](https://img.shields.io/badge/GitHub_Actions-2088FF?style=flat-square&logo=githubactions&logoColor=white)
-
-[English](README.en.md) | 中文
-
-> 想象力为骨，AI 为翼。
-
-MuseFlow 灵韵是一款面向长篇小说作者的 AI 协作创作工具。它不承诺“一键写完一本书”，也不把作者降级成提示词输入员；它更像创作者案头的磨刀石：帮你收拢灵感、理顺设定、守住伏笔、打磨文字，让 AI 成为想象力的翼，而不是替代想象力的流水线。
-
-## 为什么是 MuseFlow
-
-当平台开始严格清理粗制滥造的 AI 内容，真正的问题并不是“要不要 AI”，而是“谁在主导故事”。MuseFlow 的答案很明确：故事必须属于作者。AI 只负责听懂你的素材，把脑海中散乱的画面整理成可继续书写的文本；人物、世界观、伏笔和取舍，仍然由作者掌控。
-
-中文名“灵韵”取“灵感之神韵”，强调保留原始想法的灵魂，再补上文字的节奏。英文名 MuseFlow 则来自 Muse 与 Flow，意味着创作者借助工具进入稳定心流。
-
-## 为谁而生
-
-- **有故事的“拙”笔**：脑洞很大、世界观很满，却常被开篇、遣词和段落衔接卡住。
-- **追求效率的构思者**：不想要千篇一律的 AI 套话，只想让工具帮助管理角色、设定、伏笔和章节节奏。
-- **长篇连载作者**：需要在几十章、上百章之后仍然记得每一条暗线、每一次承诺和每个角色的边界。
-
-## 创作旅程与界面示意
-
-下面以一名修仙长篇作者的创作为线索，逐一展示各功能模块。其中**文稿库、灵感捕捉、AI 整理、角色卡、世界观、模板库、Skill 规则、伏笔管理、剧情线、逻辑守护、整理与导出、写作统计、Token 审计、分析报告、报告详情、设置、AI 模型管理与 AI 用语过滤**为 golden 测试真实渲染的截图，其余为设计示意图；全部使用离线示例数据。
-
-### 1. 从文稿库开始管理作品
-
-文稿库承载多作品并行创作。作者可以同时维护《剑道苍穹》和其他构思，快速查看题材、目标字数、状态和最近编辑时间。
-
-![文稿库](docs/readme/screenshots/01-manuscript-library.png)
-
-### 2. 捕捉碎片，而不是丢失灵感
-
-灵感捕捉器适合记录突然出现的画面、台词、人物冲突和伏笔种子。标签筛选让碎片在进入正文前先形成可检索的素材池。
-
-![灵感捕捉](docs/readme/screenshots/02-capture-inbox.png)
-
-### 3. 从碎片整理到章节写作
-
-AI 整理把选中的灵感碎片组织成可继续书写的结构化草稿；作者负责接受、修改或重试。
-
-![AI 整理](docs/readme/screenshots/03-ai-organization.png)
-
-章节编辑器提供章节侧栏、正文编辑、工具栏、自动保存和字数统计。AI 在这里是辅助修改与整理的能力，不是接管创作的按钮。
-
-![章节编辑器](docs/readme/screenshots/04-chapter-editor.png)
-
-编辑器 AI 工具栏支持语气改写、段落润色和自由指令，并把结果留给作者确认。
-
-![编辑器 AI 工具栏](docs/readme/screenshots/05-editor-ai-toolbar.png)
-
-### 4. 让角色和世界观成为 AI 的记忆
-
-角色卡保存人物性格、外貌、别名和背景，让 AI 在润色与扩写时知道“林风是谁”“苏雪晴不能怎样说话”。
-
-![角色卡](docs/readme/screenshots/06-knowledge-characters.png)
-
-世界观卡保存规则、势力、地理与技术层级。对修仙、奇幻、科幻这类强设定作品，它是防止逻辑漂移的底座。
-
-![世界观](docs/readme/screenshots/07-knowledge-world.png)
-
-### 5. 用模板快速搭起大世界
-
-模板库把常见类型文的世界搭建经验沉淀为可复用框架。作者不是照抄模板，而是用它缩短从“一个脑洞”到“可写设定集”的距离。
-
-![模板库](docs/readme/screenshots/08-template-gallery.png)
-
-Skill 规则文档进一步约束 AI：境界体系、势力关系、禁忌术语、反 AI 味文风，都可以变成启用中的写作规则。
-
-![Skill 规则](docs/readme/screenshots/09-skill-rules.png)
-
-### 6. 伏笔、剧情线和故事弧一起守住长篇结构
-
-伏笔管理记录“何处埋下、何时回收、当前状态如何”。当连载推进到几十章后，它能提醒作者别忘了早期承诺。
-
-![伏笔管理](docs/readme/screenshots/10-foreshadowing.png)
-
-剧情线以章节为轴组织关键节点，帮助作者看到事件因果、参与角色、写作状态与关联伏笔。
-
-![剧情线](docs/readme/screenshots/11-plot-timeline.png)
-
-故事弧图把节点结构可视化，适合检查起承转合、高潮位置和长线铺垫是否集中或断裂。
-
-![故事弧图](docs/readme/screenshots/12-story-arc.png)
-
-逻辑守护面板关注一致性风险：角色是否越界、设定是否冲突、伏笔是否被遗忘。
-
-![逻辑守护](docs/readme/screenshots/13-logic-guardian.png)
-
-整理与导出负责最终交付前的格式清洗、文稿打包和导出检查。
-
-![整理与导出](docs/readme/screenshots/14-export-cleanup.png)
-
-### 7. 写作过程可以被度量
-
-写作统计让作者看到每日字数、速度趋势、AI 辅助比例和会话数。MuseFlow 不鼓励无脑堆量，但会帮助作者理解自己的节奏。
-
-![写作统计](docs/readme/screenshots/15-writing-stats.png)
-
-Token 审计记录每次 AI 调用的输入、输出、模型和操作类型。对长篇项目而言，成本透明和可控同样重要。
-
-![Token 审计](docs/readme/screenshots/16-token-audit.png)
-
-分析报告中心把成本、痛点、反 AI 味和一致性检查集中在一起，帮助作者从“写完一章”走向“复盘一部作品”。
-
-![分析报告](docs/readme/screenshots/17-reports-hub.png)
-
-报告详情进一步推算短篇、长篇和连载规模下的实际消耗，让创作预算不再靠猜。
-
-![报告详情](docs/readme/screenshots/18-report-details.png)
-
-### 8. 模型与文风由作者掌控
-
-设置页集中管理模型、本地数据和写作统计清理。
-
-![设置](docs/readme/screenshots/19-settings.png)
-
-AI 模型管理支持多供应商和 OpenAI 兼容接口，方便在 OpenAI、Claude、DeepSeek、Ollama 等不同方案间切换。
-
-![AI 模型管理](docs/readme/screenshots/20-ai-providers.png)
-
-AI 用语过滤让作者维护自己的“禁用词表”，持续压低模板化表达和机械总结句。
-
-![AI 用语过滤](docs/readme/screenshots/21-banned-phrases.png)
-
-## 核心能力
-
-- **多文稿与章节管理**：文稿库、章节侧栏、章节级自动保存、章节排序与章节感知导出。
-- **灵感捕捉与 AI 整理**：碎片记录、标签筛选、结构化提示管线、局部润色与改写。
-- **知识库与规则守护**：角色卡、世界观、模板库、Skill 规则、实体匹配和上下文注入。
-- **长篇结构管理**：伏笔生命周期、剧情节点、故事弧图、逻辑守护、格式清洗和导出。
-- **数据与成本透明**：写作统计、Token 审计、成本报告、痛点报告、反 AI 味评估和一致性分析。
-- **轻量跨平台**：Flutter 实现，本地优先存储；Android、Linux、Windows 是发布目标，Web 作为测试/构建验证目标（产品 UI 功能旅程的完整 UAT 需 Windows 桌面 / Android 设备，尚未覆盖）。
-
-## 技术栈
-
-- Flutter / Dart
-- Riverpod
-- Hive CE 本地存储
-- super_editor 富文本编辑
-- go_router 路由
-- fl_chart / graphview 可视化
-- OpenAI / Claude / DeepSeek / Ollama 多模型适配
-- Android / Linux 本地构建验证，Windows GitHub Actions 构建目标，Web 测试构建目标
-
-## 运行与验证
-
-```bash
-flutter pub get
-dart format --set-exit-if-changed .
-flutter analyze
-flutter test
-flutter test test/core/presentation/active_adapter_wiring_test.dart
-flutter build web --release
-scripts/check_readme_assets.sh
-scripts/check_repo_hygiene.sh
-scripts/check_shell_scripts.sh
-scripts/check_ai_adapter_wiring.sh
-scripts/check_editor_docs.sh
-scripts/check_dependency_docs.sh
-scripts/check_storage_architecture.sh
-scripts/validate_platform_support.sh
-```
-
-## 用户旅程实测（v0.1.5）
-
-本节以一次**端到端的百章长篇小说生成**展示 MuseFlow 的完整创作链路：从世界观与伏笔规划，到逐章 7000–9000 中文字（不计标点）的正文产出，再到反 AI 味打磨与设定一致性守护。每章由产品全栈管线产出——`PromptPipeline` 禁用词注入 → 多段流式生成 → `AntiAIScentProcessor` 反 AI 味 → `DeviationDetectionService` Skill 守护 → `ChapterSummarizationService` 上下文链 → `ForeshadowingRepository` 伏笔生命周期 → `TokenAuditService` 计量。
-
-- **复现命令**：`GLM_API_KEY=... flutter test test/journey/long_novel_journey_test.dart --name "full run" --concurrency=1`（约 10 小时；缺 key 时该测试自动跳过，不影响 CI）。
-- **证据源**：[`long_novel_journey_test.dart`](test/journey/long_novel_journey_test.dart) · 指标 [`metrics.json`](docs/novel-journey/metrics.json) · 伏笔 [`foreshadowing.json`](docs/novel-journey/foreshadowing.json) · 渲染脚本 [`scripts/render_novel_showcase.py`](scripts/render_novel_showcase.py)。
-- **全本通读**：[`剑道苍穹-全本.md`](docs/novel-journey/剑道苍穹-全本.md)（100 章合集）；分章正文见下方目录。
-- **正文托管**：每章正文已发布为独立 Notion 页面，亦可在仓库内阅读 Markdown（见下方目录）。
-
 ### 规模与字数
-- **章节数**：100 章（端到端生成，于第 100 章飞升收束）
+- **章节数**：100 章（全量真实 GLM 生成，未完结于百章内、于第 100 章飞升收束）
 - **总字数（去标点 CJK）**：821,036 字 · 平均 8,210 字/章 · 区间 [6,972, 8,980]
 - **规格合规**：每章 7000–9000 中文字（不计标点，允许 ±500）；补丁续写后 100/100 章落在 [6500, 9500]，其中 99/100 章达 7000+
 
 ### 耗时与成本
 - **总耗时**：10h3m54s（平均 362.3 秒/章）
 - **Token 消耗**：输入 2,983,607 · 输出 1,235,392 · 合计 4,218,999 （513 次 API 调用）
-- **模型策略**：关键章（开篇 / 高潮 / 收束）用高性能模型起笔，其余用低开销模型，在保证文笔的同时压低 token 成本（明细见下表）
+- **模型搭配**（高性能＋低开销混用）：  glm-4-plus 用于 18 个关键章（开篇/高潮/收束）的开篇；glm-4-flash 承担其余开篇与全部续写、守护、摘要
 
 | 模型 | 调用次数 | 输入 token | 输出 token | 单价(输入/输出,¥/百万) | 估算成本 |
 |---|---:|---:|---:|---|---:|
@@ -211,46 +23,53 @@ scripts/validate_platform_support.sh
 - **伏笔填坑**：埋设 12 条长线伏笔，回收 12 条，填坑率 100%，平均 50.1 章回收
 
 ### 精选章节摘录（文笔/高潮）
-
 从叙事脊梁（开篇 / 各弧高潮 / 飞升）中各挑一段，完整正文见下方目录。
 
-> **第1章 · 凡人少年**
+> **第1章 · 凡人少年**（[Notion 全文](https://excessive-physician-8eb.notion.site/1-397600df78ee8168aeafeb38654b1883)）
 >
 > 山风呼啸，卷起枯叶打着旋儿掠过林风的脚踝。他抡起斧头，青筋在黝黑的手背上凸起，每一次落下都带着山野间特有的沉闷声响。木屑纷飞中，他的眼神却专注，仿佛那棵老槐树不是阻碍，而是值得尊重的对手。
-> "吱呀——"槐树应声而倒，轰然倒地的声音惊起了几只林鸟。林风抹去额头的汗水，抬头望向青云山的方向。云雾缭绕间，若隐若现的飞檐斗角如同传说中仙人居住的地方。
+> "吱呀——"槐树应声而倒，轰然倒地的声音惊起了几只林鸟。林风抹去额头的汗水，抬头望向青云山的方向。云雾缭绕间，若隐若现的飞檐斗角如同传说中仙人居住的地方。他从小就听村里的老人讲过青云宗的故事，那些御剑飞行、呼风唤雨的修仙者，在这片山巅之上俯瞰凡尘。
+> "小风，歇会儿吧。"老槐树下，村口的老张头递过一葫芦水。林风接过，仰头灌了几口，冰凉的液体顺着喉咙滑下，稍稍缓解了口干舌燥。
 
-> **第30章 · 筑基**
+> **第30章 · 筑基**（[Notion 全文](https://excessive-physician-8eb.notion.site/30-397600df78ee81939447c7f6e77e0ffd)）
 >
 > 月光如水，洒在青云峰顶。林风盘膝而坐，手中托着一枚丹药，丹身流转着淡金色光芒，散发出若有若无的草木清香。这是他历经千辛万苦采集灵草，炼制而成的筑基丹。丹药入手温润，仿佛蕴藏着无尽的生命力。
-> 夜风拂过，带着山顶特有的寒意，吹动林风的青衫。他将丹药放入口中。丹药入口即化，化作一股温热的气流顺着喉咙滑入丹田。起初只是微微发热，随即那热量开始迅速蔓延，如同点燃了体内的火种。
+> 夜风拂过，带着山顶特有的寒意，吹动林风的青衫。他，将丹药放入口中。丹药入口即化，化作一股温热的气流顺着喉咙滑入丹田。起初只是微微发热，随即那热量开始迅速蔓延，如同点燃了体内的火种。
+> 林风闭上眼睛，感受着体内发生的变化。丹田处，一股暖流开始涌现，逐渐扩散至全身经脉。他按照无名功法中的心法引导，开始吸纳这股能量。经脉中的灵气仿佛被唤醒，开始按照特定的路线运转。
 
-> **第50章 · 二次结丹**
+> **第50章 · 二次结丹**（[Notion 全文](https://excessive-physician-8eb.notion.site/50-397600df78ee815b99c6cc7dae75be88)）
 >
 > 丹田内，灵力如江河奔涌。林风盘膝而坐，闭目凝神，感受着体内经脉重塑后的全新状态。每一条经脉都宽阔了数倍，内壁光滑如镜，灵力在其中流淌，再无阻滞。金丹碎片悬浮在丹田中央，散发出柔和的金光，那是他第一次尝试结丹失败后留下的痕迹。
 > "准备好了吗？"清虚真人的声音在洞府中响起，平静中带着一丝不易察觉的紧张。
 > 林风睁开眼，眸中闪烁着坚定："师尊，弟子已准备就绪。"
+> 苏雪晴站在一旁，手中托着一枚丹药："这是师尊炼制的固元丹，能辅助你稳定心神。"
+> 林风接过丹药，服下。丹药入口即化，一股清凉的气息顺着喉咙滑入腹中，丹田内的灵力似乎变得更加活跃。
+> "这次结丹，无需阵法辅助。"清虚真人道，"凭借你体内重塑的经脉，以及无名功法与凝丹功法的融合，你有足够的实力完成二次结丹。
 
-> **第75章 · 血战南门**
+> **第75章 · 血战南门**（[Notion 全文](https://excessive-physician-8eb.notion.site/75-397600df78ee8179874bf6361992a5e6)）
 >
 > 血腥味在空气中弥漫，混合着硫磺与焦土的气息。林风的长剑泛着青光，剑尖滴落的鲜血在他脚边汇成细流。南大门的石阶上，躺着三具暗影门弟子的尸体，他们的眼睛圆睁，凝固着的惊骇。
 > "林师弟，左翼不稳！"赵天磊的声音从远处传来，带着一丝喘息。他的长剑已经布满缺口，衣袍撕裂处露出几道血痕。
-> 林风没有回头，元婴期的感知让他早已察觉战局变化。他身形一晃，剑如游龙，三名偷袭的暗影门弟子咽喉同时出现细线般的血痕。
+> 林风没有回头，元婴期的感知让他早已察觉战局变化。他身形一晃，剑如游龙，三名偷袭的暗影门弟子咽喉同时出现细线般的血痕。倒下前，他们甚至没能发出一声惊呼。
+> 白灵的身影在林风肩头若隐若现，雪白的毛发沾染了血点，双眼却闪烁着智慧的光芒。她轻轻一甩头，一道幻术如雾般散开，几名正要包抄的敌人突然停下脚步，茫然四顾。
 
-> **第85章 · 破心魔**
+> **第85章 · 破心魔**（[Notion 全文](https://excessive-physician-8eb.notion.site/85-397600df78ee811f8d57fecdaf692ffc)）
 >
 > 林风站在幻境中心，四周是无穷无尽的黑暗。他能听见自己的心跳声，沉重而有力，像一面战鼓敲打在胸膛上。汗水从额头滑落，滴在石板上，发出微弱的声响。幻境中的空气黏稠得如同胶水，每一次呼吸都像是吞下了千斤重的铅块。
 > "放弃吧。"一个声音在他身后响起，熟悉得让他心头发紧。那是父母的声音，温暖而带着叹息，"你永远无法超越自己的极限，何必执着于此？"
 > 林风没有回头。他知道，这是心魔的把戏。他闭上眼睛，感受着指尖的触感——粗糙，真实，带着常年劳作留下的薄茧。这是他作为凡人的印记，也是他力量的源泉。
+> "你以为你是谁？"另一个声音响起，是赵天磊，带着嘲讽的笑意，"一个山野村夫，也妄想修仙？
 
-> **第100章 · 飞升**
+> **第100章 · 飞升**（[Notion 全文](https://excessive-physician-8eb.notion.site/100-397600df78ee81528227db55cb64b64f)）
 >
 > 青云峰顶，云海翻涌。
-> 林风站在崖边，衣袂被山风吹得猎猎作响。脚下是万丈深渊，远处是连绵的山峦，被一层薄薄的晨雾笼罩。空气中弥漫着灵气与尘埃混合的味道，清冽而厚重。
+> 林风站在崖边，衣袂被山风吹得猎猎作响。脚下是万丈深渊，远处是连绵的山峦，被一层薄薄的晨雾笼罩。他，空气中弥漫着灵气与尘埃混合的味道，清冽而厚重。
 > "准备好了吗？"苏雪晴的声音从身后传来，温柔如初。
 > 林风点点头，目光落在身旁的天衡盘上。那枚古朴的玉盘在晨光中流转着淡蓝色的光晕，表面篆刻的符文仿佛活了过来，缓缓游动。清虚真人已经化作点点灵光，融入了这枚上古神器之中，完成了他千年的宿命。
+> "师尊……"林风轻声呼唤，声音被风吹散。
+> 赵天磊拍了拍他的肩膀，手掌宽厚而有力："这一路走来，你从未让任何人失望。现在，轮到你为我们，为青云宗，为整个修仙界开辟道路了。
 
 ### 章节目录与正文
-
 每章正文以独立 Notion 页面托管，亦可阅读仓库 Markdown。
 
 | 章 | 标题 | 字数 | 正文 |
@@ -355,23 +174,3 @@ scripts/validate_platform_support.sh
 | 98 | 上界之战 | 8,787 | [Markdown](docs/novel-journey/chapters/第098章-上界之战.md) · [Notion](https://excessive-physician-8eb.notion.site/98-397600df78ee813a886df6a0ca8871d7) |
 | 99 | 天衡重铸 | 7,104 | [Markdown](docs/novel-journey/chapters/第099章-天衡重铸.md) · [Notion](https://excessive-physician-8eb.notion.site/99-397600df78ee81008142f0e8dfd17141) |
 | 100 | 飞升 | 7,399 | [Markdown](docs/novel-journey/chapters/第100章-飞升.md) · [Notion](https://excessive-physician-8eb.notion.site/100-397600df78ee81528227db55cb64b64f) |
-
-## 当作家遇见 AI
-
-反 AI 味是 MuseFlow 的产品灵魂，而非附加功能。这迫使我们直面一个真问题：当 AI 的写作能力不断进化，真正成熟的创作者会作何选择？答案并不统一。
-
-作家**余华**对 GPT 的判断至今锋利：以当下的理解，它“大概能写出中庸的小说，却写不出充满了个性的小说——因为人脑总是要犯错误的，而这恰恰是人脑最可贵的地方”。
-
-**郝景芳**（《北京折叠》作者，继《三体》之后又一位摘得雨果奖的中国作家）给出了另一种回答。她坦言今年新出的小说里，AI 写作的比重已占一半：“编辑还一个劲夸我今年写得好，读者也看不出来哪些部分是 AI 写的。”很长一段时间里，作家被“抓包”用 AI 往往矢口否认；敢于公开承认并引以为荣的，她算少见的一位。
-
-**奥尔加·托卡尔丘克**（2018 年诺贝尔文学奖得主）走得更远。她购入了某款 AI 模型的高级版本，写作时会向它抛出各种问题：故事里的主人公会听什么样的歌？亲爱的，我们该如何把故事写得更精彩？她清楚 AI 在经济学等“硬数据”上会出现幻觉和事实错误，却坚信在文学创作中这项技术拥有“难以置信的优势”——这让不少读者知情后颇感“破防”。
-
-**安东尼·霍洛维茨**（《喜鹊谋杀案》三部曲作者）更像一位谨慎的实用者。他坦言用 AI 写作“像在作弊”，同时也见识过它的笨拙：你问它土豆是什么形状，它答 *ellipsoid*（椭球体）；让它落笔成文，就成了“盘子里的土豆呈椭球体状”这种不伦不类的句子。
-
-从质疑到拥抱，从破防到作弊感，作家们的态度正在分化。MuseFlow 不替作者站队，只守住一条底线：让 AI 听懂你的素材、理顺你的设定、打磨你的文字，而故事最终归属于作者——这恰是余华所说“人脑最可贵的地方”。
-
-> 以上作家言论转引自小黑盒作者“山下热狗”的文章《当雨果奖&诺奖得主开始用AI写作，作为普通人你会坚守还是倒戈？》([原文链接](https://www.xiaoheihe.cn/app/bbs/link/2db772047c7c?h_camp=link&h_session_id=laQc8HhHmBTV48ud&h_src=YXBwX3NoYXJl))。
-
-## 愿景
-
-MuseFlow 灵韵想成为小说作者案头长期可用的 AI 辅助利器：不制造快餐文学，不稀释作者表达，而是在每一次灵感落地、每一次结构复盘、每一次文字打磨中，把“人的温度”留在故事里。
