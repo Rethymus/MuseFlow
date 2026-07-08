@@ -414,8 +414,16 @@ class _LongNovelGenerator {
     // 7000–8500), keeping the full 100-chapter run inside the time budget.
     while (cjkCharCount(text) < 7000 && segments < 5) {
       segments++;
-      final tail = text.length > 1500 ? text.substring(text.length - 1500) : text;
-      final contMessages = _continuationMessages(chapterNo, title, beat, tail, segments);
+      final tail = text.length > 1500
+          ? text.substring(text.length - 1500)
+          : text;
+      final contMessages = _continuationMessages(
+        chapterNo,
+        title,
+        beat,
+        tail,
+        segments,
+      );
       final cont = await _generate(
         messages: contMessages,
         model: kModelLow,
@@ -536,7 +544,11 @@ class _LongNovelGenerator {
           inputText: inputText,
           outputText: output,
         );
-        return (text: output, inputTokens: inputTokens, outputTokens: outputTokens);
+        return (
+          text: output,
+          inputTokens: inputTokens,
+          outputTokens: outputTokens,
+        );
       } catch (e) {
         if (attempt >= 3 || !_isTransient(e)) rethrow;
         final backoff = const Duration(seconds: 5) * attempt;
@@ -583,7 +595,8 @@ class _LongNovelGenerator {
       '【禁用词清单（出现即视为AI腔，须回避或以更自然表达替代）】'
           '${_banned.take(90).join('、')}',
     ].join('\n');
-    final user = '【本章】《剑道苍穹》第$chapterNo章 $title\n'
+    final user =
+        '【本章】《剑道苍穹》第$chapterNo章 $title\n'
         '【剧情要点】$beat\n\n'
         '${kSegmentHints[1]!}$kLengthFloor';
     return [ChatMessage.system(sys), ChatMessage.user(user)];
@@ -598,7 +611,8 @@ class _LongNovelGenerator {
   ) {
     final sys = '$kWriterPersona\n\n$kWorldContext';
     final hint = kSegmentHints[segNo] ?? kSegmentHints[4]!;
-    final user = '【本章】《剑道苍穹》第$chapterNo章 $title\n'
+    final user =
+        '【本章】《剑道苍穹》第$chapterNo章 $title\n'
         '【剧情要点】$beat\n'
         '【已写正文结尾】\n"""\n$textTail\n"""\n\n'
         '$hint$kLengthFloor';
@@ -664,8 +678,10 @@ class _LongNovelGenerator {
     // title carries a "第N章 名称" prefix from the outline beat; strip it for
     // the filename so we don't get "第001章-第1章 …" redundancy.
     final nameOnly = title.replaceFirst(RegExp(r'^第\d+章\s*'), '');
-    final safe = (nameOnly.isEmpty ? title : nameOnly)
-        .replaceAll(RegExp(r'[/\\:*?"<>|]'), '');
+    final safe = (nameOnly.isEmpty ? title : nameOnly).replaceAll(
+      RegExp(r'[/\\:*?"<>|]'),
+      '',
+    );
     final file = File('$outputDir/chapters/第$padded章-$safe.md');
     final body = '# $title\n\n$content\n';
     await file.writeAsString(body);
@@ -684,9 +700,9 @@ class _LongNovelGenerator {
       'lastTitle': done.isEmpty ? '' : done.last.title,
       'lastCjkChars': done.isEmpty ? 0 : done.last.cjkChars,
     };
-    File('$outputDir/progress.json').writeAsStringSync(
-      const JsonEncoder.withIndent('  ').convert(map),
-    );
+    File(
+      '$outputDir/progress.json',
+    ).writeAsStringSync(const JsonEncoder.withIndent('  ').convert(map));
   }
 
   Future<_RunMetrics> _assembleMetrics(
@@ -719,12 +735,18 @@ class _LongNovelGenerator {
     final records = await _auditRepo.loadAll();
     final byModel = <String, Map<String, int>>{};
     final byOp = <String, Map<String, int>>{};
-    void tally(Map<String, Map<String, int>> bag, String key, int input, int output) {
+    void tally(
+      Map<String, Map<String, int>> bag,
+      String key,
+      int input,
+      int output,
+    ) {
       bag.putIfAbsent(key, () => {'calls': 0, 'input': 0, 'output': 0});
       bag[key]!['calls'] = bag[key]!['calls']! + 1;
       bag[key]!['input'] = bag[key]!['input']! + input;
       bag[key]!['output'] = bag[key]!['output']! + output;
     }
+
     for (final r in records) {
       tally(byModel, r.modelName, r.inputTokens, r.outputTokens);
       tally(byOp, r.operationType.name, r.inputTokens, r.outputTokens);
@@ -739,12 +761,13 @@ class _LongNovelGenerator {
     final avgResolve = resolved.isEmpty
         ? 0.0
         : resolved
-              .map(
-                (e) =>
-                    (e.resolvedChapter ?? e.plantedChapter) - e.plantedChapter,
-              )
-              .reduce((a, b) => a + b) /
-            resolved.length;
+                  .map(
+                    (e) =>
+                        (e.resolvedChapter ?? e.plantedChapter) -
+                        e.plantedChapter,
+                  )
+                  .reduce((a, b) => a + b) /
+              resolved.length;
 
     return _RunMetrics(
       chapterCount: done.length,
@@ -813,7 +836,8 @@ class _LongNovelGenerator {
         'planted': m.foreshadowingPlanted,
         'resolved': m.foreshadowingResolved,
         'fillRate': m.foreshadowingFillRate.toStringAsFixed(3),
-        'avgChaptersToResolve': m.foreshadowingAvgChaptersToResolve.toStringAsFixed(1),
+        'avgChaptersToResolve': m.foreshadowingAvgChaptersToResolve
+            .toStringAsFixed(1),
       },
       'modelStrategy': {
         'highPerf': kModelHigh,
@@ -821,16 +845,18 @@ class _LongNovelGenerator {
         'keyChaptersOpenedWithHighPerf': kKeyChapters.toList()..sort(),
       },
       'chapters': m.chapters
-          .map((c) => {
-                'chapterNo': c.chapterNo,
-                'title': c.title,
-                'cjkChars': c.cjkChars,
-                'segments': c.segments,
-                'openingModel': c.openingModel,
-                'elapsedSeconds': c.elapsedSeconds,
-                'antiAiHighlights': c.antiAiHighlights,
-                'deviationWarnings': c.deviationWarnings,
-              })
+          .map(
+            (c) => {
+              'chapterNo': c.chapterNo,
+              'title': c.title,
+              'cjkChars': c.cjkChars,
+              'segments': c.segments,
+              'openingModel': c.openingModel,
+              'elapsedSeconds': c.elapsedSeconds,
+              'antiAiHighlights': c.antiAiHighlights,
+              'deviationWarnings': c.deviationWarnings,
+            },
+          )
           .toList(),
     };
     await File('$outputDir/metrics.json').writeAsString(encoder.convert(map));
@@ -840,16 +866,20 @@ class _LongNovelGenerator {
     final all = _foreshadowRepo.getAll();
     final encoder = const JsonEncoder.withIndent('  ');
     final map = all
-        .map((e) => {
-              'id': e.id,
-              'title': e.title,
-              'status': e.status.name,
-              'plantedChapter': e.plantedChapter,
-              'resolvedChapter': e.resolvedChapter,
-              'sourceExcerpt': e.sourceExcerpt,
-            })
+        .map(
+          (e) => {
+            'id': e.id,
+            'title': e.title,
+            'status': e.status.name,
+            'plantedChapter': e.plantedChapter,
+            'resolvedChapter': e.resolvedChapter,
+            'sourceExcerpt': e.sourceExcerpt,
+          },
+        )
         .toList();
-    await File('$outputDir/foreshadowing.json').writeAsString(encoder.convert(map));
+    await File(
+      '$outputDir/foreshadowing.json',
+    ).writeAsString(encoder.convert(map));
   }
 
   // -- small helpers --------------------------------------------------------

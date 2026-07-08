@@ -49,7 +49,24 @@ const Map<int, String> kSegmentHints = {
 /// matters most for the showcase. All other openings and every continuation
 /// use the low-cost model (glm-4-flash).
 const Set<int> kKeyChapters = {
-  1, 5, 13, 25, 30, 41, 50, 57, 60, 72, 75, 85, 90, 96, 97, 98, 99, 100,
+  1,
+  5,
+  13,
+  25,
+  30,
+  41,
+  50,
+  57,
+  60,
+  72,
+  75,
+  85,
+  90,
+  96,
+  97,
+  98,
+  99,
+  100,
 };
 
 /// High-performance model for key-chapter openings; low-cost model elsewhere.
@@ -206,8 +223,7 @@ String trimToCjkRange(String text, {int minCjk = 7000, int maxCjk = 9000}) {
   final runes = text.runes.toList();
   for (var i = 0; i < runes.length; i++) {
     final r = runes[i];
-    final isCjk =
-        (r >= 0x4E00 && r <= 0x9FFF) || (r >= 0x3400 && r <= 0x4DBF);
+    final isCjk = (r >= 0x4E00 && r <= 0x9FFF) || (r >= 0x3400 && r <= 0x4DBF);
     if (isCjk) running++;
     if (boundaries.contains(String.fromCharCode(r))) {
       lastBoundaryEnd = i + 1;
