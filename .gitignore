@@ -33,3 +33,7 @@ test-results/
 # flutter_test golden-failure artifacts (master/test/diff PNGs dumped next to
 # the test on a golden mismatch) — never tracked, always regenerable.
 test/readme_screenshots/failures/
+
+# Python bytecode
+__pycache__/
+*.pyc
