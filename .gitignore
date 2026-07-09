@@ -37,3 +37,30 @@ test/readme_screenshots/failures/
 # Python bytecode
 __pycache__/
 *.pyc
+
+# 小说正文仅本地开发用，完整正文以 Notion 为载体（不上传远程仓库）
+docs/novel-go/chapters/
+docs/novel-go/showcase.md
+docs/novel-go/notion_wordcounts.json
+docs/novel-go/*resync*.log
+docs/novel-go/*run*.log
+docs/novel-go/fetch-wc.log
+docs/novel-go/errors*.log
+docs/novel-go/progress.json
+docs/novel-journey/chapters/
+docs/novel-journey/剑道苍穹-全本.md
+docs/novel-journey/showcase.md
+docs/novel-journey/notion_wordcounts.json
+docs/novel-journey/republish*.log
+docs/novel-journey/republish_progress.json
+*.polished.md
+
+# transient 运行日志与中间产物（不入库）
+docs/novel-go/*.log
+docs/novel-go/chapters_metrics.jsonl
+docs/novel-go/summaries.json
+docs/novel-journey/*.log
+docs/novel-journey/*AUDIT*.md
+docs/novel-journey/republish_progress.json
+.hermes/
+docs/novel-journey/[A-Z]*-2026-*.md
