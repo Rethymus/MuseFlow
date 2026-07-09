@@ -157,6 +157,7 @@ Items acknowledged and deferred from v1.3:
 | uat_gap | Phase 00: Windows IME testing | human_needed |
 | uat_gap | Phase 14: Chinese IME composition | human_needed |
 | tech_debt | Phase 11: 4 non-critical items | deferred |
+| 2026-07-09 | dual-novel-readme | README 双小说重构(修仙+围棋并列)+字数修正(Go metrics刷新/修仙用权威值) | complete |
 
 ## Session Continuity
 

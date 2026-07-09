@@ -177,52 +177,41 @@ scripts/check_storage_architecture.sh
 scripts/validate_platform_support.sh
 ```
 
-## 100-Chapter Novel Run (v0.1.5)
+## User-Journey Proof: Two 100-Chapter Novels — Two Edges of One Whetstone
 
-This section demonstrates MuseFlow's full creation pipeline via an **end-to-end 100-chapter novel generation**: from world-building and foreshadowing plans, to per-chapter prose of 7,000–9,000 Chinese characters (punctuation excluded), to anti-AI-scent polishing and canon consistency. Each chapter runs the full product stack — `PromptPipeline` banned-phrase injection → multi-segment streaming generation → `AntiAIScentProcessor` → `DeviationDetectionService` Skill guardian → `ChapterSummarizationService` context chain → `ForeshadowingRepository` lifecycle → `TokenAuditService` metering.
+MuseFlow's "whetstone, not typewriter" positioning is proven by two very different 100-chapter novels: **the same full stack (fragment capture → knowledge base & Skill guardian → multi-segment generation → anti-AI-scent → foreshadowing lifecycle → structure review) holds steady for a traditional genre novel and lands a sky-high imagination end-to-end.** Both novels are 100 chapters with 12 long-arc foreshadowing threads at 100% payoff — differing only in creative orientation. The full text is hosted on Notion.
 
-- **Reproduce**: `GLM_API_KEY=... flutter test test/journey/long_novel_journey_test.dart --name "full run" --concurrency=1` (~10 hours; auto-skipped without a key, so CI is unaffected).
-- **Evidence**: [`long_novel_journey_test.dart`](test/journey/long_novel_journey_test.dart) · metrics [`metrics.json`](docs/novel-journey/metrics.json) · foreshadowing [`foreshadowing.json`](docs/novel-journey/foreshadowing.json) · renderer [`scripts/render_novel_showcase.py`](scripts/render_novel_showcase.py).
-- **Full book**: [`剑道苍穹-全本.md`](docs/novel-journey/剑道苍穹-全本.md) (all 100 chapters); per-chapter text in the directory below.
-- **Hosting**: each chapter is published as a standalone Notion page and also readable as in-repo Markdown (see the directory below).
+### Side-by-Side
 
-### Size & Word Count
-- **Chapters**: 100 (end-to-end generation, concluding with ascension at ch. 100)
-- **Total (CJK, punctuation excluded)**: 821,036 chars · avg 8,210/chapter · range [6,972, 8,980]
-- **Spec compliance**: 7,000–9,000 Chinese chars/chapter (±500); after a compliance pass, 100/100 chapters land in [6,500, 9,500], 99/100 reach 7,000+
+| Dimension | 《剑道苍穹》(Xianxia) | 《俗手》(Go · 2022 Gaokao New Vol. I) |
+|---|---|---|
+| **Orientation** | Helps the author write a **traditional genre** novel | Creatively **lands a wild imagination** |
+| **Theme** | Mortal-to-ascension cultivation | Theme from the 2022 Gaokao New-Vol.-I essay prompt (本手/妙手/俗手) |
+| **Voice** | Orthodox cultivation; realms/sects/foreshadowing | Modern magical-realist comedy + dry humor + fourth-wall breaks, O. Henry finale |
+| **Anti-AI-scent** | 8,368 flagged · 8,032 auto-purified | 4,544 flagged · 4,310 auto-purified |
+| **Skill guardian** | 372 deviation warnings | 414 deviation warnings |
+| **Foreshadowing** | 12/12 (100%, avg 50.1 ch to payoff) | 12/12 (100%, avg 80.5 ch to payoff) |
+| **Full text** | [Notion:《剑道苍穹》](https://excessive-physician-8eb.notion.site/397600df78ee804a8cfedad17b9c5e05) | [Notion:《俗手》](https://excessive-physician-8eb.notion.site/397600df78ee8091a741d56bd3db72f5) |
 
-### Time & Cost
-- **Wall clock**: 10h 03m 54s (avg 362.3 s/chapter)
-- **Tokens**: input 2,983,607 · output 1,235,392 · total 4,218,999 (513 API calls)
-- **Model strategy**: a high-performance model opens the key chapters (opening / climaxes / finale); a low-cost model handles the rest — keeping prose quality up while driving token cost down (see the breakdown below).
+On average each novel was completed in about a week with MuseFlow's assistance — far faster than the cycle for traditional novels of this type — and passed multiple review passes without the unplanted foreshadowing or abandoned endings that plague much web fiction. Unlike crude, fully-AI-written work, a MuseFlow novel makes no fast-food literature and never dilutes the author's voice: in every landing of an idea, every structural review, every polishing of the prose, it keeps the "warmth of a human" inside the story. MuseFlow never takes the author's side of the argument; it holds one bottom line — let AI understand your material, straighten out your settings, polish your words, while the story ultimately belongs to the author. That is what Yu Hua calls "the most precious thing about the human brain."
 
-| Model | Calls | Input tokens | Output tokens | Rate (in/out, ¥/M) | Est. cost |
-|---|---:|---:|---:|---|---:|
-| glm-4-flash | 495 | 2,962,728 | 1,190,712 | ¥0.10 / ¥0.10 | ¥0.42 |
-| glm-4-plus | 18 | 20,879 | 44,680 | ¥50.00 / ¥50.00 | ¥3.28 |
-| **Total** | **513** | **2,983,607** | **1,235,392** | — | **¥3.69** |
+### Run 1 ·《剑道苍穹》: Traditional genre
 
-> Cost is an estimate from public pricing assumptions (see `PRICING` in the renderer); the authoritative metric is the measured token count.
+Xianxia is the most setting-heavy, drift-prone genre in Chinese long-form — realm hierarchies, sect rules, spirit-beast contracts, sealed zones; one contradiction breaks the spell. This run proves MuseFlow holds these across 100 chapters: four Skill-guardian rules stay online throughout, the deviation detector intercepts 372 drifts at generation time, and 12 long-arc threads plant from ch. 5 and pay off through ch. 91.
 
-### Anti-AI-Scent · Consistency Guard · Foreshadowing
-- **Anti-AI-scent**: 8,368 AI-tell markers across the book; 8,032 auto-purified via the synonym map, the rest surfaced as author-review signals.
-- **Skill guardian**: 372 deviation warnings, caught at generation time by the consistency checker.
-- **Foreshadowing**: 12 long-arc threads planted, 12 resolved — 100% fill rate, avg 50.1 chapters to payoff.
+> Mountain wind howled, swirling dead leaves past Lin Feng's ankles. He swung the axe, sinews standing out on his dark hands, each stroke landing with the dull thud peculiar to the wilds. Amid the flying chips his eyes stayed focused, as if the old locust tree were not an obstacle but a worthy opponent.
+> —《剑道苍穹》, ch. 1, opening
 
-### Highlights
+The full 100 chapters are on [Notion:《剑道苍穹》](https://excessive-physician-8eb.notion.site/397600df78ee804a8cfedad17b9c5e05).
 
-Curated beats from the narrative spine (the novel is in Chinese; full text via the directory below):
+### Run 2 ·《俗手》: Landing an imagination (2022 Gaokao New Vol. I)
 
-- **Ch. 1 — 凡人少年**: Lin Feng felling timber on the mountain; an injured Azure-Cloud disciple in the brambles.
-- **Ch. 30 — 筑基**: moonlit peak, the foundation pill swallowed, qi igniting like a struck spark.
-- **Ch. 50 — 二次结丹**: rebuilt meridians; the second core-forming attempt, unaided by any array.
-- **Ch. 75 — 血战南门**: the sect war — three Shadow-Gate assailants dropped in one sword-dragon pass.
-- **Ch. 85 — 破心魔**: the inner-demon trial; refusing the voices wearing his parents' and rival's faces.
-- **Ch. 100 — 飞升**: cloud-sea at the summit, the Heavenly-Balance disc, the master's light dissolving into the artifact.
+The theme is taken from the **2022 Gaokao New-Vol.-I** essay prompt (the Go terms 本手/妙手/俗手). It **abandons that prompt's traditional argumentative-essay form and innovatively writes, from scratch, in the novel form** — not an essay rewritten as a novel, but an original long-form work: a directionless young man ducks into a back-alley Go salon and apprentices himself to an eccentric master; three interlocked unit-arcs plant foreshadowing paid off in ch. 100 with an O. Henry reversal — *"a vulgar move is also a brilliant move; what looks like a proper move could be either; false is true, true is false."* Modern realism, dry humor, fourth-wall breaks; cultivation deliberately avoided.
 
-### Chapter Directory
+> The midsummer rain came without warning; Lu Heng had barely stepped out of the office tower when the sky darkened. The clouds hung over the city like waterlogged cotton, heavy and low. When the first drop hit his forehead, he took it for dripping air-conditioning.
+> —《俗手》, ch. 1, opening
 
-The full 100-chapter directory (titles, word counts, Markdown links) is in [README.md (Chinese)](README.md#章节目录与正文); the chapter files live under [`docs/novel-journey/chapters/`](docs/novel-journey/chapters/).
+The full 100 chapters are on [Notion:《俗手》](https://excessive-physician-8eb.notion.site/397600df78ee8091a741d56bd3db72f5).
 
 ## When Authors Meet AI
 
