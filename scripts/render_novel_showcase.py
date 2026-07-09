@@ -17,11 +17,15 @@ and the authoritative metric is the recorded token count, not the cost.
 from __future__ import annotations
 
 import json
+import os
 import re
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
-NOVEL = ROOT / "docs" / "novel-journey"
+# NOVEL_DIR lets a second novel (e.g. "novel-go") reuse this renderer. Default
+# unchanged so the original "novel-journey" (xianxia) showcase is unaffected.
+NOVEL_DIR_NAME = os.environ.get("NOVEL_DIR", "novel-journey")
+NOVEL = ROOT / "docs" / NOVEL_DIR_NAME
 METRICS = NOVEL / "metrics.json"
 INDEX = NOVEL / "notion_index.json"
 CHAPTERS = NOVEL / "chapters"
@@ -34,14 +38,32 @@ PRICING = {
 }
 
 # Curated "highlight" chapters for excerpting in the README — the narrative
-# spine: opening, each arc's climax, and the finale.
-HIGHLIGHTS = [1, 30, 50, 75, 85, 100]
+# spine: opening, each arc's climax, and the finale. Override per novel via the
+# HIGHLIGHTS env var (comma-separated), e.g. HIGHLIGHTS=1,12,33,50,66,88,99,100
+# for the Go novel's three-arc climaxes.
+HIGHLIGHTS = [
+    int(x) for x in os.environ.get("HIGHLIGHTS", "1,30,50,75,85,100").split(",")
+    if x.strip()
+]
 
 CJK = re.compile(r"[一-鿿㐀-䶵]")
 
 
 def cjk_count(s: str) -> int:
     return len(CJK.findall(s))
+
+
+def markdown_body(raw: str) -> str:
+    lines = raw.splitlines()
+    if lines and lines[0].startswith("# "):
+        return "\n".join(lines[1:]).strip()
+    return raw.strip()
+
+
+def canonical_chapter_paths() -> list[Path]:
+    return sorted(
+        p for p in CHAPTERS.glob("第*章-*.md") if not p.name.endswith(".polished.md")
+    )
 
 
 def display_title(title: str) -> str:
@@ -78,7 +100,7 @@ def load_chapter(chapter_no: int) -> tuple[str, str] | None:
         raw = p.read_text(encoding="utf-8")
         lines = raw.splitlines()
         title = lines[0][2:].strip() if lines and lines[0].startswith("# ") else p.stem
-        body = "\n".join(lines[1:]).strip()
+        body = markdown_body(raw)
         return title, body
     return None
 
@@ -130,32 +152,37 @@ def main() -> int:
     # Final length stats from the chapter files on disk (after the optional
     # compliance pass that extends sub-floor chapters). Authoritative for the
     # "in spec" claim.
-    files_on_disk = sorted(CHAPTERS.glob("第*章-*.md")) if CHAPTERS.is_dir() else []
-    final_counts = [cjk_count(p.read_text(encoding="utf-8")) for p in files_on_disk]
+    files_on_disk = canonical_chapter_paths() if CHAPTERS.is_dir() else []
+    final_counts = [
+        cjk_count(markdown_body(p.read_text(encoding="utf-8")))
+        for p in files_on_disk
+    ]
     if final_counts:
         f_total, f_avg = sum(final_counts), sum(final_counts) // len(final_counts)
         f_min, f_max = min(final_counts), max(final_counts)
-        in_spec = sum(1 for c in final_counts if 6500 <= c <= 9500)
-        at_floor = sum(1 for c in final_counts if c >= 7000)
+        under_7000 = sum(1 for c in final_counts if c < 7000)
     else:
         f_total = length.get("totalCjkChars", 0)
         f_avg = length.get("avgCjkCharsPerChapter", 0)
         f_min = length.get("minCjkChars", 0)
         f_max = length.get("maxCjkChars", 0)
-        in_spec = at_floor = 0
+        under_7000 = 0
 
     md = []
     md.append("### 规模与字数\n")
+    ending_note = metrics.get(
+        "endingNote", "未完结于百章内、于第 100 章飞升收束"
+    )
     md.append(
-        f"- **章节数**：{metrics.get('chapterCount', 0)} 章（全量真实 GLM 生成，未完结于百章内、于第 100 章飞升收束）\n"
+        f"- **章节数**：{metrics.get('chapterCount', 0)} 章（当前仓库托管正文，{ending_note}）\n"
     )
     md.append(
         f"- **总字数（去标点 CJK）**：{fmt(f_total)} 字 · 平均 {fmt(f_avg)} 字/章 "
         f"· 区间 [{fmt(f_min)}, {fmt(f_max)}]\n"
     )
     md.append(
-        f"- **规格合规**：每章 7000–9000 中文字（不计标点，允许 ±500）；"
-        f"补丁续写后 {in_spec}/100 章落在 [6500, 9500]，其中 {at_floor}/100 章达 7000+\n"
+        f"- **当前正文分布**：{under_7000}/{len(final_counts) or metrics.get('chapterCount', 0)} 章低于 7000 CJK；"
+        "章节字数统计直接取自仓库当前正文。\n"
     )
 
     md.append("\n### 耗时与成本\n")
@@ -223,14 +250,14 @@ def main() -> int:
     md.append("| 章 | 标题 | 字数 | 正文 |\n|---:|---|---:|---|\n")
     if CHAPTERS.is_dir():
         notion_by_no = {e.get("chapterNo"): e for e in index}
-        for p in sorted(CHAPTERS.glob("第*章-*.md")):
+        for p in canonical_chapter_paths():
             m = re.search(r"第0*(\d+)章", p.stem)
             no = int(m.group(1)) if m else 0
             raw = p.read_text(encoding="utf-8")
             lines = raw.splitlines()
             title = lines[0][2:].strip() if lines and lines[0].startswith("# ") else p.stem
-            wc = cjk_count(raw)
-            repo = f"[Markdown](docs/novel-journey/chapters/{p.name})"
+            wc = cjk_count(markdown_body(raw))
+            repo = f"[Markdown](docs/{NOVEL_DIR_NAME}/chapters/{p.name})"
             extra = ""
             e = notion_by_no.get(no)
             if e:

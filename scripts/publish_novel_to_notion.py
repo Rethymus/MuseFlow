@@ -45,8 +45,11 @@ API = "https://api.notion.com/v1"
 CHUNK = 1900  # Notion rich_text content limit is 2000 chars; stay under it.
 MAX_BLOCKS = 100  # Notion children-per-request cap.
 ROOT = Path(__file__).resolve().parent.parent
-CHAPTERS_DIR = ROOT / "docs" / "novel-journey" / "chapters"
-INDEX_PATH = ROOT / "docs" / "novel-journey" / "notion_index.json"
+# NOVEL_DIR lets a second novel (e.g. "novel-go") reuse this script without
+# touching the original "novel-journey" (xianxia) artifacts. Default unchanged.
+NOVEL_DIR = os.environ.get("NOVEL_DIR", "novel-journey")
+CHAPTERS_DIR = ROOT / "docs" / NOVEL_DIR / "chapters"
+INDEX_PATH = ROOT / "docs" / NOVEL_DIR / "notion_index.json"
 
 # Lines that are clearly structural rather than prose get their own block type.
 _HEADING = re.compile(r"^#{1,3}\s+")
