@@ -1,0 +1,1128 @@
+{
+  "generatedAt": "2026-07-09T03:53:03.463384",
+  "manuscriptTitle": "俗手",
+  "theme": "2022 全国新高考Ⅰ卷围棋题（本手/妙手/俗手）·现代奇诡喜剧·欧·亨利反转",
+  "endingNote": "三单元剧环扣、欧·亨利式反转于第 100 章收束（俗手即妙手）",
+  "targetChapterCount": 100,
+  "chapterCount": 100,
+  "successCount": 100,
+  "length": {
+    "totalCjkChars": 816011,
+    "avgCjkCharsPerChapter": 8160,
+    "minCjkChars": 6612,
+    "maxCjkChars": 8994,
+    "note": "润色后最终正文（去标题去标点CJK）；生成阶段原始值为 chapters_metrics.jsonl"
+  },
+  "timing": {
+    "wallClockSeconds": 35479,
+    "wallClockHuman": "9h51m19s",
+    "note": "跨首轮 ch1-28 + 断点续跑 ch29-100 累计实际生成耗时（含流式重试）；源自 chapters_metrics.jsonl 各章 elapsedSeconds 之和",
+    "avgSecondsPerChapter": "354.8"
+  },
+  "tokens": {
+    "total": 1350951,
+    "input": 668782,
+    "output": 682169,
+    "totalCalls": 261,
+    "byModel": {
+      "glm-4-flash": {
+        "calls": 97,
+        "input": 634057,
+        "output": 645568
+      },
+      "glm-4-plus": {
+        "calls": 20,
+        "input": 34725,
+        "output": 36601
+      }
+    },
+    "byOperation": {
+      "expand": {
+        "calls": 84,
+        "input": 452785,
+        "output": 449747
+      },
+      "opening": {
+        "calls": 98,
+        "input": 195935,
+        "output": 231685
+      },
+      "deviationDetect": {
+        "calls": 3,
+        "input": 20062,
+        "output": 737
+      }
+    }
+  },
+  "antiAi": {
+    "totalHighlights": 4544,
+    "totalAutoReplaced": 4310,
+    "topSignals": [
+      {
+        "signal": "叠词/程度副词堆砌",
+        "count": 99
+      },
+      {
+        "signal": "转场套话偏多",
+        "count": 82
+      },
+      {
+        "signal": "类型文套句偏多",
+        "count": 60
+      },
+      {
+        "signal": "结尾悬念公式化",
+        "count": 35
+      },
+      {
+        "signal": "结构化句式重复",
+        "count": 32
+      },
+      {
+        "signal": "情感描写套路化",
+        "count": 22
+      },
+      {
+        "signal": "句长节奏过于整齐",
+        "count": 6
+      }
+    ]
+  },
+  "deviation": {
+    "totalWarnings": 414
+  },
+  "foreshadowing": {
+    "planted": 12,
+    "resolved": 12,
+    "fillRate": "1.000",
+    "avgChaptersToResolve": "80.5"
+  },
+  "modelStrategy": {
+    "highPerf": "glm-4-plus",
+    "lowCost": "glm-4-flash",
+    "keyChaptersOpenedWithHighPerf": [
+      1,
+      3,
+      12,
+      20,
+      33,
+      34,
+      50,
+      60,
+      66,
+      67,
+      78,
+      84,
+      88,
+      92,
+      95,
+      96,
+      97,
+      98,
+      99,
+      100
+    ]
+  },
+  "chapters": [
+    {
+      "chapterNo": 1,
+      "title": "第1章 入社",
+      "cjkChars": 7279,
+      "segments": 5,
+      "openingModel": "glm-4-plus",
+      "elapsedSeconds": 356,
+      "antiAiHighlights": 57,
+      "deviationWarnings": 6
+    },
+    {
+      "chapterNo": 2,
+      "title": "第2章 残局",
+      "cjkChars": 7310,
+      "segments": 3,
+      "openingModel": "glm-4-flash",
+      "elapsedSeconds": 322,
+      "antiAiHighlights": 27,
+      "deviationWarnings": 4
+    },
+    {
+      "chapterNo": 3,
+      "title": "第3章 盘外",
+      "cjkChars": 7810,
+      "segments": 4,
+      "openingModel": "glm-4-plus",
+      "elapsedSeconds": 309,
+      "antiAiHighlights": 38,
+      "deviationWarnings": 4
+    },
+    {
+      "chapterNo": 4,
+      "title": "第4章 不为赢",
+      "cjkChars": 7449,
+      "segments": 3,
+      "openingModel": "glm-4-flash",
+      "elapsedSeconds": 291,
+      "antiAiHighlights": 74,
+      "deviationWarnings": 10
+    },
+    {
+      "chapterNo": 5,
+      "title": "第5章 断指",
+      "cjkChars": 7151,
+      "segments": 4,
+      "openingModel": "glm-4-flash",
+      "elapsedSeconds": 329,
+      "antiAiHighlights": 23,
+      "deviationWarnings": 4
+    },
+    {
+      "chapterNo": 6,
+      "title": "第6章 复盘",
+      "cjkChars": 7942,
+      "segments": 2,
+      "openingModel": "glm-4-flash",
+      "elapsedSeconds": 374,
+      "antiAiHighlights": 7,
+      "deviationWarnings": 2
+    },
+    {
+      "chapterNo": 7,
+      "title": "第7章 系统",
+      "cjkChars": 7723,
+      "segments": 2,
+      "openingModel": "glm-4-flash",
+      "elapsedSeconds": 385,
+      "antiAiHighlights": 88,
+      "deviationWarnings": 5
+    },
+    {
+      "chapterNo": 8,
+      "title": "第8章 第一课",
+      "cjkChars": 8265,
+      "segments": 3,
+      "openingModel": "glm-4-flash",
+      "elapsedSeconds": 436,
+      "antiAiHighlights": 144,
+      "deviationWarnings": 5
+    },
+    {
+      "chapterNo": 9,
+      "title": "第9章 旁观者",
+      "cjkChars": 8784,
+      "segments": 4,
+      "openingModel": "glm-4-flash",
+      "elapsedSeconds": 348,
+      "antiAiHighlights": 49,
+      "deviationWarnings": 6
+    },
+    {
+      "chapterNo": 10,
+      "title": "第10章 定式",
+      "cjkChars": 8901,
+      "segments": 4,
+      "openingModel": "glm-4-flash",
+      "elapsedSeconds": 491,
+      "antiAiHighlights": 26,
+      "deviationWarnings": 5
+    },
+    {
+      "chapterNo": 11,
+      "title": "第11章 故人",
+      "cjkChars": 7387,
+      "segments": 3,
+      "openingModel": "glm-4-flash",
+      "elapsedSeconds": 378,
+      "antiAiHighlights": 20,
+      "deviationWarnings": 3
+    },
+    {
+      "chapterNo": 12,
+      "title": "第12章 捷径",
+      "cjkChars": 7736,
+      "segments": 5,
+      "openingModel": "glm-4-plus",
+      "elapsedSeconds": 341,
+      "antiAiHighlights": 68,
+      "deviationWarnings": 7
+    },
+    {
+      "chapterNo": 13,
+      "title": "第13章 坦白",
+      "cjkChars": 8606,
+      "segments": 5,
+      "openingModel": "glm-4-flash",
+      "elapsedSeconds": 306,
+      "antiAiHighlights": 71,
+      "deviationWarnings": 7
+    },
+    {
+      "chapterNo": 14,
+      "title": "第14章 守拙",
+      "cjkChars": 7734,
+      "segments": 5,
+      "openingModel": "glm-4-flash",
+      "elapsedSeconds": 212,
+      "antiAiHighlights": 27,
+      "deviationWarnings": 4
+    },
+    {
+      "chapterNo": 15,
+      "title": "第15章 愚形",
+      "cjkChars": 7329,
+      "segments": 2,
+      "openingModel": "glm-4-flash",
+      "elapsedSeconds": 195,
+      "antiAiHighlights": 6,
+      "deviationWarnings": 5
+    },
+    {
+      "chapterNo": 16,
+      "title": "第16章 半目",
+      "cjkChars": 8915,
+      "segments": 4,
+      "openingModel": "glm-4-flash",
+      "elapsedSeconds": 477,
+      "antiAiHighlights": 24,
+      "deviationWarnings": 4
+    },
+    {
+      "chapterNo": 17,
+      "title": "第17章 急所",
+      "cjkChars": 7789,
+      "segments": 3,
+      "openingModel": "glm-4-flash",
+      "elapsedSeconds": 304,
+      "antiAiHighlights": 82,
+      "deviationWarnings": 5
+    },
+    {
+      "chapterNo": 18,
+      "title": "第18章 弃子",
+      "cjkChars": 7689,
+      "segments": 3,
+      "openingModel": "glm-4-flash",
+      "elapsedSeconds": 250,
+      "antiAiHighlights": 16,
+      "deviationWarnings": 4
+    },
+    {
+      "chapterNo": 19,
+      "title": "第19章 先手",
+      "cjkChars": 8535,
+      "segments": 4,
+      "openingModel": "glm-4-flash",
+      "elapsedSeconds": 253,
+      "antiAiHighlights": 47,
+      "deviationWarnings": 7
+    },
+    {
+      "chapterNo": 20,
+      "title": "第20章 旧照",
+      "cjkChars": 8118,
+      "segments": 3,
+      "openingModel": "glm-4-plus",
+      "elapsedSeconds": 241,
+      "antiAiHighlights": 47,
+      "deviationWarnings": 3
+    },
+    {
+      "chapterNo": 21,
+      "title": "第21章 棋筋",
+      "cjkChars": 7140,
+      "segments": 3,
+      "openingModel": "glm-4-flash",
+      "elapsedSeconds": 262,
+      "antiAiHighlights": 9,
+      "deviationWarnings": 3
+    },
+    {
+      "chapterNo": 22,
+      "title": "第22章 余地",
+      "cjkChars": 8217,
+      "segments": 4,
+      "openingModel": "glm-4-flash",
+      "elapsedSeconds": 496,
+      "antiAiHighlights": 136,
+      "deviationWarnings": 4
+    },
+    {
+      "chapterNo": 23,
+      "title": "第23章 厚势",
+      "cjkChars": 8480,
+      "segments": 4,
+      "openingModel": "glm-4-flash",
+      "elapsedSeconds": 483,
+      "antiAiHighlights": 102,
+      "deviationWarnings": 5
+    },
+    {
+      "chapterNo": 24,
+      "title": "第24章 试应手",
+      "cjkChars": 7501,
+      "segments": 2,
+      "openingModel": "glm-4-flash",
+      "elapsedSeconds": 255,
+      "antiAiHighlights": 129,
+      "deviationWarnings": 3
+    },
+    {
+      "chapterNo": 25,
+      "title": "第25章 收益",
+      "cjkChars": 7161,
+      "segments": 3,
+      "openingModel": "glm-4-flash",
+      "elapsedSeconds": 270,
+      "antiAiHighlights": 215,
+      "deviationWarnings": 3
+    },
+    {
+      "chapterNo": 26,
+      "title": "第26章 攻防",
+      "cjkChars": 8796,
+      "segments": 4,
+      "openingModel": "glm-4-flash",
+      "elapsedSeconds": 286,
+      "antiAiHighlights": 56,
+      "deviationWarnings": 6
+    },
+    {
+      "chapterNo": 27,
+      "title": "第27章 胜负",
+      "cjkChars": 8869,
+      "segments": 2,
+      "openingModel": "glm-4-flash",
+      "elapsedSeconds": 389,
+      "antiAiHighlights": 58,
+      "deviationWarnings": 5
+    },
+    {
+      "chapterNo": 28,
+      "title": "第28章 复盘会",
+      "cjkChars": 6936,
+      "segments": 3,
+      "openingModel": "glm-4-flash",
+      "elapsedSeconds": 233,
+      "antiAiHighlights": 67,
+      "deviationWarnings": 7
+    },
+    {
+      "chapterNo": 29,
+      "title": "第29章 苏小满",
+      "cjkChars": 8566,
+      "segments": 2,
+      "openingModel": "glm-4-flash",
+      "elapsedSeconds": 376,
+      "antiAiHighlights": 95,
+      "deviationWarnings": 3
+    },
+    {
+      "chapterNo": 30,
+      "title": "第30章 本手",
+      "cjkChars": 7351,
+      "segments": 3,
+      "openingModel": "glm-4-flash",
+      "elapsedSeconds": 263,
+      "antiAiHighlights": 14,
+      "deviationWarnings": 4
+    },
+    {
+      "chapterNo": 31,
+      "title": "第31章 退一步",
+      "cjkChars": 8914,
+      "segments": 2,
+      "openingModel": "glm-4-flash",
+      "elapsedSeconds": 396,
+      "antiAiHighlights": 21,
+      "deviationWarnings": 2
+    },
+    {
+      "chapterNo": 32,
+      "title": "第32章 立本",
+      "cjkChars": 7677,
+      "segments": 5,
+      "openingModel": "glm-4-flash",
+      "elapsedSeconds": 262,
+      "antiAiHighlights": 34,
+      "deviationWarnings": 4
+    },
+    {
+      "chapterNo": 33,
+      "title": "第33章 本手立",
+      "cjkChars": 7419,
+      "segments": 3,
+      "openingModel": "glm-4-plus",
+      "elapsedSeconds": 348,
+      "antiAiHighlights": 42,
+      "deviationWarnings": 2
+    },
+    {
+      "chapterNo": 34,
+      "title": "第34章 宿敌",
+      "cjkChars": 6612,
+      "segments": 5,
+      "openingModel": "glm-4-plus",
+      "elapsedSeconds": 184,
+      "antiAiHighlights": 33,
+      "deviationWarnings": 5
+    },
+    {
+      "chapterNo": 35,
+      "title": "第35章 神之一手",
+      "cjkChars": 7292,
+      "segments": 1,
+      "openingModel": "glm-4-flash",
+      "elapsedSeconds": 162,
+      "antiAiHighlights": 10,
+      "deviationWarnings": 3
+    },
+    {
+      "chapterNo": 36,
+      "title": "第36章 复盘",
+      "cjkChars": 8972,
+      "segments": 3,
+      "openingModel": "glm-4-flash",
+      "elapsedSeconds": 465,
+      "antiAiHighlights": 5,
+      "deviationWarnings": 4
+    },
+    {
+      "chapterNo": 37,
+      "title": "第37章 棋谱",
+      "cjkChars": 8994,
+      "segments": 2,
+      "openingModel": "glm-4-flash",
+      "elapsedSeconds": 414,
+      "antiAiHighlights": 1,
+      "deviationWarnings": 3
+    },
+    {
+      "chapterNo": 38,
+      "title": "第38章 名利",
+      "cjkChars": 7065,
+      "segments": 3,
+      "openingModel": "glm-4-flash",
+      "elapsedSeconds": 284,
+      "antiAiHighlights": 47,
+      "deviationWarnings": 3
+    },
+    {
+      "chapterNo": 39,
+      "title": "第39章 暗涌",
+      "cjkChars": 8921,
+      "segments": 3,
+      "openingModel": "glm-4-flash",
+      "elapsedSeconds": 448,
+      "antiAiHighlights": 18,
+      "deviationWarnings": 5
+    },
+    {
+      "chapterNo": 40,
+      "title": "第40章 裂缝",
+      "cjkChars": 8986,
+      "segments": 2,
+      "openingModel": "glm-4-flash",
+      "elapsedSeconds": 336,
+      "antiAiHighlights": 2,
+      "deviationWarnings": 4
+    },
+    {
+      "chapterNo": 41,
+      "title": "第41章 心魔",
+      "cjkChars": 8387,
+      "segments": 4,
+      "openingModel": "glm-4-flash",
+      "elapsedSeconds": 276,
+      "antiAiHighlights": 46,
+      "deviationWarnings": 4
+    },
+    {
+      "chapterNo": 42,
+      "title": "第42章 对弈",
+      "cjkChars": 8519,
+      "segments": 3,
+      "openingModel": "glm-4-flash",
+      "elapsedSeconds": 421,
+      "antiAiHighlights": 111,
+      "deviationWarnings": 3
+    },
+    {
+      "chapterNo": 43,
+      "title": "第43章 求道",
+      "cjkChars": 8153,
+      "segments": 3,
+      "openingModel": "glm-4-flash",
+      "elapsedSeconds": 305,
+      "antiAiHighlights": 22,
+      "deviationWarnings": 6
+    },
+    {
+      "chapterNo": 44,
+      "title": "第44章 败局",
+      "cjkChars": 7254,
+      "segments": 3,
+      "openingModel": "glm-4-flash",
+      "elapsedSeconds": 258,
+      "antiAiHighlights": 59,
+      "deviationWarnings": 4
+    },
+    {
+      "chapterNo": 45,
+      "title": "第45章 棋品",
+      "cjkChars": 8069,
+      "segments": 3,
+      "openingModel": "glm-4-flash",
+      "elapsedSeconds": 242,
+      "antiAiHighlights": 36,
+      "deviationWarnings": 3
+    },
+    {
+      "chapterNo": 46,
+      "title": "第46章 阴影",
+      "cjkChars": 8921,
+      "segments": 3,
+      "openingModel": "glm-4-flash",
+      "elapsedSeconds": 422,
+      "antiAiHighlights": 14,
+      "deviationWarnings": 3
+    },
+    {
+      "chapterNo": 47,
+      "title": "第47章 邀战",
+      "cjkChars": 8792,
+      "segments": 2,
+      "openingModel": "glm-4-flash",
+      "elapsedSeconds": 383,
+      "antiAiHighlights": 49,
+      "deviationWarnings": 4
+    },
+    {
+      "chapterNo": 48,
+      "title": "第48章 应招",
+      "cjkChars": 8735,
+      "segments": 4,
+      "openingModel": "glm-4-flash",
+      "elapsedSeconds": 232,
+      "antiAiHighlights": 85,
+      "deviationWarnings": 4
+    },
+    {
+      "chapterNo": 49,
+      "title": "第49章 中盘",
+      "cjkChars": 7213,
+      "segments": 3,
+      "openingModel": "glm-4-flash",
+      "elapsedSeconds": 201,
+      "antiAiHighlights": 15,
+      "deviationWarnings": 3
+    },
+    {
+      "chapterNo": 50,
+      "title": "第50章 裂痕",
+      "cjkChars": 8234,
+      "segments": 3,
+      "openingModel": "glm-4-plus",
+      "elapsedSeconds": 257,
+      "antiAiHighlights": 40,
+      "deviationWarnings": 0
+    },
+    {
+      "chapterNo": 51,
+      "title": "第51章 妙手",
+      "cjkChars": 8872,
+      "segments": 2,
+      "openingModel": "glm-4-flash",
+      "elapsedSeconds": 204,
+      "antiAiHighlights": 51,
+      "deviationWarnings": 4
+    },
+    {
+      "chapterNo": 52,
+      "title": "第52章 反噬",
+      "cjkChars": 8640,
+      "segments": 3,
+      "openingModel": "glm-4-flash",
+      "elapsedSeconds": 509,
+      "antiAiHighlights": 79,
+      "deviationWarnings": 2
+    },
+    {
+      "chapterNo": 53,
+      "title": "第53章 困局",
+      "cjkChars": 7283,
+      "segments": 5,
+      "openingModel": "glm-4-flash",
+      "elapsedSeconds": 424,
+      "antiAiHighlights": 43,
+      "deviationWarnings": 4
+    },
+    {
+      "chapterNo": 54,
+      "title": "第54章 俗手",
+      "cjkChars": 8473,
+      "segments": 4,
+      "openingModel": "glm-4-flash",
+      "elapsedSeconds": 304,
+      "antiAiHighlights": 8,
+      "deviationWarnings": 4
+    },
+    {
+      "chapterNo": 55,
+      "title": "第55章 真相",
+      "cjkChars": 8553,
+      "segments": 2,
+      "openingModel": "glm-4-flash",
+      "elapsedSeconds": 387,
+      "antiAiHighlights": 118,
+      "deviationWarnings": 4
+    },
+    {
+      "chapterNo": 56,
+      "title": "第56章 抉择",
+      "cjkChars": 8609,
+      "segments": 3,
+      "openingModel": "glm-4-flash",
+      "elapsedSeconds": 433,
+      "antiAiHighlights": 67,
+      "deviationWarnings": 2
+    },
+    {
+      "chapterNo": 57,
+      "title": "第57章 留白",
+      "cjkChars": 8767,
+      "segments": 5,
+      "openingModel": "glm-4-flash",
+      "elapsedSeconds": 524,
+      "antiAiHighlights": 51,
+      "deviationWarnings": 3
+    },
+    {
+      "chapterNo": 58,
+      "title": "第58章 落子",
+      "cjkChars": 6910,
+      "segments": 3,
+      "openingModel": "glm-4-flash",
+      "elapsedSeconds": 342,
+      "antiAiHighlights": 50,
+      "deviationWarnings": 7
+    },
+    {
+      "chapterNo": 59,
+      "title": "第59章 因果",
+      "cjkChars": 8614,
+      "segments": 4,
+      "openingModel": "glm-4-flash",
+      "elapsedSeconds": 583,
+      "antiAiHighlights": 77,
+      "deviationWarnings": 5
+    },
+    {
+      "chapterNo": 60,
+      "title": "第60章 反噬",
+      "cjkChars": 7883,
+      "segments": 5,
+      "openingModel": "glm-4-plus",
+      "elapsedSeconds": 315,
+      "antiAiHighlights": 36,
+      "deviationWarnings": 5
+    },
+    {
+      "chapterNo": 61,
+      "title": "第61章 救赎",
+      "cjkChars": 7224,
+      "segments": 5,
+      "openingModel": "glm-4-flash",
+      "elapsedSeconds": 348,
+      "antiAiHighlights": 44,
+      "deviationWarnings": 5
+    },
+    {
+      "chapterNo": 62,
+      "title": "第62章 了断",
+      "cjkChars": 7714,
+      "segments": 4,
+      "openingModel": "glm-4-flash",
+      "elapsedSeconds": 332,
+      "antiAiHighlights": 22,
+      "deviationWarnings": 5
+    },
+    {
+      "chapterNo": 63,
+      "title": "第63章 和棋",
+      "cjkChars": 8764,
+      "segments": 4,
+      "openingModel": "glm-4-flash",
+      "elapsedSeconds": 476,
+      "antiAiHighlights": 64,
+      "deviationWarnings": 3
+    },
+    {
+      "chapterNo": 64,
+      "title": "第64章 复盘",
+      "cjkChars": 8683,
+      "segments": 4,
+      "openingModel": "glm-4-flash",
+      "elapsedSeconds": 498,
+      "antiAiHighlights": 65,
+      "deviationWarnings": 3
+    },
+    {
+      "chapterNo": 65,
+      "title": "第65章 妙手",
+      "cjkChars": 7188,
+      "segments": 3,
+      "openingModel": "glm-4-flash",
+      "elapsedSeconds": 333,
+      "antiAiHighlights": 56,
+      "deviationWarnings": 4
+    },
+    {
+      "chapterNo": 66,
+      "title": "第66章 妙手即俗手",
+      "cjkChars": 8127,
+      "segments": 3,
+      "openingModel": "glm-4-plus",
+      "elapsedSeconds": 281,
+      "antiAiHighlights": 20,
+      "deviationWarnings": 2
+    },
+    {
+      "chapterNo": 67,
+      "title": "第67章 来路",
+      "cjkChars": 8813,
+      "segments": 5,
+      "openingModel": "glm-4-plus",
+      "elapsedSeconds": 422,
+      "antiAiHighlights": 46,
+      "deviationWarnings": 4
+    },
+    {
+      "chapterNo": 68,
+      "title": "第68章 旧事",
+      "cjkChars": 7056,
+      "segments": 3,
+      "openingModel": "glm-4-flash",
+      "elapsedSeconds": 287,
+      "antiAiHighlights": 13,
+      "deviationWarnings": 4
+    },
+    {
+      "chapterNo": 69,
+      "title": "第69章 陪练",
+      "cjkChars": 8764,
+      "segments": 3,
+      "openingModel": "glm-4-flash",
+      "elapsedSeconds": 373,
+      "antiAiHighlights": 43,
+      "deviationWarnings": 6
+    },
+    {
+      "chapterNo": 70,
+      "title": "第70章 默默",
+      "cjkChars": 8778,
+      "segments": 3,
+      "openingModel": "glm-4-flash",
+      "elapsedSeconds": 430,
+      "antiAiHighlights": 41,
+      "deviationWarnings": 3
+    },
+    {
+      "chapterNo": 71,
+      "title": "第71章 那一步",
+      "cjkChars": 7519,
+      "segments": 4,
+      "openingModel": "glm-4-flash",
+      "elapsedSeconds": 373,
+      "antiAiHighlights": 14,
+      "deviationWarnings": 5
+    },
+    {
+      "chapterNo": 72,
+      "title": "第72章 藏拙",
+      "cjkChars": 8589,
+      "segments": 5,
+      "openingModel": "glm-4-flash",
+      "elapsedSeconds": 440,
+      "antiAiHighlights": 25,
+      "deviationWarnings": 7
+    },
+    {
+      "chapterNo": 73,
+      "title": "第73章 守口",
+      "cjkChars": 8276,
+      "segments": 2,
+      "openingModel": "glm-4-flash",
+      "elapsedSeconds": 407,
+      "antiAiHighlights": 35,
+      "deviationWarnings": 3
+    },
+    {
+      "chapterNo": 74,
+      "title": "第74章 失语",
+      "cjkChars": 7941,
+      "segments": 4,
+      "openingModel": "glm-4-flash",
+      "elapsedSeconds": 417,
+      "antiAiHighlights": 51,
+      "deviationWarnings": 4
+    },
+    {
+      "chapterNo": 75,
+      "title": "第75章 护道",
+      "cjkChars": 8933,
+      "segments": 3,
+      "openingModel": "glm-4-flash",
+      "elapsedSeconds": 395,
+      "antiAiHighlights": 12,
+      "deviationWarnings": 2
+    },
+    {
+      "chapterNo": 76,
+      "title": "第76章 暗线",
+      "cjkChars": 8660,
+      "segments": 2,
+      "openingModel": "glm-4-flash",
+      "elapsedSeconds": 340,
+      "antiAiHighlights": 73,
+      "deviationWarnings": 7
+    },
+    {
+      "chapterNo": 77,
+      "title": "第77章 旧友",
+      "cjkChars": 8722,
+      "segments": 5,
+      "openingModel": "glm-4-flash",
+      "elapsedSeconds": 422,
+      "antiAiHighlights": 71,
+      "deviationWarnings": 3
+    },
+    {
+      "chapterNo": 78,
+      "title": "第78章 坐实",
+      "cjkChars": 7536,
+      "segments": 5,
+      "openingModel": "glm-4-plus",
+      "elapsedSeconds": 233,
+      "antiAiHighlights": 23,
+      "deviationWarnings": 3
+    },
+    {
+      "chapterNo": 79,
+      "title": "第79章 重估",
+      "cjkChars": 7829,
+      "segments": 5,
+      "openingModel": "glm-4-flash",
+      "elapsedSeconds": 241,
+      "antiAiHighlights": 22,
+      "deviationWarnings": 5
+    },
+    {
+      "chapterNo": 80,
+      "title": "第80章 清净",
+      "cjkChars": 8934,
+      "segments": 3,
+      "openingModel": "glm-4-flash",
+      "elapsedSeconds": 445,
+      "antiAiHighlights": 20,
+      "deviationWarnings": 4
+    },
+    {
+      "chapterNo": 81,
+      "title": "第81章 守拙二",
+      "cjkChars": 8805,
+      "segments": 3,
+      "openingModel": "glm-4-flash",
+      "elapsedSeconds": 441,
+      "antiAiHighlights": 42,
+      "deviationWarnings": 3
+    },
+    {
+      "chapterNo": 82,
+      "title": "第82章 棋镜",
+      "cjkChars": 8858,
+      "segments": 4,
+      "openingModel": "glm-4-flash",
+      "elapsedSeconds": 483,
+      "antiAiHighlights": 38,
+      "deviationWarnings": 4
+    },
+    {
+      "chapterNo": 83,
+      "title": "第83章 破执",
+      "cjkChars": 8847,
+      "segments": 4,
+      "openingModel": "glm-4-flash",
+      "elapsedSeconds": 469,
+      "antiAiHighlights": 37,
+      "deviationWarnings": 4
+    },
+    {
+      "chapterNo": 84,
+      "title": "第84章 旁观者",
+      "cjkChars": 8655,
+      "segments": 5,
+      "openingModel": "glm-4-plus",
+      "elapsedSeconds": 376,
+      "antiAiHighlights": 68,
+      "deviationWarnings": 5
+    },
+    {
+      "chapterNo": 85,
+      "title": "第85章 衣钵",
+      "cjkChars": 7825,
+      "segments": 5,
+      "openingModel": "glm-4-flash",
+      "elapsedSeconds": 238,
+      "antiAiHighlights": 11,
+      "deviationWarnings": 4
+    },
+    {
+      "chapterNo": 86,
+      "title": "第86章 交代",
+      "cjkChars": 8963,
+      "segments": 3,
+      "openingModel": "glm-4-flash",
+      "elapsedSeconds": 448,
+      "antiAiHighlights": 7,
+      "deviationWarnings": 3
+    },
+    {
+      "chapterNo": 87,
+      "title": "第87章 倒计时",
+      "cjkChars": 7739,
+      "segments": 2,
+      "openingModel": "glm-4-flash",
+      "elapsedSeconds": 407,
+      "antiAiHighlights": 32,
+      "deviationWarnings": 4
+    },
+    {
+      "chapterNo": 88,
+      "title": "第88章 真相",
+      "cjkChars": 7841,
+      "segments": 3,
+      "openingModel": "glm-4-plus",
+      "elapsedSeconds": 427,
+      "antiAiHighlights": 17,
+      "deviationWarnings": 3
+    },
+    {
+      "chapterNo": 89,
+      "title": "第89章 妙手在俗",
+      "cjkChars": 8788,
+      "segments": 4,
+      "openingModel": "glm-4-flash",
+      "elapsedSeconds": 492,
+      "antiAiHighlights": 47,
+      "deviationWarnings": 3
+    },
+    {
+      "chapterNo": 90,
+      "title": "第90章 释然",
+      "cjkChars": 8829,
+      "segments": 3,
+      "openingModel": "glm-4-flash",
+      "elapsedSeconds": 441,
+      "antiAiHighlights": 39,
+      "deviationWarnings": 4
+    },
+    {
+      "chapterNo": 91,
+      "title": "第91章 传承",
+      "cjkChars": 8817,
+      "segments": 5,
+      "openingModel": "glm-4-flash",
+      "elapsedSeconds": 549,
+      "antiAiHighlights": 46,
+      "deviationWarnings": 8
+    },
+    {
+      "chapterNo": 92,
+      "title": "第92章 断指",
+      "cjkChars": 7306,
+      "segments": 4,
+      "openingModel": "glm-4-plus",
+      "elapsedSeconds": 401,
+      "antiAiHighlights": 17,
+      "deviationWarnings": 7
+    },
+    {
+      "chapterNo": 93,
+      "title": "第93章 不为赢",
+      "cjkChars": 7793,
+      "segments": 4,
+      "openingModel": "glm-4-flash",
+      "elapsedSeconds": 336,
+      "antiAiHighlights": 13,
+      "deviationWarnings": 3
+    },
+    {
+      "chapterNo": 94,
+      "title": "第94章 真假",
+      "cjkChars": 8940,
+      "segments": 3,
+      "openingModel": "glm-4-flash",
+      "elapsedSeconds": 426,
+      "antiAiHighlights": 52,
+      "deviationWarnings": 1
+    },
+    {
+      "chapterNo": 95,
+      "title": "第95章 半目",
+      "cjkChars": 8915,
+      "segments": 5,
+      "openingModel": "glm-4-plus",
+      "elapsedSeconds": 351,
+      "antiAiHighlights": 28,
+      "deviationWarnings": 4
+    },
+    {
+      "chapterNo": 96,
+      "title": "第96章 残局",
+      "cjkChars": 8560,
+      "segments": 3,
+      "openingModel": "glm-4-plus",
+      "elapsedSeconds": 431,
+      "antiAiHighlights": 74,
+      "deviationWarnings": 4
+    },
+    {
+      "chapterNo": 97,
+      "title": "第97章 愚形",
+      "cjkChars": 8760,
+      "segments": 4,
+      "openingModel": "glm-4-plus",
+      "elapsedSeconds": 322,
+      "antiAiHighlights": 53,
+      "deviationWarnings": 3
+    },
+    {
+      "chapterNo": 98,
+      "title": "第98章 盘外",
+      "cjkChars": 7882,
+      "segments": 5,
+      "openingModel": "glm-4-plus",
+      "elapsedSeconds": 229,
+      "antiAiHighlights": 35,
+      "deviationWarnings": 6
+    },
+    {
+      "chapterNo": 99,
+      "title": "第99章 系统",
+      "cjkChars": 7943,
+      "segments": 2,
+      "openingModel": "glm-4-plus",
+      "elapsedSeconds": 246,
+      "antiAiHighlights": 16,
+      "deviationWarnings": 3
+    },
+    {
+      "chapterNo": 100,
+      "title": "第100章 俗手",
+      "cjkChars": 8693,
+      "segments": 5,
+      "openingModel": "glm-4-plus",
+      "elapsedSeconds": 241,
+      "antiAiHighlights": 20,
+      "deviationWarnings": 4
+    }
+  ]
+}
