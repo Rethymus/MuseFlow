@@ -202,16 +202,12 @@ Xianxia is the most setting-heavy, drift-prone genre in Chinese long-form — re
 > Mountain wind howled, swirling dead leaves past Lin Feng's ankles. He swung the axe, sinews standing out on his dark hands, each stroke landing with the dull thud peculiar to the wilds. Amid the flying chips his eyes stayed focused, as if the old locust tree were not an obstacle but a worthy opponent.
 > —《剑道苍穹》, ch. 1, opening
 
-The full 100 chapters are on [Notion:《剑道苍穹》](https://excessive-physician-8eb.notion.site/397600df78ee804a8cfedad17b9c5e05).
-
 ### Run 2 ·《俗手》: Landing an imagination (2022 Gaokao New Vol. I)
 
 The theme is taken from the **2022 Gaokao New-Vol.-I** essay prompt (the Go terms 本手/妙手/俗手). It **abandons that prompt's traditional argumentative-essay form and innovatively writes, from scratch, in the novel form** — not an essay rewritten as a novel, but an original long-form work: a directionless young man ducks into a back-alley Go salon and apprentices himself to an eccentric master; three interlocked unit-arcs plant foreshadowing paid off in ch. 100 with an O. Henry reversal — *"a vulgar move is also a brilliant move; what looks like a proper move could be either; false is true, true is false."* Modern realism, dry humor, fourth-wall breaks; cultivation deliberately avoided.
 
 > The midsummer rain came without warning; Lu Heng had barely stepped out of the office tower when the sky darkened. The clouds hung over the city like waterlogged cotton, heavy and low. When the first drop hit his forehead, he took it for dripping air-conditioning.
 > —《俗手》, ch. 1, opening
-
-The full 100 chapters are on [Notion:《俗手》](https://excessive-physician-8eb.notion.site/397600df78ee8091a741d56bd3db72f5).
 
 ## When Authors Meet AI
 
