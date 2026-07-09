@@ -16,7 +16,7 @@
 ![Ollama](https://img.shields.io/badge/Ollama-111827?style=flat-square)
 ![GitHub Actions](https://img.shields.io/badge/GitHub_Actions-2088FF?style=flat-square&logo=githubactions&logoColor=white)
 
-English | [中文](README.md)
+[中文](README.md) | English
 
 > Imagination as the bones. AI as the wings.
 

@@ -16,7 +16,7 @@
 ![Ollama](https://img.shields.io/badge/Ollama-111827?style=flat-square)
 ![GitHub Actions](https://img.shields.io/badge/GitHub_Actions-2088FF?style=flat-square&logo=githubactions&logoColor=white)
 
-[English](README.en.md) | 中文
+中文 | [English](README.en.md)
 
 > 想象力为骨，AI 为翼。
 

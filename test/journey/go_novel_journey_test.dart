@@ -52,7 +52,8 @@ const int _kResumeFloor = 6500; // 已落盘章节 CJK≥此值则跳过（可�
 
 void main() {
   final apiKey = Platform.environment['GLM_API_KEY'];
-  final baseUrl = Platform.environment['GLM_BASE_URL'] ??
+  final baseUrl =
+      Platform.environment['GLM_BASE_URL'] ??
       'https://open.bigmodel.cn/api/paas/v4';
 
   test(
@@ -234,8 +235,9 @@ class _GoNovelGenerator {
       model: kModelLow,
       auditService: _auditService,
     );
-    _foreshadowRepo =
-        await container.read(foreshadowingRepositoryProvider.future);
+    _foreshadowRepo = await container.read(
+      foreshadowingRepositoryProvider.future,
+    );
     _summarizationService = ChapterSummarizationService(
       openAIAdapter: _adapter,
       apiKey: _apiKey,
@@ -314,16 +316,18 @@ class _GoNovelGenerator {
     // 现代都市题材模板；缺失则跳过——真正指导生成的是 prompt 里的 kGoWorldContext。
     final template = await templateRepo.getById('male-urban-power');
     if (template != null) {
-      final instantiationService =
-          await container.read(templateInstantiationServiceProvider.future);
+      final instantiationService = await container.read(
+        templateInstantiationServiceProvider.future,
+      );
       final draft = instantiationService.createDraft(
         template,
         storyConcept: '迷茫青年陆衡入半目棋社学棋，识破俗手即妙手',
       );
       await instantiationService.saveDraft(draft);
     }
-    final characterRepo =
-        await container.read(characterCardRepositoryProvider.future);
+    final characterRepo = await container.read(
+      characterCardRepositoryProvider.future,
+    );
     for (final card in GoFixtures.characters()) {
       await characterRepo.add(card);
     }
@@ -339,7 +343,7 @@ class _GoNovelGenerator {
   }
 
   Future<List<Chapter>> _createOrSyncChapters() async {
-    final existingMs = await _manuscriptRepo.getById(_kManuscriptId);
+    final existingMs = _manuscriptRepo.getById(_kManuscriptId);
     if (existingMs == null) {
       await _manuscriptRepo.add(
         Manuscript(
@@ -385,8 +389,13 @@ class _GoNovelGenerator {
     final openModel = openingModelFor(chapterNo);
     final sw = Stopwatch()..start();
 
-    final openMessages =
-        _openingMessages(chapterNo, title, beat, prevSummary, contextChain);
+    final openMessages = _openingMessages(
+      chapterNo,
+      title,
+      beat,
+      prevSummary,
+      contextChain,
+    );
     final open = await _generate(
       messages: openMessages,
       model: openModel,
@@ -402,9 +411,16 @@ class _GoNovelGenerator {
     // 续写至 CJK 达 7000 地板。
     while (cjkCharCount(text) < 7000 && segments < 5) {
       segments++;
-      final tail = text.length > 1500 ? text.substring(text.length - 1500) : text;
-      final contMessages =
-          _continuationMessages(chapterNo, title, beat, tail, segments);
+      final tail = text.length > 1500
+          ? text.substring(text.length - 1500)
+          : text;
+      final contMessages = _continuationMessages(
+        chapterNo,
+        title,
+        beat,
+        tail,
+        segments,
+      );
       final cont = await _generate(
         messages: contMessages,
         model: kModelLow,
@@ -466,7 +482,12 @@ class _GoNovelGenerator {
     final chapterTokensByOp = <String, Map<String, int>>{};
     for (final r in records.where((r) => r.chapterId == chapter.id)) {
       _tally(chapterTokensByModel, r.modelName, r.inputTokens, r.outputTokens);
-      _tally(chapterTokensByOp, r.operationType.name, r.inputTokens, r.outputTokens);
+      _tally(
+        chapterTokensByOp,
+        r.operationType.name,
+        r.inputTokens,
+        r.outputTokens,
+      );
     }
 
     sw.stop();
@@ -542,8 +563,10 @@ class _GoNovelGenerator {
       } catch (e) {
         if (attempt >= 5 || !_isTransient(e)) rethrow;
         final backoff = const Duration(seconds: 8) * attempt;
-        debugPrint('[RETRY] $model/$op attempt $attempt failed ($e); '
-            'backing off ${backoff.inSeconds}s');
+        debugPrint(
+          '[RETRY] $model/$op attempt $attempt failed ($e); '
+          'backing off ${backoff.inSeconds}s',
+        );
         await Future<void>.delayed(backoff);
       }
     }
@@ -590,7 +613,8 @@ class _GoNovelGenerator {
       '【禁用词清单（出现即视为AI腔，须回避或以更自然表达替代）】'
           '${_banned.take(90).join('、')}',
     ].join('\n');
-    final user = '【本章】《$_kManuscriptTitle》第$chapterNo章 $title\n'
+    final user =
+        '【本章】《$_kManuscriptTitle》第$chapterNo章 $title\n'
         '【剧情要点】$beat\n\n${kSegmentHints[1]!}$kLengthFloor';
     return [ChatMessage.system(sys), ChatMessage.user(user)];
   }
@@ -602,13 +626,15 @@ class _GoNovelGenerator {
     String textTail,
     int segNo,
   ) {
-    final sys = '$kGoWriterPersona\n\n$kGoWorldContext\n\n'
+    final sys =
+        '$kGoWriterPersona\n\n$kGoWorldContext\n\n'
         '【续写铁律】紧接【已写正文结尾】自然推进；严禁复述已写情节；'
         '严禁重复上文已用过的比喻、意象或整句（例如不得反复出现同一句'
         '"黑白子在光影中变幻"之类的描写），每段必须用全新的画面、动作与对话向前推进；'
         '避免堆砌"命运""莫名的恐惧""像被无形力量拉扯"等抽象抒情，多用白描与具体细节。';
     final hint = kSegmentHints[segNo] ?? kSegmentHints[4]!;
-    final user = '【本章】《$_kManuscriptTitle》第$chapterNo章 $title\n'
+    final user =
+        '【本章】《$_kManuscriptTitle》第$chapterNo章 $title\n'
         '【剧情要点】$beat\n【已写正文结尾】\n"""\n$textTail\n"""\n\n'
         '$hint$kLengthFloor';
     return [ChatMessage.system(sys), ChatMessage.user(user)];
@@ -684,10 +710,7 @@ class _GoNovelGenerator {
     if (f.existsSync()) {
       map = jsonDecode(f.readAsStringSync()) as Map<String, dynamic>;
     }
-    map[chapterNo.toString()] = {
-      'title': title,
-      'summary': summary ?? '',
-    };
+    map[chapterNo.toString()] = {'title': title, 'summary': summary ?? ''};
     f.writeAsStringSync(const JsonEncoder.withIndent('  ').convert(map));
   }
 
@@ -697,8 +720,10 @@ class _GoNovelGenerator {
     final title = chapterTitleFromBeat(beat);
     final padded = chapterNo.toString().padLeft(3, '0');
     final nameOnly = title.replaceFirst(RegExp(r'^第\d+章\s*'), '');
-    final safe = (nameOnly.isEmpty ? title : nameOnly)
-        .replaceAll(RegExp(r'[/\\:*?"<>|]'), '');
+    final safe = (nameOnly.isEmpty ? title : nameOnly).replaceAll(
+      RegExp(r'[/\\:*?"<>|]'),
+      '',
+    );
     final f = File('$outputDir/chapters/第$padded章-$safe.md');
     if (!f.existsSync()) return null;
     final raw = f.readAsStringSync();
@@ -734,8 +759,10 @@ class _GoNovelGenerator {
   ) async {
     final padded = chapterNo.toString().padLeft(3, '0');
     final nameOnly = title.replaceFirst(RegExp(r'^第\d+章\s*'), '');
-    final safe = (nameOnly.isEmpty ? title : nameOnly)
-        .replaceAll(RegExp(r'[/\\:*?"<>|]'), '');
+    final safe = (nameOnly.isEmpty ? title : nameOnly).replaceAll(
+      RegExp(r'[/\\:*?"<>|]'),
+      '',
+    );
     final file = File('$outputDir/chapters/第$padded章-$safe.md');
     final body = '# $title\n\n$content\n';
     await file.writeAsString(body);
@@ -745,22 +772,24 @@ class _GoNovelGenerator {
   void _appendChapterMetrics(_GoChapterResult c) {
     final f = File('$outputDir/chapters_metrics.jsonl');
     final sink = f.openWrite(mode: FileMode.append);
-    sink.writeln(jsonEncode({
-      'chapterNo': c.chapterNo,
-      'title': c.title,
-      'cjkChars': c.cjkChars,
-      'rawCjkChars': c.rawCjkChars,
-      'segments': c.segments,
-      'openingModel': c.openingModel,
-      'elapsedSeconds': c.elapsedSeconds,
-      'antiAiHighlights': c.antiAiHighlights,
-      'antiAiAutoReplaced': c.antiAiAutoReplaced,
-      'antiAiSignals': c.antiAiSignals,
-      'deviationWarnings': c.deviationWarnings,
-      'callLog': c.callLog,
-      'tokensByModel': c.tokensByModel,
-      'tokensByOp': c.tokensByOp,
-    }));
+    sink.writeln(
+      jsonEncode({
+        'chapterNo': c.chapterNo,
+        'title': c.title,
+        'cjkChars': c.cjkChars,
+        'rawCjkChars': c.rawCjkChars,
+        'segments': c.segments,
+        'openingModel': c.openingModel,
+        'elapsedSeconds': c.elapsedSeconds,
+        'antiAiHighlights': c.antiAiHighlights,
+        'antiAiAutoReplaced': c.antiAiAutoReplaced,
+        'antiAiSignals': c.antiAiSignals,
+        'deviationWarnings': c.deviationWarnings,
+        'callLog': c.callLog,
+        'tokensByModel': c.tokensByModel,
+        'tokensByOp': c.tokensByOp,
+      }),
+    );
     sink.close();
   }
 
@@ -778,8 +807,9 @@ class _GoNovelGenerator {
       'lastTitle': done.isEmpty ? '' : done.last.title,
       'lastCjkChars': done.isEmpty ? 0 : done.last.cjkChars,
     };
-    File('$outputDir/progress.json')
-        .writeAsStringSync(const JsonEncoder.withIndent('  ').convert(map));
+    File(
+      '$outputDir/progress.json',
+    ).writeAsStringSync(const JsonEncoder.withIndent('  ').convert(map));
   }
 
   Future<_GoRunMetrics> _assembleMetrics(
@@ -792,10 +822,12 @@ class _GoNovelGenerator {
     final src = useAll ? all : done;
 
     final totalCjk = src.fold<int>(0, (a, c) => a + c.cjkChars);
-    final minCjk =
-        src.isEmpty ? 0 : src.map((c) => c.cjkChars).reduce((a, b) => a < b ? a : b);
-    final maxCjk =
-        src.isEmpty ? 0 : src.map((c) => c.cjkChars).reduce((a, b) => a > b ? a : b);
+    final minCjk = src.isEmpty
+        ? 0
+        : src.map((c) => c.cjkChars).reduce((a, b) => a < b ? a : b);
+    final maxCjk = src.isEmpty
+        ? 0
+        : src.map((c) => c.cjkChars).reduce((a, b) => a > b ? a : b);
     final totalHighlights = src.fold<int>(0, (a, c) => a + c.antiAiHighlights);
     final totalAuto = src.fold<int>(0, (a, c) => a + c.antiAiAutoReplaced);
     final totalDev = src.fold<int>(0, (a, c) => a + c.deviationWarnings);
@@ -816,7 +848,12 @@ class _GoNovelGenerator {
     var totalInput = 0, totalOutput = 0, totalCalls = 0;
     for (final c in src) {
       for (final entry in c.tokensByModel.entries) {
-        _tally(byModel, entry.key, entry.value['input']!, entry.value['output']!);
+        _tally(
+          byModel,
+          entry.key,
+          entry.value['input']!,
+          entry.value['output']!,
+        );
         totalInput += entry.value['input']!;
         totalOutput += entry.value['output']!;
         totalCalls += entry.value['calls']!;
@@ -840,9 +877,9 @@ class _GoNovelGenerator {
     final avgResolve = resolved.isEmpty
         ? 0.0
         : resolved
-                .map((t) => t.resolveChapter - t.plantedChapter)
-                .reduce((a, b) => a + b) /
-            resolved.length;
+                  .map((t) => t.resolveChapter - t.plantedChapter)
+                  .reduce((a, b) => a + b) /
+              resolved.length;
 
     return _GoRunMetrics(
       chapterCount: src.length,
@@ -886,27 +923,30 @@ class _GoNovelGenerator {
       seen.add(no);
       final tModel = _readNestedMap(m['tokensByModel']);
       final tOp = _readNestedMap(m['tokensByOp']);
-      out.add(_GoChapterResult(
-        chapterNo: no,
-        title: m['title'] as String,
-        content: '',
-        cjkChars: (m['cjkChars'] as num).toInt(),
-        rawCjkChars: (m['rawCjkChars'] as num).toInt(),
-        segments: (m['segments'] as num).toInt(),
-        openingModel: m['openingModel'] as String,
-        elapsedSeconds: (m['elapsedSeconds'] as num).toInt(),
-        antiAiHighlights: (m['antiAiHighlights'] as num).toInt(),
-        antiAiAutoReplaced: (m['antiAiAutoReplaced'] as num).toInt(),
-        antiAiSignals: (m['antiAiSignals'] as List)
-            .map((e) => Map<String, String>.from(e as Map))
-            .toList(),
-        deviationWarnings: (m['deviationWarnings'] as num).toInt(),
-        summary: null,
-        callLog: (m['callLog'] as Map)
-            .map((k, v) => MapEntry(k.toString(), (v as num).toInt())),
-        tokensByModel: tModel,
-        tokensByOp: tOp,
-      ));
+      out.add(
+        _GoChapterResult(
+          chapterNo: no,
+          title: m['title'] as String,
+          content: '',
+          cjkChars: (m['cjkChars'] as num).toInt(),
+          rawCjkChars: (m['rawCjkChars'] as num).toInt(),
+          segments: (m['segments'] as num).toInt(),
+          openingModel: m['openingModel'] as String,
+          elapsedSeconds: (m['elapsedSeconds'] as num).toInt(),
+          antiAiHighlights: (m['antiAiHighlights'] as num).toInt(),
+          antiAiAutoReplaced: (m['antiAiAutoReplaced'] as num).toInt(),
+          antiAiSignals: (m['antiAiSignals'] as List)
+              .map((e) => Map<String, String>.from(e as Map))
+              .toList(),
+          deviationWarnings: (m['deviationWarnings'] as num).toInt(),
+          summary: null,
+          callLog: (m['callLog'] as Map).map(
+            (k, v) => MapEntry(k.toString(), (v as num).toInt()),
+          ),
+          tokensByModel: tModel,
+          tokensByOp: tOp,
+        ),
+      );
     }
     out.sort((a, b) => a.chapterNo.compareTo(b.chapterNo));
     return out;
@@ -951,7 +991,8 @@ class _GoNovelGenerator {
         'planted': m.foreshadowingPlanted,
         'resolved': m.foreshadowingResolved,
         'fillRate': m.foreshadowingFillRate.toStringAsFixed(3),
-        'avgChaptersToResolve': m.foreshadowingAvgChaptersToResolve.toStringAsFixed(1),
+        'avgChaptersToResolve': m.foreshadowingAvgChaptersToResolve
+            .toStringAsFixed(1),
       },
       'modelStrategy': {
         'highPerf': kModelHigh,
@@ -959,16 +1000,18 @@ class _GoNovelGenerator {
         'keyChaptersOpenedWithHighPerf': kGoKeyChapters.toList()..sort(),
       },
       'chapters': m.chapters
-          .map((c) => {
-                'chapterNo': c.chapterNo,
-                'title': c.title,
-                'cjkChars': c.cjkChars,
-                'segments': c.segments,
-                'openingModel': c.openingModel,
-                'elapsedSeconds': c.elapsedSeconds,
-                'antiAiHighlights': c.antiAiHighlights,
-                'deviationWarnings': c.deviationWarnings,
-              })
+          .map(
+            (c) => {
+              'chapterNo': c.chapterNo,
+              'title': c.title,
+              'cjkChars': c.cjkChars,
+              'segments': c.segments,
+              'openingModel': c.openingModel,
+              'elapsedSeconds': c.elapsedSeconds,
+              'antiAiHighlights': c.antiAiHighlights,
+              'deviationWarnings': c.deviationWarnings,
+            },
+          )
           .toList(),
     };
     await File('$outputDir/metrics.json').writeAsString(encoder.convert(map));
@@ -988,27 +1031,35 @@ class _GoNovelGenerator {
         'sourceExcerpt': t.sourceExcerpt,
       };
     }).toList();
-    await File('$outputDir/foreshadowing.json').writeAsString(encoder.convert(map));
+    await File(
+      '$outputDir/foreshadowing.json',
+    ).writeAsString(encoder.convert(map));
   }
 
   // -- small helpers --------------------------------------------------------
 
-  void _tally(Map<String, Map<String, int>> bag, String key, int input, int output) {
+  void _tally(
+    Map<String, Map<String, int>> bag,
+    String key,
+    int input,
+    int output,
+  ) {
     bag.putIfAbsent(key, () => {'calls': 0, 'input': 0, 'output': 0});
     bag[key]!['calls'] = bag[key]!['calls']! + 1;
     bag[key]!['input'] = bag[key]!['input']! + input;
     bag[key]!['output'] = bag[key]!['output']! + output;
   }
 
-  /// 从 jsonDecode 的嵌套 Map 显式构造 Map<String, Map<String,int>>，
-  /// 避免 `.map` 推断出 Map<dynamic,...> 的类型错误。
+  /// 从 jsonDecode 的嵌套 Map 显式构造 `Map<String, Map<String,int>>`，
+  /// 避免 `.map` 推断出 `Map<dynamic,...>` 的类型错误。
   Map<String, Map<String, int>> _readNestedMap(Object? raw) {
     final result = <String, Map<String, int>>{};
     if (raw is Map) {
       raw.forEach((k, v) {
         if (v is Map) {
-          result[k.toString()] = v.map((kk, vv) =>
-              MapEntry(kk.toString(), (vv as num).toInt()));
+          result[k.toString()] = v.map(
+            (kk, vv) => MapEntry(kk.toString(), (vv as num).toInt()),
+          );
         }
       });
     }
