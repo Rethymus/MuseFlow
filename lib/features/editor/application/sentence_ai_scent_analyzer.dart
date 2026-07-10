@@ -45,11 +45,16 @@ class SentenceAiScentAnalysis {
   /// Per-sentence scores, sorted descending (worst/most-AI first).
   final List<SentenceAiScentScore> scores;
 
-  const SentenceAiScentAnalysis({required this.scores});
+  /// Score at/above which a sentence is worth the author's attention.
+  final int notableThreshold;
+
+  const SentenceAiScentAnalysis({
+    required this.scores,
+    this.notableThreshold = SentenceAiScentAnalyzer.notableThreshold,
+  });
 
   /// Whether any sentence reaches the notable threshold.
-  bool get hasNotable =>
-      scores.any((s) => s.score >= SentenceAiScentAnalyzer.notableThreshold);
+  bool get hasNotable => scores.any((s) => s.score >= notableThreshold);
 
   /// The single highest-scoring sentence, or null if the passage was empty.
   SentenceAiScentScore? get worst => scores.isEmpty ? null : scores.first;
@@ -57,10 +62,14 @@ class SentenceAiScentAnalysis {
 
 /// Scores each sentence of a passage for AI-scent using local signals.
 class SentenceAiScentAnalyzer {
-  const SentenceAiScentAnalyzer();
+  /// Runtime threshold used by [SentenceAiScentAnalysis.hasNotable].
+  final int threshold;
+
+  const SentenceAiScentAnalyzer({this.threshold = notableThreshold})
+    : assert(threshold >= 0 && threshold <= 100);
 
   /// Score at/above which a sentence is "notable" (worth the author's attention).
-  static const int notableThreshold = 30;
+  static const int notableThreshold = 25;
 
   /// Sentence-leading connectors that mark mechanical, AI-like transitions.
   static const Set<String> transitionStarts = {
@@ -165,7 +174,7 @@ class SentenceAiScentAnalyzer {
     if (maxSentences != null) {
       scored = scored.take(maxSentences).toList();
     }
-    return SentenceAiScentAnalysis(scores: scored);
+    return SentenceAiScentAnalysis(scores: scored, notableThreshold: threshold);
   }
 
   SentenceAiScentScore _score(String sentence, String cjk) {

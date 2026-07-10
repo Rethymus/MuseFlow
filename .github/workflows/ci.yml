@@ -44,6 +44,12 @@ jobs:
       - name: Analyze
         run: flutter analyze
 
+      - name: Check literary quality baseline
+        run: dart run tool/quality_eval.dart --check
+
+      - name: Verify literary quality balance
+        run: dart run tool/quality_eval.dart --balance
+
       - name: Run tests
         run: flutter test
 

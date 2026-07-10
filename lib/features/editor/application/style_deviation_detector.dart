@@ -85,7 +85,16 @@ class StyleDeviationDetector {
   /// Minimum CJK characters required for meaningful analysis.
   static const int _minChars = 10;
 
-  const StyleDeviationDetector();
+  /// Per-dimension weights in enum order. Values must sum to 1.
+  final List<double> weights;
+
+  /// Runtime threshold for per-dimension deviation flags.
+  final double threshold;
+
+  const StyleDeviationDetector({
+    this.weights = const [0.2, 0.2, 0.15, 0.25, 0.2],
+    this.threshold = deviationThreshold,
+  }) : assert(threshold >= 0 && threshold <= 1);
 
   /// Analyzes AI text against the author's style profile.
   ///
@@ -97,6 +106,13 @@ class StyleDeviationDetector {
     required String text,
     required AuthorStyleProfile profile,
   }) {
+    if (weights.length != StyleDimension.values.length) {
+      throw ArgumentError.value(
+        weights,
+        'weights',
+        'must contain one value per style dimension',
+      );
+    }
     if (StyleAnalysisUtils.cjkCharCount(text) < _minChars || !profile.hasData) {
       return null;
     }
@@ -110,7 +126,6 @@ class StyleDeviationDetector {
     ];
 
     // Compute overall AI-scent score (weighted average of deviations)
-    final weights = [0.2, 0.25, 0.15, 0.2, 0.2];
     var weightedSum = 0.0;
     for (var i = 0; i < deviations.length; i++) {
       weightedSum += deviations[i].deviationScore * weights[i];
@@ -118,13 +133,11 @@ class StyleDeviationDetector {
     final aiScentScore = (weightedSum * 100).round().clamp(0, 100);
 
     // Check for significant deviations
-    final hasDeviations = deviations.any(
-      (d) => d.deviationScore >= deviationThreshold,
-    );
+    final hasDeviations = deviations.any((d) => d.deviationScore >= threshold);
 
     // Build summary
     final significantDeviations = deviations
-        .where((d) => d.deviationScore >= deviationThreshold)
+        .where((d) => d.deviationScore >= threshold)
         .toList();
     final summary = _buildSummary(significantDeviations, aiScentScore);
 
@@ -163,7 +176,7 @@ class StyleDeviationDetector {
         ? (diff / (profileStdDev * 2 + profileAvg * 0.3)).clamp(0.0, 1.0)
         : 0.0;
 
-    final explanation = normalizedDev < deviationThreshold
+    final explanation = normalizedDev < threshold
         ? '句式长度与作者风格一致'
         : normalizedDev > 0.6
         ? '句式长度明显偏离作者习惯'
@@ -200,7 +213,7 @@ class StyleDeviationDetector {
         ? normalizedDev
         : normalizedDev * 0.3; // less penalty for being more varied
 
-    final explanation = penaltyDev < deviationThreshold
+    final explanation = penaltyDev < threshold
         ? '节奏变化与作者风格一致'
         : textRhythm > profileRhythm
         ? '节奏过于均匀，缺乏长短变化（AI常见特征）'
@@ -251,7 +264,7 @@ class StyleDeviationDetector {
     // If AI text is much less rich, it's being repetitive
     final normalizedDev = diff.clamp(0.0, 1.0);
 
-    final explanation = normalizedDev < deviationThreshold
+    final explanation = normalizedDev < threshold
         ? '词汇丰富度与作者风格一致'
         : normalizedRichness > profileRichness
         ? '词汇过于华丽，偏离作者朴实风格'
@@ -291,7 +304,7 @@ class StyleDeviationDetector {
         habits.metaphorFrequency > profileHabits.metaphorFrequency + 0.1;
 
     String explanation;
-    if (normalizedDev < deviationThreshold) {
+    if (normalizedDev < threshold) {
       explanation = '修辞手法与作者风格一致';
     } else if (descriptionHeavy) {
       explanation =
@@ -346,7 +359,7 @@ class StyleDeviationDetector {
         : normalizedDev;
 
     String explanation;
-    if (effectiveDev < deviationThreshold) {
+    if (effectiveDev < threshold) {
       explanation = '情感基调与作者风格一致';
     } else if (isFlat) {
       explanation = '情感曲线过于平淡，缺乏起伏（AI常见特征）';

@@ -1,0 +1,30 @@
+{
+  "corpusVersion": 1,
+  "config": {
+    "sentenceLengthWeight": 0.2,
+    "rhythmWeight": 0.2,
+    "vocabularyWeight": 0.15,
+    "rhetoricWeight": 0.25,
+    "emotionalToneWeight": 0.2,
+    "styleScoreWeight": 0.55,
+    "deviationThreshold": 0.3,
+    "sentenceNotableThreshold": 25,
+    "classificationThreshold": 35
+  },
+  "metrics": {
+    "truePositives": 7,
+    "falseNegatives": 1,
+    "trueNegatives": 8,
+    "falsePositives": 0,
+    "averageAiLikeScore": 49.625,
+    "averageHumanScore": 16.625,
+    "recall": 0.875,
+    "falsePositiveRate": 0.0,
+    "accuracy": 0.9375,
+    "balancedAccuracy": 0.9375,
+    "scoreSeparation": 33.0
+  },
+  "minimumBalancedAccuracy": 0.85,
+  "minimumRecall": 0.75,
+  "maximumFalsePositiveRate": 0.1
+}
