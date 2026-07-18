@@ -1,5 +1,9 @@
 # MuseFlow 灵韵
 
+<p align="center">
+  <img src="docs/readme/logo/museflow-logo.png" alt="MuseFlow 灵韵 logo：由章节、伏笔和故事弧组成的结构星图" width="760">
+</p>
+
 [![CI](https://github.com/Rethymus/MuseFlow/actions/workflows/ci.yml/badge.svg)](https://github.com/Rethymus/MuseFlow/actions/workflows/ci.yml)
 [![Version](https://img.shields.io/badge/version-0.1.4-blue?style=flat-square)](https://github.com/Rethymus/MuseFlow/releases)
 [![Platform](https://img.shields.io/badge/platform-Android%20%7C%20Linux%20%7C%20Windows%20%7C%20Web-lightgrey?style=flat-square)](#技术栈)
