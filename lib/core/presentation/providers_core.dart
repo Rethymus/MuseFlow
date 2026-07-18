@@ -63,6 +63,16 @@ final secureStorageServiceProvider = Provider<SecureStorageService>((ref) {
   return SecureStorageService();
 });
 
+final browserStorageServiceProvider = Provider<BrowserStorageService>((ref) {
+  return const BrowserStorageService();
+});
+
+final browserStorageStatusProvider = FutureProvider<BrowserStorageStatus>((
+  ref,
+) {
+  return ref.watch(browserStorageServiceProvider).getStatus();
+});
+
 /// Provides a singleton [ConnectivityService] for offline fast-fail probes.
 ///
 /// Injected into the AI adapter providers so streaming calls fast-fail with

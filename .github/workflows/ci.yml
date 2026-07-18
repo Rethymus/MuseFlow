@@ -53,6 +53,9 @@ jobs:
       - name: Run tests
         run: flutter test
 
+      - name: Verify Web session-only API key storage
+        run: flutter test --platform chrome test/web/session_secure_storage_test.dart
+
       - name: Run integration smoke
         run: xvfb-run -a flutter test integration_test/app_test.dart -d linux
 

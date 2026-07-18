@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:museflow/core/presentation/providers.dart';
 import 'package:museflow/features/ai/domain/creativity_level.dart';
 import 'package:museflow/shared/constants/app_constants.dart';
+import 'package:museflow/features/settings/presentation/web_workspace_settings_section.dart';
 
 /// Settings page with section headers for storage and about.
 ///
@@ -23,6 +25,7 @@ class SettingsPage extends ConsumerWidget {
         children: [
           Text('设置', style: theme.textTheme.headlineMedium),
           const SizedBox(height: 32),
+          if (kIsWeb) const WebWorkspaceSettingsSection(),
           // AI Model section
           Text('AI', style: theme.textTheme.titleLarge),
           const SizedBox(height: 8),

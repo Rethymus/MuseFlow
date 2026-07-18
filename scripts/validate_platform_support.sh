@@ -55,15 +55,22 @@ for readme in README.md README.en.md; do
   fi
 done
 
-if ! grep -Fq 'Android、Linux、Windows 是发布目标，Web 作为测试/构建验证目标' README.md; then
-  echo "README.md must keep Web scoped as a testing/build-validation target, not a release target" >&2
+if ! grep -Fq 'Android、Linux、Windows 是发布目标，Web 提供 GitHub Pages 浏览器工作区预览' README.md; then
+  echo "README.md must describe Web as a GitHub Pages browser-workspace preview" >&2
   status=1
 fi
 
-if ! grep -Fq 'Android, Linux, and Windows are release targets; Web is a testing/build-validation target' README.en.md; then
-  echo "README.en.md must keep Web scoped as a testing/build-validation target, not a release target" >&2
+if ! grep -Fq 'Android, Linux, and Windows are release targets; Web provides a GitHub Pages browser-workspace preview' README.en.md; then
+  echo "README.en.md must describe Web as a GitHub Pages browser-workspace preview" >&2
   status=1
 fi
+
+for readme in README.md README.en.md; do
+  if ! grep -Fq 'BYOK' "$readme"; then
+    echo "$readme must document the AI Provider BYOK boundary" >&2
+    status=1
+  fi
+done
 
 if grep -Eiq 'macOS|iOS' README.md README.en.md; then
   echo "README files must not advertise macOS/iOS until platform runners and storage validation exist" >&2

@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:museflow/core/infrastructure/settings_repository.dart';
@@ -83,7 +84,7 @@ class _AppShellScaffoldState extends ConsumerState<AppShellScaffold> {
       // Mobile layout: bottom nav bar + content
       return QuickCaptureShortcut(
         child: Scaffold(
-          body: widget.navigationShell,
+          body: _withWebBackupReminder(widget.navigationShell),
           bottomNavigationBar: AdaptiveSidebar(
             currentIndex: widget.navigationShell.currentIndex,
             onDestinationSelected: (index) {
@@ -112,10 +113,46 @@ class _AppShellScaffoldState extends ConsumerState<AppShellScaffold> {
               },
             ),
             const VerticalDivider(width: 1, thickness: 1),
-            Expanded(child: widget.navigationShell),
+            Expanded(child: _withWebBackupReminder(widget.navigationShell)),
           ],
         ),
       ),
+    );
+  }
+
+  Widget _withWebBackupReminder(Widget child) {
+    if (!kIsWeb) return child;
+
+    final manuscripts = ref.watch(manuscriptNotifierProvider).value ?? const [];
+    final settings = ref.watch(settingsRepositoryProvider).value;
+    final lastBackupAt = settings?.getLastBrowserBackupAt();
+    final backupDue =
+        manuscripts.isNotEmpty &&
+        (lastBackupAt == null ||
+            DateTime.now().difference(lastBackupAt).inDays >= 7);
+    if (!backupDue) return child;
+
+    return Column(
+      children: [
+        Material(
+          color: Theme.of(context).colorScheme.secondaryContainer,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            child: Row(
+              children: [
+                const Icon(Icons.backup_outlined),
+                const SizedBox(width: 12),
+                const Expanded(child: Text('浏览器数据可能被清理，请及时导出作品备份。')),
+                TextButton(
+                  onPressed: () => context.go(AppConstants.settings),
+                  child: const Text('前往备份'),
+                ),
+              ],
+            ),
+          ),
+        ),
+        Expanded(child: child),
+      ],
     );
   }
 }

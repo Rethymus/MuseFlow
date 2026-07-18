@@ -5,6 +5,7 @@
 /// in the same library — consumers import this file unchanged.
 library;
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:museflow/core/presentation/providers.dart';
@@ -169,6 +170,12 @@ class _ProviderManagementPageState
   }
 
   Future<void> _handleSave() async {
+    if (kIsWeb && !_hasValidWebBaseUrl()) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Web 版服务地址必须是有效的 HTTPS URL')),
+      );
+      return;
+    }
     if (!_validateForm()) {
       ScaffoldMessenger.of(
         context,
@@ -227,6 +234,11 @@ class _ProviderManagementPageState
     }
   }
 
+  bool _hasValidWebBaseUrl() {
+    final uri = Uri.tryParse(_baseUrlController.text.trim());
+    return uri != null && uri.scheme == 'https' && uri.host.isNotEmpty;
+  }
+
   Future<void> _handleTestConnection() async {
     final notifier = ref.read(providerManagementProvider.notifier);
     final apiKey = PresetProviders.requiresApiKey(_selectedType)
@@ -278,7 +290,12 @@ class _ProviderManagementPageState
   @override
   Widget build(BuildContext context) {
     final mgmtState = ref.watch(providerManagementProvider);
-    final presets = ref.watch(presetProvidersProvider);
+    final allPresets = ref.watch(presetProvidersProvider);
+    final presets = kIsWeb
+        ? allPresets
+              .where((provider) => provider.type != AiProviderType.ollama)
+              .toList()
+        : allPresets;
 
     return Scaffold(
       appBar: AppBar(

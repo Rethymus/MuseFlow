@@ -12,6 +12,7 @@ library;
 
 import 'dart:async';
 
+import 'package:flutter/foundation.dart';
 import 'package:museflow/features/ai/domain/ai_adapter.dart';
 import 'package:museflow/features/ai/domain/ai_exception.dart';
 import 'package:openai_dart/openai_dart.dart';
@@ -371,6 +372,9 @@ class OpenAIAdapter implements AIAdapter {
         baseUrl.startsWith('http://0.0.0.0') ||
         baseUrl.startsWith('http://[::1]');
 
+    if (kIsWeb && !baseUrl.startsWith('https://')) {
+      throw const AIStreamException('Web 版仅支持 HTTPS AI 服务地址');
+    }
     if (!baseUrl.startsWith('https://') && !isLocalhost) {
       throw const AIStreamException('baseUrl 必须使用 HTTPS 协议');
     }

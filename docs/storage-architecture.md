@@ -319,7 +319,7 @@ TypeId 集中注册于 `HiveTypeIds`（`hive_adapters.dart:17-30`），避免冲
 | Windows | Windows Credential Manager | OS 级 DPAPI 加密 |
 | Android | Android Keystore + 加密 SharedPreferences | 硬件级（TEE/StrongBox） |
 | Linux | Secret Service / libsecret | 依赖 D-Bus keyring daemon |
-| Web | ⚠️ 无原生后端（Web Crypto + localStorage 模拟） | 仅作为测试/UAT 目标，见第 8 节 |
+| Web | ⚠️ 无原生后端；Provider Key 使用 Web Crypto + sessionStorage | 标签页会话结束后失效，见第 8 节 |
 
 > 设计约束（`secure_storage_service.dart:8-11`）：**不回落明文文件**。平台后端不可用时向上抛平台异常，由调用方呈现可操作错误。
 
@@ -346,13 +346,16 @@ TypeId 集中注册于 `HiveTypeIds`（`hive_adapters.dart:17-30`），避免冲
 
 ## 8. 平台限制与注意事项
 
-### 8.1 Web 平台（测试/UAT 目标，非生产）
+### 8.1 Web 平台（GitHub Pages 测试/UAT 工作区）
 
 Web 存在三个已知限制，代码以 `kIsWeb` 分支主动规避：
 
 1. **启动前加密 `settings` 读取被跳过**（`main.dart:108-113`）：注释明确「SecureStorageService may hang」。Web 的窗口控制器是 no-op，启动前无需读取窗口几何，直接退回默认值。
 2. **业务任务跳过**（`main.dart:80-103`）：30 天软删除清理（`ManuscriptPurgeService`）在 Web 不执行。
-3. **API Key 安全性弱**：`ProviderService` 仍统一通过 `SecureStorageService` 存取 API Key；但 `flutter_secure_storage` 在 Web 仅能用 Web Crypto + localStorage 模拟，非 OS 级隔离。因此 Web 端 API Key 持久化仍是未妥善解决的痛点，Web 仅作测试/UAT 目标。
+3. **API Key 为会话级**：Provider Key 使用 `WebOptions(useSessionStorage: true)`，刷新可继续使用，关闭标签页后失效；旧版 localStorage Key 在读取时迁移至会话存储并删除持久副本。Web Crypto 仍非 OS 级隔离，不能抵御同源 XSS 或恶意脚本。
+4. **作品为尽力持久化**：Hive CE 使用 IndexedDB；应用请求 `navigator.storage.persist()`、显示配额与备份状态，并提供全部文稿/章节 JSON 备份和恢复。用户清理站点数据时仍会丢失。
+5. **临时体验不落盘**：`?workspace=temporary` 在启动阶段把 19 个 Hive Box 打开为内存后端，刷新或关闭即清除，不依赖不可靠的 unload 事件。
+6. **浏览器网络限制**：Web Base URL 必须使用 HTTPS，供应商必须允许浏览器 CORS。GitHub Pages 不提供 AI 请求代理，桌面可用的自定义端点不保证在 Web 可用。
 
 ### 8.2 Linux libsecret 依赖
 

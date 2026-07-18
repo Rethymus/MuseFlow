@@ -1,4 +1,5 @@
 import 'package:anthropic_sdk_dart/anthropic_sdk_dart.dart' as anthropic;
+import 'package:flutter/foundation.dart';
 import 'package:museflow/core/infrastructure/secure_storage_service.dart';
 import 'package:museflow/features/ai/domain/ai_exception.dart';
 import 'package:museflow/features/ai/domain/ai_provider.dart';
@@ -130,6 +131,7 @@ class ProviderService {
     String model = 'gpt-4o-mini',
     Duration timeout = const Duration(seconds: 30),
   }) async {
+    _validateWebBaseUrl(baseUrl);
     if (type == AiProviderType.claude) {
       await _testClaudeConnection(
         apiKey: apiKey,
@@ -144,6 +146,14 @@ class ProviderService {
         model: model,
         timeout: timeout,
       );
+    }
+  }
+
+  void _validateWebBaseUrl(String baseUrl) {
+    if (!kIsWeb) return;
+    final uri = Uri.tryParse(baseUrl);
+    if (uri == null || uri.scheme != 'https' || uri.host.isEmpty) {
+      throw const AINetworkException('Web 版仅支持 HTTPS AI 服务地址');
     }
   }
 

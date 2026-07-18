@@ -57,6 +57,7 @@ class ClaudeAdapter implements AIAdapter {
     int? maxTokens,
     void Function(Usage?)? onUsage,
   }) {
+    _validateBaseUrl(baseUrl);
     // Get or create cached client
     final client = _getOrCreateClient(apiKey, baseUrl);
 
@@ -117,6 +118,16 @@ class ClaudeAdapter implements AIAdapter {
     // no probe is injected (legacy path).
     if (onlineCheck == null) return inner;
     return _guardOnline(inner);
+  }
+
+  void _validateBaseUrl(String baseUrl) {
+    final uri = Uri.tryParse(baseUrl);
+    if (uri == null || uri.host.isEmpty) {
+      throw const AIStreamException('无效的 Claude Base URL');
+    }
+    if (kIsWeb && uri.scheme != 'https') {
+      throw const AIStreamException('Web 版仅支持 HTTPS AI 服务地址');
+    }
   }
 
   /// Extracts system prompt text from OpenAI system messages.

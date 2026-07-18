@@ -7,7 +7,7 @@ the goal is to make secret-handling regressions easy to spot during reviews.
 ## Secrets
 
 These values must only be stored through `SecureStorageService`, which delegates
-to `flutter_secure_storage` and the platform native backend:
+to `flutter_secure_storage` with platform-specific lifetime rules:
 
 | Value | Storage key owner | Source files |
 | --- | --- | --- |
@@ -17,6 +17,13 @@ to `flutter_secure_storage` and the platform native backend:
 Plaintext fallback files are not allowed for these values. If the platform
 secure-storage backend is missing, locked, or unavailable, the caller should
 surface or preserve that failure instead of silently writing secrets elsewhere.
+
+On Web, provider API keys use `WebOptions(useSessionStorage: true)` and expire
+with the tab session. The Hive settings encryption key remains in the Web
+plugin's persistent storage so the encrypted settings box can be reopened.
+Temporary Web workspaces keep both categories session-scoped and open every
+Hive box with an in-memory backend. Web storage is not equivalent to an OS
+credential vault and must not be described as native-grade secret protection.
 
 ## Non-Secret Provider Metadata
 
@@ -53,6 +60,7 @@ startup, exports, or test fixtures that touch API keys:
 ```bash
 scripts/check_storage_architecture.sh
 flutter test test/infrastructure/secure_storage_test.dart
+flutter test --platform chrome test/web/session_secure_storage_test.dart
 flutter test test/features/ai/application/provider_service_test.dart
 ```
 

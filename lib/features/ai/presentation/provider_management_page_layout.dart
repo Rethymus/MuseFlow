@@ -193,6 +193,20 @@ extension _ProviderManagementPageStateLayout on _ProviderManagementPageState {
             _isEditing ? '编辑模型' : '配置新模型',
             style: theme.textTheme.titleLarge,
           ),
+          if (kIsWeb) ...[
+            const SizedBox(height: 12),
+            Material(
+              color: colorScheme.secondaryContainer,
+              borderRadius: BorderRadius.circular(8),
+              child: const Padding(
+                padding: EdgeInsets.all(12),
+                child: Text(
+                  'Web 版 API Key 仅在当前标签页会话中保存。服务地址必须使用 HTTPS，'
+                  '并由供应商允许浏览器 CORS；请先测试连接。',
+                ),
+              ),
+            ),
+          ],
           const SizedBox(height: 24),
 
           // Provider type selector
@@ -201,24 +215,28 @@ extension _ProviderManagementPageStateLayout on _ProviderManagementPageState {
           SingleChildScrollView(
             scrollDirection: Axis.horizontal,
             child: SegmentedButton<AiProviderType>(
-              segments: const [
-                ButtonSegment(
+              segments: [
+                const ButtonSegment(
                   value: AiProviderType.openai,
                   label: Text('OpenAI'),
                 ),
-                ButtonSegment(
+                const ButtonSegment(
                   value: AiProviderType.deepseek,
                   label: Text('DeepSeek'),
                 ),
-                ButtonSegment(
+                const ButtonSegment(
                   value: AiProviderType.claude,
                   label: Text('Claude'),
                 ),
-                ButtonSegment(
-                  value: AiProviderType.ollama,
-                  label: Text('Ollama'),
+                if (!kIsWeb)
+                  const ButtonSegment(
+                    value: AiProviderType.ollama,
+                    label: Text('Ollama'),
+                  ),
+                const ButtonSegment(
+                  value: AiProviderType.custom,
+                  label: Text('自定义'),
                 ),
-                ButtonSegment(value: AiProviderType.custom, label: Text('自定义')),
               ],
               selected: {_selectedType},
               onSelectionChanged: (types) {
@@ -315,6 +333,7 @@ extension _ProviderManagementPageStateLayout on _ProviderManagementPageState {
                 hintText: 'sk-...',
                 border: const OutlineInputBorder(),
                 suffixIcon: IconButton(
+                  tooltip: _obscureApiKey ? '显示 API Key' : '隐藏 API Key',
                   icon: Icon(
                     _obscureApiKey ? Icons.visibility_off : Icons.visibility,
                   ),

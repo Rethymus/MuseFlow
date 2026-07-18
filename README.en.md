@@ -3,6 +3,7 @@
 [![CI](https://github.com/Rethymus/MuseFlow/actions/workflows/ci.yml/badge.svg)](https://github.com/Rethymus/MuseFlow/actions/workflows/ci.yml)
 [![Version](https://img.shields.io/badge/version-0.1.4-blue?style=flat-square)](https://github.com/Rethymus/MuseFlow/releases)
 [![Platform](https://img.shields.io/badge/platform-Android%20%7C%20Linux%20%7C%20Windows%20%7C%20Web-lightgrey?style=flat-square)](#tech-stack)
+[![AI Provider BYOK](https://img.shields.io/badge/AI%20Provider-BYOK-16A34A?style=flat-square)](#ai-provider-byok)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen?style=flat-square)](CONTRIBUTING.md)
 
 ![Flutter](https://img.shields.io/badge/Flutter-02569B?style=flat-square&logo=flutter&logoColor=white)
@@ -145,7 +146,7 @@ AI phrase filtering lets writers maintain their own banned phrase list and suppr
 - **Knowledge and rule control**: character cards, world settings, templates, Skill documents, entity matching, and context injection.
 - **Long-form structure**: foreshadowing lifecycle, plot nodes, story arc graph, logic guardian, cleanup, and export.
 - **Analytics and cost transparency**: writing stats, token audit, cost report, pain point report, anti-AI-scent evaluation, and consistency analysis.
-- **Lightweight cross-platform design**: Flutter-based and local-first. Android, Linux, and Windows are release targets; Web is a testing/build-validation target (full UI journey UAT requires a Windows desktop / Android device and is not yet covered).
+- **Lightweight cross-platform design**: Flutter-based and local-first. Android, Linux, and Windows are release targets; Web provides a GitHub Pages browser-workspace preview. Browser data is best-effort and still requires regular exported backups.
 
 ## Tech Stack
 
@@ -156,7 +157,13 @@ AI phrase filtering lets writers maintain their own banned phrase list and suppr
 - go_router navigation
 - fl_chart / graphview visualization
 - OpenAI / Claude / DeepSeek / Ollama model adapters
-- Android / Linux local build validation, Windows as a GitHub Actions build target, and Web as a testing build target
+- Android / Linux local build validation, Windows as a GitHub Actions build target, and Web as a GitHub Pages preview
+
+## AI Provider BYOK
+
+MuseFlow uses **BYOK (Bring Your Own Key)**: users supply credentials from OpenAI, Claude, DeepSeek, GLM, or another compatible provider. Native clients keep credentials in operating-system secure storage. The Web build keeps provider keys only for the current tab session and discards them when the tab closes. Requests go directly from the MuseFlow client to the selected provider, so provider quotas, rate limits, and model charges remain on the user's provider account. Local Ollama remains a native-client option; browser endpoints must support HTTPS and CORS.
+
+The browser workspace auto-saves manuscripts to IndexedDB, but browser storage is not a permanent backup. Settings provide persistent-storage requests plus full manuscript backup and restore. Add `?workspace=temporary` for an in-memory session that is cleared on refresh or close.
 
 ## Run and Verify
 
@@ -167,6 +174,7 @@ flutter analyze
 flutter test
 flutter test test/core/presentation/active_adapter_wiring_test.dart
 flutter build web --release
+flutter build web --release --base-href /MuseFlow/
 scripts/check_readme_assets.sh
 scripts/check_repo_hygiene.sh
 scripts/check_shell_scripts.sh

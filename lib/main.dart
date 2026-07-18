@@ -8,8 +8,10 @@ import 'package:hive_ce_flutter/hive_flutter.dart';
 import 'package:museflow/app.dart';
 import 'package:museflow/core/infrastructure/hive_adapters.dart';
 import 'package:museflow/core/infrastructure/secure_storage_service.dart';
+import 'package:museflow/core/infrastructure/temporary_hive_workspace.dart';
 import 'package:museflow/core/platform/trace_marker.dart';
 import 'package:museflow/core/platform/window_controller.dart';
+import 'package:museflow/core/platform/web_workspace_mode.dart';
 import 'package:museflow/features/manuscript/infrastructure/chapter_repository.dart';
 import 'package:museflow/features/manuscript/infrastructure/manuscript_purge_service.dart';
 import 'package:museflow/features/manuscript/infrastructure/manuscript_repository.dart';
@@ -79,6 +81,10 @@ void main() async {
   Hive.registerAdapter(ChapterAdapter());
   Hive.registerAdapter(TokenAuditRecordAdapter());
   Hive.registerAdapter(ChapterSummaryAdapter());
+
+  if (kIsWeb && isTemporaryWebWorkspace) {
+    await openTemporaryHiveWorkspace();
+  }
   setTraceMarker('4.purge');
 
   // Purge soft-deleted manuscripts older than 30 days (D-21).

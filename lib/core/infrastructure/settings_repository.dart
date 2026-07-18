@@ -15,6 +15,8 @@ class SettingsRepository {
   static const String _defaultTagKey = 'defaultTag';
   static const String _autoDeviationCheckKey = 'auto_deviation_check';
   static const String _creativityLevelKey = 'creativity_level';
+  static const String _webWorkspaceNoticeKey = 'web_workspace_notice_seen';
+  static const String _lastBrowserBackupAtKey = 'last_browser_backup_at';
 
   SettingsRepository(this._box);
 
@@ -116,5 +118,22 @@ class SettingsRepository {
   /// Per D-18: Local-only, does not expose manuscript content.
   Future<void> saveLastExportPath(String path) async {
     await _box.put('last_export_path', path);
+  }
+
+  bool hasSeenWebWorkspaceNotice() {
+    return _box.get(_webWorkspaceNoticeKey, defaultValue: false) as bool;
+  }
+
+  Future<void> markWebWorkspaceNoticeSeen() async {
+    await _box.put(_webWorkspaceNoticeKey, true);
+  }
+
+  DateTime? getLastBrowserBackupAt() {
+    final value = _box.get(_lastBrowserBackupAtKey) as String?;
+    return value == null ? null : DateTime.tryParse(value);
+  }
+
+  Future<void> saveLastBrowserBackupAt(DateTime value) async {
+    await _box.put(_lastBrowserBackupAtKey, value.toIso8601String());
   }
 }

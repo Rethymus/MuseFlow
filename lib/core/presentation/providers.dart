@@ -16,6 +16,8 @@ import 'package:museflow/core/infrastructure/connectivity_service.dart';
 import 'package:museflow/core/infrastructure/fragment_repository.dart';
 import 'package:museflow/core/infrastructure/secure_storage_service.dart';
 import 'package:museflow/core/infrastructure/settings_repository.dart';
+import 'package:museflow/core/platform/browser_storage.dart';
+import 'package:museflow/core/platform/browser_storage_status.dart';
 import 'package:museflow/core/platform/export_file_writer.dart';
 import 'package:museflow/features/ai/application/anti_ai_scent_processor.dart';
 import 'package:museflow/features/ai/application/prompt_pipeline.dart';
