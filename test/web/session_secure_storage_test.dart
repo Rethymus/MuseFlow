@@ -2,6 +2,8 @@
 library;
 
 import 'package:flutter_test/flutter_test.dart';
+import 'package:flutter_secure_storage_platform_interface/flutter_secure_storage_platform_interface.dart';
+import 'package:flutter_secure_storage_web/flutter_secure_storage_web.dart';
 import 'package:museflow/core/infrastructure/secure_storage_service.dart';
 import 'package:web/web.dart' as web;
 
@@ -9,6 +11,10 @@ void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
   setUp(() {
+    // Browser unit tests do not run the generated plugin registrant. Install
+    // the real Web implementation so these assertions exercise Web Crypto and
+    // the same localStorage/sessionStorage selection used by the built app.
+    FlutterSecureStoragePlatform.instance = FlutterSecureStorageWeb();
     web.window.localStorage.clear();
     web.window.sessionStorage.clear();
   });
