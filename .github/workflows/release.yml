@@ -102,11 +102,15 @@ jobs:
         run: flutter pub get
 
       - name: Decode Android upload keystore
-        if: ${{ secrets.ANDROID_KEYSTORE_BASE64 != '' }}
         env:
           ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
         shell: bash
-        run: printf '%s' "$ANDROID_KEYSTORE_BASE64" | base64 -d > "$RUNNER_TEMP/museflow-upload.jks"
+        run: |
+          if [ -n "$ANDROID_KEYSTORE_BASE64" ]; then
+            printf '%s' "$ANDROID_KEYSTORE_BASE64" | base64 -d > "$RUNNER_TEMP/museflow-upload.jks"
+          else
+            echo "ANDROID_KEYSTORE_BASE64 not configured; release APK falls back to debug signing."
+          fi
 
       - name: Build Android APK
         env:
