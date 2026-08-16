@@ -95,19 +95,32 @@ jobs:
         uses: subosito/flutter-action@v2
         with:
           channel: stable
+          flutter-version: "3.44.0"
           cache: true
 
       - name: Resolve dependencies
         run: flutter pub get
 
-      - name: Build unsigned Android APK
+      - name: Decode Android upload keystore
+        if: ${{ secrets.ANDROID_KEYSTORE_BASE64 != '' }}
+        env:
+          ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+        shell: bash
+        run: printf '%s' "$ANDROID_KEYSTORE_BASE64" | base64 -d > "$RUNNER_TEMP/museflow-upload.jks"
+
+      - name: Build Android APK
+        env:
+          ANDROID_KEYSTORE_PATH: ${{ runner.temp }}/museflow-upload.jks
+          ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
         run: flutter build apk --release
 
       - name: Package Android artifact
         shell: bash
         run: |
           mkdir -p dist
-          cp build/app/outputs/flutter-apk/app-release.apk "dist/museflow-${{ needs.prepare.outputs.tag }}-android-unsigned.apk"
+          cp build/app/outputs/flutter-apk/app-release.apk "dist/museflow-${{ needs.prepare.outputs.tag }}-android.apk"
           (cd dist && sha256sum * > SHA256SUMS-android.txt)
 
       - name: Upload Android artifact
@@ -128,6 +141,7 @@ jobs:
         uses: subosito/flutter-action@v2
         with:
           channel: stable
+          flutter-version: "3.44.0"
           cache: true
 
       - name: Install Linux desktop dependencies
@@ -169,6 +183,7 @@ jobs:
         uses: subosito/flutter-action@v2
         with:
           channel: stable
+          flutter-version: "3.44.0"
           cache: true
 
       - name: Enable Windows desktop
@@ -205,6 +220,7 @@ jobs:
         uses: subosito/flutter-action@v2
         with:
           channel: stable
+          flutter-version: "3.44.0"
           cache: true
 
       - name: Resolve dependencies
@@ -254,10 +270,23 @@ jobs:
 
           ## Platform Artifacts
 
-          - Android APK: unsigned/debug-signed release APK. Verify before sideloading.
+          - Android APK: signed with the stable upload key when `ANDROID_KEYSTORE_*` secrets are configured (enables in-place upgrades); otherwise debug-signed — verify before sideloading.
           - Linux x64: release bundle packaged as `tar.gz`.
           - Windows x64: release bundle packaged as `zip`.
           - Web: browser build packaged as `zip` for testing/UAT. Web is not a production secure-storage target.
+
+          ## Linux System Requirements
+
+          The Linux bundle requires the GTK3 stack (`libgtk-3-0`) and `libsecret-1-0`, plus a running
+          Secret Service (e.g. `gnome-keyring`) for encrypted settings/API-key storage. On minimal
+          installs run e.g. `sudo apt install libgtk-3-0 libsecret-1-0 gnome-keyring` before launch.
+          WSL without a keyring daemon is not a supported target for the Linux bundle.
+
+          ## Windows First-Run Note
+
+          The Windows build is not code-signed. On first launch Windows SmartScreen may show
+          "Windows protected your PC". To proceed: click "More info" → "Run anyway" — this is
+          expected for unsigned binaries. Verify the download against `SHA256SUMS.txt` first.
 
           ## Signing Status
 

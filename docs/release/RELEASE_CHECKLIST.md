@@ -27,6 +27,38 @@ Complete: Web testing target is implemented, remote CI is green on `main`, and G
 | `flutter build linux --release` | PASS | Built `build/linux/x64/release/bundle/museflow` |
 | `flutter build web --release` | PASS | Built `build/web`; Web is a testing/UAT target, not a production secure-storage target |
 
+## Android Release Signing Setup
+
+Stable upload signing is wired through environment variables (consumed by
+`android/app/build.gradle.kts`); without them the build falls back to debug
+signing. Debug keys are regenerated per CI runner, so debug-signed APKs cannot
+upgrade over each other — Android refuses mismatched signatures and requires an
+uninstall, which wipes app data (manuscripts, settings). Configure once:
+
+1. Generate a dedicated upload keystore (keep it OUT of the repository):
+
+   ```bash
+   keytool -genkey -v -keystore museflow-upload.jks \
+     -alias museflow-upload -keyalg RSA -keysize 2048 -validity 10000
+   ```
+
+2. Add four repository secrets (Settings → Secrets and variables → Actions):
+
+   | Secret | Value |
+   | --- | --- |
+   | `ANDROID_KEYSTORE_BASE64` | `base64 -w0 museflow-upload.jks` output |
+   | `ANDROID_KEYSTORE_PASSWORD` | keystore password |
+   | `ANDROID_KEY_ALIAS` | `museflow-upload` |
+   | `ANDROID_KEY_PASSWORD` | key password |
+
+3. The release workflow decodes the keystore to `$RUNNER_TEMP` and exports
+   `ANDROID_KEYSTORE_PATH`/passwords for `flutter build apk --release`. Local
+   release builds can set the same environment variables pointing at the local
+   `.jks` file.
+
+Back up the keystore and passwords: losing them permanently breaks in-place
+upgrades for existing installs.
+
 ## Release Automation Status
 
 - CI workflow: PASS on `main` for commit `ec169cf96e22147951578045709ba12966b314af`, run `27211536093`.

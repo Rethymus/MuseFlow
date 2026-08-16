@@ -4,6 +4,15 @@ plugins {
     id("dev.flutter.flutter-gradle-plugin")
 }
 
+// Release signing from environment variables (used by CI; see
+// docs/release/RELEASE_CHECKLIST.md). When ANDROID_KEYSTORE_PATH points to an
+// existing file, release builds are signed with that stable upload key so
+// users can upgrade in place — debug-key signing differs per build and forces
+// an uninstall (wiping app data) on every upgrade. Falls back to debug signing
+// for local `flutter run --release` and fork builds without secrets.
+val envKeystorePath = System.getenv("ANDROID_KEYSTORE_PATH")
+val releaseKeystoreFile = envKeystorePath?.let { file(it) }?.takeIf { it.exists() }
+
 android {
     namespace = "com.museflow.museflow"
     compileSdk = 36
@@ -25,11 +34,22 @@ android {
         versionName = flutter.versionName
     }
 
+    if (releaseKeystoreFile != null) {
+        signingConfigs {
+            create("release") {
+                storeFile = releaseKeystoreFile
+                storePassword = System.getenv("ANDROID_KEYSTORE_PASSWORD")
+                keyAlias = System.getenv("ANDROID_KEY_ALIAS")
+                keyPassword = System.getenv("ANDROID_KEY_PASSWORD")
+            }
+        }
+    }
+
     buildTypes {
         release {
-            // TODO: Add your own signing config for the release build.
-            // Signing with the debug keys for now, so `flutter run --release` works.
-            signingConfig = signingConfigs.getByName("debug")
+            signingConfig =
+                if (releaseKeystoreFile != null) signingConfigs.getByName("release")
+                else signingConfigs.getByName("debug")
         }
     }
 }
