@@ -205,7 +205,7 @@ MuseFlow 灵韵是一个人机协作的小说创作辅助工具，面向"有故�
 |---------|---------|---------|-------------|
 | uuid | latest | Generate unique IDs for entities | All domain entities (manuscripts, chapters, characters, plot nodes) |
 | logger | latest | Structured logging | Debug and development logging. Use `debugPrint` per project rules for UI debugging. |
-| google_fonts | latest | Custom typography | Writer-facing app needs readable, tuned typography across editor and shell UI. |
+| 内置 Noto Sans CJK SC 子集 | assets/fonts（GB2312, OFL 1.1） | Custom typography | 中文渲染不依赖运行时 google_fonts 网络拉取（终用户网络不可靠）；罕见字符回退系统字体 |
 | markdown | latest | Markdown parsing/rendering | Import/export of fragments and chapters in Markdown format. |
 | path_provider | latest | Platform-specific paths | Locate app data directory for Hive initialization and export files. |
 | share_plus | latest | Share functionality | Export and share manuscripts from Android. |

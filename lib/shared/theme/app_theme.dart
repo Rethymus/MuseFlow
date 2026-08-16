@@ -1,9 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 /// Creates the application theme with Material 3 dark indigo scheme.
 ///
-/// Uses Noto Sans SC for CJK text via google_fonts.
+/// CJK text renders via the bundled `Noto Sans CJK SC` font declared in
+/// pubspec.yaml (GB2312 subset, ~2.9MB) — no runtime font fetching. The
+/// previous default of `GoogleFonts.notoSansScTextTheme()` downloaded fonts
+/// from fonts.gstatic.com on end-user machines at first launch, which failed
+/// on networks without Google access and left the app without Chinese glyphs.
+/// Rare characters outside GB2312 fall back to the system font.
+///
 /// Typography follows UI-SPEC: body 14px w400, label 12px w500,
 /// heading 20px w600, display 28px w700.
 ThemeData appTheme() {
@@ -12,12 +17,9 @@ ThemeData appTheme() {
     brightness: Brightness.dark,
   );
 
-  const disableGoogleFonts = bool.fromEnvironment(
-    'MUSEFLOW_DISABLE_GOOGLE_FONTS',
+  final baseTextTheme = Typography.material2021().white.apply(
+    fontFamily: 'Noto Sans CJK SC',
   );
-  final baseTextTheme = disableGoogleFonts
-      ? Typography.material2021().white.apply(fontFamily: 'Noto Sans CJK SC')
-      : GoogleFonts.notoSansScTextTheme();
 
   return ThemeData(
     colorScheme: colorScheme,

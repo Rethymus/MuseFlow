@@ -42,7 +42,6 @@ dependencies:
   # Supporting libraries
   uuid: ^4.5.1
   logger: ^2.5.0
-  google_fonts: ^8.1.0
   markdown: ^7.3.1
   path_provider: ^2.1.6
   share_plus: ^12.0.0
@@ -83,3 +82,14 @@ flutter:
   uses-material-design: true
   assets:
     - assets/templates/world_presets/templates_zh.json
+    # OFL 1.1 requires the license to accompany redistribution of the font.
+    - assets/fonts/OFL-NotoSansSC.txt
+  fonts:
+    # Bundled CJK font (GB2312 universal subset of Noto Sans CJK SC, OFL 1.1).
+    # Shipping it locally removes the runtime google_fonts fetch, which is
+    # unreliable/blocked on end-user networks and left release builds without
+    # Chinese glyphs. See assets/fonts/OFL-NotoSansSC.txt and
+    # test_assets/FONT_NOTICE.txt for provenance and the regeneration recipe.
+    - family: Noto Sans CJK SC
+      fonts:
+        - asset: assets/fonts/noto_sans_sc_subset.ttf
