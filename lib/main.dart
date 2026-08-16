@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -8,6 +7,7 @@ import 'package:hive_ce_flutter/hive_flutter.dart';
 import 'package:museflow/app.dart';
 import 'package:museflow/core/infrastructure/hive_adapters.dart';
 import 'package:museflow/core/infrastructure/secure_storage_service.dart';
+import 'package:museflow/core/infrastructure/settings_repository.dart';
 import 'package:museflow/core/infrastructure/temporary_hive_workspace.dart';
 import 'package:museflow/core/platform/trace_marker.dart';
 import 'package:museflow/core/platform/window_controller.dart';
@@ -16,26 +16,27 @@ import 'package:museflow/features/manuscript/infrastructure/chapter_repository.d
 import 'package:museflow/features/manuscript/infrastructure/manuscript_purge_service.dart';
 import 'package:museflow/features/manuscript/infrastructure/manuscript_repository.dart';
 
-/// Reads saved window geometry from the encrypted settings box.
+/// Upper bound for the startup settings-box open, which reads/writes platform
+/// secure storage. On Linux without a running Secret Service (WSL, minimal
+/// window managers) libsecret calls can block indefinitely — startup must
+/// fall back to defaults instead of hanging before the first frame.
+const _settingsOpenTimeout = Duration(seconds: 5);
+
+/// Opens the encrypted 'settings' box before [runApp] and reads the saved
+/// window geometry from it. The box is left open — the router's first-run
+/// redirect reads `onboarding_completed` from it synchronously, and
+/// [settingsRepositoryProvider] reuses it via same-name open semantics.
 ///
-/// Called before [runApp] so the window opens at the user's last size/position.
-/// Returns nulls on first launch or if the box hasn't been created yet.
-/// The box is left open — [settingsRepositoryProvider] reuses it via
-/// [Hive.openBox] same-name semantics.
-Future<({Size? size, Offset? position})> _readSavedGeometry() async {
+/// Opening the box here (instead of lazily in the provider) also fixes the
+/// fresh-install redirect: the box used to be closed on first launch, so
+/// `Hive.box('settings')` threw inside the redirect guard, the error was
+/// swallowed, and new users landed on the manuscript library instead of the
+/// onboarding wizard.
+Future<({Size? size, Offset? position})> _openSettingsAndReadGeometry() async {
   try {
-    const encryptionKeyStoreKey = 'hive_encryption_key';
-
-    final secureStorage = SecureStorageService();
-    final storedKey = await secureStorage.getApiKey(encryptionKeyStoreKey);
-
-    if (storedKey == null) return (size: null, position: null);
-
-    final encryptionKey = base64Decode(storedKey);
-    final box = await Hive.openBox(
-      'settings',
-      encryptionCipher: HiveAesCipher(encryptionKey),
-    );
+    final box = await openSettingsBox(
+      SecureStorageService(),
+    ).timeout(_settingsOpenTimeout);
 
     Size? savedSize;
     final sizeData = box.get('windowSize');
@@ -54,7 +55,9 @@ Future<({Size? size, Offset? position})> _readSavedGeometry() async {
 
     return (size: savedSize, position: savedPosition);
   } catch (_) {
-    // If key is corrupted or box can't open, fall back to defaults.
+    // Key corrupted, secure storage unavailable, or the open timed out —
+    // fall back to defaults. The box stays closed and the redirect guard
+    // degrades to its no-redirect path until a later successful open.
     return (size: null, position: null);
   }
 }
@@ -110,12 +113,12 @@ void main() async {
   }
   setTraceMarker('5.geometry');
 
-  // Read saved window geometry before showing the window.
-  // On Web, window_controller_web.dart is a no-op and SecureStorageService
-  // may hang, so skip geometry retrieval entirely.
+  // Open the encrypted settings box (creating the Hive encryption key on
+  // first launch) and read saved window geometry. Skipped on Web where
+  // SecureStorageService may hang and geometry is irrelevant.
   final geometry = kIsWeb
-      ? (size: null, position: null)
-      : await _readSavedGeometry();
+      ? (size: null as Size?, position: null as Offset?)
+      : await _openSettingsAndReadGeometry();
   setTraceMarker('6.platform');
 
   if (!kIsWeb) {

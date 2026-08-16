@@ -215,9 +215,9 @@ require_regex_in_file \
   'ProviderRepository.delete must continue deleting the associated API key from secure storage'
 
 require_regex_in_file \
-  lib/core/presentation/providers_core.dart \
-  'const encryptionKeyStoreKey = '\''hive_encryption_key'\'';' \
-  'settingsRepositoryProvider must continue using the documented hive_encryption_key owner'
+  lib/core/infrastructure/settings_repository.dart \
+  "const String _encryptionKeyStoreKey = 'hive_encryption_key';" \
+  'openSettingsBox must remain the single hive_encryption_key owner (settings box cipher)'
 
 if [[ "$registered_adapter_count" -ne "$type_id_count" ]]; then
   echo "lib/main.dart registers $registered_adapter_count Hive adapters, but HiveTypeIds defines $type_id_count IDs" >&2

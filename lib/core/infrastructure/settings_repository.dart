@@ -1,8 +1,41 @@
+import 'dart:convert';
 import 'dart:ui';
 
 import 'package:hive_ce/hive.dart';
 import 'package:museflow/core/domain/fragment_tag.dart';
+import 'package:museflow/core/infrastructure/secure_storage_service.dart';
 import 'package:museflow/features/ai/domain/creativity_level.dart';
+
+const String _encryptionKeyStoreKey = 'hive_encryption_key';
+
+/// Opens (or returns the already-open) encrypted Hive 'settings' box.
+///
+/// The AES key is read from — or generated into — platform secure storage,
+/// so the box is always opened with the same cipher regardless of which
+/// call site wins the race. Single source of truth for `main()` startup,
+/// [settingsRepositoryProvider], and the onboarding repositories; previously
+/// `onboardingRepositoryProvider` opened the same box WITHOUT a cipher, and
+/// Hive ignores the cipher argument once a box is open, so an early onboarding
+/// access silently left the settings box unencrypted.
+Future<Box<dynamic>> openSettingsBox(SecureStorageService secureStorage) async {
+  final storedKey = await secureStorage.getApiKey(_encryptionKeyStoreKey);
+
+  List<int> encryptionKey;
+  if (storedKey != null) {
+    encryptionKey = base64Decode(storedKey);
+  } else {
+    encryptionKey = Hive.generateSecureKey();
+    await secureStorage.saveApiKey(
+      _encryptionKeyStoreKey,
+      base64Encode(encryptionKey),
+    );
+  }
+
+  return Hive.openBox(
+    'settings',
+    encryptionCipher: HiveAesCipher(encryptionKey),
+  );
+}
 
 /// Repository for managing application settings in an encrypted Hive box.
 ///

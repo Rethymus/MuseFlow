@@ -5,7 +5,6 @@
 /// in the same library — consumers import this file unchanged.
 library;
 
-import 'dart:convert';
 import 'dart:ui';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';

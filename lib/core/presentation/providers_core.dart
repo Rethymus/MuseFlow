@@ -20,29 +20,8 @@ final fragmentRepositoryProvider = FutureProvider<FragmentRepository>((
 final settingsRepositoryProvider = FutureProvider<SettingsRepository>((
   ref,
 ) async {
-  const encryptionKeyStoreKey = 'hive_encryption_key';
-
   final secureStorage = ref.read(secureStorageServiceProvider);
-  String? storedKey = await secureStorage.getApiKey(encryptionKeyStoreKey);
-
-  List<int> encryptionKey;
-  if (storedKey != null) {
-    // Decode the base64-encoded key
-    encryptionKey = base64Decode(storedKey);
-  } else {
-    // Generate a new encryption key and store it as base64
-    encryptionKey = Hive.generateSecureKey();
-    await secureStorage.saveApiKey(
-      encryptionKeyStoreKey,
-      base64Encode(encryptionKey),
-    );
-  }
-
-  final box = await Hive.openBox(
-    'settings',
-    encryptionCipher: HiveAesCipher(encryptionKey),
-  );
-
+  final box = await openSettingsBox(secureStorage);
   return SettingsRepository(box);
 });
 

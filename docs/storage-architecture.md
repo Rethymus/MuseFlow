@@ -327,7 +327,7 @@ TypeId 集中注册于 `HiveTypeIds`（`hive_adapters.dart:17-30`），避免冲
 
 ## 7. 加密机制
 
-`settings` box 的加密链路（`lib/main.dart` + `lib/core/presentation/providers_core.dart`）：
+`settings` box 的加密链路（`lib/main.dart` + `lib/core/infrastructure/settings_repository.dart` 的 `openSettingsBox`）：
 
 ```
 首次启动:

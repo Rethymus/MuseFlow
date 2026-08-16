@@ -1,5 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive_ce/hive.dart';
+import 'package:museflow/core/infrastructure/secure_storage_service.dart';
+import 'package:museflow/core/infrastructure/settings_repository.dart';
 import 'package:museflow/features/knowledge/infrastructure/character_card_repository.dart';
 import 'package:museflow/features/knowledge/infrastructure/world_setting_repository.dart';
 import 'package:museflow/features/onboarding/infrastructure/onboarding_progress_repository.dart';
@@ -14,7 +16,10 @@ import 'package:museflow/features/onboarding/infrastructure/onboarding_progress_
 /// registered for redirect guard access.
 final onboardingRepositoryProvider =
     FutureProvider<OnboardingProgressRepository>((ref) async {
-      final box = await Hive.openBox('settings');
+      // Same encrypted-open path as settingsRepositoryProvider — opening the
+      // box without a cipher here used to race it and could leave the
+      // settings box unencrypted (Hive ignores the cipher of later opens).
+      final box = await openSettingsBox(SecureStorageService());
       return OnboardingProgressRepository(box);
     });
 
