@@ -140,36 +140,44 @@ extension _EditorWithSidebarStateLayout on _EditorWithSidebarState {
                   maxWidth: AppConstants.editorMaxWidth,
                 ),
                 // ValueKey forces rebuild on chapter switch (per RESEARCH.md)
-                child: SuperEditor(
-                  key: ValueKey(_currentChapterId),
-                  editor: _editor!,
-                  autofocus: true,
-                  stylesheet: _buildManuscriptStylesheet(context),
-                  selectionLayerLinks: _selectionLinks,
-                  documentOverlayBuilders: [
-                    _SelectionLeadersLayerBuilder(links: _selectionLinks!),
-                    const ContextAnchorOverlayBuilder(),
-                    const DiffOverlayBuilder(),
-                    FunctionalSuperEditorLayerBuilder((context, editContext) {
-                      return ContentLayerProxyWidget(
-                        child: FloatingToolbar(
-                          editor: _editor!,
-                          selectionLayerLinks: _selectionLinks!,
-                          manuscriptId: widget.manuscriptId,
-                          chapterId: _currentChapterId,
-                        ),
-                      );
-                    }),
-                    FunctionalSuperEditorLayerBuilder((context, editContext) {
-                      return ContentLayerProxyWidget(
-                        child: AcceptRejectBar(
-                          editor: _editor!,
-                          selectionLayerLinks: _selectionLinks!,
-                        ),
-                      );
-                    }),
-                    const DefaultCaretOverlayBuilder(),
-                  ],
+                //
+                // Semantics: super_editor does not yet expose document text
+                // to assistive tech (upstream limitation); at minimum label
+                // the editing region so screen readers announce where the
+                // manuscript body lives instead of skipping it entirely.
+                child: Semantics(
+                  label: '章节正文编辑区',
+                  child: SuperEditor(
+                    key: ValueKey(_currentChapterId),
+                    editor: _editor!,
+                    autofocus: true,
+                    stylesheet: _buildManuscriptStylesheet(context),
+                    selectionLayerLinks: _selectionLinks,
+                    documentOverlayBuilders: [
+                      _SelectionLeadersLayerBuilder(links: _selectionLinks!),
+                      const ContextAnchorOverlayBuilder(),
+                      const DiffOverlayBuilder(),
+                      FunctionalSuperEditorLayerBuilder((context, editContext) {
+                        return ContentLayerProxyWidget(
+                          child: FloatingToolbar(
+                            editor: _editor!,
+                            selectionLayerLinks: _selectionLinks!,
+                            manuscriptId: widget.manuscriptId,
+                            chapterId: _currentChapterId,
+                          ),
+                        );
+                      }),
+                      FunctionalSuperEditorLayerBuilder((context, editContext) {
+                        return ContentLayerProxyWidget(
+                          child: AcceptRejectBar(
+                            editor: _editor!,
+                            selectionLayerLinks: _selectionLinks!,
+                          ),
+                        );
+                      }),
+                      const DefaultCaretOverlayBuilder(),
+                    ],
+                  ),
                 ),
               ),
             ),

@@ -42,7 +42,10 @@ class CharacterCardRepository {
   List<CharacterCard> getAll() {
     try {
       return _box.values
-          .map((json) => CharacterCard.fromJson(json as Map<String, dynamic>))
+          .map(
+            (json) =>
+                CharacterCard.fromJson(Map<String, dynamic>.from(json as Map)),
+          )
           .toList();
     } catch (e) {
       throw StateError('Failed to read character cards: $e');
@@ -54,7 +57,7 @@ class CharacterCardRepository {
     try {
       final json = _box.get(id);
       if (json == null) return null;
-      return CharacterCard.fromJson(json as Map<String, dynamic>);
+      return CharacterCard.fromJson(Map<String, dynamic>.from(json as Map));
     } catch (e) {
       throw StateError('Failed to read character card $id: $e');
     }

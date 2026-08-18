@@ -25,6 +25,53 @@ class SettingsPage extends ConsumerWidget {
         children: [
           Text('设置', style: theme.textTheme.headlineMedium),
           const SizedBox(height: 32),
+          // Appearance section: day/night writing is a standard ergonomics
+          // feature for long-session writing tools (HF-7).
+          Text('外观', style: theme.textTheme.titleLarge),
+          const SizedBox(height: 8),
+          ListTile(
+            leading: const Icon(Icons.brightness_6_outlined),
+            title: const Text('主题模式'),
+            subtitle: const Text('日间写作用浅色，夜间护眼用深色'),
+          ),
+          Padding(
+            padding: const EdgeInsets.symmetric(
+              horizontal: 16.0,
+              vertical: 4.0,
+            ),
+            child: LayoutBuilder(
+              builder: (context, constraints) {
+                // Icon-only on narrow viewports so the three segments stay
+                // within Material tap-target sizes without overflowing.
+                final compact = constraints.maxWidth < 320;
+                return SegmentedButton<ThemeMode>(
+                  showSelectedIcon: false,
+                  segments: [
+                    ButtonSegment(
+                      value: ThemeMode.system,
+                      icon: const Icon(Icons.brightness_auto_outlined),
+                      label: compact ? null : const Text('跟随系统'),
+                    ),
+                    ButtonSegment(
+                      value: ThemeMode.light,
+                      icon: const Icon(Icons.light_mode_outlined),
+                      label: compact ? null : const Text('浅色'),
+                    ),
+                    ButtonSegment(
+                      value: ThemeMode.dark,
+                      icon: const Icon(Icons.dark_mode_outlined),
+                      label: compact ? null : const Text('深色'),
+                    ),
+                  ],
+                  selected: {ref.watch(themeModeProvider)},
+                  onSelectionChanged: (selection) =>
+                      ref.read(themeModeProvider.notifier).set(selection.first),
+                );
+              },
+            ),
+          ),
+          const Divider(),
+          const SizedBox(height: 16),
           if (kIsWeb) const WebWorkspaceSettingsSection(),
           // AI Model section
           Text('AI', style: theme.textTheme.titleLarge),

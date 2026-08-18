@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:museflow/core/domain/fragment_tag.dart';
+import 'package:museflow/shared/utils/friendly_error.dart';
 import 'package:museflow/features/ai/presentation/synthesis_notifier.dart';
 import 'package:museflow/features/ai/presentation/synthesis_panel.dart';
 import 'package:museflow/features/capture/presentation/capture_provider.dart';
@@ -88,7 +89,7 @@ class _CapturePageState extends ConsumerState<CapturePage> {
                     const SizedBox(width: 8),
                     Expanded(
                       child: Text(
-                        captureState.error!,
+                        friendlyError(captureState.error!),
                         style: TextStyle(color: colorScheme.onErrorContainer),
                       ),
                     ),

@@ -1,10 +1,12 @@
 library;
 
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hive_ce/hive.dart';
 import 'package:museflow/core/presentation/app_shell.dart';
+import 'package:museflow/core/presentation/providers.dart';
 import 'package:museflow/features/ai/presentation/banned_phrase_settings.dart';
 import 'package:museflow/features/ai/presentation/provider_management_page.dart';
 import 'package:museflow/features/capture/presentation/capture_page.dart';
@@ -53,9 +55,20 @@ class MuseFlowApp extends ConsumerWidget {
     return MaterialApp.router(
       title: 'MuseFlow 灵韵',
       debugShowCheckedModeBanner: false,
-      theme: appTheme(),
-      darkTheme: appTheme(),
-      themeMode: ThemeMode.dark,
+      theme: appTheme(Brightness.light),
+      darkTheme: appTheme(Brightness.dark),
+      themeMode: ref.watch(themeModeProvider),
+      // Chinese-first localization: the app's own copy is Chinese, so every
+      // framework-provided string (tooltips, counters like "characters
+      // remaining", date pickers) must follow instead of mixing English
+      // defaults into a Chinese interface (HF-8).
+      locale: const Locale('zh', 'CN'),
+      supportedLocales: const [Locale('zh', 'CN'), Locale('en')],
+      localizationsDelegates: const [
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
       routerConfig: router,
       builder: (context, child) =>
           WebWorkspaceGate(child: child ?? const SizedBox.shrink()),

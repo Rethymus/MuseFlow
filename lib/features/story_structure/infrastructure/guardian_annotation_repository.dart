@@ -48,7 +48,9 @@ class GuardianAnnotationRepository {
     try {
       return _box.values
           .map(
-            (json) => GuardianAnnotation.fromJson(json as Map<String, dynamic>),
+            (json) => GuardianAnnotation.fromJson(
+              Map<String, dynamic>.from(json as Map),
+            ),
           )
           .toList();
     } catch (e) {
@@ -66,7 +68,9 @@ class GuardianAnnotationRepository {
     try {
       final json = _box.get(id);
       if (json == null) return null;
-      return GuardianAnnotation.fromJson(json as Map<String, dynamic>);
+      return GuardianAnnotation.fromJson(
+        Map<String, dynamic>.from(json as Map),
+      );
     } catch (e) {
       throw StateError('Failed to read guardian annotation $id: $e');
     }

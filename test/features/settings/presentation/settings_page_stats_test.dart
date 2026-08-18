@@ -58,7 +58,11 @@ void main() {
       );
 
       // The creativity control (标题 + 保守/平衡/灵动 三档) must render
-      // without a RenderFlex overflow exception at 360dp width.
+      // without a RenderFlex overflow exception at 360dp width. It sits
+      // below the appearance section added above it, so scroll it into
+      // view first (ListView builds only visible children).
+      await tester.scrollUntilVisible(find.text('创意度'), 100.0);
+      await tester.scrollUntilVisible(find.text('保守'), 100.0);
       expect(find.text('创意度'), findsOneWidget);
       expect(find.text('保守'), findsOneWidget);
       expect(find.text('平衡'), findsOneWidget);

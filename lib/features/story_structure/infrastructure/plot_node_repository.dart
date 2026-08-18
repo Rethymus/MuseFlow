@@ -48,7 +48,9 @@ class PlotNodeRepository {
   List<PlotNode> getAll() {
     try {
       final nodes = _box.values
-          .map((json) => PlotNode.fromJson(json as Map<String, dynamic>))
+          .map(
+            (json) => PlotNode.fromJson(Map<String, dynamic>.from(json as Map)),
+          )
           .toList();
       nodes.sort((a, b) {
         final chapterCompare = a.chapter.compareTo(b.chapter);
@@ -66,7 +68,7 @@ class PlotNodeRepository {
     try {
       final json = _box.get(id);
       if (json == null) return null;
-      return PlotNode.fromJson(json as Map<String, dynamic>);
+      return PlotNode.fromJson(Map<String, dynamic>.from(json as Map));
     } catch (e) {
       throw StateError('Failed to read plot node $id: $e');
     }

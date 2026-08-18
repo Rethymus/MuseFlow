@@ -44,7 +44,10 @@ class WorldSettingRepository {
   List<WorldSetting> getAll() {
     try {
       return _box.values
-          .map((json) => WorldSetting.fromJson(json as Map<String, dynamic>))
+          .map(
+            (json) =>
+                WorldSetting.fromJson(Map<String, dynamic>.from(json as Map)),
+          )
           .toList();
     } catch (e) {
       throw StateError('Failed to read world settings: $e');
@@ -56,7 +59,7 @@ class WorldSettingRepository {
     try {
       final json = _box.get(id);
       if (json == null) return null;
-      return WorldSetting.fromJson(json as Map<String, dynamic>);
+      return WorldSetting.fromJson(Map<String, dynamic>.from(json as Map));
     } catch (e) {
       throw StateError('Failed to read world setting $id: $e');
     }

@@ -48,7 +48,9 @@ class ForeshadowingRepository {
     try {
       return _box.values
           .map(
-            (json) => ForeshadowingEntry.fromJson(json as Map<String, dynamic>),
+            (json) => ForeshadowingEntry.fromJson(
+              Map<String, dynamic>.from(json as Map),
+            ),
           )
           .toList();
     } catch (e) {
@@ -61,7 +63,9 @@ class ForeshadowingRepository {
     try {
       final json = _box.get(id);
       if (json == null) return null;
-      return ForeshadowingEntry.fromJson(json as Map<String, dynamic>);
+      return ForeshadowingEntry.fromJson(
+        Map<String, dynamic>.from(json as Map),
+      );
     } catch (e) {
       throw StateError('Failed to read foreshadowing entry $id: $e');
     }

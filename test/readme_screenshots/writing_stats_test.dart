@@ -65,12 +65,13 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    // Prove the seeded data rendered (not empty / loading / error). '写作统计'
-    // is the AppBar title + body headline (=2); '每日字数' is the first chart
-    // section title (unique, above fold). Only above-the-fold content is
-    // asserted (the page is a tall ListView). CJK rasterization correctness
-    // follows from the registered universal subset.
-    expect(find.text('写作统计'), findsNWidgets(2));
+    // Prove the seeded data rendered (not empty / loading / error). The
+    // in-body heading was removed (D-4 duplicate of the AppBar title), so
+    // '写作统计' appears once; '每日字数' is the first chart section title
+    // (unique, above fold). Only above-the-fold content is asserted (the
+    // page is a tall ListView). CJK rasterization correctness follows from
+    // the registered universal subset.
+    expect(find.text('写作统计'), findsNWidgets(1));
     expect(find.text('每日字数'), findsOneWidget);
 
     await expectLater(

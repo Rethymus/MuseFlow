@@ -28,9 +28,8 @@ class OnboardingProgressRepository {
   /// or if the stored data is malformed (T-08-03 mitigation).
   OnboardingProgress getProgress() {
     final data = _box.get(_progressKey);
-    if (data == null) return OnboardingProgress.initial();
-    if (data is! Map<String, dynamic>) return OnboardingProgress.initial();
-    return OnboardingProgress.fromJson(data);
+    if (data is! Map) return OnboardingProgress.initial();
+    return OnboardingProgress.fromJson(Map<String, dynamic>.from(data));
   }
 
   /// Marks the onboarding wizard as completed.

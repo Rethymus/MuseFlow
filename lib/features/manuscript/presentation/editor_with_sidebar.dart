@@ -27,6 +27,7 @@ import 'package:museflow/features/manuscript/presentation/chapter_context_menu.d
 import 'package:museflow/features/manuscript/presentation/chapter_create_dialog.dart';
 import 'package:museflow/features/manuscript/presentation/chapter_rename_dialog.dart';
 import 'package:museflow/features/manuscript/presentation/chapter_sidebar.dart';
+import 'package:museflow/features/stats/application/writing_stats_collector.dart';
 import 'package:museflow/shared/constants/app_constants.dart';
 import 'package:super_editor/super_editor.dart';
 
@@ -58,6 +59,12 @@ class _EditorWithSidebarState extends ConsumerState<EditorWithSidebar>
   SelectionLayerLinks? _selectionLinks;
   EditListener? _editListener;
   ChapterAutoSave? _autoSave;
+  WritingStatsCollector? _statsCollector;
+
+  /// Live word count of the chapter being edited, recomputed on every
+  /// document change so the status bar gives immediate feedback (HF-1)
+  /// instead of waiting for the 2s auto-save round-trip.
+  int? _liveWordCount;
 
   @override
   void initState() {
@@ -70,6 +77,9 @@ class _EditorWithSidebarState extends ConsumerState<EditorWithSidebar>
   @override
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
+    // Flush pending writing statistics before the widget tree tears down.
+    // Uses the cached instance — Riverpod forbids `ref` after unmount.
+    _statsCollector?.flush();
     _disposeEditorOnly();
     super.dispose();
   }
@@ -95,6 +105,14 @@ class _EditorWithSidebarState extends ConsumerState<EditorWithSidebar>
       ref.read(chapterAutoSaveProvider.future).then((autoSave) {
         if (!mounted) return;
         _autoSave = autoSave;
+        // After a successful flush, re-read the chapter list so sidebar and
+        // status-bar word counts track what is actually persisted (SE-4).
+        autoSave.onSaved = (chapterId) {
+          if (!mounted) return;
+          ref
+              .read(chapterNotifierProvider.notifier)
+              .loadChapters(widget.manuscriptId);
+        };
       });
     });
   }
@@ -166,6 +184,60 @@ class _EditorWithSidebarState extends ConsumerState<EditorWithSidebar>
 
     // Expose editor via provider
     ref.read(editorProvider.notifier).setEditor(_editor);
+
+    // Reset the live word counter and the stats baseline to the newly
+    // loaded chapter. Without the baseline reset, switching to a longer
+    // chapter would be miscounted as freshly typed words (SE-3).
+    final markdown = serializeDocumentToMarkdown(document);
+    _liveWordCount = markdown.replaceAll(RegExp(r'\s'), '').length;
+    _resetStatsBaseline(_getDocumentPlainText(document));
+  }
+
+  /// Points the writing-stats collector at the current document without
+  /// recording a delta, so only future edits count as written units.
+  void _resetStatsBaseline(String plainText) {
+    _withStatsCollector(
+      (collector) => collector.resetBaseline(
+        plainText,
+        projectId: widget.manuscriptId,
+        documentId: _currentChapterId,
+      ),
+    );
+  }
+
+  /// Records a document snapshot for writing statistics (SE-3).
+  ///
+  /// The collector debounces its own persistence; flushing happens on
+  /// forced saves and dispose. Stats are best-effort: a failing provider
+  /// (e.g. storage unavailable) must never disrupt editing.
+  void _recordStatsSnapshot() {
+    final editor = _editor;
+    if (editor == null) return;
+    final plainText = _getDocumentPlainText(editor.document);
+    _withStatsCollector(
+      (collector) => collector.recordTextSnapshot(
+        plainText,
+        projectId: widget.manuscriptId,
+        documentId: _currentChapterId,
+      ),
+    );
+  }
+
+  void _withStatsCollector(void Function(WritingStatsCollector) action) {
+    final cached = _statsCollector;
+    if (cached != null) {
+      action(cached);
+      return;
+    }
+    ref
+        .read(writingStatsCollectorProvider.future)
+        .then((collector) {
+          _statsCollector ??= collector;
+          action(collector);
+        })
+        .catchError((_) {
+          // Never surface stats-storage failures into the editing session.
+        });
   }
 
   /// Switches to a different chapter with forced save of the current one.
@@ -219,11 +291,18 @@ class _EditorWithSidebarState extends ConsumerState<EditorWithSidebar>
   /// Called when the document content changes.
   ///
   /// Serializes the current document to Markdown and triggers auto-save
-  /// via ChapterAutoSave.onDocumentChanged (2s debounce).
+  /// via ChapterAutoSave.onDocumentChanged (2s debounce). Also updates the
+  /// live word count immediately and records a stats snapshot so the
+  /// feedback loop closes within the same frame the user types in.
   void _onDocumentChanged() {
     if (_editor == null || _currentChapterId == null) return;
     final markdown = serializeDocumentToMarkdown(_editor!.document);
     _autoSave?.onDocumentChanged(_currentChapterId!, markdown);
+    final live = markdown.replaceAll(RegExp(r'\s'), '').length;
+    if (live != _liveWordCount) {
+      setState(() => _liveWordCount = live);
+    }
+    _recordStatsSnapshot();
   }
 
   /// Forces an async save of pending changes.
@@ -234,6 +313,15 @@ class _EditorWithSidebarState extends ConsumerState<EditorWithSidebar>
     if (autoSave != null) {
       autoSave.onDocumentChanged(_currentChapterId!, markdown);
       await autoSave.forceSave();
+    }
+    // Persist any accumulated writing statistics along with the chapter.
+    final collector = _statsCollector;
+    if (collector != null) {
+      try {
+        await collector.flush();
+      } catch (_) {
+        // Stats persistence must never block chapter navigation.
+      }
     }
   }
 
@@ -467,11 +555,21 @@ class _EditorWithSidebarState extends ConsumerState<EditorWithSidebar>
     final chaptersAsync = ref.watch(chapterNotifierProvider);
     final chapters = chaptersAsync.asData?.value ?? [];
 
-    // Compute manuscript word count for status bar
-    final currentWordCount = chapters.fold<int>(
+    // Compute manuscript word count for status bar. While typing, the
+    // current chapter's persisted count lags behind the document, so the
+    // live counter replaces it until the auto-save refresh lands (HF-1).
+    final persistedWordCount = chapters.fold<int>(
       0,
       (sum, c) => sum + c.wordCount,
     );
+    final currentChapter = chapters
+        .where((c) => c.id == _currentChapterId)
+        .firstOrNull;
+    final currentWordCount = _liveWordCount == null
+        ? persistedWordCount
+        : persistedWordCount -
+              (currentChapter?.wordCount ?? 0) +
+              _liveWordCount!;
 
     // Get manuscript for title and target word count
     final manuscriptsAsync = ref.watch(manuscriptNotifierProvider);

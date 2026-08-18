@@ -230,7 +230,7 @@ class AuthorStyleProfile {
       manuscriptId: json['manuscriptId'] as String,
       sentenceLengthStats: json['sentenceLengthStats'] != null
           ? SentenceLengthStats.fromJson(
-              json['sentenceLengthStats'] as Map<String, dynamic>,
+              Map<String, dynamic>.from(json['sentenceLengthStats'] as Map),
             )
           : const SentenceLengthStats(),
       rhythmScore: (json['rhythmScore'] as num?)?.toDouble() ?? 0.5,
@@ -238,17 +238,17 @@ class AuthorStyleProfile {
           (json['vocabularyRichness'] as num?)?.toDouble() ?? 0.5,
       rhetoricHabits: json['rhetoricHabits'] != null
           ? RhetoricHabits.fromJson(
-              json['rhetoricHabits'] as Map<String, dynamic>,
+              Map<String, dynamic>.from(json['rhetoricHabits'] as Map),
             )
           : const RhetoricHabits(),
       emotionalTone: json['emotionalTone'] != null
           ? EmotionalTone.fromJson(
-              json['emotionalTone'] as Map<String, dynamic>,
+              Map<String, dynamic>.from(json['emotionalTone'] as Map),
             )
           : const EmotionalTone(),
       lexicalSignature: json['lexicalSignature'] != null
           ? LexicalSignature.fromJson(
-              json['lexicalSignature'] as Map<String, dynamic>,
+              Map<String, dynamic>.from(json['lexicalSignature'] as Map),
             )
           : const LexicalSignature(),
       analyzedChapterCount: json['analyzedChapterCount'] as int? ?? 0,
@@ -258,7 +258,10 @@ class AuthorStyleProfile {
           : DateTime.now(),
       sampleParagraphs:
           (json['sampleParagraphs'] as List<dynamic>?)
-              ?.map((s) => StyleSample.fromJson(s as Map<String, dynamic>))
+              ?.map(
+                (s) =>
+                    StyleSample.fromJson(Map<String, dynamic>.from(s as Map)),
+              )
               .toList() ??
           [],
     );

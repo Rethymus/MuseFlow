@@ -7,7 +7,7 @@ import 'package:museflow/core/presentation/providers.dart';
 import 'package:museflow/features/onboarding/application/opening_generator_service.dart';
 import 'package:museflow/features/onboarding/domain/opening_variant.dart';
 import 'package:museflow/features/onboarding/presentation/opening_generator_sheet.dart';
-import 'package:museflow/features/editor/presentation/editor_page.dart'
+import 'package:museflow/features/editor/presentation/editor_provider.dart'
     show EditorHolderNotifier;
 import 'package:openai_dart/openai_dart.dart';
 import 'package:super_editor/super_editor.dart';

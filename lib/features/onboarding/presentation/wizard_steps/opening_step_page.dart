@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:museflow/core/presentation/providers.dart';
 import 'package:museflow/features/onboarding/domain/opening_variant.dart';
 import 'package:museflow/features/onboarding/presentation/opening_variant_card.dart';
+import 'package:museflow/shared/constants/app_constants.dart';
 
 class OpeningStepPage extends ConsumerStatefulWidget {
   const OpeningStepPage({
@@ -29,6 +31,7 @@ class OpeningStepPageState extends ConsumerState<OpeningStepPage>
   OpeningVariant? _selectedVariant;
   bool _isGenerating = false;
   String? _error;
+  bool _errorIsConfigIssue = false;
 
   @override
   bool get wantKeepAlive => true;
@@ -62,11 +65,27 @@ class OpeningStepPageState extends ConsumerState<OpeningStepPage>
         _variants = variants;
         _selectedVariant = null;
         _error = variants.isEmpty ? '没有生成可用开篇，请重试' : null;
+        _errorIsConfigIssue = false;
       });
       widget.onSelected(null);
     } catch (error) {
       if (!mounted) return;
-      setState(() => _error = error.toString());
+      // Show a recovery path, not raw implementation detail: the dominant
+      // failure is "no AI provider configured", where retrying changes
+      // nothing but jumping to provider setup fixes the cause (HF-2).
+      final raw = error.toString();
+      setState(() {
+        if (raw.contains('未配置') || raw.contains('Bad state')) {
+          _error = '尚未配置可用的 AI 模型，配置后即可生成开篇。';
+          _errorIsConfigIssue = true;
+        } else if (raw.contains('API Key') || raw.contains('401')) {
+          _error = 'API Key 无效，请检查后重试。';
+        } else if (raw.contains('网络') || raw.contains('Failed to fetch')) {
+          _error = '网络连接失败，请检查网络后重试。';
+        } else {
+          _error = '生成开篇失败，请稍后重试。';
+        }
+      });
     } finally {
       if (mounted) setState(() => _isGenerating = false);
     }
@@ -119,7 +138,11 @@ class OpeningStepPageState extends ConsumerState<OpeningStepPage>
             ),
           )
         else if (_error != null)
-          _OpeningError(message: _error!, onRetry: _generateOpenings)
+          _OpeningError(
+            message: _error!,
+            isConfigIssue: _errorIsConfigIssue,
+            onRetry: _generateOpenings,
+          )
         else if (_variants == null)
           Center(
             child: Text(
@@ -146,10 +169,15 @@ class OpeningStepPageState extends ConsumerState<OpeningStepPage>
 }
 
 class _OpeningError extends StatelessWidget {
-  const _OpeningError({required this.message, required this.onRetry});
+  const _OpeningError({
+    required this.message,
+    required this.onRetry,
+    this.isConfigIssue = false,
+  });
 
   final String message;
   final VoidCallback onRetry;
+  final bool isConfigIssue;
 
   @override
   Widget build(BuildContext context) {
@@ -165,7 +193,14 @@ class _OpeningError extends StatelessWidget {
               style: TextStyle(color: colorScheme.onErrorContainer),
             ),
             const SizedBox(height: 12),
-            OutlinedButton(onPressed: onRetry, child: const Text('重试')),
+            if (isConfigIssue)
+              FilledButton.tonalIcon(
+                onPressed: () => context.go(AppConstants.aiProviders),
+                icon: const Icon(Icons.settings_outlined, size: 18),
+                label: const Text('去配置 AI 模型'),
+              )
+            else
+              OutlinedButton(onPressed: onRetry, child: const Text('重试')),
           ],
         ),
       ),

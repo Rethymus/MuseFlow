@@ -20,7 +20,9 @@ class StyleProfileRepository {
     try {
       final json = _box.get(manuscriptId);
       if (json == null) return null;
-      return AuthorStyleProfile.fromJson(json as Map<String, dynamic>);
+      return AuthorStyleProfile.fromJson(
+        Map<String, dynamic>.from(json as Map),
+      );
     } catch (e) {
       throw StateError('Failed to read style profile for $manuscriptId: $e');
     }
@@ -53,7 +55,9 @@ class StyleProfileRepository {
     try {
       return _box.values
           .map(
-            (json) => AuthorStyleProfile.fromJson(json as Map<String, dynamic>),
+            (json) => AuthorStyleProfile.fromJson(
+              Map<String, dynamic>.from(json as Map),
+            ),
           )
           .toList();
     } catch (e) {

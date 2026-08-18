@@ -196,10 +196,11 @@ void main() {
       expect(find.byType(NavigationBar), findsOneWidget);
       expect(find.byType(NavigationRail), findsNothing);
 
-      // Should have 6 destinations
+      // Should have the 5 primary destinations (settings lives behind the
+      // library AppBar gear on narrow layouts, per the M3 5-destination cap)
 
       final navBar = tester.widget<NavigationBar>(find.byType(NavigationBar));
-      expect(navBar.destinations.length, equals(6));
+      expect(navBar.destinations.length, equals(5));
 
       tester.view.resetPhysicalSize();
       tester.view.resetDevicePixelRatio();

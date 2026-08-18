@@ -9,6 +9,7 @@ import 'package:museflow/features/stats/presentation/charts/speed_trend_line_cha
 import 'package:museflow/features/stats/presentation/achievement_badge_section.dart';
 import 'package:museflow/features/stats/presentation/stats_summary_card.dart';
 import 'package:museflow/shared/constants/app_constants.dart';
+import 'package:museflow/shared/utils/friendly_error.dart';
 
 class WritingStatsPage extends ConsumerWidget {
   const WritingStatsPage({super.key, this.debugSnapshot});
@@ -57,7 +58,7 @@ class WritingStatsPage extends ConsumerWidget {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Text('统计加载失败：$error'),
+              Text('统计加载失败：${friendlyError(error)}'),
               const SizedBox(height: 12),
               FilledButton(
                 onPressed: () =>
@@ -81,11 +82,11 @@ class _StatsContent extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // No duplicated in-body heading: the AppBar already says 写作统计 (D-4);
+    // only the one-line description leads into the content.
     return ListView(
       padding: const EdgeInsets.all(24),
       children: [
-        Text('写作统计', style: Theme.of(context).textTheme.headlineMedium),
-        const SizedBox(height: 8),
         Text('把创作过程变成可感知的轨迹。', style: Theme.of(context).textTheme.bodyMedium),
         const SizedBox(height: 24),
         if (snapshot.totalUnits == 0)

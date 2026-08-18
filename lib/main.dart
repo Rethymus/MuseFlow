@@ -114,9 +114,15 @@ void main() async {
   setTraceMarker('5.geometry');
 
   // Open the encrypted settings box (creating the Hive encryption key on
-  // first launch) and read saved window geometry. Skipped on Web where
-  // SecureStorageService may hang and geometry is irrelevant.
-  final geometry = kIsWeb
+  // first launch) and read saved window geometry. Also runs on Web: the
+  // router's first-run redirect reads `onboarding_completed` synchronously,
+  // and skipping the pre-runApp open here used to swallow a HiveError and
+  // strand fresh web users on the library instead of the onboarding wizard.
+  // The [_settingsOpenTimeout] guard keeps a wedged secure-storage backend
+  // from hanging startup; on failure the redirect degrades to no-redirect.
+  // Temporary workspaces keep their own in-memory settings box and must not
+  // touch the persistent encryption-key path at all.
+  final geometry = (kIsWeb && isTemporaryWebWorkspace)
       ? (size: null as Size?, position: null as Offset?)
       : await _openSettingsAndReadGeometry();
   setTraceMarker('6.platform');

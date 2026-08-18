@@ -5,8 +5,7 @@
 /// in the same library — consumers import this file unchanged.
 library;
 
-import 'dart:ui';
-
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive_ce/hive.dart';
 import 'package:hive_ce_flutter/hive_flutter.dart';
@@ -96,7 +95,7 @@ import 'package:museflow/features/editor/infrastructure/style_profile_repository
 
 export 'package:museflow/features/editor/application/context_anchor_notifier.dart'
     show contextAnchorNotifierProvider, ContextAnchorNotifier;
-export 'package:museflow/features/editor/presentation/editor_page.dart'
+export 'package:museflow/features/editor/presentation/editor_provider.dart'
     show editorProvider;
 export 'package:museflow/features/editor/application/editor_ai_notifier.dart'
     show editorAINotifierProvider, EditorAINotifier;

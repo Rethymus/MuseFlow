@@ -6,6 +6,7 @@ import 'package:museflow/features/knowledge/application/kb_staleness_checker.dar
 import 'package:museflow/features/knowledge/domain/character_card.dart';
 import 'package:museflow/features/knowledge/domain/world_setting.dart';
 import 'package:museflow/shared/constants/app_constants.dart';
+import 'package:museflow/shared/utils/friendly_error.dart';
 
 /// Knowledge base page with tabs for character cards and world settings.
 ///
@@ -133,7 +134,7 @@ class _CharacterCardList extends ConsumerWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Text('加载失败: $error'),
+            Text('加载失败: ${friendlyError(error)}'),
             const SizedBox(height: 8),
             ElevatedButton(
               onPressed: () => ref.invalidate(characterCardNotifierProvider),
@@ -317,7 +318,7 @@ class _WorldSettingList extends ConsumerWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Text('加载失败: $error'),
+            Text('加载失败: ${friendlyError(error)}'),
             const SizedBox(height: 8),
             ElevatedButton(
               onPressed: () => ref.invalidate(worldSettingNotifierProvider),

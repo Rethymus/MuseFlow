@@ -36,7 +36,9 @@ class ChapterSummaryAdapter extends TypeAdapter<ChapterSummary> {
 
   @override
   ChapterSummary read(BinaryReader reader) {
-    final json = reader.readMap() as Map<String, dynamic>;
+    // readMap() always returns Map<dynamic, dynamic>; re-type defensively
+    // so boxes decode identically on first open and after a reload.
+    final json = Map<String, dynamic>.from(reader.readMap());
     return ChapterSummary.fromJson(json);
   }
 
@@ -65,7 +67,9 @@ class FragmentAdapter extends TypeAdapter<Fragment> {
 
   @override
   Fragment read(BinaryReader reader) {
-    final json = reader.readMap() as Map<String, dynamic>;
+    // readMap() always returns Map<dynamic, dynamic>; re-type defensively
+    // so boxes decode identically on first open and after a reload.
+    final json = Map<String, dynamic>.from(reader.readMap());
     return Fragment.fromJson(json);
   }
 
@@ -94,7 +98,9 @@ class AppSettingsAdapter extends TypeAdapter<AppSettings> {
 
   @override
   AppSettings read(BinaryReader reader) {
-    final json = reader.readMap() as Map<String, dynamic>;
+    // readMap() always returns Map<dynamic, dynamic>; re-type defensively
+    // so boxes decode identically on first open and after a reload.
+    final json = Map<String, dynamic>.from(reader.readMap());
     return AppSettings.fromJson(json);
   }
 
@@ -123,7 +129,9 @@ class CharacterCardAdapter extends TypeAdapter<CharacterCard> {
 
   @override
   CharacterCard read(BinaryReader reader) {
-    final json = reader.readMap() as Map<String, dynamic>;
+    // readMap() always returns Map<dynamic, dynamic>; re-type defensively
+    // so boxes decode identically on first open and after a reload.
+    final json = Map<String, dynamic>.from(reader.readMap());
     return CharacterCard.fromJson(json);
   }
 
@@ -152,7 +160,9 @@ class WorldSettingAdapter extends TypeAdapter<WorldSetting> {
 
   @override
   WorldSetting read(BinaryReader reader) {
-    final json = reader.readMap() as Map<String, dynamic>;
+    // readMap() always returns Map<dynamic, dynamic>; re-type defensively
+    // so boxes decode identically on first open and after a reload.
+    final json = Map<String, dynamic>.from(reader.readMap());
     return WorldSetting.fromJson(json);
   }
 
@@ -178,7 +188,9 @@ class SkillDocumentAdapter extends TypeAdapter<SkillDocument> {
 
   @override
   SkillDocument read(BinaryReader reader) {
-    final json = reader.readMap() as Map<String, dynamic>;
+    // readMap() always returns Map<dynamic, dynamic>; re-type defensively
+    // so boxes decode identically on first open and after a reload.
+    final json = Map<String, dynamic>.from(reader.readMap());
     return SkillDocument.fromJson(json);
   }
 
@@ -207,7 +219,9 @@ class ForeshadowingEntryAdapter extends TypeAdapter<ForeshadowingEntry> {
 
   @override
   ForeshadowingEntry read(BinaryReader reader) {
-    final json = reader.readMap() as Map<String, dynamic>;
+    // readMap() always returns Map<dynamic, dynamic>; re-type defensively
+    // so boxes decode identically on first open and after a reload.
+    final json = Map<String, dynamic>.from(reader.readMap());
     return ForeshadowingEntry.fromJson(json);
   }
 
@@ -236,7 +250,9 @@ class PlotNodeAdapter extends TypeAdapter<PlotNode> {
 
   @override
   PlotNode read(BinaryReader reader) {
-    final json = reader.readMap() as Map<String, dynamic>;
+    // readMap() always returns Map<dynamic, dynamic>; re-type defensively
+    // so boxes decode identically on first open and after a reload.
+    final json = Map<String, dynamic>.from(reader.readMap());
     return PlotNode.fromJson(json);
   }
 
@@ -265,7 +281,9 @@ class GuardianAnnotationAdapter extends TypeAdapter<GuardianAnnotation> {
 
   @override
   GuardianAnnotation read(BinaryReader reader) {
-    final json = reader.readMap() as Map<String, dynamic>;
+    // readMap() always returns Map<dynamic, dynamic>; re-type defensively
+    // so boxes decode identically on first open and after a reload.
+    final json = Map<String, dynamic>.from(reader.readMap());
     return GuardianAnnotation.fromJson(json);
   }
 
@@ -294,7 +312,9 @@ class ManuscriptAdapter extends TypeAdapter<Manuscript> {
 
   @override
   Manuscript read(BinaryReader reader) {
-    final json = reader.readMap() as Map<String, dynamic>;
+    // readMap() always returns Map<dynamic, dynamic>; re-type defensively
+    // so boxes decode identically on first open and after a reload.
+    final json = Map<String, dynamic>.from(reader.readMap());
     return Manuscript.fromJson(json);
   }
 
@@ -323,7 +343,9 @@ class ChapterAdapter extends TypeAdapter<Chapter> {
 
   @override
   Chapter read(BinaryReader reader) {
-    final json = reader.readMap() as Map<String, dynamic>;
+    // readMap() always returns Map<dynamic, dynamic>; re-type defensively
+    // so boxes decode identically on first open and after a reload.
+    final json = Map<String, dynamic>.from(reader.readMap());
     return Chapter.fromJson(json);
   }
 
@@ -352,7 +374,9 @@ class TokenAuditRecordAdapter extends TypeAdapter<TokenAuditRecord> {
 
   @override
   TokenAuditRecord read(BinaryReader reader) {
-    final json = reader.readMap() as Map<String, dynamic>;
+    // readMap() always returns Map<dynamic, dynamic>; re-type defensively
+    // so boxes decode identically on first open and after a reload.
+    final json = Map<String, dynamic>.from(reader.readMap());
     return TokenAuditRecord.fromJson(json);
   }
 

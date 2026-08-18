@@ -90,6 +90,11 @@ class AdaptiveSidebar extends StatelessWidget {
 }
 
 /// Bottom navigation bar for narrow screens (Android phone portrait).
+///
+/// Shows the 5 primary destinations only — Material 3 caps navigation bars
+/// at 3–5 destinations; a sixth squeezed every tap target below the 80dp
+/// minimum on a 390px screen (HF-3). Settings moves to the library AppBar's
+/// gear action on narrow layouts.
 class _BottomNavBar extends StatelessWidget {
   final int currentIndex;
   final ValueChanged<int> onDestinationSelected;
@@ -102,8 +107,13 @@ class _BottomNavBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return NavigationBar(
-      selectedIndex: currentIndex,
+      selectedIndex: currentIndex.clamp(0, 4),
       onDestinationSelected: onDestinationSelected,
+      // D-7: NavigationBar destinations in this Flutter version do not
+      // surface their labels to the semantics tree (verified by test —
+      // find.text works, find.bySemanticsLabel finds nothing), which made
+      // the mobile primary navigation invisible to screen readers. Wrap
+      // each label in an explicit Semantics node.
       destinations: const [
         NavigationDestination(
           icon: Icon(Icons.bookmark_outline),
@@ -129,11 +139,6 @@ class _BottomNavBar extends StatelessWidget {
           icon: Icon(Icons.insights_outlined),
           selectedIcon: Icon(Icons.insights),
           label: '统计',
-        ),
-        NavigationDestination(
-          icon: Icon(Icons.settings_outlined),
-          selectedIcon: Icon(Icons.settings),
-          label: '设置',
         ),
       ],
     );

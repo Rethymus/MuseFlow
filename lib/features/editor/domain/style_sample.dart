@@ -50,7 +50,9 @@ class StyleSample {
 
   factory StyleSample.fromJson(Map<String, dynamic> json) {
     final dimScores = <StyleDimension, double>{};
-    final rawDims = json['dimensionScores'] as Map<String, dynamic>?;
+    final rawDims = json['dimensionScores'] == null
+        ? null
+        : Map<String, dynamic>.from(json['dimensionScores'] as Map);
     if (rawDims != null) {
       for (final entry in rawDims.entries) {
         final dim = StyleDimension.values.firstWhere(

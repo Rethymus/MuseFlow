@@ -62,7 +62,7 @@ void main() {
       // Should show close icon
       expect(find.byIcon(Icons.close), findsOneWidget);
       // Should find skip text
-      expect(find.text('跳过'), findsOneWidget);
+      expect(find.text('跳过此步'), findsOneWidget);
     });
 
     testWidgets('should advance to step 2 on next button tap', (tester) async {
@@ -131,7 +131,7 @@ void main() {
       await tester.pumpAndSettle();
 
       // Tap skip
-      await tester.tap(find.text('跳过'));
+      await tester.tap(find.text('跳过此步'));
       await tester.pumpAndSettle();
 
       // Should be on step 2 (AI Provider setup)
@@ -554,13 +554,13 @@ void main() {
       await tester.pumpAndSettle();
 
       // Skip from step 1 to step 2 (AI Provider)
-      await tester.tap(find.text('跳过'));
+      await tester.tap(find.text('跳过此步'));
       await tester.pumpAndSettle();
 
       expect(find.text('配置AI'), findsOneWidget);
 
       // Skip from step 2 to step 3 (World, no validation triggered)
-      await tester.tap(find.text('跳过'));
+      await tester.tap(find.text('跳过此步'));
       await tester.pumpAndSettle();
 
       expect(find.text('构建世界'), findsOneWidget);

@@ -11,6 +11,35 @@ final autoDeviationCheckProvider =
       AutoDeviationCheckNotifier.new,
     );
 
+/// App appearance preference, persisted as 'system' | 'light' | 'dark'.
+///
+/// Writers alternate between day (high ambient light — light surfaces reduce
+/// contrast strain) and night sessions; the mode is applied by [MuseFlowApp]
+/// against the paired FlexColorScheme light/dark themes.
+final themeModeProvider = NotifierProvider<ThemeModeNotifier, ThemeMode>(
+  ThemeModeNotifier.new,
+);
+
+class ThemeModeNotifier extends Notifier<ThemeMode> {
+  @override
+  ThemeMode build() {
+    final settings = ref.watch(settingsRepositoryProvider).value;
+    return switch (settings?.getThemeModeName()) {
+      'light' => ThemeMode.light,
+      'dark' => ThemeMode.dark,
+      _ => ThemeMode.system,
+    };
+  }
+
+  Future<void> set(ThemeMode mode) async {
+    state = mode;
+    final settings = ref.read(settingsRepositoryProvider).value;
+    if (settings != null) {
+      await settings.saveThemeModeName(mode.name);
+    }
+  }
+}
+
 /// Notifier backing [autoDeviationCheckProvider].
 ///
 /// Reads the persisted preference synchronously from [SettingsRepository]

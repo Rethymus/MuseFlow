@@ -79,7 +79,10 @@ class LexicalSignature {
     return LexicalSignature(
       topTerms:
           raw
-              ?.map((t) => LexicalTerm.fromJson(t as Map<String, dynamic>))
+              ?.map(
+                (t) =>
+                    LexicalTerm.fromJson(Map<String, dynamic>.from(t as Map)),
+              )
               .toList() ??
           const [],
     );

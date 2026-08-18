@@ -202,9 +202,13 @@ class WebWorkspaceSettingsSection extends ConsumerWidget {
   }
 
   static String _formatBytes(int bytes) {
+    // Human-scale ladder (HF-6): a 10 GiB quota reads as "10.0 GB", not
+    // "10240.0 MiB". Decimal units match how browsers report quotas.
     if (bytes < 1024) return '$bytes B';
-    final kib = bytes / 1024;
-    if (kib < 1024) return '${kib.toStringAsFixed(1)} KiB';
-    return '${(kib / 1024).toStringAsFixed(1)} MiB';
+    final kb = bytes / 1024;
+    if (kb < 1024) return '${kb.toStringAsFixed(1)} KB';
+    final mb = kb / 1024;
+    if (mb < 1024) return '${mb.toStringAsFixed(1)} MB';
+    return '${(mb / 1024).toStringAsFixed(1)} GB';
   }
 }

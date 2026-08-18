@@ -6,6 +6,8 @@ import 'package:museflow/features/manuscript/application/manuscript_sort.dart';
 import 'package:museflow/features/manuscript/domain/manuscript.dart';
 import 'package:museflow/features/manuscript/presentation/manuscript_card.dart';
 import 'package:museflow/features/manuscript/presentation/manuscript_create_dialog.dart';
+import 'package:museflow/shared/constants/app_constants.dart';
+import 'package:museflow/shared/utils/friendly_error.dart';
 
 /// Manuscript library homepage -- the app's new default screen.
 ///
@@ -37,6 +39,15 @@ class _ManuscriptLibraryPageState extends ConsumerState<ManuscriptLibraryPage> {
           ),
         ),
         actions: [
+          // On narrow layouts the bottom navigation collapses to 5 primary
+          // destinations (Material 3 limit) and settings moves here (HF-3).
+          if (MediaQuery.of(context).size.width <
+              AppConstants.sidebarCollapsedBreakpoint)
+            IconButton(
+              tooltip: '设置',
+              icon: const Icon(Icons.settings_outlined),
+              onPressed: () => context.go(AppConstants.settings),
+            ),
           manuscriptsAsync.asData?.value.isNotEmpty == true
               ? _SortDropdown(
                   sortMode: _sortMode,
@@ -48,7 +59,7 @@ class _ManuscriptLibraryPageState extends ConsumerState<ManuscriptLibraryPage> {
       body: manuscriptsAsync.when(
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (error, _) => _ErrorState(
-          error: error.toString(),
+          error: friendlyError(error),
           onRetry: () => ref.invalidate(manuscriptNotifierProvider),
         ),
         data: (manuscripts) {
@@ -123,6 +134,14 @@ class _EmptyState extends StatelessWidget {
               },
               child: const Text('创建文稿'),
             ),
+            const SizedBox(height: 8),
+            // Secondary path: jump-start worldbuilding from the template
+            // gallery instead of a blank page.
+            OutlinedButton.icon(
+              onPressed: () => context.go(AppConstants.knowledgeTemplates),
+              icon: const Icon(Icons.auto_awesome_mosaic_outlined, size: 18),
+              label: const Text('从模板库开始'),
+            ),
           ],
         ),
       ),
@@ -182,6 +201,8 @@ class _ManuscriptCardWrapper extends ConsumerWidget {
       child: ManuscriptCard(
         manuscript: manuscript,
         onTap: () => context.go('/manuscript/${manuscript.id}/editor'),
+        onEditInfo: () => context.go('/manuscript/${manuscript.id}/settings'),
+        onDelete: () => _confirmDelete(context, ref),
       ),
     );
   }
@@ -294,7 +315,7 @@ class _ErrorState extends StatelessWidget {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Text('加载失败: $error'),
+          Text('加载失败: ${friendlyError(error)}'),
           const SizedBox(height: 8),
           ElevatedButton(onPressed: onRetry, child: const Text('重试')),
         ],

@@ -216,7 +216,7 @@ class ForeshadowingEntry {
       sourceExcerpt: json['sourceExcerpt'] as String? ?? '',
       sourceLocation: json['sourceLocation'] != null
           ? SourceLocation.fromJson(
-              json['sourceLocation'] as Map<String, dynamic>,
+              Map<String, dynamic>.from(json['sourceLocation'] as Map),
             )
           : null,
       notes: json['notes'] as String? ?? '',

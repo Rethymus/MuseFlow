@@ -21,6 +21,21 @@ class WritingStatsCollector {
   String? _projectId;
   String? _documentId;
 
+  /// Repositions the snapshot baseline without recording a delta.
+  ///
+  /// Call when the editor switches to a different document: the next
+  /// [recordTextSnapshot] then measures only edits made after the switch,
+  /// instead of mistaking the chapter boundary for a burst of writing.
+  void resetBaseline(
+    String plainText, {
+    String? projectId,
+    String? documentId,
+  }) {
+    _lastTextUnits = countWritingUnits(plainText);
+    _projectId = projectId ?? _projectId;
+    _documentId = documentId ?? _documentId;
+  }
+
   void recordTextSnapshot(
     String plainText, {
     String? projectId,

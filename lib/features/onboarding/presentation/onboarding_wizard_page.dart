@@ -4,10 +4,11 @@ import 'package:go_router/go_router.dart';
 import 'package:museflow/features/knowledge/domain/character_card.dart';
 import 'package:museflow/features/knowledge/domain/world_setting.dart';
 import 'package:museflow/core/presentation/providers.dart';
+import 'package:museflow/features/manuscript/domain/chapter.dart';
+import 'package:museflow/features/manuscript/domain/manuscript.dart';
 import 'package:museflow/features/onboarding/domain/genre_option.dart';
 import 'package:museflow/features/onboarding/domain/opening_variant.dart';
 import 'package:museflow/features/onboarding/presentation/onboarding_providers.dart';
-import 'package:museflow/features/onboarding/presentation/opening_text_insertion.dart';
 import 'package:museflow/features/onboarding/presentation/wizard_steps/character_step_page.dart';
 import 'package:museflow/features/onboarding/presentation/wizard_steps/genre_step_page.dart';
 import 'package:museflow/features/onboarding/presentation/wizard_steps/opening_step_page.dart';
@@ -178,16 +179,58 @@ class _OnboardingWizardPageState extends ConsumerState<OnboardingWizardPage> {
 
   Future<void> _completeOnboarding() async {
     final selectedOpening = _selectedOpeningVariant;
-    if (selectedOpening != null) {
-      insertOpeningText(
-        ref.read(editorProvider),
-        selectedOpening.text,
-        onAiInserted: (text) {
-          ref.read(writingStatsCollectorProvider.future).then((collector) {
-            collector.recordAiInsertion(text);
-          });
-        },
+
+    // Create the user's first manuscript so the wizard's choices land in a
+    // concrete place: previously the wizard only created orphaned knowledge
+    // entities and inserted the opening into an editor that did not exist
+    // (SE-5). The opening becomes the first chapter's content.
+    String? manuscriptId;
+    try {
+      final repository = await ref.read(manuscriptRepositoryProvider.future);
+      final chapters = await ref.read(chapterRepositoryProvider.future);
+      final now = DateTime.now();
+      final worldName = _worldNameController.text.trim();
+      final title = worldName.isNotEmpty ? worldName : '我的第一部作品';
+
+      final manuscript = await repository.add(
+        Manuscript(
+          id: '',
+          title: title,
+          genre: _selectedGenreName,
+          coverLetter: title.substring(0, title.length.clamp(0, 2)),
+          status: '构思中',
+          targetWordCount: 50000,
+          createdAt: now,
+          updatedAt: now,
+        ),
       );
+      manuscriptId = manuscript.id;
+
+      await chapters.add(
+        Chapter(
+          id: '',
+          manuscriptId: manuscript.id,
+          title: '第一章',
+          sortOrder: 1,
+          status: '草稿',
+          documentContent: selectedOpening?.text ?? '',
+          createdAt: now,
+          updatedAt: now,
+        ),
+      );
+      if (selectedOpening != null) {
+        ref.read(writingStatsCollectorProvider.future).then((collector) {
+          collector.recordAiInsertion(
+            selectedOpening.text,
+            projectId: manuscript.id,
+          );
+        });
+      }
+      // Make the library list pick up the new manuscript.
+      ref.invalidate(manuscriptNotifierProvider);
+    } catch (_) {
+      // Finishing onboarding must never be blocked by persistence issues;
+      // fall through and land on the library instead of the new editor.
     }
 
     try {
@@ -196,9 +239,12 @@ class _OnboardingWizardPageState extends ConsumerState<OnboardingWizardPage> {
     } catch (_) {
       // Even if persistence fails, navigate away so user is not stuck.
     }
-    if (mounted) {
-      context.go(AppConstants.editor);
-    }
+    if (!mounted) return;
+    context.go(
+      manuscriptId != null
+          ? '/manuscript/$manuscriptId/editor'
+          : AppConstants.editor,
+    );
   }
 
   /// Progress indicator showing 4 dots for step tracking.
@@ -238,24 +284,21 @@ class _OnboardingWizardPageState extends ConsumerState<OnboardingWizardPage> {
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
-        leading: _currentStep > 0
-            ? IconButton(
-                icon: const Icon(Icons.arrow_back),
-                tooltip: '上一步',
-                onPressed: _previousStep,
-              )
-            : null,
+        // Back/skip live in the bottom action bar only; keeping a single
+        // navigation cluster avoids the previous five-affordance header
+        // (上一步/跳过/关闭 on top of 上一步/下一步) that blurred which
+        // action actually exits the wizard.
         actions: [
           TextButton(
             onPressed: _skipStep,
             child: Text(
-              '跳过',
+              '跳过此步',
               style: TextStyle(color: theme.colorScheme.onSurfaceVariant),
             ),
           ),
           IconButton(
             icon: const Icon(Icons.close),
-            tooltip: '关闭',
+            tooltip: '退出引导',
             onPressed: _completeOnboarding,
           ),
         ],
@@ -295,7 +338,10 @@ class _OnboardingWizardPageState extends ConsumerState<OnboardingWizardPage> {
               physics: const NeverScrollableScrollPhysics(),
               onPageChanged: _onPageChanged,
               children: [
-                // Step 1: Genre selection
+                // Step 1: Genre selection. Tapping a card only records the
+                // selection; advancing happens through the single 下一步
+                // button. The previous tap-to-auto-advance let a follow-up
+                // 下一步 tap silently skip the AI provider step.
                 GenreStepPage(
                   onSelected: (genreId) {
                     _selectedGenreName = '通用';
@@ -305,7 +351,6 @@ class _OnboardingWizardPageState extends ConsumerState<OnboardingWizardPage> {
                         break;
                       }
                     }
-                    _nextStep();
                   },
                 ),
                 // Step 2: AI provider setup

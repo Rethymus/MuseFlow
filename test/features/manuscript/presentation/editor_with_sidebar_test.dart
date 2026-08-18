@@ -11,6 +11,15 @@ import 'package:museflow/features/manuscript/domain/chapter.dart';
 import 'package:museflow/features/manuscript/domain/manuscript.dart';
 import 'package:museflow/features/manuscript/infrastructure/chapter_repository.dart';
 import 'package:museflow/features/manuscript/presentation/editor_with_sidebar.dart';
+import 'package:super_editor/super_editor.dart'
+    show
+        ChangeSelectionRequest,
+        DocumentPosition,
+        DocumentSelection,
+        InsertTextRequest,
+        SelectionChangeType,
+        StandardEditables,
+        TextNodePosition;
 
 void main() {
   group('EditorWithSidebar chapter loading (SC-2/SC-3)', () {
@@ -77,6 +86,67 @@ void main() {
       expect(find.text('第一章'), findsOneWidget);
       expect(find.text('第二章'), findsOneWidget);
     });
+
+    testWidgets(
+      'status bar word count updates live as the document changes (HF-1)',
+      (tester) async {
+        await tester.pumpWidget(
+          ProviderScope(
+            overrides: [
+              manuscriptNotifierProvider.overrideWith(
+                () => _TestManuscriptNotifier(),
+              ),
+              chapterNotifierProvider.overrideWith(
+                () => _PreloadedChapterNotifier(),
+              ),
+              chapterAutoSaveProvider.overrideWith(
+                (ref) async => _NoOpAutoSave(),
+              ),
+            ],
+            child: const MaterialApp(
+              home: EditorWithSidebar(manuscriptId: 'm1'),
+            ),
+          ),
+        );
+        await tester.pump();
+        await tester.pump();
+        await tester.pump(const Duration(milliseconds: 100));
+
+        // Persisted totals: c1 '一二三四五' (5) + c2 'abc' (3) = 8.
+        expect(find.text('总字数: 8/50,000 字'), findsOneWidget);
+
+        // Type through the real edit pipeline: place the caret at the end of
+        // the first chapter's paragraph and insert more characters.
+        final container = ProviderScope.containerOf(
+          tester.element(find.byType(EditorWithSidebar)),
+        );
+        final editor = container.read(editorProvider);
+        expect(editor, isNotNull, reason: 'editor should be exposed');
+        final firstNode = editor!.document.first;
+        final endOfFirst = DocumentPosition(
+          nodeId: firstNode.id,
+          nodePosition: const TextNodePosition(offset: 5),
+        );
+        editor.execute([
+          ChangeSelectionRequest(
+            DocumentSelection.collapsed(position: endOfFirst),
+            SelectionChangeType.placeCaret,
+            'test caret placement',
+          ),
+        ]);
+        editor.execute([
+          InsertTextRequest(
+            documentPosition: endOfFirst,
+            textToInsert: '六七八九十',
+            attributions: const {},
+          ),
+        ]);
+        await tester.pump();
+
+        // Live total: 8 persisted - 5 stale for c1 + (5 + 5 live) = 13.
+        expect(find.text('总字数: 13/50,000 字'), findsOneWidget);
+      },
+    );
 
     testWidgets(
       'should await loadChapters and load first chapter when build starts empty',

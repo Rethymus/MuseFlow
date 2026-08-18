@@ -125,7 +125,12 @@ class _AppShellScaffoldState extends ConsumerState<AppShellScaffold> {
 
     final manuscripts = ref.watch(manuscriptNotifierProvider).value ?? const [];
     final settings = ref.watch(settingsRepositoryProvider).value;
-    final lastBackupAt = settings?.getLastBrowserBackupAt();
+    if (settings == null) return child;
+    // HF-4: a permanent, undismissable banner taxes every page load and
+    // breaks writing focus. Snooze it for 7 days after an explicit dismiss.
+    if (settings.isBackupBannerSnoozed()) return child;
+
+    final lastBackupAt = settings.getLastBrowserBackupAt();
     final backupDue =
         manuscripts.isNotEmpty &&
         (lastBackupAt == null ||
@@ -137,15 +142,32 @@ class _AppShellScaffoldState extends ConsumerState<AppShellScaffold> {
         Material(
           color: Theme.of(context).colorScheme.secondaryContainer,
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
             child: Row(
               children: [
-                const Icon(Icons.backup_outlined),
-                const SizedBox(width: 12),
-                const Expanded(child: Text('浏览器数据可能被清理，请及时导出作品备份。')),
+                const Icon(Icons.backup_outlined, size: 20),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: Text(
+                    '浏览器数据可能被清理，请及时导出作品备份。',
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    style: Theme.of(context).textTheme.bodySmall,
+                  ),
+                ),
                 TextButton(
                   onPressed: () => context.go(AppConstants.settings),
                   child: const Text('前往备份'),
+                ),
+                IconButton(
+                  tooltip: '7 天内不再提醒',
+                  visualDensity: VisualDensity.compact,
+                  icon: const Icon(Icons.close, size: 18),
+                  onPressed: () {
+                    settings.snoozeBackupBanner();
+                    // Re-evaluate the snooze state on the next build.
+                    ref.invalidate(settingsRepositoryProvider);
+                  },
                 ),
               ],
             ),

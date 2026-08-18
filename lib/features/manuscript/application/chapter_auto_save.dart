@@ -11,6 +11,13 @@ class ChapterAutoSave {
   final ChapterRepository _repository;
   final Duration debounceDuration;
 
+  /// Optional hook fired after a flush successfully persists a chapter.
+  ///
+  /// The editor uses it to re-read the chapter list so word counts in the
+  /// sidebar/status bar stay in sync with what is actually on disk; the
+  /// in-memory document itself is never reloaded from this callback.
+  void Function(String chapterId)? onSaved;
+
   Timer? _debounceTimer;
   String? _currentChapterId;
   String? _pendingMarkdown;
@@ -56,6 +63,7 @@ class ChapterAutoSave {
     if (_currentChapterId == chapterId && _pendingMarkdown == markdown) {
       _isDirty = false;
     }
+    onSaved?.call(chapterId);
   }
 
   /// Disposes the auto-save service.

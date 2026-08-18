@@ -50,6 +50,8 @@ class SettingsRepository {
   static const String _creativityLevelKey = 'creativity_level';
   static const String _webWorkspaceNoticeKey = 'web_workspace_notice_seen';
   static const String _lastBrowserBackupAtKey = 'last_browser_backup_at';
+  static const String _themeModeKey = 'theme_mode';
+  static const String _backupBannerSnoozedAtKey = 'backup_banner_snoozed_at';
 
   SettingsRepository(this._box);
 
@@ -168,5 +170,33 @@ class SettingsRepository {
 
   Future<void> saveLastBrowserBackupAt(DateTime value) async {
     await _box.put(_lastBrowserBackupAtKey, value.toIso8601String());
+  }
+
+  /// The persisted appearance preference ('system' | 'light' | 'dark').
+  ///
+  /// Stored as a raw string to keep Material types out of the repository
+  /// layer; the presentation-side provider maps it onto [ThemeMode].
+  String getThemeModeName() {
+    return _box.get(_themeModeKey, defaultValue: 'system') as String;
+  }
+
+  Future<void> saveThemeModeName(String name) async {
+    await _box.put(_themeModeKey, name);
+  }
+
+  /// When the browser backup-reminder banner was last dismissed.
+  DateTime? getBackupBannerSnoozedAt() {
+    final value = _box.get(_backupBannerSnoozedAtKey) as String?;
+    return value == null ? null : DateTime.tryParse(value);
+  }
+
+  Future<void> snoozeBackupBanner() async {
+    await _box.put(_backupBannerSnoozedAtKey, DateTime.now().toIso8601String());
+  }
+
+  /// Whether the backup reminder should currently stay hidden.
+  bool isBackupBannerSnoozed() {
+    final snoozedAt = getBackupBannerSnoozedAt();
+    return snoozedAt != null && DateTime.now().difference(snoozedAt).inDays < 7;
   }
 }

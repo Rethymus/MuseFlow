@@ -180,15 +180,17 @@ void main() {
         // NavigationRail should NOT be present
         expect(find.byType(NavigationRail), findsNothing);
 
-        // NavigationBar should have 6 destinations with Chinese labels
+        // NavigationBar should have the 5 primary destinations with Chinese
+        // labels (settings moves to the library AppBar below 600px — the
+        // Material 3 navigation-bar cap is 5 destinations)
 
         final navBar = tester.widget<NavigationBar>(find.byType(NavigationBar));
-        expect(navBar.destinations.length, equals(6));
+        expect(navBar.destinations.length, equals(5));
 
         // Labels should be visible in NavigationBar
         expect(find.text('捕捉器'), findsOneWidget);
         expect(find.text('编辑器'), findsOneWidget);
-        expect(find.text('设置'), findsOneWidget);
+        expect(find.text('知识库'), findsOneWidget);
 
         tester.view.resetPhysicalSize();
         tester.view.resetDevicePixelRatio();
@@ -196,7 +198,7 @@ void main() {
     );
 
     testWidgets(
-      'should have exactly 6 destinations with matching icons in both modes',
+      'rail keeps 6 destinations while bottom bar keeps 5 primary ones',
 
       (tester) async {
         // Test desktop mode
@@ -222,7 +224,7 @@ void main() {
         await tester.pumpAndSettle();
 
         final navBar = tester.widget<NavigationBar>(find.byType(NavigationBar));
-        expect(navBar.destinations.length, equals(6));
+        expect(navBar.destinations.length, equals(5));
 
         tester.view.resetPhysicalSize();
         tester.view.resetDevicePixelRatio();
