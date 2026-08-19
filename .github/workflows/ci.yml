@@ -54,6 +54,17 @@ jobs:
       - name: Run tests
         run: flutter test
 
+      # Golden failures write masked/isolated diffs + master/test images to
+      # test/readme_screenshots/failures/ — upload them so cross-platform
+      # rendering differences can be diagnosed without runner access.
+      - name: Upload golden failure diffs
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: golden-failures
+          path: test/readme_screenshots/failures/
+          if-no-files-found: ignore
+
       - name: Verify Web session-only API key storage
         run: flutter test --platform chrome test/web/session_secure_storage_test.dart
 
