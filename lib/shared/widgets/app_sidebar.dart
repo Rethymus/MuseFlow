@@ -10,6 +10,7 @@ import 'package:flutter/material.dart';
 
 import '../theme/app_colors.dart';
 import '../theme/app_dimens.dart';
+import '../theme/app_materials.dart';
 
 /// One sidebar destination (icon + label).
 class AppSidebarDestination {
@@ -53,53 +54,50 @@ class AppSidebar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final p = AppColors.of(context);
     final textTheme = Theme.of(context).textTheme;
     final width = extended ? extendedWidth : collapsedWidth;
 
-    return Container(
+    return SizedBox(
       width: width,
-      decoration: BoxDecoration(
-        // macOS sidebar material: one step off the content background.
-        color: p.isDark ? const Color(0xFF101013) : const Color(0xFFECECF1),
-        border: Border(
-          right: BorderSide(color: p.separator, width: AppRadius.hairline),
-        ),
-      ),
-      child: SafeArea(
-        right: false,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            if (title.isNotEmpty) ...[
-              Padding(
-                padding: const EdgeInsets.fromLTRB(20, 20, 20, 18),
-                child: Text(
-                  title,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: textTheme.headlineMedium,
+      child: AppMaterial(
+        tier: AppMaterialTier.thin,
+        radius: BorderRadius.zero,
+        borderEdges: const {LogicalEdge.right},
+        child: SafeArea(
+          right: false,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              if (title.isNotEmpty) ...[
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(20, 20, 20, 18),
+                  child: Text(
+                    title,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: textTheme.headlineMedium,
+                  ),
+                ),
+              ],
+              Expanded(
+                child: ListView(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 10,
+                    vertical: 8,
+                  ),
+                  children: [
+                    for (var i = 0; i < destinations.length; i++)
+                      _SidebarItem(
+                        destination: destinations[i],
+                        selected: i == selectedIndex,
+                        extended: extended,
+                        onTap: () => onDestinationSelected(i),
+                      ),
+                  ],
                 ),
               ),
             ],
-            Expanded(
-              child: ListView(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 10,
-                  vertical: 8,
-                ),
-                children: [
-                  for (var i = 0; i < destinations.length; i++)
-                    _SidebarItem(
-                      destination: destinations[i],
-                      selected: i == selectedIndex,
-                      extended: extended,
-                      onTap: () => onDestinationSelected(i),
-                    ),
-                ],
-              ),
-            ),
-          ],
+          ),
         ),
       ),
     );

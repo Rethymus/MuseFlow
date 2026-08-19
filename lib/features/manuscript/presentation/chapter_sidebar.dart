@@ -55,7 +55,7 @@ class ChapterSidebar extends ConsumerWidget {
       width: 260,
       decoration: BoxDecoration(
         // Same sidebar material as the app shell's navigation column.
-        color: p.isDark ? const Color(0xFF101013) : const Color(0xFFECECF1),
+        color: p.sidebarMaterial,
         border: Border(
           right: BorderSide(color: p.separator, width: AppRadius.hairline),
         ),

@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:museflow/core/presentation/providers.dart';
 import 'package:museflow/features/knowledge/domain/world_setting.dart';
+import 'package:museflow/shared/widgets/app_card.dart';
 
 /// Form for creating or editing a [WorldSetting].
 ///
@@ -86,98 +87,103 @@ class _WorldSettingFormState extends ConsumerState<WorldSettingForm> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text(_isEditing ? '编辑世界观' : '新建世界观')),
+      appBar: AppBar(
+        title: Text(
+          _isEditing ? '编辑世界观' : '新建世界观',
+          style: Theme.of(context).textTheme.displayMedium,
+        ),
+      ),
       body: Form(
         key: _formKey,
         child: ListView(
           padding: const EdgeInsets.all(16),
           children: [
-            TextFormField(
-              controller: _nameController,
-              decoration: const InputDecoration(
-                labelText: '名称 *',
-                hintText: '世界观名称',
-                border: OutlineInputBorder(),
+            AppCard(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                children: [
+                  TextFormField(
+                    controller: _nameController,
+                    decoration: const InputDecoration(
+                      labelText: '名称 *',
+                      hintText: '世界观名称',
+                    ),
+                    validator: (value) {
+                      if (value == null || value.trim().isEmpty) {
+                        return '请输入世界观名称';
+                      }
+                      if (value.trim().length > 100) {
+                        return '名称不能超过100个字符';
+                      }
+                      return null;
+                    },
+                    maxLength: 100,
+                  ),
+                  const SizedBox(height: 12),
+                  TextFormField(
+                    controller: _descriptionController,
+                    decoration: const InputDecoration(
+                      labelText: '描述',
+                      hintText: '世界观的简要描述',
+                      alignLabelWithHint: true,
+                    ),
+                    maxLines: 3,
+                    maxLength: 5000,
+                  ),
+                  const SizedBox(height: 12),
+                  TextFormField(
+                    controller: _rulesController,
+                    decoration: const InputDecoration(
+                      labelText: '规则',
+                      hintText: '天地法则、因果循环等',
+                      alignLabelWithHint: true,
+                    ),
+                    maxLines: 3,
+                    maxLength: 5000,
+                  ),
+                  const SizedBox(height: 12),
+                  TextFormField(
+                    controller: _factionsController,
+                    decoration: const InputDecoration(
+                      labelText: '势力',
+                      hintText: '正道联盟、魔道、散修等',
+                      alignLabelWithHint: true,
+                    ),
+                    maxLines: 3,
+                    maxLength: 5000,
+                  ),
+                  const SizedBox(height: 12),
+                  TextFormField(
+                    controller: _geographyController,
+                    decoration: const InputDecoration(
+                      labelText: '地理',
+                      hintText: '东洲、西荒、南疆、北冥等',
+                      alignLabelWithHint: true,
+                    ),
+                    maxLines: 3,
+                    maxLength: 5000,
+                  ),
+                  const SizedBox(height: 12),
+                  TextFormField(
+                    controller: _techLevelController,
+                    decoration: const InputDecoration(
+                      labelText: '科技等级',
+                      hintText: '古代仙侠、中世纪、现代等',
+                    ),
+                    maxLength: 5000,
+                  ),
+                  const SizedBox(height: 12),
+                  TextFormField(
+                    controller: _aliasesController,
+                    decoration: const InputDecoration(
+                      labelText: '别名',
+                      hintText: '用逗号分隔，如：仙界, 九天',
+                      alignLabelWithHint: true,
+                    ),
+                    maxLines: 2,
+                  ),
+                ],
               ),
-              validator: (value) {
-                if (value == null || value.trim().isEmpty) {
-                  return '请输入世界观名称';
-                }
-                if (value.trim().length > 100) {
-                  return '名称不能超过100个字符';
-                }
-                return null;
-              },
-              maxLength: 100,
-            ),
-            const SizedBox(height: 12),
-            TextFormField(
-              controller: _descriptionController,
-              decoration: const InputDecoration(
-                labelText: '描述',
-                hintText: '世界观的简要描述',
-                border: OutlineInputBorder(),
-                alignLabelWithHint: true,
-              ),
-              maxLines: 3,
-              maxLength: 5000,
-            ),
-            const SizedBox(height: 12),
-            TextFormField(
-              controller: _rulesController,
-              decoration: const InputDecoration(
-                labelText: '规则',
-                hintText: '天地法则、因果循环等',
-                border: OutlineInputBorder(),
-                alignLabelWithHint: true,
-              ),
-              maxLines: 3,
-              maxLength: 5000,
-            ),
-            const SizedBox(height: 12),
-            TextFormField(
-              controller: _factionsController,
-              decoration: const InputDecoration(
-                labelText: '势力',
-                hintText: '正道联盟、魔道、散修等',
-                border: OutlineInputBorder(),
-                alignLabelWithHint: true,
-              ),
-              maxLines: 3,
-              maxLength: 5000,
-            ),
-            const SizedBox(height: 12),
-            TextFormField(
-              controller: _geographyController,
-              decoration: const InputDecoration(
-                labelText: '地理',
-                hintText: '东洲、西荒、南疆、北冥等',
-                border: OutlineInputBorder(),
-                alignLabelWithHint: true,
-              ),
-              maxLines: 3,
-              maxLength: 5000,
-            ),
-            const SizedBox(height: 12),
-            TextFormField(
-              controller: _techLevelController,
-              decoration: const InputDecoration(
-                labelText: '科技等级',
-                hintText: '古代仙侠、中世纪、现代等',
-                border: OutlineInputBorder(),
-              ),
-              maxLength: 5000,
-            ),
-            const SizedBox(height: 12),
-            TextFormField(
-              controller: _aliasesController,
-              decoration: const InputDecoration(
-                labelText: '别名',
-                hintText: '用逗号分隔，如：仙界, 九天',
-                border: OutlineInputBorder(),
-                alignLabelWithHint: true,
-              ),
-              maxLines: 2,
             ),
             const SizedBox(height: 24),
             FilledButton(

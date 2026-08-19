@@ -1,9 +1,12 @@
+import 'package:flutter/cupertino.dart' show CupertinoIcons;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:museflow/core/presentation/providers.dart';
 import 'package:museflow/features/knowledge/domain/character_card.dart';
 import 'package:museflow/features/knowledge/domain/character_relationship.dart';
+import 'package:museflow/shared/theme/app_colors.dart';
+import 'package:museflow/shared/widgets/app_card.dart';
 import 'package:uuid/uuid.dart';
 
 /// Form for creating or editing a [CharacterCard].
@@ -80,76 +83,83 @@ class _CharacterCardFormState extends ConsumerState<CharacterCardForm> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text(_isEditing ? '编辑角色卡' : '新建角色卡')),
+      appBar: AppBar(
+        title: Text(
+          _isEditing ? '编辑角色卡' : '新建角色卡',
+          style: Theme.of(context).textTheme.displayMedium,
+        ),
+      ),
       body: Form(
         key: _formKey,
         child: ListView(
           padding: const EdgeInsets.all(16),
           children: [
-            TextFormField(
-              controller: _nameController,
-              decoration: const InputDecoration(
-                labelText: '名称 *',
-                hintText: '角色名称',
-                border: OutlineInputBorder(),
+            AppCard(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                children: [
+                  TextFormField(
+                    controller: _nameController,
+                    decoration: const InputDecoration(
+                      labelText: '名称 *',
+                      hintText: '角色名称',
+                    ),
+                    validator: (value) {
+                      if (value == null || value.trim().isEmpty) {
+                        return '请输入角色名称';
+                      }
+                      if (value.trim().length > 100) {
+                        return '名称不能超过100个字符';
+                      }
+                      return null;
+                    },
+                    maxLength: 100,
+                  ),
+                  const SizedBox(height: 12),
+                  TextFormField(
+                    controller: _personalityController,
+                    decoration: const InputDecoration(
+                      labelText: '性格',
+                      hintText: '角色的性格特征',
+                      alignLabelWithHint: true,
+                    ),
+                    maxLines: 3,
+                    maxLength: 5000,
+                  ),
+                  const SizedBox(height: 12),
+                  TextFormField(
+                    controller: _appearanceController,
+                    decoration: const InputDecoration(
+                      labelText: '外貌',
+                      hintText: '角色的外貌描述',
+                      alignLabelWithHint: true,
+                    ),
+                    maxLines: 3,
+                    maxLength: 5000,
+                  ),
+                  const SizedBox(height: 12),
+                  TextFormField(
+                    controller: _backstoryController,
+                    decoration: const InputDecoration(
+                      labelText: '背景故事',
+                      hintText: '角色的背景经历',
+                      alignLabelWithHint: true,
+                    ),
+                    maxLines: 4,
+                    maxLength: 5000,
+                  ),
+                  const SizedBox(height: 12),
+                  TextFormField(
+                    controller: _aliasesController,
+                    decoration: const InputDecoration(
+                      labelText: '别名',
+                      hintText: '用逗号分隔，如：逍遥, 李大哥',
+                      alignLabelWithHint: true,
+                    ),
+                    maxLines: 2,
+                  ),
+                ],
               ),
-              validator: (value) {
-                if (value == null || value.trim().isEmpty) {
-                  return '请输入角色名称';
-                }
-                if (value.trim().length > 100) {
-                  return '名称不能超过100个字符';
-                }
-                return null;
-              },
-              maxLength: 100,
-            ),
-            const SizedBox(height: 12),
-            TextFormField(
-              controller: _personalityController,
-              decoration: const InputDecoration(
-                labelText: '性格',
-                hintText: '角色的性格特征',
-                border: OutlineInputBorder(),
-                alignLabelWithHint: true,
-              ),
-              maxLines: 3,
-              maxLength: 5000,
-            ),
-            const SizedBox(height: 12),
-            TextFormField(
-              controller: _appearanceController,
-              decoration: const InputDecoration(
-                labelText: '外貌',
-                hintText: '角色的外貌描述',
-                border: OutlineInputBorder(),
-                alignLabelWithHint: true,
-              ),
-              maxLines: 3,
-              maxLength: 5000,
-            ),
-            const SizedBox(height: 12),
-            TextFormField(
-              controller: _backstoryController,
-              decoration: const InputDecoration(
-                labelText: '背景故事',
-                hintText: '角色的背景经历',
-                border: OutlineInputBorder(),
-                alignLabelWithHint: true,
-              ),
-              maxLines: 4,
-              maxLength: 5000,
-            ),
-            const SizedBox(height: 12),
-            TextFormField(
-              controller: _aliasesController,
-              decoration: const InputDecoration(
-                labelText: '别名',
-                hintText: '用逗号分隔，如：逍遥, 李大哥',
-                border: OutlineInputBorder(),
-                alignLabelWithHint: true,
-              ),
-              maxLines: 2,
             ),
             if (_isEditing) ...[
               const SizedBox(height: 16),
@@ -273,7 +283,7 @@ class _RelationshipsSection extends ConsumerWidget {
                 if (otherCards.length >= 2)
                   TextButton.icon(
                     onPressed: () => _showAddDialog(context, ref, otherCards),
-                    icon: const Icon(Icons.add, size: 18),
+                    icon: const Icon(CupertinoIcons.plus, size: 18),
                     label: const Text('添加'),
                   ),
               ],
@@ -284,7 +294,7 @@ class _RelationshipsSection extends ConsumerWidget {
                 child: Text(
                   '暂无关系记录',
                   style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: Theme.of(context).colorScheme.outline,
+                    color: AppColors.of(context).secondaryLabel,
                   ),
                 ),
               )
@@ -362,13 +372,13 @@ class _RelationshipTile extends ConsumerWidget {
               child: Text(
                 '（${rel.description}）',
                 style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                  color: Theme.of(context).colorScheme.outline,
+                  color: AppColors.of(context).secondaryLabel,
                 ),
                 overflow: TextOverflow.ellipsis,
               ),
             ),
           IconButton(
-            icon: const Icon(Icons.close, size: 16),
+            icon: const Icon(CupertinoIcons.xmark, size: 16),
             onPressed: () => ref
                 .read(characterRelationshipNotifierProvider.notifier)
                 .delete(rel.id),
@@ -432,10 +442,7 @@ class _AddRelationshipDialogState
           children: [
             DropdownButtonFormField<String>(
               initialValue: _selectedCharId,
-              decoration: const InputDecoration(
-                labelText: '对方角色 *',
-                border: OutlineInputBorder(),
-              ),
+              decoration: const InputDecoration(labelText: '对方角色 *'),
               items: widget.otherCards
                   .map(
                     (c) => DropdownMenuItem(value: c.id, child: Text(c.name)),
@@ -446,10 +453,7 @@ class _AddRelationshipDialogState
             const SizedBox(height: 12),
             DropdownButtonFormField<RelationshipType>(
               initialValue: _selectedType,
-              decoration: const InputDecoration(
-                labelText: '关系类型',
-                border: OutlineInputBorder(),
-              ),
+              decoration: const InputDecoration(labelText: '关系类型'),
               items: RelationshipType.values
                   .map((t) => DropdownMenuItem(value: t, child: Text(t.label)))
                   .toList(),
@@ -463,7 +467,6 @@ class _AddRelationshipDialogState
               decoration: const InputDecoration(
                 labelText: '备注（可选）',
                 hintText: '补充说明关系细节',
-                border: OutlineInputBorder(),
               ),
               maxLines: 2,
             ),

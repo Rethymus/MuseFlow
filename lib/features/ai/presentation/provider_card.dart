@@ -1,5 +1,8 @@
+import 'package:flutter/cupertino.dart' show CupertinoIcons;
 import 'package:flutter/material.dart';
 import 'package:museflow/features/ai/domain/ai_provider.dart';
+import 'package:museflow/shared/theme/app_colors.dart';
+import 'package:museflow/shared/widgets/app_card.dart';
 
 /// A card widget displaying a preset AI provider option.
 ///
@@ -14,75 +17,69 @@ class ProviderCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
+    final p = AppColors.of(context);
 
-    return Card(
-      elevation: 0,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
-        side: BorderSide(color: colorScheme.outlineVariant),
-      ),
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(12),
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Row(
-            children: [
-              _buildIcon(context),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      provider.name,
-                      style: theme.textTheme.titleSmall?.copyWith(
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                    const SizedBox(height: 2),
-                    Text(
-                      _description,
-                      style: theme.textTheme.bodySmall?.copyWith(
-                        color: colorScheme.onSurfaceVariant,
-                      ),
-                    ),
-                  ],
+    return AppCard(
+      onTap: onTap,
+      child: Row(
+        children: [
+          _buildIcon(p),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  provider.name,
+                  style: theme.textTheme.titleSmall?.copyWith(
+                    fontWeight: FontWeight.w600,
+                  ),
                 ),
-              ),
-              Icon(
-                Icons.arrow_forward_ios,
-                size: 14,
-                color: colorScheme.onSurfaceVariant,
-              ),
-            ],
+                const SizedBox(height: 2),
+                Text(
+                  _description,
+                  style: theme.textTheme.bodySmall?.copyWith(
+                    color: p.secondaryLabel,
+                  ),
+                ),
+              ],
+            ),
           ),
-        ),
+          Icon(CupertinoIcons.chevron_right, size: 14, color: p.tertiaryLabel),
+        ],
       ),
     );
   }
 
-  Widget _buildIcon(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
-
+  Widget _buildIcon(AppPalette p) {
+    final tint = _iconTint(p);
     final icon = switch (provider.type) {
-      AiProviderType.openai => Icons.smart_toy_outlined,
-      AiProviderType.deepseek => Icons.psychology_outlined,
-      AiProviderType.ollama => Icons.computer_outlined,
-      AiProviderType.claude => Icons.auto_awesome_outlined,
-      AiProviderType.custom => Icons.tune,
+      AiProviderType.openai => CupertinoIcons.bolt,
+      AiProviderType.deepseek => CupertinoIcons.textformat,
+      AiProviderType.ollama => CupertinoIcons.desktopcomputer,
+      AiProviderType.claude => CupertinoIcons.sparkles,
+      AiProviderType.custom => CupertinoIcons.slider_horizontal_3,
     };
 
     return Container(
-      width: 40,
-      height: 40,
+      width: 36,
+      height: 36,
       decoration: BoxDecoration(
-        color: colorScheme.primaryContainer,
-        borderRadius: BorderRadius.circular(8),
+        color: tint.withValues(alpha: 0.14),
+        borderRadius: BorderRadius.circular(9),
       ),
-      child: Icon(icon, size: 20, color: colorScheme.onPrimaryContainer),
+      child: Icon(icon, size: 19, color: tint),
     );
+  }
+
+  Color _iconTint(AppPalette p) {
+    return switch (provider.type) {
+      AiProviderType.openai => p.systemGreen,
+      AiProviderType.deepseek => p.systemBlue,
+      AiProviderType.ollama => p.systemTeal,
+      AiProviderType.claude => p.systemPurple,
+      AiProviderType.custom => p.systemOrange,
+    };
   }
 
   String get _description => switch (provider.type) {

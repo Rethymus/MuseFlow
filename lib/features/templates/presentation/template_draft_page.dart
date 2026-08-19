@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart' show CupertinoIcons;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -52,7 +53,9 @@ class _TemplateDraftPageState extends ConsumerState<TemplateDraftPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('确认模板草稿')),
+      appBar: AppBar(
+        title: Text('确认模板草稿', style: Theme.of(context).textTheme.displayMedium),
+      ),
       body: FutureBuilder<_DraftLoadResult?>(
         future: _draftFuture,
         builder: (context, snapshot) {
@@ -76,11 +79,9 @@ class _TemplateDraftPageState extends ConsumerState<TemplateDraftPage> {
               const SizedBox(height: 8),
               TextField(
                 controller: TextEditingController(text: draft.storyConcept),
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                   labelText: '故事概念',
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
+                  alignLabelWithHint: true,
                 ),
                 minLines: 2,
                 maxLines: 4,
@@ -103,13 +104,13 @@ class _TemplateDraftPageState extends ConsumerState<TemplateDraftPage> {
                         height: 16,
                         child: CircularProgressIndicator(strokeWidth: 2),
                       )
-                    : const Icon(Icons.auto_awesome),
+                    : const Icon(CupertinoIcons.sparkles, size: 18),
                 label: const Text('AI补全空白字段'),
               ),
               const SizedBox(height: 8),
               FilledButton.icon(
                 onPressed: _isSaving ? null : _saveDraft,
-                icon: const Icon(Icons.save_alt),
+                icon: const Icon(CupertinoIcons.arrow_down_doc, size: 18),
                 label: const Text('保存到知识库'),
               ),
             ],
@@ -296,7 +297,6 @@ class _DraftTextField extends StatelessWidget {
         decoration: InputDecoration(
           labelText: label,
           helperText: _sourceLabel(field.source),
-          border: const OutlineInputBorder(),
         ),
         onChanged: (value) => onChanged(field.edit(value)),
       ),

@@ -5,12 +5,10 @@
 /// label. Five destinations max, per Apple HIG.
 library;
 
-import 'dart:ui';
-
 import 'package:flutter/material.dart';
 
 import '../theme/app_colors.dart';
-import '../theme/app_dimens.dart';
+import '../theme/app_materials.dart';
 import 'app_sidebar.dart';
 
 /// iOS-style bottom tab bar with a blurred translucent background.
@@ -32,36 +30,25 @@ class AppTabBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final p = AppColors.of(context);
-    final bg = p.groupedBackground.withValues(alpha: 0.82);
-
-    return ClipRect(
-      child: BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
-        child: Container(
-          decoration: BoxDecoration(
-            color: bg,
-            border: Border(
-              top: BorderSide(color: p.separator, width: AppRadius.hairline),
-            ),
-          ),
-          child: SafeArea(
-            top: false,
-            child: SizedBox(
-              height: barHeight,
-              child: Row(
-                children: [
-                  for (var i = 0; i < destinations.length; i++)
-                    Expanded(
-                      child: _TabItem(
-                        destination: destinations[i],
-                        selected: i == selectedIndex,
-                        onTap: () => onDestinationSelected(i),
-                      ),
-                    ),
-                ],
-              ),
-            ),
+    return AppMaterial(
+      tier: AppMaterialTier.ultraThin,
+      radius: BorderRadius.zero,
+      borderEdges: const {LogicalEdge.top},
+      child: SafeArea(
+        top: false,
+        child: SizedBox(
+          height: barHeight,
+          child: Row(
+            children: [
+              for (var i = 0; i < destinations.length; i++)
+                Expanded(
+                  child: _TabItem(
+                    destination: destinations[i],
+                    selected: i == selectedIndex,
+                    onTap: () => onDestinationSelected(i),
+                  ),
+                ),
+            ],
           ),
         ),
       ),

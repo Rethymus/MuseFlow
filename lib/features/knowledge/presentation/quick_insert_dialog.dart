@@ -1,9 +1,12 @@
+import 'package:flutter/cupertino.dart' show CupertinoIcons;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:museflow/core/presentation/providers.dart';
 import 'package:museflow/features/knowledge/domain/entity_type.dart';
 import 'package:museflow/features/knowledge/domain/knowledge_entity.dart';
+import 'package:museflow/shared/theme/app_colors.dart';
+import 'package:museflow/shared/widgets/app_controls.dart';
 import 'package:super_editor/super_editor.dart';
 
 class QuickInsertDialog extends ConsumerStatefulWidget {
@@ -48,7 +51,7 @@ class _QuickInsertDialogState extends ConsumerState<QuickInsertDialog> {
                 controller: _searchController,
                 autofocus: true,
                 decoration: const InputDecoration(
-                  prefixIcon: Icon(Icons.search),
+                  prefixIcon: Icon(CupertinoIcons.search),
                   hintText: '搜索角色、世界观或模板...',
                 ),
                 onChanged: (value) => setState(() => _query = value.trim()),
@@ -73,7 +76,11 @@ class _QuickInsertDialogState extends ConsumerState<QuickInsertDialog> {
               const SizedBox(height: 12),
               Expanded(
                 child: filtered.isEmpty
-                    ? const Center(child: Text('没有找到匹配的知识库条目'))
+                    ? const AppEmptyState(
+                        icon: CupertinoIcons.search,
+                        title: '没有找到匹配的知识库条目',
+                        message: '',
+                      )
                     : ListView.builder(
                         itemCount: filtered.length,
                         itemBuilder: (context, index) {
@@ -88,7 +95,11 @@ class _QuickInsertDialogState extends ConsumerState<QuickInsertDialog> {
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
                             ),
-                            trailing: Chip(label: Text(entry.type.label)),
+                            trailing: AppBadge(
+                              label: entry.type.label,
+                              color: AppColors.of(context).gray,
+                              subtle: true,
+                            ),
                             onTap: () => _insert(entry.entity),
                           );
                         },

@@ -9,16 +9,17 @@
 library;
 
 import 'package:flutter/material.dart';
+import 'package:museflow/shared/theme/app_semantic_colors.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:museflow/core/presentation/providers.dart';
 import 'package:museflow/features/editor/domain/context_anchor.dart';
 import 'package:super_editor/super_editor.dart';
 
 /// Gold background color for persistent anchors (deeper, 10% opacity).
-const _persistentAnchorColor = Color(0x1AFFD700);
+const _persistentAnchorColor = AppAnchorColors.persistent;
 
 /// Gold background color for one-time anchors (lighter, 5% opacity).
-const _oneTimeAnchorColor = Color(0x0DFFD700);
+const _oneTimeAnchorColor = AppAnchorColors.oneTime;
 
 /// Overlay builder that renders anchor visual indicators in the editor.
 ///
@@ -111,7 +112,7 @@ class _AnchorIndicator extends StatelessWidget {
         alignment: Alignment.topLeft,
         child: Padding(
           padding: EdgeInsets.only(left: 2, top: 2),
-          child: Icon(Icons.push_pin, size: 14, color: Color(0x99FFD700)),
+          child: Icon(Icons.push_pin, size: 14, color: AppAnchorColors.icon),
         ),
       ),
     );

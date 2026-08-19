@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart' show CupertinoIcons;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -9,7 +10,9 @@ import 'package:museflow/features/stats/presentation/charts/speed_trend_line_cha
 import 'package:museflow/features/stats/presentation/achievement_badge_section.dart';
 import 'package:museflow/features/stats/presentation/stats_summary_card.dart';
 import 'package:museflow/shared/constants/app_constants.dart';
+import 'package:museflow/shared/theme/app_dimens.dart';
 import 'package:museflow/shared/utils/friendly_error.dart';
+import 'package:museflow/shared/widgets/app_card.dart';
 
 class WritingStatsPage extends ConsumerWidget {
   const WritingStatsPage({super.key, this.debugSnapshot});
@@ -28,26 +31,26 @@ class WritingStatsPage extends ConsumerWidget {
     final statsAsync = ref.watch(writingStatsNotifierProvider);
     return Scaffold(
       appBar: AppBar(
-        title: const Text('写作统计'),
+        title: Text('写作统计', style: Theme.of(context).textTheme.displayMedium),
         actions: [
           TextButton.icon(
             onPressed: () => context.go(AppConstants.statsProject),
-            icon: const Icon(Icons.article_outlined),
+            icon: const Icon(CupertinoIcons.doc_text, size: 18),
             label: const Text('当前作品'),
           ),
           TextButton.icon(
             onPressed: () => context.go(AppConstants.statsTokens),
-            icon: const Icon(Icons.token_outlined),
+            icon: const Icon(CupertinoIcons.bolt, size: 18),
             label: const Text('Token 消耗'),
           ),
           TextButton.icon(
             onPressed: () => context.go(AppConstants.statsProgress),
-            icon: const Icon(Icons.dashboard_outlined),
+            icon: const Icon(CupertinoIcons.square_grid_2x2, size: 18),
             label: const Text('进度'),
           ),
           TextButton.icon(
             onPressed: () => context.go(AppConstants.statsReports),
-            icon: const Icon(Icons.assessment_outlined),
+            icon: const Icon(CupertinoIcons.chart_bar, size: 18),
             label: const Text('分析报告'),
           ),
         ],
@@ -85,16 +88,14 @@ class _StatsContent extends StatelessWidget {
     // No duplicated in-body heading: the AppBar already says 写作统计 (D-4);
     // only the one-line description leads into the content.
     return ListView(
-      padding: const EdgeInsets.all(24),
+      padding: const EdgeInsets.all(AppSpacing.xl),
       children: [
         Text('把创作过程变成可感知的轨迹。', style: Theme.of(context).textTheme.bodyMedium),
         const SizedBox(height: 24),
         if (snapshot.totalUnits == 0)
-          const Card(
-            child: Padding(
-              padding: EdgeInsets.all(20),
-              child: Text('开始写作后，这里会出现你的创作轨迹。'),
-            ),
+          AppCard(
+            padding: const EdgeInsets.all(20),
+            child: Text('开始写作后，这里会出现你的创作轨迹。'),
           ),
         _SummaryWrap(snapshot: snapshot),
         const SizedBox(height: 24),
@@ -115,8 +116,6 @@ class _StatsContent extends StatelessWidget {
         ),
         AchievementBadgeSection(debugBadges: useDebugBadges ? const [] : null),
         const SizedBox(height: 24),
-        const Divider(),
-        const SizedBox(height: 16),
         const _TokenSummarySection(),
       ],
     );
@@ -135,11 +134,9 @@ class _TokenSummarySection extends ConsumerWidget {
       error: (_, _) => const SizedBox.shrink(),
       data: (snapshot) {
         if (snapshot.totalCalls == 0) {
-          return const Card(
-            child: Padding(
-              padding: EdgeInsets.all(20),
-              child: Text('开始使用 AI 功能后，这里会出现 Token 消耗统计。'),
-            ),
+          return AppCard(
+            padding: const EdgeInsets.all(20),
+            child: Text('开始使用 AI 功能后，这里会出现 Token 消耗统计。'),
           );
         }
 
@@ -161,7 +158,7 @@ class _TokenSummarySection extends ConsumerWidget {
 
         return InkWell(
           onTap: () => context.go(AppConstants.statsTokens),
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(AppRadius.medium),
           child: LayoutBuilder(
             builder: (context, constraints) {
               final cardWidth = constraints.maxWidth < 720
@@ -174,7 +171,7 @@ class _TokenSummarySection extends ConsumerWidget {
                   SizedBox(
                     width: cardWidth,
                     child: StatsSummaryCard(
-                      icon: Icons.arrow_downward_outlined,
+                      icon: CupertinoIcons.arrow_down,
                       title: '输入 Token',
                       value: formatNumber(snapshot.totalInputTokens),
                     ),
@@ -182,7 +179,7 @@ class _TokenSummarySection extends ConsumerWidget {
                   SizedBox(
                     width: cardWidth,
                     child: StatsSummaryCard(
-                      icon: Icons.arrow_upward_outlined,
+                      icon: CupertinoIcons.arrow_up,
                       title: '输出 Token',
                       value: formatNumber(snapshot.totalOutputTokens),
                     ),
@@ -190,7 +187,7 @@ class _TokenSummarySection extends ConsumerWidget {
                   SizedBox(
                     width: cardWidth,
                     child: StatsSummaryCard(
-                      icon: Icons.swap_calls_outlined,
+                      icon: CupertinoIcons.arrow_up_arrow_down,
                       title: 'API 调用次数',
                       value: formatNumber(snapshot.totalCalls),
                     ),
@@ -225,7 +222,7 @@ class _SummaryWrap extends StatelessWidget {
             SizedBox(
               width: cardWidth,
               child: StatsSummaryCard(
-                icon: Icons.edit_note_outlined,
+                icon: CupertinoIcons.pencil,
                 title: '总字数',
                 value: '${snapshot.totalUnits}',
               ),
@@ -233,7 +230,7 @@ class _SummaryWrap extends StatelessWidget {
             SizedBox(
               width: cardWidth,
               child: StatsSummaryCard(
-                icon: Icons.calendar_month_outlined,
+                icon: CupertinoIcons.calendar,
                 title: '写作天数',
                 value: '${snapshot.writingDays}',
               ),
@@ -241,7 +238,7 @@ class _SummaryWrap extends StatelessWidget {
             SizedBox(
               width: cardWidth,
               child: StatsSummaryCard(
-                icon: Icons.auto_awesome_outlined,
+                icon: CupertinoIcons.sparkles,
                 title: 'AI辅助比例',
                 value: '$ratio%',
               ),
@@ -249,7 +246,7 @@ class _SummaryWrap extends StatelessWidget {
             SizedBox(
               width: cardWidth,
               child: StatsSummaryCard(
-                icon: Icons.history_outlined,
+                icon: CupertinoIcons.clock,
                 title: '会话总数',
                 value: '${snapshot.sessionCount}',
               ),
@@ -269,17 +266,16 @@ class _ChartSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(title, style: Theme.of(context).textTheme.titleMedium),
-            const SizedBox(height: 12),
-            child,
-          ],
-        ),
+    return AppCard(
+      margin: const EdgeInsets.only(bottom: AppSpacing.md),
+      padding: const EdgeInsets.all(AppSpacing.lg),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(title, style: Theme.of(context).textTheme.titleMedium),
+          const SizedBox(height: 12),
+          child,
+        ],
       ),
     );
   }

@@ -107,8 +107,8 @@ class StyleThermometerCard extends ConsumerWidget {
 
 /// Returns the color for a given AI-scent score.
 Color _scoreColor(int score) {
-  if (score < 25) return const Color(0xFF4CAF50); // green
-  if (score < 50) return const Color(0xFFFFC107); // amber
-  if (score < 75) return const Color(0xFFFF9800); // orange
-  return const Color(0xFFF44336); // red
+  if (score < 25) return const Color(0xFF34C759); // systemGreen
+  if (score < 50) return const Color(0xFFFFCC00); // systemYellow
+  if (score < 75) return const Color(0xFFFF9500); // systemOrange
+  return const Color(0xFFFF3B30); // systemRed
 }

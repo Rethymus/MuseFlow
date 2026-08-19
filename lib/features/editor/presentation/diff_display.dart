@@ -13,13 +13,9 @@ import 'package:follow_the_leader/follow_the_leader.dart';
 import 'package:museflow/core/presentation/providers.dart';
 import 'package:museflow/features/editor/domain/diff_state.dart';
 import 'package:museflow/features/editor/domain/editor_ai_state.dart';
+import 'package:museflow/shared/theme/app_colors.dart';
+import 'package:museflow/shared/theme/app_semantic_colors.dart';
 import 'package:super_editor/super_editor.dart';
-
-/// Color for deleted sentences -- red with 20% opacity.
-const _deletionColor = Color(0x33FF0000);
-
-/// Color for inserted sentences -- green with 20% opacity.
-const _insertionColor = Color(0x3300FF00);
 
 /// Floating action bar for accepting/rejecting pending diff sentences.
 ///
@@ -95,7 +91,7 @@ class _AcceptRejectBarState extends ConsumerState<AcceptRejectBar> {
           children: [
             _AcceptRejectButton(
               label: isMultiple ? '全部接受' : '接受',
-              color: Colors.green.shade700,
+              color: AppColors.of(context).diffAccept,
               onTap: () {
                 final notifier = ref.read(editorAINotifierProvider.notifier);
                 if (isMultiple) {
@@ -108,7 +104,7 @@ class _AcceptRejectBarState extends ConsumerState<AcceptRejectBar> {
             const SizedBox(width: 4),
             _AcceptRejectButton(
               label: isMultiple ? '全部拒绝' : '拒绝',
-              color: Colors.red.shade700,
+              color: AppColors.of(context).diffReject,
               onTap: () {
                 final notifier = ref.read(editorAINotifierProvider.notifier);
                 if (isMultiple) {
@@ -172,8 +168,7 @@ class _AcceptRejectButton extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
         child: Text(
           label,
-          style: TextStyle(
-            fontSize: 13,
+          style: Theme.of(context).textTheme.bodySmall?.copyWith(
             color: color,
             fontWeight: FontWeight.w500,
           ),
@@ -248,7 +243,10 @@ class _DiffHighlights extends StatelessWidget {
     return IgnorePointer(
       child: Stack(
         children: pendingSentences.map((sentence) {
-          final color = sentence.isDeletion ? _deletionColor : _insertionColor;
+          final palette = AppColors.of(context);
+          final color = sentence.isDeletion
+              ? palette.diffDeletionBg
+              : palette.diffInsertionBg;
           return _SentenceHighlight(
             sentence: sentence,
             color: color,
@@ -325,7 +323,7 @@ class _DiffHighlightPainter extends CustomPainter {
     // For deletions, draw a strikethrough line
     if (isDeletion) {
       final strikePaint = Paint()
-        ..color = const Color(0xFFFF0000)
+        ..color = const Color(0xFFFF3B30)
         ..strokeWidth = 1.5;
       final y = size.height / 2;
       canvas.drawLine(Offset(0, y), Offset(size.width, y), strikePaint);

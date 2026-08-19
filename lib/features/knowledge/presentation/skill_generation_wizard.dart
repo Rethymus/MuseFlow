@@ -29,7 +29,9 @@ class _SkillGenerationWizardState extends ConsumerState<SkillGenerationWizard> {
     final generated = generation.asData?.value.document;
 
     return Scaffold(
-      appBar: AppBar(title: const Text('创建世界观模板')),
+      appBar: AppBar(
+        title: Text('创建世界观模板', style: Theme.of(context).textTheme.displayMedium),
+      ),
       body: Stepper(
         currentStep: _step,
         onStepContinue: () => _continue(generated != null),

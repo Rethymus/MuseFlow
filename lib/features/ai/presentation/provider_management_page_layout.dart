@@ -1,5 +1,32 @@
 part of 'provider_management_page.dart';
 
+/// A labeled [AiProviderType] segment for [AppSegmentedControl], which
+/// derives segment labels from [Object.toString].
+class _ProviderTypeSegment {
+  const _ProviderTypeSegment(this.value, this.label);
+
+  final AiProviderType value;
+  final String label;
+
+  @override
+  String toString() => label;
+
+  @override
+  bool operator ==(Object other) =>
+      other is _ProviderTypeSegment && other.value == value;
+
+  @override
+  int get hashCode => Object.hash(_ProviderTypeSegment, value);
+}
+
+const List<_ProviderTypeSegment> _providerTypeSegments = [
+  _ProviderTypeSegment(AiProviderType.openai, 'OpenAI'),
+  _ProviderTypeSegment(AiProviderType.deepseek, 'DeepSeek'),
+  _ProviderTypeSegment(AiProviderType.claude, 'Claude'),
+  _ProviderTypeSegment(AiProviderType.ollama, 'Ollama'),
+  _ProviderTypeSegment(AiProviderType.custom, '自定义'),
+];
+
 /// Layout helpers for [_ProviderManagementPageState].
 ///
 /// Extracted from provider_management_page.dart to satisfy the
@@ -16,31 +43,28 @@ extension _ProviderManagementPageStateLayout on _ProviderManagementPageState {
   ) {
     final theme = Theme.of(context);
 
-    return Material(
-      color: theme.colorScheme.surface,
-      child: Padding(
-        padding: const EdgeInsets.fromLTRB(8, 8, 8, 4),
-        child: Row(
-          children: [
-            TextButton.icon(
-              onPressed: _showListOnNarrow,
-              icon: const Icon(Icons.arrow_back),
-              label: const Text('返回列表'),
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(8, 8, 8, 4),
+      child: Row(
+        children: [
+          TextButton.icon(
+            onPressed: _showListOnNarrow,
+            icon: const Icon(CupertinoIcons.chevron_left, size: 18),
+            label: const Text('返回列表'),
+          ),
+          const Spacer(),
+          if (_showList)
+            FilledButton.tonalIcon(
+              onPressed: () => _clearForm(),
+              icon: const Icon(CupertinoIcons.plus, size: 18),
+              label: const Text('新建'),
+            )
+          else
+            Text(
+              mgmtState.selectedProvider?.name ?? '模型配置',
+              style: theme.textTheme.labelLarge,
             ),
-            const Spacer(),
-            if (_showList)
-              FilledButton.tonalIcon(
-                onPressed: () => _clearForm(),
-                icon: const Icon(Icons.add),
-                label: const Text('新建'),
-              )
-            else
-              Text(
-                mgmtState.selectedProvider?.name ?? '模型配置',
-                style: theme.textTheme.labelLarge,
-              ),
-          ],
-        ),
+        ],
       ),
     );
   }
@@ -50,8 +74,8 @@ extension _ProviderManagementPageStateLayout on _ProviderManagementPageState {
     ProviderManagementState mgmtState,
     List<AIProvider> presets,
   ) {
-    final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
+    final p = AppColors.of(context);
+    final textTheme = Theme.of(context).textTheme;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -59,12 +83,7 @@ extension _ProviderManagementPageStateLayout on _ProviderManagementPageState {
         // Preset section
         Padding(
           padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
-          child: Text(
-            '预设模型',
-            style: theme.textTheme.titleSmall?.copyWith(
-              color: colorScheme.onSurfaceVariant,
-            ),
-          ),
+          child: Text('预设模型', style: groupedSectionHeader(context)),
         ),
         // Preset cards scroll to prevent vertical overflow as more presets are
         // added (the panel hosts multiple preset providers + a custom option).
@@ -110,25 +129,22 @@ extension _ProviderManagementPageStateLayout on _ProviderManagementPageState {
             ),
           ),
         ),
-        const Divider(height: 24),
+        Divider(height: 24, color: p.separator),
 
         // Saved providers section
         Padding(
           padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
-          child: Text(
-            '已配置',
-            style: theme.textTheme.titleSmall?.copyWith(
-              color: colorScheme.onSurfaceVariant,
-            ),
-          ),
+          child: Text('已配置', style: groupedSectionHeader(context)),
         ),
         Expanded(
           child: mgmtState.providers.isEmpty
-              ? const Padding(
-                  padding: EdgeInsets.all(16),
+              ? Padding(
+                  padding: const EdgeInsets.all(16),
                   child: Text(
                     '尚未配置模型\n点击上方预设开始',
-                    style: TextStyle(color: Colors.grey),
+                    style: textTheme.bodySmall?.copyWith(
+                      color: p.secondaryLabel,
+                    ),
                   ),
                 )
               : RadioGroup<String>(
@@ -152,19 +168,18 @@ extension _ProviderManagementPageStateLayout on _ProviderManagementPageState {
                       return ListTile(
                         dense: true,
                         selected: isSelected,
-                        selectedTileColor: colorScheme.primaryContainer
-                            .withAlpha(50),
+                        selectedTileColor: p.accentFill,
                         leading: Radio<String>(value: provider.id),
                         title: Text(provider.name),
                         subtitle: Text(
                           provider.model,
-                          style: theme.textTheme.bodySmall,
+                          style: textTheme.bodySmall,
                         ),
                         trailing: isActive
                             ? Icon(
-                                Icons.check_circle,
+                                CupertinoIcons.checkmark_circle_fill,
                                 size: 16,
-                                color: colorScheme.primary,
+                                color: p.systemGreen,
                               )
                             : null,
                         onTap: () => _fillForEdit(provider),
@@ -182,7 +197,7 @@ extension _ProviderManagementPageStateLayout on _ProviderManagementPageState {
     ProviderManagementState mgmtState,
   ) {
     final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
+    final p = AppColors.of(context);
 
     return SingleChildScrollView(
       padding: const EdgeInsets.all(24),
@@ -195,14 +210,18 @@ extension _ProviderManagementPageStateLayout on _ProviderManagementPageState {
           ),
           if (kIsWeb) ...[
             const SizedBox(height: 12),
-            Material(
-              color: colorScheme.secondaryContainer,
-              borderRadius: BorderRadius.circular(8),
-              child: const Padding(
-                padding: EdgeInsets.all(12),
-                child: Text(
-                  'Web 版 API Key 仅在当前标签页会话中保存。服务地址必须使用 HTTPS，'
-                  '并由供应商允许浏览器 CORS；请先测试连接。',
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: p.systemOrange.withValues(alpha: 0.12),
+                borderRadius: AppRadius.rSmall,
+              ),
+              child: Text(
+                'Web 版 API Key 仅在当前标签页会话中保存。服务地址必须使用 HTTPS，'
+                '并由供应商允许浏览器 CORS；请先测试连接。',
+                style: theme.textTheme.bodySmall?.copyWith(
+                  color: p.systemOrange,
                 ),
               ),
             ),
@@ -210,38 +229,20 @@ extension _ProviderManagementPageStateLayout on _ProviderManagementPageState {
           const SizedBox(height: 24),
 
           // Provider type selector
-          Text('模型类型', style: theme.textTheme.labelLarge),
+          Text('模型类型', style: theme.textTheme.titleSmall),
           const SizedBox(height: 8),
           SingleChildScrollView(
             scrollDirection: Axis.horizontal,
-            child: SegmentedButton<AiProviderType>(
-              segments: [
-                const ButtonSegment(
-                  value: AiProviderType.openai,
-                  label: Text('OpenAI'),
-                ),
-                const ButtonSegment(
-                  value: AiProviderType.deepseek,
-                  label: Text('DeepSeek'),
-                ),
-                const ButtonSegment(
-                  value: AiProviderType.claude,
-                  label: Text('Claude'),
-                ),
-                if (!kIsWeb)
-                  const ButtonSegment(
-                    value: AiProviderType.ollama,
-                    label: Text('Ollama'),
-                  ),
-                const ButtonSegment(
-                  value: AiProviderType.custom,
-                  label: Text('自定义'),
-                ),
-              ],
-              selected: {_selectedType},
-              onSelectionChanged: (types) {
-                _selectProviderType(types.first);
+            child: AppSegmentedControl<_ProviderTypeSegment>(
+              segments: {
+                for (final segment in _providerTypeSegments)
+                  if (kIsWeb || segment.value != AiProviderType.ollama) segment,
               },
+              selected: _providerTypeSegments.firstWhere(
+                (segment) => segment.value == _selectedType,
+              ),
+              onSelectionChanged: (segment) =>
+                  _selectProviderType(segment.value),
             ),
           ),
           const SizedBox(height: 20),
@@ -252,7 +253,6 @@ extension _ProviderManagementPageStateLayout on _ProviderManagementPageState {
             decoration: const InputDecoration(
               labelText: '名称',
               hintText: '例如：我的 OpenAI',
-              border: OutlineInputBorder(),
             ),
           ),
           const SizedBox(height: 16),
@@ -263,7 +263,6 @@ extension _ProviderManagementPageStateLayout on _ProviderManagementPageState {
             decoration: const InputDecoration(
               labelText: 'Base URL',
               hintText: 'https://api.openai.com/v1',
-              border: OutlineInputBorder(),
             ),
           ),
           const SizedBox(height: 16),
@@ -274,7 +273,6 @@ extension _ProviderManagementPageStateLayout on _ProviderManagementPageState {
             decoration: InputDecoration(
               labelText: '模型',
               hintText: 'gpt-4o-mini',
-              border: const OutlineInputBorder(),
               suffixIcon: IconButton(
                 icon: mgmtState.isFetchingModels
                     ? const SizedBox(
@@ -282,7 +280,7 @@ extension _ProviderManagementPageStateLayout on _ProviderManagementPageState {
                         height: 16,
                         child: CircularProgressIndicator(strokeWidth: 2),
                       )
-                    : const Icon(Icons.refresh),
+                    : const Icon(CupertinoIcons.arrow_clockwise, size: 18),
                 tooltip: '获取模型列表',
                 onPressed: mgmtState.isFetchingModels
                     ? null
@@ -292,12 +290,12 @@ extension _ProviderManagementPageStateLayout on _ProviderManagementPageState {
           ),
           // Model list dropdown per D-07/D-08
           if (mgmtState.availableModels.isNotEmpty) ...[
-            const SizedBox(height: 4),
+            const SizedBox(height: 8),
             Container(
               constraints: const BoxConstraints(maxHeight: 150),
               decoration: BoxDecoration(
-                border: Border.all(color: colorScheme.outlineVariant),
-                borderRadius: BorderRadius.circular(8),
+                color: p.gray5,
+                borderRadius: AppRadius.rSmall,
               ),
               child: ListView.builder(
                 shrinkWrap: true,
@@ -331,11 +329,13 @@ extension _ProviderManagementPageStateLayout on _ProviderManagementPageState {
               decoration: InputDecoration(
                 labelText: 'API Key',
                 hintText: 'sk-...',
-                border: const OutlineInputBorder(),
                 suffixIcon: IconButton(
                   tooltip: _obscureApiKey ? '显示 API Key' : '隐藏 API Key',
                   icon: Icon(
-                    _obscureApiKey ? Icons.visibility_off : Icons.visibility,
+                    _obscureApiKey
+                        ? CupertinoIcons.eye_slash
+                        : CupertinoIcons.eye,
+                    size: 20,
                   ),
                   onPressed: _toggleApiKeyVisibility,
                 ),
@@ -345,13 +345,11 @@ extension _ProviderManagementPageStateLayout on _ProviderManagementPageState {
           ],
 
           // Parameter input rows per D-05
-          Text('模型参数', style: theme.textTheme.labelLarge),
+          Text('模型参数', style: theme.textTheme.titleSmall),
           const SizedBox(height: 4),
           Text(
             '留空使用模型默认值',
-            style: theme.textTheme.bodySmall?.copyWith(
-              color: colorScheme.onSurfaceVariant,
-            ),
+            style: theme.textTheme.bodySmall?.copyWith(color: p.secondaryLabel),
           ),
           const SizedBox(height: 8),
 
@@ -362,7 +360,6 @@ extension _ProviderManagementPageStateLayout on _ProviderManagementPageState {
             decoration: const InputDecoration(
               labelText: 'Temperature',
               hintText: '0.0 - 2.0，留空使用默认值',
-              border: OutlineInputBorder(),
             ),
           ),
           const SizedBox(height: 12),
@@ -374,7 +371,6 @@ extension _ProviderManagementPageStateLayout on _ProviderManagementPageState {
             decoration: const InputDecoration(
               labelText: 'Top-P',
               hintText: '0.0 - 1.0，留空使用默认值',
-              border: OutlineInputBorder(),
             ),
           ),
           const SizedBox(height: 12),
@@ -386,7 +382,6 @@ extension _ProviderManagementPageStateLayout on _ProviderManagementPageState {
             decoration: const InputDecoration(
               labelText: '最大 Token 数',
               hintText: '1 - 128000，留空使用默认值',
-              border: OutlineInputBorder(),
             ),
           ),
           const SizedBox(height: 16),
@@ -411,12 +406,12 @@ extension _ProviderManagementPageStateLayout on _ProviderManagementPageState {
                   const SizedBox(width: 12),
                   Icon(
                     mgmtState.connectionTestResult == 'success'
-                        ? Icons.check_circle
-                        : Icons.error_outline,
+                        ? CupertinoIcons.checkmark_circle_fill
+                        : CupertinoIcons.exclamationmark_circle,
                     size: 18,
                     color: mgmtState.connectionTestResult == 'success'
-                        ? Colors.green
-                        : colorScheme.error,
+                        ? p.systemGreen
+                        : p.systemRed,
                   ),
                   const SizedBox(width: 4),
                   Text(
@@ -425,8 +420,8 @@ extension _ProviderManagementPageStateLayout on _ProviderManagementPageState {
                         : mgmtState.connectionTestResult!,
                     style: theme.textTheme.bodySmall?.copyWith(
                       color: mgmtState.connectionTestResult == 'success'
-                          ? Colors.green
-                          : colorScheme.error,
+                          ? p.systemGreen
+                          : p.systemRed,
                     ),
                   ),
                 ],
@@ -446,9 +441,7 @@ extension _ProviderManagementPageStateLayout on _ProviderManagementPageState {
               if (_isEditing) ...[
                 OutlinedButton(
                   onPressed: () => _handleDelete(_editingProviderId!),
-                  style: OutlinedButton.styleFrom(
-                    foregroundColor: colorScheme.error,
-                  ),
+                  style: OutlinedButton.styleFrom(foregroundColor: p.systemRed),
                   child: const Text('删除'),
                 ),
                 const SizedBox(width: 12),
@@ -458,7 +451,7 @@ extension _ProviderManagementPageStateLayout on _ProviderManagementPageState {
           ),
 
           const SizedBox(height: 32),
-          const Divider(),
+          Divider(height: 1, color: p.separator),
           const SizedBox(height: 16),
 
           // Advanced mode toggle (disabled placeholder per D-04)
@@ -466,9 +459,7 @@ extension _ProviderManagementPageStateLayout on _ProviderManagementPageState {
           const SizedBox(height: 4),
           Text(
             '为不同场景指定不同模型',
-            style: theme.textTheme.bodySmall?.copyWith(
-              color: colorScheme.onSurfaceVariant,
-            ),
+            style: theme.textTheme.bodySmall?.copyWith(color: p.secondaryLabel),
           ),
           SwitchListTile(
             value: false,

@@ -11,6 +11,7 @@ import 'package:flutter/material.dart';
 
 import '../theme/app_colors.dart';
 import '../theme/app_dimens.dart';
+import '../theme/app_materials.dart';
 
 /// One alert button. [isDefault] renders in the accent tint and bold;
 /// [isDestructive] renders in system red.
@@ -86,58 +87,63 @@ class AppAlertDialog extends StatelessWidget {
     ];
 
     return Dialog(
-      backgroundColor: p.tertiaryGroupedBackground,
+      backgroundColor: Colors.transparent,
       elevation: 0,
       shape: RoundedRectangleBorder(borderRadius: AppRadius.rMedium),
-      child: ClipRRect(
-        borderRadius: AppRadius.rMedium,
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Padding(
-              padding: const EdgeInsets.fromLTRB(24, 20, 24, 20),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text(
-                    title,
-                    textAlign: TextAlign.center,
-                    style: textTheme.titleLarge,
-                  ),
-                  if (message != null) ...[
-                    const SizedBox(height: 6),
+      child: AppMaterial(
+        tier: AppMaterialTier.thick,
+        radius: AppRadius.rMedium,
+        shadow: true,
+        child: ClipRRect(
+          borderRadius: AppRadius.rMedium,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Padding(
+                padding: const EdgeInsets.fromLTRB(24, 20, 24, 20),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
                     Text(
-                      message!,
+                      title,
                       textAlign: TextAlign.center,
-                      style: textTheme.bodySmall?.copyWith(
-                        color: p.secondaryLabel,
-                        height: 1.35,
-                      ),
+                      style: textTheme.titleLarge,
                     ),
+                    if (message != null) ...[
+                      const SizedBox(height: 6),
+                      Text(
+                        message!,
+                        textAlign: TextAlign.center,
+                        style: textTheme.bodySmall?.copyWith(
+                          color: p.secondaryLabel,
+                          height: 1.35,
+                        ),
+                      ),
+                    ],
+                    if (content != null) ...[
+                      const SizedBox(height: 12),
+                      content!,
+                    ],
                   ],
-                  if (content != null) ...[
-                    const SizedBox(height: 12),
-                    content!,
-                  ],
-                ],
+                ),
               ),
-            ),
-            Divider(height: 0.5, thickness: 0.5, color: p.separator),
-            if (sideBySide)
-              Row(
-                children: [
-                  buttons[0],
-                  VerticalDivider(
-                    width: 0.5,
-                    thickness: 0.5,
-                    color: p.separator,
-                  ),
-                  buttons[1],
-                ],
-              )
-            else
-              Column(children: buttons),
-          ],
+              Divider(height: 0.5, thickness: 0.5, color: p.separator),
+              if (sideBySide)
+                Row(
+                  children: [
+                    buttons[0],
+                    VerticalDivider(
+                      width: 0.5,
+                      thickness: 0.5,
+                      color: p.separator,
+                    ),
+                    buttons[1],
+                  ],
+                )
+              else
+                Column(children: buttons),
+            ],
+          ),
         ),
       ),
     );
@@ -242,11 +248,10 @@ Future<void> showAppActionSheet(
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Container(
-                decoration: BoxDecoration(
-                  color: p.tertiaryGroupedBackground,
-                  borderRadius: AppRadius.rMedium,
-                ),
+              AppMaterial(
+                tier: AppMaterialTier.regular,
+                radius: AppRadius.rMedium,
+                shadow: true,
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
@@ -278,11 +283,9 @@ Future<void> showAppActionSheet(
                 ),
               ),
               const SizedBox(height: 8),
-              Container(
-                decoration: BoxDecoration(
-                  color: p.tertiaryGroupedBackground,
-                  borderRadius: AppRadius.rMedium,
-                ),
+              AppMaterial(
+                tier: AppMaterialTier.regular,
+                radius: AppRadius.rMedium,
                 child: GestureDetector(
                   onTap: () => Navigator.of(sheetContext).pop(),
                   behavior: HitTestBehavior.opaque,

@@ -96,6 +96,10 @@ class AppPalette {
   /// Card/sheet background on a grouped page.
   Color get cardBackground => secondaryGroupedBackground;
 
+  /// macOS navigation-column material: one step off the content background.
+  Color get sidebarMaterial =>
+      isDark ? const Color(0xFF101013) : const Color(0xFFECECF1);
+
   /// Resolves against the opposite brightness (like CupertinoDynamicColor).
   AppPalette resolveFrom(Brightness b) => AppPalette._(b);
 }

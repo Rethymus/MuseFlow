@@ -5,10 +5,15 @@
 /// in the same library — consumers import this file unchanged.
 library;
 
+import 'package:flutter/cupertino.dart' show CupertinoIcons;
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:museflow/core/presentation/providers.dart';
+import 'package:museflow/shared/theme/app_colors.dart';
+import 'package:museflow/shared/theme/app_dimens.dart';
+import 'package:museflow/shared/theme/app_typography.dart';
+import 'package:museflow/shared/widgets/app_controls.dart';
 import 'package:museflow/features/ai/domain/ai_provider.dart';
 import 'package:museflow/features/ai/infrastructure/preset_providers.dart';
 import 'package:museflow/features/ai/presentation/parameter_validation.dart';

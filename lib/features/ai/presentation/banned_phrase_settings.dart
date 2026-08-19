@@ -5,10 +5,13 @@
 /// from [AntiAIScentProcessor]'s built-in synonym map keys.
 library;
 
+import 'package:flutter/cupertino.dart' show CupertinoIcons;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:museflow/core/presentation/providers.dart';
 import 'package:museflow/features/ai/application/anti_ai_scent_processor.dart';
+import 'package:museflow/shared/theme/app_colors.dart';
+import 'package:museflow/shared/theme/app_dimens.dart';
 
 /// Provider exposing the user's banned phrase list from settings.
 ///
@@ -94,23 +97,22 @@ class BannedPhraseSettingsPage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final phrasesAsync = ref.watch(bannedPhrasesProvider);
     final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
+    final p = AppColors.of(context);
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('AI 用语过滤'),
+        title: Text('AI 用语过滤', style: theme.textTheme.displayMedium),
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
+          icon: const Icon(CupertinoIcons.back),
           onPressed: () => Navigator.of(context).pop(),
         ),
       ),
       body: phrasesAsync.when(
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (err, _) => Center(
-          child: Text('加载失败: $err', style: TextStyle(color: colorScheme.error)),
+          child: Text('加载失败: $err', style: TextStyle(color: p.systemRed)),
         ),
-        data: (phrases) =>
-            _buildPhraseList(context, ref, phrases, theme, colorScheme),
+        data: (phrases) => _buildPhraseList(context, ref, phrases, theme, p),
       ),
     );
   }
@@ -120,7 +122,7 @@ class BannedPhraseSettingsPage extends ConsumerWidget {
     WidgetRef ref,
     List<String> phrases,
     ThemeData theme,
-    ColorScheme colorScheme,
+    AppPalette p,
   ) {
     return Column(
       children: [
@@ -128,64 +130,79 @@ class BannedPhraseSettingsPage extends ConsumerWidget {
         Container(
           width: double.infinity,
           padding: const EdgeInsets.all(16),
-          color: colorScheme.surfaceContainerHighest,
+          color: p.tertiaryGroupedBackground,
           child: Row(
             children: [
               Icon(
-                Icons.info_outline,
+                CupertinoIcons.info_circle,
                 size: 18,
-                color: colorScheme.onSurfaceVariant,
+                color: p.secondaryLabel,
               ),
               const SizedBox(width: 8),
               Expanded(
                 child: Text(
                   '这些词组在 AI 生成文本后会自动被替换或删除，以减少 AI 痕迹。',
                   style: theme.textTheme.bodySmall?.copyWith(
-                    color: colorScheme.onSurfaceVariant,
+                    color: p.secondaryLabel,
                   ),
                 ),
               ),
             ],
           ),
         ),
-        // Phrase list
+        // Phrase list: inset grouped card with hairline separators
         Expanded(
           child: phrases.isEmpty
               ? Center(
                   child: Text(
                     '暂无过滤词组',
                     style: theme.textTheme.bodyMedium?.copyWith(
-                      color: colorScheme.onSurfaceVariant,
+                      color: p.secondaryLabel,
                     ),
                   ),
                 )
-              : ListView.builder(
-                  itemCount: phrases.length,
-                  itemBuilder: (context, index) {
-                    final phrase = phrases[index];
-                    return ListTile(
-                      dense: true,
-                      title: Text(phrase),
-                      trailing: IconButton(
-                        icon: Icon(
-                          Icons.delete_outline,
-                          size: 20,
-                          color: colorScheme.error,
+              : Container(
+                  margin: const EdgeInsets.symmetric(
+                    horizontal: AppSpacing.groupMargin,
+                  ),
+                  decoration: BoxDecoration(
+                    color: p.cardBackground,
+                    borderRadius: AppRadius.rMedium,
+                  ),
+                  child: ListView.separated(
+                    itemCount: phrases.length,
+                    separatorBuilder: (_, _) => Divider(
+                      height: AppRadius.hairline,
+                      thickness: AppRadius.hairline,
+                      indent: 16,
+                      color: p.separator,
+                    ),
+                    itemBuilder: (context, index) {
+                      final phrase = phrases[index];
+                      return ListTile(
+                        dense: true,
+                        title: Text(phrase),
+                        trailing: IconButton(
+                          icon: Icon(
+                            CupertinoIcons.trash,
+                            size: 20,
+                            color: p.systemRed,
+                          ),
+                          tooltip: '删除',
+                          onPressed: () {
+                            ref
+                                .read(bannedPhrasesProvider.notifier)
+                                .removePhrase(index);
+                          },
                         ),
-                        tooltip: '删除',
-                        onPressed: () {
-                          ref
-                              .read(bannedPhrasesProvider.notifier)
-                              .removePhrase(index);
-                        },
-                      ),
-                    );
-                  },
+                      );
+                    },
+                  ),
                 ),
         ),
         // Add phrase section
-        const Divider(height: 1),
-        _AddPhraseSection(colorScheme: colorScheme),
+        Divider(height: 1, color: p.separator),
+        _AddPhraseSection(),
       ],
     );
   }
@@ -193,9 +210,7 @@ class BannedPhraseSettingsPage extends ConsumerWidget {
 
 /// Section at the bottom for adding a new banned phrase.
 class _AddPhraseSection extends ConsumerStatefulWidget {
-  final ColorScheme colorScheme;
-
-  const _AddPhraseSection({required this.colorScheme});
+  const _AddPhraseSection();
 
   @override
   ConsumerState<_AddPhraseSection> createState() => _AddPhraseSectionState();
@@ -219,16 +234,9 @@ class _AddPhraseSectionState extends ConsumerState<_AddPhraseSection> {
           Expanded(
             child: TextField(
               controller: _controller,
-              decoration: InputDecoration(
+              decoration: const InputDecoration(
                 hintText: '输入要过滤的词组',
                 isDense: true,
-                contentPadding: const EdgeInsets.symmetric(
-                  horizontal: 12,
-                  vertical: 10,
-                ),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8),
-                ),
               ),
               onSubmitted: _addPhrase,
             ),

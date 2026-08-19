@@ -35,6 +35,12 @@ abstract final class AppRadius {
   static final BorderRadius rMedium = BorderRadius.circular(medium);
   static final BorderRadius rLarge = BorderRadius.circular(large);
   static final BorderRadius rXLarge = BorderRadius.circular(xLarge);
+
+  /// Const variants for parameter defaults.
+  static const BorderRadius cSmall = BorderRadius.all(Radius.circular(small));
+  static const BorderRadius cMedium = BorderRadius.all(Radius.circular(medium));
+  static const BorderRadius cLarge = BorderRadius.all(Radius.circular(large));
+  static const BorderRadius cXLarge = BorderRadius.all(Radius.circular(xLarge));
 }
 
 /// Spacing steps on the 4pt grid.

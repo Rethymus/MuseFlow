@@ -17,8 +17,8 @@ const aiProvenanceAttribution = NamedAttribution('ai_provenance');
 
 /// Blue background color for AI-provenance text.
 ///
-/// Per D-09: Blue with 10% opacity (0x1A alpha).
-const provenanceColor = Color(0x1A2196F3);
+/// Per D-09: systemBlue with 10% opacity (0x1A alpha).
+const provenanceColor = Color(0x1A007AFF);
 
 /// Utility class for applying/removing AI provenance attribution to editor text.
 ///

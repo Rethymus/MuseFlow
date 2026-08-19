@@ -16,12 +16,12 @@ void main() {
   });
 
   group('provenanceColor', () {
-    test('should be blue with low opacity', () {
-      // Color(0x1A2196F3) -- alpha=0x1A (~10%), blue=0xF3, green=0x96, red=0x21
+    test('should be systemBlue with low opacity', () {
+      // Color(0x1A007AFF) -- alpha=0x1A (~10%), systemBlue
       expect((provenanceColor.a * 255.0).round().clamp(0, 255), 0x1A);
-      expect((provenanceColor.b * 255.0).round().clamp(0, 255), 0xF3);
-      expect((provenanceColor.g * 255.0).round().clamp(0, 255), 0x96);
-      expect((provenanceColor.r * 255.0).round().clamp(0, 255), 0x21);
+      expect((provenanceColor.b * 255.0).round().clamp(0, 255), 0xFF);
+      expect((provenanceColor.g * 255.0).round().clamp(0, 255), 0x7A);
+      expect((provenanceColor.r * 255.0).round().clamp(0, 255), 0x00);
     });
   });
 }

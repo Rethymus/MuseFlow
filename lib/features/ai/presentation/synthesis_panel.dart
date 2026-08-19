@@ -9,12 +9,15 @@
 /// 5. Bottom action bar: regenerate + confirm insert
 library;
 
+import 'package:flutter/cupertino.dart' show CupertinoIcons;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:museflow/features/ai/application/anti_ai_scent_processor.dart';
 import 'package:museflow/features/ai/presentation/synthesis_notifier.dart';
 import 'package:museflow/shared/constants/app_constants.dart';
+import 'package:museflow/shared/theme/app_colors.dart';
+import 'package:museflow/shared/theme/app_dimens.dart';
 
 /// Width of the synthesis panel on desktop.
 const double _panelWidth = 400.0;
@@ -59,8 +62,8 @@ class _SynthesisPanelState extends ConsumerState<SynthesisPanel> {
   @override
   Widget build(BuildContext context) {
     final synthesisState = ref.watch(synthesisProvider);
-    final colorScheme = Theme.of(context).colorScheme;
     final theme = Theme.of(context);
+    final p = AppColors.of(context);
 
     // Sync text controller when streaming completes or regenerates
     if (!synthesisState.isStreaming && !_isTextDirty) {
@@ -74,9 +77,9 @@ class _SynthesisPanelState extends ConsumerState<SynthesisPanel> {
       curve: Curves.easeOutCubic,
       width: _panelWidth,
       decoration: BoxDecoration(
-        color: colorScheme.surface,
+        color: p.cardBackground,
         border: Border(
-          left: BorderSide(color: colorScheme.outlineVariant, width: 1),
+          left: BorderSide(color: p.separator, width: AppRadius.hairline),
         ),
         boxShadow: [
           BoxShadow(
@@ -90,48 +93,41 @@ class _SynthesisPanelState extends ConsumerState<SynthesisPanel> {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           // Header
-          _buildHeader(context, colorScheme),
+          _buildHeader(context, p),
 
           // Excluded fragments notice per D-13
           if (synthesisState.excludedFragmentsNotice != null)
             _buildExcludedNotice(
               context,
               synthesisState.excludedFragmentsNotice!,
-              colorScheme,
+              p,
             ),
 
           // Main content area
-          Expanded(
-            child: _buildContentArea(
-              context,
-              synthesisState,
-              colorScheme,
-              theme,
-            ),
-          ),
+          Expanded(child: _buildContentArea(context, synthesisState, p, theme)),
 
           // Error display per D-14
           if (synthesisState.error != null)
-            _buildErrorBanner(context, synthesisState.error!, colorScheme),
+            _buildErrorBanner(context, synthesisState.error!, p),
 
           // Bottom action bar
-          _buildActionBar(context, synthesisState, colorScheme),
+          _buildActionBar(context, synthesisState, p),
         ],
       ),
     );
   }
 
-  Widget _buildHeader(BuildContext context, ColorScheme colorScheme) {
+  Widget _buildHeader(BuildContext context, AppPalette p) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       decoration: BoxDecoration(
         border: Border(
-          bottom: BorderSide(color: colorScheme.outlineVariant, width: 1),
+          bottom: BorderSide(color: p.separator, width: AppRadius.hairline),
         ),
       ),
       child: Row(
         children: [
-          Icon(Icons.auto_awesome, size: 20, color: colorScheme.primary),
+          Icon(CupertinoIcons.sparkles, size: 20, color: p.accent),
           const SizedBox(width: 8),
           Text(
             'AI 整理',
@@ -141,7 +137,7 @@ class _SynthesisPanelState extends ConsumerState<SynthesisPanel> {
           ),
           const Spacer(),
           IconButton(
-            icon: const Icon(Icons.close, size: 20),
+            icon: const Icon(CupertinoIcons.xmark, size: 18),
             onPressed: _closePanel,
             padding: EdgeInsets.zero,
             constraints: const BoxConstraints(minWidth: 32, minHeight: 32),
@@ -155,27 +151,22 @@ class _SynthesisPanelState extends ConsumerState<SynthesisPanel> {
   Widget _buildExcludedNotice(
     BuildContext context,
     String notice,
-    ColorScheme colorScheme,
+    AppPalette p,
   ) {
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      color: colorScheme.tertiaryContainer,
+      color: p.systemOrange.withValues(alpha: 0.12),
       child: Row(
         children: [
-          Icon(
-            Icons.info_outline,
-            size: 16,
-            color: colorScheme.onTertiaryContainer,
-          ),
+          Icon(CupertinoIcons.info_circle, size: 16, color: p.systemOrange),
           const SizedBox(width: 8),
           Expanded(
             child: Text(
               notice,
-              style: TextStyle(
-                fontSize: 13,
-                color: colorScheme.onTertiaryContainer,
-              ),
+              style: Theme.of(
+                context,
+              ).textTheme.bodySmall?.copyWith(color: p.systemOrange),
             ),
           ),
         ],
@@ -186,7 +177,7 @@ class _SynthesisPanelState extends ConsumerState<SynthesisPanel> {
   Widget _buildContentArea(
     BuildContext context,
     SynthesisState state,
-    ColorScheme colorScheme,
+    AppPalette p,
     ThemeData theme,
   ) {
     if (state.isStreaming && state.accumulatedText.isEmpty) {
@@ -198,16 +189,13 @@ class _SynthesisPanelState extends ConsumerState<SynthesisPanel> {
             SizedBox(
               width: 24,
               height: 24,
-              child: CircularProgressIndicator(
-                strokeWidth: 2,
-                color: colorScheme.primary,
-              ),
+              child: CircularProgressIndicator(strokeWidth: 2, color: p.accent),
             ),
             const SizedBox(height: 12),
             Text(
               'AI 正在思考...',
               style: theme.textTheme.bodyMedium?.copyWith(
-                color: colorScheme.onSurfaceVariant,
+                color: p.secondaryLabel,
               ),
             ),
           ],
@@ -220,7 +208,7 @@ class _SynthesisPanelState extends ConsumerState<SynthesisPanel> {
       return Padding(
         padding: const EdgeInsets.all(16),
         child: SingleChildScrollView(
-          child: _buildStreamingText(state.accumulatedText, theme, colorScheme),
+          child: _buildStreamingText(state.accumulatedText, theme, p),
         ),
       );
     }
@@ -245,10 +233,9 @@ class _SynthesisPanelState extends ConsumerState<SynthesisPanel> {
                 expands: true,
                 textAlignVertical: TextAlignVertical.top,
                 style: theme.textTheme.bodyLarge,
-                decoration: InputDecoration(
-                  border: const OutlineInputBorder(),
+                decoration: const InputDecoration(
                   hintText: 'AI 生成的文本将显示在这里...',
-                  contentPadding: const EdgeInsets.all(12),
+                  contentPadding: EdgeInsets.all(12),
                 ),
                 onChanged: (text) {
                   _isTextDirty = true;
@@ -265,55 +252,46 @@ class _SynthesisPanelState extends ConsumerState<SynthesisPanel> {
     return Center(
       child: Text(
         '选择碎片后点击 "AI 整理" 开始',
-        style: theme.textTheme.bodyMedium?.copyWith(
-          color: colorScheme.onSurfaceVariant,
-        ),
+        style: theme.textTheme.bodyMedium?.copyWith(color: p.secondaryLabel),
       ),
     );
   }
 
-  Widget _buildStreamingText(
-    String text,
-    ThemeData theme,
-    ColorScheme colorScheme,
-  ) {
+  Widget _buildStreamingText(String text, ThemeData theme, AppPalette p) {
     // Simple streaming display with blinking cursor effect
     return RichText(
       text: TextSpan(
         children: [
           TextSpan(
             text: text,
-            style: theme.textTheme.bodyLarge?.copyWith(
-              color: colorScheme.onSurface,
-            ),
+            style: theme.textTheme.bodyLarge?.copyWith(color: p.label),
           ),
           // Blinking cursor during streaming
-          WidgetSpan(child: _BlinkingCursor(colorScheme: colorScheme)),
+          WidgetSpan(child: _BlinkingCursor(accent: p.accent)),
         ],
       ),
     );
   }
 
-  Widget _buildErrorBanner(
-    BuildContext context,
-    String error,
-    ColorScheme colorScheme,
-  ) {
+  Widget _buildErrorBanner(BuildContext context, String error, AppPalette p) {
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-      color: colorScheme.errorContainer,
+      color: p.systemRed.withValues(alpha: 0.12),
       child: Row(
         children: [
-          Icon(Icons.error_outline, size: 16, color: colorScheme.error),
+          Icon(
+            CupertinoIcons.exclamationmark_circle,
+            size: 16,
+            color: p.systemRed,
+          ),
           const SizedBox(width: 8),
           Expanded(
             child: Text(
               error,
-              style: TextStyle(
-                fontSize: 13,
-                color: colorScheme.onErrorContainer,
-              ),
+              style: Theme.of(
+                context,
+              ).textTheme.bodySmall?.copyWith(color: p.systemRed),
             ),
           ),
           TextButton(
@@ -322,7 +300,7 @@ class _SynthesisPanelState extends ConsumerState<SynthesisPanel> {
               _isTextDirty = false;
             },
             style: TextButton.styleFrom(
-              foregroundColor: colorScheme.error,
+              foregroundColor: p.systemRed,
               padding: const EdgeInsets.symmetric(horizontal: 12),
               minimumSize: Size.zero,
               tapTargetSize: MaterialTapTargetSize.shrinkWrap,
@@ -337,13 +315,13 @@ class _SynthesisPanelState extends ConsumerState<SynthesisPanel> {
   Widget _buildActionBar(
     BuildContext context,
     SynthesisState state,
-    ColorScheme colorScheme,
+    AppPalette p,
   ) {
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
         border: Border(
-          top: BorderSide(color: colorScheme.outlineVariant, width: 1),
+          top: BorderSide(color: p.separator, width: AppRadius.hairline),
         ),
       ),
       child: Column(
@@ -352,18 +330,12 @@ class _SynthesisPanelState extends ConsumerState<SynthesisPanel> {
           // Additional instruction field per D-06
           TextField(
             controller: _additionalInstructionController,
-            decoration: InputDecoration(
+            decoration: const InputDecoration(
               hintText: '追加指令（可选）',
               isDense: true,
-              contentPadding: const EdgeInsets.symmetric(
-                horizontal: 12,
-                vertical: 8,
-              ),
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(8),
-              ),
+              contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
             ),
-            style: const TextStyle(fontSize: 13),
+            style: Theme.of(context).textTheme.bodySmall,
           ),
           const SizedBox(height: 8),
           Row(
@@ -383,7 +355,7 @@ class _SynthesisPanelState extends ConsumerState<SynthesisPanel> {
                             );
                         _isTextDirty = false;
                       },
-                icon: const Icon(Icons.refresh, size: 16),
+                icon: const Icon(CupertinoIcons.arrow_clockwise, size: 16),
                 label: const Text('重新生成'),
                 style: OutlinedButton.styleFrom(
                   padding: const EdgeInsets.symmetric(
@@ -408,7 +380,7 @@ class _SynthesisPanelState extends ConsumerState<SynthesisPanel> {
                           context.go(AppConstants.editor);
                         }
                       },
-                icon: const Icon(Icons.check, size: 16),
+                icon: const Icon(CupertinoIcons.checkmark, size: 16),
                 label: const Text('确认插入'),
                 style: FilledButton.styleFrom(
                   padding: const EdgeInsets.symmetric(
@@ -444,12 +416,13 @@ class _SynthesisReviewSummary extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
+    final p = AppColors.of(context);
+    final textTheme = Theme.of(context).textTheme;
     final primary = _highestSeverity(signals);
     final color = switch (primary.severity) {
-      ReviewSignalSeverity.high => colorScheme.error,
-      ReviewSignalSeverity.medium => colorScheme.tertiary,
-      ReviewSignalSeverity.low => colorScheme.onSurfaceVariant,
+      ReviewSignalSeverity.high => p.systemRed,
+      ReviewSignalSeverity.medium => p.systemOrange,
+      ReviewSignalSeverity.low => p.gray,
     };
 
     return Tooltip(
@@ -458,14 +431,13 @@ class _SynthesisReviewSummary extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
         decoration: BoxDecoration(
           color: color.withValues(alpha: 0.08),
-          borderRadius: BorderRadius.circular(8),
+          borderRadius: AppRadius.rSmall,
         ),
         child: Text(
           '${signals.length} 条AI修改复查：${primary.title}',
           overflow: TextOverflow.ellipsis,
           maxLines: 1,
-          style: TextStyle(
-            fontSize: 12,
+          style: textTheme.labelMedium?.copyWith(
             fontWeight: FontWeight.w600,
             color: color,
           ),
@@ -489,9 +461,9 @@ class _SynthesisReviewSummary extends StatelessWidget {
 
 /// Blinking cursor widget for streaming text display.
 class _BlinkingCursor extends StatefulWidget {
-  final ColorScheme colorScheme;
+  final Color accent;
 
-  const _BlinkingCursor({required this.colorScheme});
+  const _BlinkingCursor({required this.accent});
 
   @override
   State<_BlinkingCursor> createState() => _BlinkingCursorState();
@@ -522,10 +494,7 @@ class _BlinkingCursorState extends State<_BlinkingCursor>
       opacity: _controller,
       child: Text(
         '|',
-        style: TextStyle(
-          color: widget.colorScheme.primary,
-          fontWeight: FontWeight.bold,
-        ),
+        style: TextStyle(color: widget.accent, fontWeight: FontWeight.bold),
       ),
     );
   }

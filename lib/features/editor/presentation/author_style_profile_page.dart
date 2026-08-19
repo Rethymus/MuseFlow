@@ -12,6 +12,7 @@
 library;
 
 import 'package:flutter/material.dart';
+import 'package:museflow/shared/theme/app_colors.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:museflow/core/presentation/providers.dart';
@@ -338,7 +339,7 @@ class _DimensionCard extends StatelessWidget {
               child: LinearProgressIndicator(
                 value: score,
                 minHeight: 8,
-                backgroundColor: theme.colorScheme.surfaceContainerHighest,
+                backgroundColor: AppColors.of(context).gray5,
                 valueColor: AlwaysStoppedAnimation(_scoreColor(score, theme)),
               ),
             ),
@@ -353,9 +354,8 @@ class _DimensionCard extends StatelessWidget {
               const SizedBox(height: 4),
               Text(
                 _getExtraDetail(profile, dimension),
-                style: theme.textTheme.bodySmall?.copyWith(
+                style: theme.textTheme.labelMedium?.copyWith(
                   color: theme.colorScheme.outline,
-                  fontSize: 12,
                 ),
               ),
             ],

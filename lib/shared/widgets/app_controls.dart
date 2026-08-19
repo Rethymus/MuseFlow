@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 
 import '../theme/app_colors.dart';
 import '../theme/app_dimens.dart';
+import '../theme/app_materials.dart';
 
 /// iOS segmented control built on Material's [SegmentedButton] (keeps
 /// semantics and testing) with the Apple treatment: gray5 track, raised
@@ -26,56 +27,59 @@ class AppSegmentedControl<T> extends StatelessWidget {
     final p = AppColors.of(context);
     final textTheme = Theme.of(context).textTheme;
 
-    return Container(
-      padding: const EdgeInsets.all(2),
-      decoration: BoxDecoration(
-        color: p.gray5,
-        borderRadius: BorderRadius.circular(AppRadius.small),
-      ),
-      child: SegmentedButton<T>(
-        segments: [
-          for (final s in segments)
-            ButtonSegment(
-              value: s,
-              label: Text(
-                s is String ? s as String : s.toString(),
-                style: textTheme.bodySmall?.copyWith(
-                  fontWeight: FontWeight.w500,
+    return AppFocusRing(
+      radius: BorderRadius.circular(AppRadius.small),
+      child: Container(
+        padding: const EdgeInsets.all(2),
+        decoration: BoxDecoration(
+          color: p.gray5,
+          borderRadius: BorderRadius.circular(AppRadius.small),
+        ),
+        child: SegmentedButton<T>(
+          segments: [
+            for (final s in segments)
+              ButtonSegment(
+                value: s,
+                label: Text(
+                  s is String ? s as String : s.toString(),
+                  style: textTheme.bodySmall?.copyWith(
+                    fontWeight: FontWeight.w500,
+                  ),
                 ),
               ),
+          ],
+          selected: {selected},
+          showSelectedIcon: false,
+          style: ButtonStyle(
+            visualDensity: VisualDensity.compact,
+            backgroundColor: WidgetStateProperty.resolveWith(
+              (states) => states.contains(WidgetState.selected)
+                  ? p.tertiarySystemBackground
+                  : Colors.transparent,
             ),
-        ],
-        selected: {selected},
-        showSelectedIcon: false,
-        style: ButtonStyle(
-          visualDensity: VisualDensity.compact,
-          backgroundColor: WidgetStateProperty.resolveWith(
-            (states) => states.contains(WidgetState.selected)
-                ? p.tertiarySystemBackground
-                : Colors.transparent,
-          ),
-          foregroundColor: WidgetStateProperty.resolveWith(
-            (states) => states.contains(WidgetState.selected)
-                ? p.label
-                : p.secondaryLabel,
-          ),
-          side: const WidgetStatePropertyAll(
-            BorderSide(style: BorderStyle.none),
-          ),
-          shape: WidgetStatePropertyAll(
-            RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(AppRadius.small - 2),
+            foregroundColor: WidgetStateProperty.resolveWith(
+              (states) => states.contains(WidgetState.selected)
+                  ? p.label
+                  : p.secondaryLabel,
             ),
+            side: const WidgetStatePropertyAll(
+              BorderSide(style: BorderStyle.none),
+            ),
+            shape: WidgetStatePropertyAll(
+              RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(AppRadius.small - 2),
+              ),
+            ),
+            padding: const WidgetStatePropertyAll(
+              EdgeInsets.symmetric(horizontal: 14, vertical: 7),
+            ),
+            overlayColor: const WidgetStatePropertyAll(Colors.transparent),
+            tapTargetSize: MaterialTapTargetSize.shrinkWrap,
           ),
-          padding: const WidgetStatePropertyAll(
-            EdgeInsets.symmetric(horizontal: 14, vertical: 7),
-          ),
-          overlayColor: const WidgetStatePropertyAll(Colors.transparent),
-          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+          onSelectionChanged: (sel) {
+            if (sel.isNotEmpty) onSelectionChanged(sel.first);
+          },
         ),
-        onSelectionChanged: (sel) {
-          if (sel.isNotEmpty) onSelectionChanged(sel.first);
-        },
       ),
     );
   }

@@ -81,9 +81,11 @@ class _AppShellScaffoldState extends ConsumerState<AppShellScaffold> {
     final isNarrow = screenWidth < AppConstants.sidebarCollapsedBreakpoint;
 
     if (isNarrow) {
-      // Mobile layout: bottom nav bar + content
+      // Mobile layout: bottom nav bar + content. extendBody lets content
+      // scroll under the frosted tab bar so the blur samples real pixels.
       return QuickCaptureShortcut(
         child: Scaffold(
+          extendBody: true,
           body: _withWebBackupReminder(widget.navigationShell),
           bottomNavigationBar: AdaptiveSidebar(
             currentIndex: widget.navigationShell.currentIndex,

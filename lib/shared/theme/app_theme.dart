@@ -23,6 +23,7 @@ import 'package:flutter/material.dart';
 
 import 'app_colors.dart';
 import 'app_dimens.dart';
+import 'app_materials.dart' show appFocusTint;
 import 'app_typography.dart';
 
 /// Creates the application theme for either brightness.
@@ -33,6 +34,12 @@ ThemeData appTheme(Brightness brightness) {
   final textTheme = buildTextTheme(brightness);
 
   final buttonMinimum = const Size(44, 44);
+  // Keyboard focus reads as an accent wash on every button family.
+  final focusOverlay = WidgetStateProperty.resolveWith<Color>(
+    (states) => states.contains(WidgetState.focused)
+        ? appFocusTint(p)
+        : Colors.transparent,
+  );
 
   return ThemeData(
     useMaterial3: true,
@@ -143,7 +150,7 @@ ThemeData appTheme(Brightness brightness) {
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
         shape: const StadiumBorder(),
         textStyle: textTheme.labelLarge,
-      ),
+      ).copyWith(overlayColor: focusOverlay),
     ),
     elevatedButtonTheme: ElevatedButtonThemeData(
       style: ElevatedButton.styleFrom(
@@ -156,7 +163,7 @@ ThemeData appTheme(Brightness brightness) {
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
         shape: const StadiumBorder(),
         textStyle: textTheme.labelLarge,
-      ),
+      ).copyWith(overlayColor: focusOverlay),
     ),
     textButtonTheme: TextButtonThemeData(
       style: TextButton.styleFrom(
@@ -165,7 +172,7 @@ ThemeData appTheme(Brightness brightness) {
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
         shape: const StadiumBorder(),
         textStyle: textTheme.labelLarge,
-      ),
+      ).copyWith(overlayColor: focusOverlay),
     ),
     outlinedButtonTheme: OutlinedButtonThemeData(
       style: OutlinedButton.styleFrom(
@@ -175,7 +182,7 @@ ThemeData appTheme(Brightness brightness) {
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
         shape: const StadiumBorder(),
         textStyle: textTheme.labelLarge,
-      ),
+      ).copyWith(overlayColor: focusOverlay),
     ),
     iconButtonTheme: IconButtonThemeData(
       style: IconButton.styleFrom(

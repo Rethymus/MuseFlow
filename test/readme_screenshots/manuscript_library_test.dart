@@ -27,6 +27,7 @@ import 'package:museflow/core/presentation/providers.dart';
 import 'package:museflow/features/manuscript/application/manuscript_notifier.dart';
 import 'package:museflow/features/manuscript/domain/manuscript.dart';
 import 'package:museflow/features/manuscript/presentation/manuscript_library_page.dart';
+import 'package:museflow/shared/theme/app_theme.dart';
 
 void main() {
   /// Register the bundled Noto Sans CJK SC subset under the family name the
@@ -123,27 +124,10 @@ void main() {
   });
 }
 
-/// Mirrors `appTheme()`'s `MUSEFLOW_DISABLE_GOOGLE_FONTS=true` branch: indigo
-/// dark Material 3 scheme with the CJK text theme bound to 'Noto Sans CJK SC'
-/// (the registered subset). Kept inline + self-contained so the screenshot is
-/// deterministic without google_fonts network access or a dart-define flag.
-ThemeData _screenshotTheme() {
-  final colorScheme = ColorScheme.fromSeed(
-    seedColor: Colors.indigo,
-    brightness: Brightness.dark,
-  );
-  final base = Typography.material2021().white.apply(
-    fontFamily: 'Noto Sans CJK SC',
-  );
-  return ThemeData(
-    colorScheme: colorScheme,
-    useMaterial3: true,
-    textTheme: base.apply(
-      bodyColor: colorScheme.onSurface,
-      displayColor: colorScheme.onSurface,
-    ),
-  );
-}
+/// The real production dark theme (Apple HIG palette, CJK text theme bound
+/// to 'Noto Sans CJK SC' — the registered subset), so the golden shows the
+/// actual shipped design and regenerating stays truthful.
+ThemeData _screenshotTheme() => appTheme(Brightness.dark);
 
 /// ManuscriptNotifier override that returns a fixed seed list, bypassing the
 /// Hive/repository chain entirely (no setUpHiveTest, no HttpOverrides trap) —

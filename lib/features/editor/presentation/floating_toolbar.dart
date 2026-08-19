@@ -13,8 +13,6 @@
 /// Per Pitfall 4: Suppressed during IME composition.
 library;
 
-import 'dart:ui';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:follow_the_leader/follow_the_leader.dart';
@@ -22,6 +20,7 @@ import 'package:museflow/core/presentation/providers.dart';
 import 'package:museflow/features/editor/domain/context_anchor.dart';
 import 'package:museflow/features/editor/domain/editor_ai_state.dart';
 import 'package:museflow/shared/theme/app_colors.dart';
+import 'package:museflow/shared/theme/app_materials.dart';
 import 'package:uuid/uuid.dart';
 import 'package:super_editor/super_editor.dart';
 
@@ -306,82 +305,67 @@ class _ToolbarContent extends StatelessWidget {
     final p = AppColors.of(context);
 
     // iOS text-selection edit menu: a frosted capsule floating over text.
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(10),
-      child: BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: 24, sigmaY: 24),
-        child: Container(
-          decoration: BoxDecoration(
-            color: p.tertiaryGroupedBackground.withValues(alpha: 0.78),
-            borderRadius: BorderRadius.circular(10),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withValues(alpha: 0.16),
-                blurRadius: 16,
-                offset: const Offset(0, 4),
-              ),
-            ],
-          ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              // Action buttons row
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 4),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    _ActionButton(
-                      key: const Key('ai_synthesis_button'),
-                      icon: Icons.auto_fix_high,
-                      label: '语气改写',
-                      shortcutLabel: 'Ctrl+Shift+T',
-                      onTap: () =>
-                          onStartOperation(EditorAIOperation.toneRewrite),
-                    ),
-                    const SizedBox(width: 2),
-                    _ActionButton(
-                      icon: Icons.auto_awesome,
-                      label: '文段润色',
-                      shortcutLabel: 'Ctrl+Shift+P',
-                      onTap: () =>
-                          onStartOperation(EditorAIOperation.paragraphPolish),
-                    ),
-                    const SizedBox(width: 2),
-                    _ActionButton(
-                      icon: Icons.edit_note,
-                      label: '自由输入',
-                      onTap: onToggleFreeInput,
-                      isActive: showFreeInput,
-                    ),
-                    // D-13: Anchor entry button
-                    const SizedBox(width: 2),
-                    VerticalDivider(
-                      width: 1,
-                      indent: 4,
-                      endIndent: 4,
-                      color: p.separator,
-                    ),
-                    const SizedBox(width: 2),
-                    _AnchorButton(onSetAnchor: onSetAnchor),
-                  ],
+    return AppMaterial(
+      tier: AppMaterialTier.ultraThin,
+      radius: BorderRadius.circular(10),
+      shadow: true,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          // Action buttons row
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 4),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                _ActionButton(
+                  key: const Key('ai_synthesis_button'),
+                  icon: Icons.auto_fix_high,
+                  label: '语气改写',
+                  shortcutLabel: 'Ctrl+Shift+T',
+                  onTap: () => onStartOperation(EditorAIOperation.toneRewrite),
                 ),
-              ),
-              // D-06: Free-input field
-              if (showFreeInput)
-                _FreeInputField(
-                  controller: freeInputController,
-                  onSubmit: (instruction) {
-                    onStartOperation(
-                      EditorAIOperation.freeInput,
-                      userInstruction: instruction,
-                    );
-                  },
-                  onCancel: onToggleFreeInput,
+                const SizedBox(width: 2),
+                _ActionButton(
+                  icon: Icons.auto_awesome,
+                  label: '文段润色',
+                  shortcutLabel: 'Ctrl+Shift+P',
+                  onTap: () =>
+                      onStartOperation(EditorAIOperation.paragraphPolish),
                 ),
-            ],
+                const SizedBox(width: 2),
+                _ActionButton(
+                  icon: Icons.edit_note,
+                  label: '自由输入',
+                  onTap: onToggleFreeInput,
+                  isActive: showFreeInput,
+                ),
+                // D-13: Anchor entry button
+                const SizedBox(width: 2),
+                VerticalDivider(
+                  width: 1,
+                  indent: 4,
+                  endIndent: 4,
+                  color: p.separator,
+                ),
+                const SizedBox(width: 2),
+                _AnchorButton(onSetAnchor: onSetAnchor),
+              ],
+            ),
           ),
-        ),
+          // D-06: Free-input field
+          if (showFreeInput)
+            _FreeInputField(
+              controller: freeInputController,
+              onSubmit: (instruction) {
+                onStartOperation(
+                  EditorAIOperation.freeInput,
+                  userInstruction: instruction,
+                );
+              },
+              onCancel: onToggleFreeInput,
+            ),
+        ],
       ),
     );
   }
@@ -562,68 +546,56 @@ class _StreamingProgress extends StatelessWidget {
     final p = AppColors.of(context);
     final textTheme = Theme.of(context).textTheme;
 
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(10),
-      child: BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: 24, sigmaY: 24),
-        child: Container(
-          width: 280,
-          decoration: BoxDecoration(
-            color: p.tertiaryGroupedBackground.withValues(alpha: 0.78),
-            borderRadius: BorderRadius.circular(10),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withValues(alpha: 0.16),
-                blurRadius: 16,
-                offset: const Offset(0, 4),
-              ),
-            ],
-          ),
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Operation label + cancel button
-              Row(
-                children: [
-                  Expanded(
-                    child: Text(
-                      '${state.operation?.label ?? "AI 处理"}中...',
-                      style: textTheme.bodySmall?.copyWith(color: p.label),
-                    ),
+    return AppMaterial(
+      tier: AppMaterialTier.ultraThin,
+      radius: BorderRadius.circular(10),
+      shadow: true,
+      child: Container(
+        width: 280,
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Operation label + cancel button
+            Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    '${state.operation?.label ?? "AI 处理"}中...',
+                    style: textTheme.bodySmall?.copyWith(color: p.label),
                   ),
-                  TextButton(
-                    onPressed: onCancel,
-                    style: TextButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(horizontal: 8),
-                      minimumSize: Size.zero,
-                      tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                    ),
-                    child: Text(
-                      '取消',
-                      style: textTheme.bodySmall?.copyWith(color: p.systemRed),
-                    ),
+                ),
+                TextButton(
+                  onPressed: onCancel,
+                  style: TextButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(horizontal: 8),
+                    minimumSize: Size.zero,
+                    tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                   ),
-                ],
-              ),
-              const SizedBox(height: 4),
-              // Indeterminate progress bar
-              LinearProgressIndicator(
-                borderRadius: BorderRadius.circular(2),
-                color: p.accent,
-                backgroundColor: p.gray5,
-              ),
-              // Show error if any
-              if (state.error != null) ...[
-                const SizedBox(height: 4),
-                Text(
-                  state.error!,
-                  style: textTheme.labelMedium?.copyWith(color: p.systemRed),
+                  child: Text(
+                    '取消',
+                    style: textTheme.bodySmall?.copyWith(color: p.systemRed),
+                  ),
                 ),
               ],
+            ),
+            const SizedBox(height: 4),
+            // Indeterminate progress bar
+            LinearProgressIndicator(
+              borderRadius: BorderRadius.circular(2),
+              color: p.accent,
+              backgroundColor: p.gray5,
+            ),
+            // Show error if any
+            if (state.error != null) ...[
+              const SizedBox(height: 4),
+              Text(
+                state.error!,
+                style: textTheme.labelMedium?.copyWith(color: p.systemRed),
+              ),
             ],
-          ),
+          ],
         ),
       ),
     );
