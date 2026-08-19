@@ -32,6 +32,7 @@ import 'package:museflow/core/domain/fragment.dart';
 import 'package:museflow/features/ai/presentation/synthesis_notifier.dart';
 import 'package:museflow/features/capture/presentation/capture_page.dart';
 import 'package:museflow/features/capture/presentation/capture_provider.dart';
+import 'package:museflow/shared/theme/app_theme.dart';
 
 void main() {
   setUpAll(() async {
@@ -141,20 +142,6 @@ class _SeededCaptureNotifier extends CaptureNotifier {
   }
 }
 
-ThemeData _screenshotTheme() {
-  final colorScheme = ColorScheme.fromSeed(
-    seedColor: Colors.indigo,
-    brightness: Brightness.dark,
-  );
-  final base = Typography.material2021().white.apply(
-    fontFamily: 'Noto Sans CJK SC',
-  );
-  return ThemeData(
-    colorScheme: colorScheme,
-    useMaterial3: true,
-    textTheme: base.apply(
-      bodyColor: colorScheme.onSurface,
-      displayColor: colorScheme.onSurface,
-    ),
-  );
-}
+/// The real production dark theme (Apple HIG palette on the
+/// registered CJK subset), so the golden shows the shipped design.
+ThemeData _screenshotTheme() => appTheme(Brightness.dark);

@@ -30,6 +30,7 @@ import 'package:museflow/features/stats/domain/token_audit_record.dart';
 import 'package:museflow/features/stats/application/token_audit_notifier.dart';
 import 'package:museflow/features/stats/infrastructure/token_audit_repository.dart';
 import 'package:museflow/features/stats/presentation/writing_stats_page.dart';
+import 'package:museflow/shared/theme/app_theme.dart';
 
 void main() {
   setUpAll(() async {
@@ -174,20 +175,6 @@ class _SeededTokenAuditNotifier extends TokenAuditNotifier {
   Future<TokenAuditSnapshot> build() async => _seed;
 }
 
-ThemeData _screenshotTheme() {
-  final colorScheme = ColorScheme.fromSeed(
-    seedColor: Colors.indigo,
-    brightness: Brightness.dark,
-  );
-  final base = Typography.material2021().white.apply(
-    fontFamily: 'Noto Sans CJK SC',
-  );
-  return ThemeData(
-    colorScheme: colorScheme,
-    useMaterial3: true,
-    textTheme: base.apply(
-      bodyColor: colorScheme.onSurface,
-      displayColor: colorScheme.onSurface,
-    ),
-  );
-}
+/// The real production dark theme (Apple HIG palette on the
+/// registered CJK subset), so the golden shows the shipped design.
+ThemeData _screenshotTheme() => appTheme(Brightness.dark);

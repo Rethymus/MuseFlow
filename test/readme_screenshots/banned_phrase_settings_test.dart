@@ -23,6 +23,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:museflow/features/ai/presentation/banned_phrase_settings.dart';
+import 'package:museflow/shared/theme/app_theme.dart';
 
 void main() {
   setUpAll(() async {
@@ -91,23 +92,9 @@ void main() {
 /// the manuscript-library screenshot test): indigo dark Material 3 scheme with
 /// the CJK text theme bound to 'Noto Sans CJK SC'. Inline + self-contained so
 /// the screenshot is deterministic without google_fonts / dart-define.
-ThemeData _screenshotTheme() {
-  final colorScheme = ColorScheme.fromSeed(
-    seedColor: Colors.indigo,
-    brightness: Brightness.dark,
-  );
-  final base = Typography.material2021().white.apply(
-    fontFamily: 'Noto Sans CJK SC',
-  );
-  return ThemeData(
-    colorScheme: colorScheme,
-    useMaterial3: true,
-    textTheme: base.apply(
-      bodyColor: colorScheme.onSurface,
-      displayColor: colorScheme.onSurface,
-    ),
-  );
-}
+/// The real production dark theme (Apple HIG palette on the
+/// registered CJK subset), so the golden shows the shipped design.
+ThemeData _screenshotTheme() => appTheme(Brightness.dark);
 
 /// BannedPhrasesNotifier override returning a fixed seed list, bypassing the
 /// settingsRepository/Hive chain entirely — the page only `watch`es this

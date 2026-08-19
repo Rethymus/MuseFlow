@@ -29,6 +29,7 @@ import 'package:museflow/core/presentation/providers.dart';
 import 'package:museflow/features/templates/domain/world_template.dart';
 import 'package:museflow/features/templates/infrastructure/world_template_repository.dart';
 import 'package:museflow/features/templates/presentation/template_gallery_page.dart';
+import 'package:museflow/shared/theme/app_theme.dart';
 
 void main() {
   setUpAll(() async {
@@ -205,20 +206,6 @@ final List<WorldTemplate> _templates = <WorldTemplate>[
 /// value itself is pinned for determinism).
 final DateTime _seededReviewedAt = DateTime(2026, 5, 1, 10, 0);
 
-ThemeData _screenshotTheme() {
-  final colorScheme = ColorScheme.fromSeed(
-    seedColor: Colors.indigo,
-    brightness: Brightness.dark,
-  );
-  final base = Typography.material2021().white.apply(
-    fontFamily: 'Noto Sans CJK SC',
-  );
-  return ThemeData(
-    colorScheme: colorScheme,
-    useMaterial3: true,
-    textTheme: base.apply(
-      bodyColor: colorScheme.onSurface,
-      displayColor: colorScheme.onSurface,
-    ),
-  );
-}
+/// The real production dark theme (Apple HIG palette on the
+/// registered CJK subset), so the golden shows the shipped design.
+ThemeData _screenshotTheme() => appTheme(Brightness.dark);

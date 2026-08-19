@@ -1,4 +1,6 @@
+import 'package:flutter/cupertino.dart' show CupertinoIcons;
 import 'package:flutter/material.dart';
+import 'package:museflow/shared/theme/app_colors.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:museflow/core/presentation/providers.dart';
@@ -42,7 +44,7 @@ class _KnowledgeBasePageState extends ConsumerState<KnowledgeBasePage>
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('知识库'),
+        title: Text('知识库', style: Theme.of(context).textTheme.displayMedium),
         bottom: TabBar(
           controller: _tabController,
           tabs: const [
@@ -60,7 +62,7 @@ class _KnowledgeBasePageState extends ConsumerState<KnowledgeBasePage>
               children: [
                 OutlinedButton.icon(
                   onPressed: () => context.go(AppConstants.knowledgeTemplates),
-                  icon: const Icon(Icons.auto_awesome),
+                  icon: const Icon(CupertinoIcons.sparkles, size: 18),
                   label: const Text('模板库'),
                 ),
                 const SizedBox(height: 8),
@@ -68,20 +70,16 @@ class _KnowledgeBasePageState extends ConsumerState<KnowledgeBasePage>
                   controller: _searchController,
                   decoration: InputDecoration(
                     hintText: '搜索名称或别名...',
-                    prefixIcon: const Icon(Icons.search),
+                    prefixIcon: const Icon(CupertinoIcons.search, size: 18),
                     suffixIcon: _searchQuery.isNotEmpty
                         ? IconButton(
-                            icon: const Icon(Icons.clear),
+                            icon: const Icon(CupertinoIcons.xmark, size: 16),
                             onPressed: () {
                               _searchController.clear();
                               setState(() => _searchQuery = '');
                             },
                           )
                         : null,
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    contentPadding: const EdgeInsets.symmetric(horizontal: 16),
                     isDense: true,
                   ),
                   onChanged: (value) => setState(() => _searchQuery = value),
@@ -506,7 +504,9 @@ class _StalenessBadge extends StatelessWidget {
 
     final theme = Theme.of(context);
     final isVeryStale = staleness.level == KbStalenessLevel.veryStale;
-    final iconColor = isVeryStale ? theme.colorScheme.error : Colors.amber[700];
+    final iconColor = isVeryStale
+        ? AppColors.of(context).systemRed
+        : AppColors.of(context).systemOrange;
     final icon = Icon(
       isVeryStale ? Icons.error_outline : Icons.warning_amber_rounded,
       size: 14,
@@ -514,7 +514,7 @@ class _StalenessBadge extends StatelessWidget {
     );
     final background = isVeryStale
         ? theme.colorScheme.errorContainer.withValues(alpha: 0.3)
-        : Colors.amber.withValues(alpha: 0.12);
+        : AppColors.of(context).systemOrange.withValues(alpha: 0.12);
     final textColor = isVeryStale
         ? theme.colorScheme.onErrorContainer
         : iconColor;

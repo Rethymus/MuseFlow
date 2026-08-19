@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart' show CupertinoIcons;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -60,7 +61,7 @@ void main() {
       await tester.pumpAndSettle();
 
       // Should show close icon
-      expect(find.byIcon(Icons.close), findsOneWidget);
+      expect(find.byIcon(CupertinoIcons.xmark), findsOneWidget);
       // Should find skip text
       expect(find.text('跳过此步'), findsOneWidget);
     });

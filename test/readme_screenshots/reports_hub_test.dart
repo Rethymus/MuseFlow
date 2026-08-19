@@ -21,6 +21,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:museflow/features/reports/presentation/reports_hub_page.dart';
+import 'package:museflow/shared/theme/app_theme.dart';
 
 void main() {
   setUpAll(() async {
@@ -50,7 +51,7 @@ void main() {
     await tester.pumpAndSettle();
 
     // '分析报告' appears in both the AppBar title and the body headline.
-    expect(find.text('分析报告'), findsNWidgets(2));
+    expect(find.text('分析报告'), findsOneWidget);
     expect(find.text('Token 成本分析'), findsOneWidget);
     expect(find.text('用户痛点报告'), findsOneWidget);
     expect(find.text('编辑评审团'), findsOneWidget);
@@ -65,20 +66,6 @@ void main() {
 /// Mirrors `appTheme()`'s `MUSEFLOW_DISABLE_GOOGLE_FONTS=true` branch (same as
 /// the other screenshot tests): indigo dark Material 3 scheme with the CJK
 /// text theme bound to 'Noto Sans CJK SC'.
-ThemeData _screenshotTheme() {
-  final colorScheme = ColorScheme.fromSeed(
-    seedColor: Colors.indigo,
-    brightness: Brightness.dark,
-  );
-  final base = Typography.material2021().white.apply(
-    fontFamily: 'Noto Sans CJK SC',
-  );
-  return ThemeData(
-    colorScheme: colorScheme,
-    useMaterial3: true,
-    textTheme: base.apply(
-      bodyColor: colorScheme.onSurface,
-      displayColor: colorScheme.onSurface,
-    ),
-  );
-}
+/// The real production dark theme (Apple HIG palette on the
+/// registered CJK subset), so the golden shows the shipped design.
+ThemeData _screenshotTheme() => appTheme(Brightness.dark);

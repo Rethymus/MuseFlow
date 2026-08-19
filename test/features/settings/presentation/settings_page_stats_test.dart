@@ -9,6 +9,13 @@ void main() {
   testWidgets('clear stats tile requires confirmation and clears stats', (
     tester,
   ) async {
+    // Tall surface so the whole grouped list lays out below the AppBar
+    // without the scroll-to-visible landing rows under the AppBar.
+    tester.view.physicalSize = const Size(800, 2400);
+    tester.view.devicePixelRatio = 1.0;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+
     var clearCount = 0;
 
     await tester.pumpWidget(
@@ -24,19 +31,22 @@ void main() {
     );
 
     await tester.scrollUntilVisible(find.text('清除写作统计'), 100.0);
+    await tester.pumpAndSettle();
     await tester.tap(find.text('清除写作统计'));
-    await tester.pump();
+    await tester.pumpAndSettle();
     expect(find.text('清除写作统计？'), findsOneWidget);
 
     await tester.tap(find.text('取消'));
-    await tester.pump();
+    await tester.pumpAndSettle();
     expect(clearCount, 0);
 
     await tester.scrollUntilVisible(find.text('清除写作统计'), 100.0);
+    await tester.pumpAndSettle();
     await tester.tap(find.text('清除写作统计'));
-    await tester.pump();
-    await tester.tap(find.widgetWithText(TextButton, '清除'));
-    await tester.pump();
+    await tester.pumpAndSettle();
+    // The destructive alert action carries the clear logic.
+    await tester.tap(find.text('清除'));
+    await tester.pumpAndSettle();
 
     expect(clearCount, 1);
     expect(find.text('写作统计已清除'), findsOneWidget);

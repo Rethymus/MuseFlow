@@ -30,7 +30,10 @@ class _SkillGenerationWizardState extends ConsumerState<SkillGenerationWizard> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('创建世界观模板', style: Theme.of(context).textTheme.displayMedium),
+        title: Text(
+          '创建世界观模板',
+          style: Theme.of(context).textTheme.displayMedium,
+        ),
       ),
       body: Stepper(
         currentStep: _step,

@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart' show CupertinoIcons;
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
@@ -54,27 +55,21 @@ void main() {
       await tester.pumpAndSettle();
     }
 
-    testWidgets('should render page title in headlineMedium style', (
+    testWidgets('should render the large Apple-style page title', (
       WidgetTester tester,
     ) async {
       await pumpHubPage(tester);
 
       final titleFinder = find.text('分析报告');
-      // There are two "分析报告" texts: one in AppBar, one in body.
-      // Find the one in the body that has headlineMedium style.
-      expect(titleFinder, findsNWidgets(2));
+      expect(titleFinder, findsOneWidget);
 
-      // Verify the body title has headlineMedium style
-      final bodyTitleWidget = tester
-          .widgetList<Text>(titleFinder)
-          .firstWhere(
-            (text) =>
-                text.style?.fontSize ==
-                Theme.of(
-                  tester.element(titleFinder.first),
-                ).textTheme.headlineMedium?.fontSize,
-          );
-      expect(bodyTitleWidget.style?.fontSize, isNotNull);
+      // The AppBar title uses the displayMedium (large title) style.
+      final titleWidget = tester.widget<Text>(titleFinder);
+      final theme = Theme.of(tester.element(titleFinder));
+      expect(
+        titleWidget.style?.fontSize,
+        theme.textTheme.displayMedium?.fontSize,
+      );
     });
 
     testWidgets('should render subtitle in bodyMedium style', (
@@ -123,11 +118,11 @@ void main() {
     ) async {
       await pumpHubPage(tester);
 
-      expect(find.byIcon(Icons.analytics_outlined), findsOneWidget);
-      expect(find.byIcon(Icons.bug_report_outlined), findsOneWidget);
-      expect(find.byIcon(Icons.visibility_outlined), findsOneWidget);
-      expect(find.byIcon(Icons.fact_check_outlined), findsOneWidget);
-      expect(find.byIcon(Icons.rate_review_outlined), findsOneWidget);
+      expect(find.byIcon(CupertinoIcons.chart_bar), findsOneWidget);
+      expect(find.byIcon(CupertinoIcons.ant), findsOneWidget);
+      expect(find.byIcon(CupertinoIcons.eye), findsOneWidget);
+      expect(find.byIcon(CupertinoIcons.checkmark_shield), findsOneWidget);
+      expect(find.byIcon(CupertinoIcons.square_pencil), findsOneWidget);
     });
 
     testWidgets('should render chevron trailing icons on cards', (
@@ -135,7 +130,7 @@ void main() {
     ) async {
       await pumpHubPage(tester);
 
-      expect(find.byIcon(Icons.chevron_right), findsNWidgets(5));
+      expect(find.byIcon(CupertinoIcons.chevron_right), findsNWidgets(5));
     });
 
     testWidgets('should navigate to token-cost route on tap', (
@@ -169,7 +164,7 @@ void main() {
         MaterialApp(
           home: Scaffold(
             body: ReportCard(
-              icon: Icons.analytics_outlined,
+              icon: CupertinoIcons.chart_bar,
               title: 'Test Title',
               description: 'Test Description',
               onTap: () {},
@@ -178,10 +173,10 @@ void main() {
         ),
       );
 
-      expect(find.byIcon(Icons.analytics_outlined), findsOneWidget);
+      expect(find.byIcon(CupertinoIcons.chart_bar), findsOneWidget);
       expect(find.text('Test Title'), findsOneWidget);
       expect(find.text('Test Description'), findsOneWidget);
-      expect(find.byIcon(Icons.chevron_right), findsOneWidget);
+      expect(find.byIcon(CupertinoIcons.chevron_right), findsOneWidget);
     });
 
     testWidgets('should call onTap when tapped', (WidgetTester tester) async {
@@ -190,7 +185,7 @@ void main() {
         MaterialApp(
           home: Scaffold(
             body: ReportCard(
-              icon: Icons.analytics_outlined,
+              icon: CupertinoIcons.chart_bar,
               title: 'Test',
               description: 'Desc',
               onTap: () => tapped = true,

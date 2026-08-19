@@ -83,6 +83,11 @@ class _TemplateGalleryPageState extends ConsumerState<TemplateGalleryPage> {
                       selected: _selectedChannel,
                       onSelectionChanged: (selected) =>
                           setState(() => _selectedChannel = selected),
+                      labelOf: (channel) => switch (channel) {
+                        TemplateChannel.male => '男频',
+                        TemplateChannel.female => '女频',
+                        null => '全部',
+                      },
                     ),
                     const SizedBox(height: AppSpacing.md),
                     TextField(
@@ -164,11 +169,7 @@ class _TemplateCard extends StatelessWidget {
               color: p.accentFill,
               borderRadius: AppRadius.rSmall,
             ),
-            child: Icon(
-              _iconFor(template.iconName),
-              size: 22,
-              color: p.accent,
-            ),
+            child: Icon(_iconFor(template.iconName), size: 22, color: p.accent),
           ),
           const SizedBox(width: AppSpacing.md),
           Expanded(
@@ -186,9 +187,7 @@ class _TemplateCard extends StatelessWidget {
                   template.description,
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
-                  style: textTheme.bodySmall?.copyWith(
-                    color: p.secondaryLabel,
-                  ),
+                  style: textTheme.bodySmall?.copyWith(color: p.secondaryLabel),
                 ),
                 const SizedBox(height: AppSpacing.sm),
                 Wrap(

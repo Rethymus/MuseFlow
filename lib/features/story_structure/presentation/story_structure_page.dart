@@ -1,4 +1,6 @@
+import 'package:flutter/cupertino.dart' show CupertinoIcons;
 import 'package:flutter/material.dart';
+import 'package:museflow/shared/widgets/app_controls.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:museflow/core/presentation/providers.dart';
 import 'package:museflow/features/story_structure/application/foreshadowing_reminder_service.dart';
@@ -53,7 +55,7 @@ class _StoryStructurePageState extends ConsumerState<StoryStructurePage>
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('故事结构'),
+        title: Text('故事结构', style: Theme.of(context).textTheme.displayMedium),
         bottom: TabBar(
           controller: _tabController,
           isScrollable: true,
@@ -133,26 +135,10 @@ class _ForeshadowingSection extends ConsumerWidget {
       ),
       data: (entries) {
         if (entries.isEmpty) {
-          return const Center(
-            child: Padding(
-              padding: EdgeInsets.all(32.0),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Icon(Icons.lightbulb_outline, size: 48),
-                  SizedBox(height: 16),
-                  Text(
-                    '还没有伏笔',
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
-                  ),
-                  SizedBox(height: 8),
-                  Text(
-                    '选中文稿中的一句话创建伏笔，或先手动写下计划埋设的线索。',
-                    textAlign: TextAlign.center,
-                  ),
-                ],
-              ),
-            ),
+          return const AppEmptyState(
+            icon: CupertinoIcons.lightbulb,
+            title: '还没有伏笔',
+            message: '选中文稿中的一句话创建伏笔，或先手动写下计划埋设的线索。',
           );
         }
 
@@ -213,11 +199,11 @@ class _ReminderBadges extends ConsumerWidget {
   IconData _reminderIcon(ForeshadowingReminderKind kind) {
     switch (kind) {
       case ForeshadowingReminderKind.unresolvedCount:
-        return Icons.info_outline;
+        return CupertinoIcons.info;
       case ForeshadowingReminderKind.thresholdOverdue:
-        return Icons.schedule;
+        return CupertinoIcons.clock;
       case ForeshadowingReminderKind.targetOverdue:
-        return Icons.flag;
+        return CupertinoIcons.flag;
     }
   }
 }
@@ -243,12 +229,12 @@ class _ForeshadowingTile extends ConsumerWidget {
         children: [
           if (entry.isOpen)
             IconButton(
-              icon: const Icon(Icons.check_circle_outline, size: 20),
+              icon: const Icon(CupertinoIcons.checkmark_circle, size: 20),
               tooltip: '标记已解决',
               onPressed: () => _markResolved(context, ref),
             ),
           IconButton(
-            icon: const Icon(Icons.delete_outline, size: 20),
+            icon: const Icon(CupertinoIcons.trash, size: 20),
             tooltip: '删除',
             onPressed: () => _confirmDelete(context, ref),
           ),
@@ -327,13 +313,13 @@ class _StatusIcon extends StatelessWidget {
   IconData _statusIcon(ForeshadowingStatus s) {
     switch (s) {
       case ForeshadowingStatus.planted:
-        return Icons.circle_outlined;
+        return CupertinoIcons.circle;
       case ForeshadowingStatus.developing:
-        return Icons.trending_flat;
+        return CupertinoIcons.arrow_right;
       case ForeshadowingStatus.resolved:
-        return Icons.check_circle;
+        return CupertinoIcons.checkmark_circle_fill;
       case ForeshadowingStatus.abandoned:
-        return Icons.remove_circle_outline;
+        return CupertinoIcons.minus_circle;
     }
   }
 
@@ -366,27 +352,29 @@ class _FinishExportSection extends ConsumerWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Icon(Icons.auto_fix_high, size: 48),
-            const SizedBox(height: 16),
-            const Text(
-              '整理成可交付的稿件',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+            const Icon(
+              CupertinoIcons.wand_stars,
+              size: 44,
+              color: Color(0xFFC7C7CC),
             ),
+            const SizedBox(height: 16),
+            Text('整理成可交付的稿件', style: Theme.of(context).textTheme.titleMedium),
             const SizedBox(height: 8),
-            const Text(
+            Text(
               '先预览清理结果，再确认应用。导出只保存到你选择的本地文件。',
               textAlign: TextAlign.center,
+              style: Theme.of(context).textTheme.bodyMedium,
             ),
             const SizedBox(height: 24),
             FilledButton.icon(
               onPressed: () => _showFormatCleanPreview(context, ref),
-              icon: const Icon(Icons.preview),
+              icon: const Icon(CupertinoIcons.eye),
               label: const Text('预览清理'),
             ),
             const SizedBox(height: 12),
             OutlinedButton.icon(
               onPressed: () => _showExportDialog(context, ref),
-              icon: const Icon(Icons.file_download),
+              icon: const Icon(CupertinoIcons.down_arrow),
               label: const Text('导出稿件'),
             ),
           ],

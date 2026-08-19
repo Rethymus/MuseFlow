@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart' show CupertinoIcons;
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:museflow/features/reports/presentation/report_card.dart';
@@ -16,44 +17,45 @@ class ReportsHubPage extends StatelessWidget {
     final theme = Theme.of(context);
 
     return Scaffold(
-      appBar: AppBar(title: const Text('分析报告')),
+      appBar: AppBar(title: Text('分析报告', style: theme.textTheme.displayMedium)),
       body: ListView(
-        padding: const EdgeInsets.all(24),
+        padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),
         children: [
-          Text('分析报告', style: theme.textTheme.headlineMedium),
-          const SizedBox(height: 8),
-          Text('百章创作验证的四维分析。', style: theme.textTheme.bodyMedium),
-          const SizedBox(height: 24),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: Text('百章创作验证的四维分析。', style: theme.textTheme.bodyMedium),
+          ),
+          const SizedBox(height: 12),
           ReportCard(
-            icon: Icons.analytics_outlined,
+            icon: CupertinoIcons.chart_bar,
             title: 'Token 成本分析',
             description: '万字短篇实际成本与50万字长篇消耗推算',
             onTap: () => context.go(AppConstants.statsReportsTokenCost),
           ),
           const SizedBox(height: 12),
           ReportCard(
-            icon: Icons.bug_report_outlined,
+            icon: CupertinoIcons.ant,
             title: '用户痛点报告',
             description: '功能缺陷 + 体验摩擦 + 缺失需求，按严重程度分类',
             onTap: () => context.go(AppConstants.statsReportsPainPoints),
           ),
           const SizedBox(height: 12),
           ReportCard(
-            icon: Icons.visibility_outlined,
+            icon: CupertinoIcons.eye,
             title: '反AI味效果评估',
             description: '盲读测试评估 AI 生成内容的自然度',
             onTap: () => context.go(AppConstants.statsReportsAntiAiScent),
           ),
           const SizedBox(height: 12),
           ReportCard(
-            icon: Icons.fact_check_outlined,
+            icon: CupertinoIcons.checkmark_shield,
             title: '知识库一致性分析',
             description: '角色卡和设定集与实际内容的一致性对比',
             onTap: () => context.go(AppConstants.statsReportsConsistency),
           ),
           const SizedBox(height: 12),
           ReportCard(
-            icon: Icons.rate_review_outlined,
+            icon: CupertinoIcons.square_pencil,
             title: '编辑评审团',
             description: 'AI 从情节、人物、文笔、节奏四维给出建议性评审',
             onTap: () => context.go(AppConstants.statsReportsEditorialReview),

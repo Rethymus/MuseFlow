@@ -16,11 +16,15 @@ class AppSegmentedControl<T> extends StatelessWidget {
     required this.segments,
     required this.selected,
     required this.onSelectionChanged,
+    this.labelOf,
   });
 
   final Set<T> segments;
   final T selected;
   final ValueChanged<T> onSelectionChanged;
+
+  /// Optional display-label resolver for non-String segment values.
+  final String Function(T value)? labelOf;
 
   @override
   Widget build(BuildContext context) {
@@ -41,7 +45,9 @@ class AppSegmentedControl<T> extends StatelessWidget {
               ButtonSegment(
                 value: s,
                 label: Text(
-                  s is String ? s as String : s.toString(),
+                  labelOf != null
+                      ? labelOf!(s)
+                      : (s is String ? s as String : s.toString()),
                   style: textTheme.bodySmall?.copyWith(
                     fontWeight: FontWeight.w500,
                   ),

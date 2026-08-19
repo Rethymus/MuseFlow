@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart' show CupertinoIcons;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -297,7 +298,7 @@ class _OnboardingWizardPageState extends ConsumerState<OnboardingWizardPage> {
             ),
           ),
           IconButton(
-            icon: const Icon(Icons.close),
+            icon: const Icon(CupertinoIcons.xmark, size: 20),
             tooltip: '退出引导',
             onPressed: _completeOnboarding,
           ),
@@ -317,9 +318,7 @@ class _OnboardingWizardPageState extends ConsumerState<OnboardingWizardPage> {
               children: [
                 Text(
                   _stepTitles[_currentStep],
-                  style: theme.textTheme.headlineSmall?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
+                  style: theme.textTheme.headlineLarge,
                 ),
                 const SizedBox(height: 4),
                 Text(
@@ -327,6 +326,7 @@ class _OnboardingWizardPageState extends ConsumerState<OnboardingWizardPage> {
                   style: theme.textTheme.bodyMedium?.copyWith(
                     color: theme.colorScheme.onSurfaceVariant,
                   ),
+                  textAlign: TextAlign.center,
                 ),
               ],
             ),

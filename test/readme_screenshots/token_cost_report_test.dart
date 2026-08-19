@@ -27,6 +27,7 @@ import 'package:museflow/features/reports/domain/token_cost_report.dart';
 import 'package:museflow/features/reports/presentation/token_cost_report_page.dart';
 import 'package:museflow/features/reports/providers.dart';
 import 'package:museflow/features/stats/domain/audit_operation_type.dart';
+import 'package:museflow/shared/theme/app_theme.dart';
 
 void main() {
   /// Register the bundled Noto Sans CJK SC universal subset under the family
@@ -123,23 +124,9 @@ void main() {
 /// dark Material 3 scheme with the CJK text theme bound to 'Noto Sans CJK SC'
 /// (the registered subset). Kept inline + self-contained so the screenshot is
 /// deterministic without google_fonts network access or a dart-define flag.
-ThemeData _screenshotTheme() {
-  final colorScheme = ColorScheme.fromSeed(
-    seedColor: Colors.indigo,
-    brightness: Brightness.dark,
-  );
-  final base = Typography.material2021().white.apply(
-    fontFamily: 'Noto Sans CJK SC',
-  );
-  return ThemeData(
-    colorScheme: colorScheme,
-    useMaterial3: true,
-    textTheme: base.apply(
-      bodyColor: colorScheme.onSurface,
-      displayColor: colorScheme.onSurface,
-    ),
-  );
-}
+/// The real production dark theme (Apple HIG palette on the
+/// registered CJK subset), so the golden shows the shipped design.
+ThemeData _screenshotTheme() => appTheme(Brightness.dark);
 
 /// TokenCostReportNotifier override that returns a fixed seed report, bypassing
 /// the token-audit repository / chapter repository chain entirely (no

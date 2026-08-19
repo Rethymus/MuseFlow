@@ -32,6 +32,7 @@ import 'package:museflow/features/knowledge/domain/character_card.dart';
 import 'package:museflow/features/knowledge/presentation/knowledge_base_page.dart';
 import 'package:museflow/features/manuscript/application/chapter_notifier.dart';
 import 'package:museflow/features/manuscript/domain/chapter.dart';
+import 'package:museflow/shared/theme/app_theme.dart';
 
 void main() {
   setUpAll(() async {
@@ -146,20 +147,6 @@ class _SeededChapterNotifier extends ChapterNotifier {
 /// (habit enforced after the #02 wall-clock flake).
 final DateTime _created = DateTime(2026, 6, 1, 9, 30);
 
-ThemeData _screenshotTheme() {
-  final colorScheme = ColorScheme.fromSeed(
-    seedColor: Colors.indigo,
-    brightness: Brightness.dark,
-  );
-  final base = Typography.material2021().white.apply(
-    fontFamily: 'Noto Sans CJK SC',
-  );
-  return ThemeData(
-    colorScheme: colorScheme,
-    useMaterial3: true,
-    textTheme: base.apply(
-      bodyColor: colorScheme.onSurface,
-      displayColor: colorScheme.onSurface,
-    ),
-  );
-}
+/// The real production dark theme (Apple HIG palette on the
+/// registered CJK subset), so the golden shows the shipped design.
+ThemeData _screenshotTheme() => appTheme(Brightness.dark);
