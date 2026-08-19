@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart' show CupertinoIcons;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -7,13 +8,16 @@ import 'package:museflow/features/manuscript/domain/manuscript.dart';
 import 'package:museflow/features/manuscript/presentation/manuscript_card.dart';
 import 'package:museflow/features/manuscript/presentation/manuscript_create_dialog.dart';
 import 'package:museflow/shared/constants/app_constants.dart';
+import 'package:museflow/shared/theme/app_dimens.dart';
 import 'package:museflow/shared/utils/friendly_error.dart';
+import 'package:museflow/shared/widgets/app_controls.dart';
+import 'package:museflow/shared/widgets/app_dialogs.dart';
 
-/// Manuscript library homepage -- the app's new default screen.
+/// Manuscript library homepage — the app's default screen.
 ///
-/// Renders a responsive card grid for existing manuscripts or an empty state
-/// with a welcoming message. Supports sorting, quick-create, and context
-/// menus for edit/delete operations.
+/// Apple layout: a large bold title over a responsive card grid of inset
+/// white cards on the grouped gray background. Supports sorting, quick
+/// create, and context menus for edit/delete operations.
 class ManuscriptLibraryPage extends ConsumerStatefulWidget {
   const ManuscriptLibraryPage({super.key});
 
@@ -31,21 +35,15 @@ class _ManuscriptLibraryPageState extends ConsumerState<ManuscriptLibraryPage> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(
-          '文稿库',
-          style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-            fontWeight: FontWeight.w700,
-            fontSize: 28,
-          ),
-        ),
+        title: Text('文稿库', style: Theme.of(context).textTheme.displayMedium),
         actions: [
-          // On narrow layouts the bottom navigation collapses to 5 primary
-          // destinations (Material 3 limit) and settings moves here (HF-3).
+          // On narrow layouts the bottom tab bar collapses to 5 primary
+          // destinations and settings moves here (HF-3).
           if (MediaQuery.of(context).size.width <
               AppConstants.sidebarCollapsedBreakpoint)
             IconButton(
               tooltip: '设置',
-              icon: const Icon(Icons.settings_outlined),
+              icon: const Icon(CupertinoIcons.gear),
               onPressed: () => context.go(AppConstants.settings),
             ),
           manuscriptsAsync.asData?.value.isNotEmpty == true
@@ -89,61 +87,37 @@ class _ManuscriptLibraryPageState extends ConsumerState<ManuscriptLibraryPage> {
   }
 }
 
-/// Empty state widget shown when no manuscripts exist.
-///
-/// Displays an icon, heading, description, and a "创建文稿" CTA button.
+/// Empty state shown when no manuscripts exist.
 class _EmptyState extends StatelessWidget {
   const _EmptyState();
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
-
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(32),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(Icons.auto_stories, size: 48, color: colorScheme.outline),
-            const SizedBox(height: 16),
-            Text(
-              '创建你的第一部作品',
-              style: theme.textTheme.titleMedium?.copyWith(
-                fontWeight: FontWeight.w600,
-                fontSize: 20,
-              ),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              '从灵感开始，写下属于你的故事',
-              style: theme.textTheme.bodyMedium?.copyWith(
-                fontWeight: FontWeight.w400,
-                fontSize: 14,
-                color: colorScheme.onSurfaceVariant,
-              ),
-            ),
-            const SizedBox(height: 24),
-            FilledButton(
-              onPressed: () {
-                showDialog(
-                  context: context,
-                  builder: (_) => const ManuscriptCreateDialog(),
-                );
-              },
-              child: const Text('创建文稿'),
-            ),
-            const SizedBox(height: 8),
-            // Secondary path: jump-start worldbuilding from the template
-            // gallery instead of a blank page.
-            OutlinedButton.icon(
-              onPressed: () => context.go(AppConstants.knowledgeTemplates),
-              icon: const Icon(Icons.auto_awesome_mosaic_outlined, size: 18),
-              label: const Text('从模板库开始'),
-            ),
-          ],
-        ),
+    return AppEmptyState(
+      icon: CupertinoIcons.book,
+      title: '创建你的第一部作品',
+      message: '从灵感开始，写下属于你的故事',
+      action: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          FilledButton(
+            onPressed: () {
+              showDialog(
+                context: context,
+                builder: (_) => const ManuscriptCreateDialog(),
+              );
+            },
+            child: const Text('创建文稿'),
+          ),
+          const SizedBox(height: AppSpacing.sm),
+          // Secondary path: jump-start worldbuilding from the template
+          // gallery instead of a blank page.
+          TextButton.icon(
+            onPressed: () => context.go(AppConstants.knowledgeTemplates),
+            icon: const Icon(CupertinoIcons.sparkles, size: 18),
+            label: const Text('从模板库开始'),
+          ),
+        ],
       ),
     );
   }
@@ -164,11 +138,11 @@ class _ManuscriptGrid extends StatelessWidget {
         final crossAxisCount = _columnCount(constraints.maxWidth);
 
         return GridView.builder(
-          padding: const EdgeInsets.all(16),
+          padding: const EdgeInsets.all(AppSpacing.lg),
           gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
             crossAxisCount: crossAxisCount,
-            mainAxisSpacing: 16,
-            crossAxisSpacing: 16,
+            mainAxisSpacing: AppSpacing.lg,
+            crossAxisSpacing: AppSpacing.lg,
             childAspectRatio: 0.75,
           ),
           itemCount: manuscripts.length,
@@ -208,65 +182,42 @@ class _ManuscriptCardWrapper extends ConsumerWidget {
   }
 
   void _showContextMenu(BuildContext context, WidgetRef ref) {
-    showModalBottomSheet(
-      context: context,
-      builder: (ctx) => SafeArea(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            ListTile(
-              leading: const Icon(Icons.edit_outlined),
-              title: const Text('编辑信息'),
-              onTap: () {
-                Navigator.of(ctx).pop();
-                context.go('/manuscript/${manuscript.id}/settings');
-              },
-            ),
-            ListTile(
-              leading: Icon(
-                Icons.delete_outline,
-                color: Theme.of(context).colorScheme.error,
-              ),
-              title: Text(
-                '删除',
-                style: TextStyle(color: Theme.of(context).colorScheme.error),
-              ),
-              onTap: () {
-                Navigator.of(ctx).pop();
-                _confirmDelete(context, ref);
-              },
-            ),
-          ],
+    showAppActionSheet(
+      context,
+      title: manuscript.title,
+      actions: [
+        AppSheetAction(
+          '编辑信息',
+          onPressed: () {
+            context.go('/manuscript/${manuscript.id}/settings');
+          },
         ),
-      ),
+        AppSheetAction(
+          '删除',
+          isDestructive: true,
+          onPressed: () {
+            _confirmDelete(context, ref);
+          },
+        ),
+      ],
     );
   }
 
   void _confirmDelete(BuildContext context, WidgetRef ref) {
-    showDialog(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        title: const Text('确认删除'),
-        content: Text("确定要删除文稿'${manuscript.title}'吗？文稿将在30天后永久删除，期间可恢复。"),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(ctx).pop(),
-            child: const Text('取消'),
-          ),
-          TextButton(
-            onPressed: () {
-              Navigator.of(ctx).pop();
-              ref
-                  .read(manuscriptNotifierProvider.notifier)
-                  .softDelete(manuscript.id);
-            },
-            style: TextButton.styleFrom(
-              foregroundColor: Theme.of(context).colorScheme.error,
-            ),
-            child: const Text('删除'),
-          ),
-        ],
-      ),
+    showAppDialog(
+      context,
+      title: '确认删除',
+      message: '确定要删除文稿「${manuscript.title}」吗？文稿将在30天后永久删除，期间可恢复。',
+      actions: [
+        const AppDialogAction('取消'),
+        AppDialogAction(
+          '删除',
+          isDestructive: true,
+          onPressed: () => ref
+              .read(manuscriptNotifierProvider.notifier)
+              .softDelete(manuscript.id),
+        ),
+      ],
     );
   }
 }
@@ -281,7 +232,7 @@ class _SortDropdown extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return PopupMenuButton<ManuscriptSortMode>(
-      icon: const Icon(Icons.sort),
+      icon: const Icon(CupertinoIcons.line_horizontal_3_decrease),
       initialValue: sortMode,
       onSelected: onChanged,
       itemBuilder: (context) => [
@@ -311,15 +262,11 @@ class _ErrorState extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Text('加载失败: ${friendlyError(error)}'),
-          const SizedBox(height: 8),
-          ElevatedButton(onPressed: onRetry, child: const Text('重试')),
-        ],
-      ),
+    return AppEmptyState(
+      icon: CupertinoIcons.exclamationmark_triangle,
+      title: '加载失败',
+      message: friendlyError(error),
+      action: FilledButton(onPressed: onRetry, child: const Text('重试')),
     );
   }
 }

@@ -1,14 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:museflow/features/manuscript/domain/manuscript.dart';
 import 'package:museflow/features/manuscript/domain/manuscript_genre.dart';
+import 'package:museflow/shared/theme/app_colors.dart';
+import 'package:museflow/shared/theme/app_dimens.dart';
 
 /// A card widget displaying a manuscript summary in the library grid.
 ///
-/// Book-metaphor layout: a genre-tinted cover strip with the cover letter
-/// and genre label, then metadata (title, progress, status, timestamp).
-/// Desktop affordance (D-3): a "more" menu fades in on hover — previously
-/// edit/delete were long-press-only, which desktop users never discover.
-/// Long-press still works for touch devices via the parent wrapper.
+/// Book-metaphor layout on an Apple inset-group card: a genre-tinted cover
+/// with the cover letter and genre label, then metadata (title, progress,
+/// status, timestamp). Hover raises a soft shadow — the only elevation in
+/// the card system — and reveals the "more" menu (D-3); long-press and
+/// right-click still work via the parent wrapper and the secondary tap.
 class ManuscriptCard extends StatefulWidget {
   const ManuscriptCard({
     super.key,
@@ -43,7 +45,7 @@ class _ManuscriptCardState extends State<ManuscriptCard> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
+    final p = AppColors.of(context);
     final hasMenu = widget.onEditInfo != null || widget.onDelete != null;
 
     // D-7: expose the card as a single labelled button for assistive tech —
@@ -57,46 +59,59 @@ class _ManuscriptCardState extends State<ManuscriptCard> {
       child: MouseRegion(
         onEnter: (_) => setState(() => _hovering = true),
         onExit: (_) => setState(() => _hovering = false),
-        child: Card(
-          elevation: _hovering ? 2 : 0,
-          color: colorScheme.surfaceContainerHighest,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
-          ),
-          clipBehavior: Clip.antiAlias,
-          child: InkWell(
-            onTap: widget.onTap,
-            // Desktop convention (SE-8): right-click opens the same actions
-            // as the hover "⋮" menu, so edit/delete no longer depend on
-            // long-press alone.
-            onSecondaryTapUp: hasMenu
-                ? (details) => _showMenuAt(context, details.globalPosition)
-                : null,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                _buildCoverArea(colorScheme, hasMenu),
-                Expanded(
-                  child: Padding(
-                    padding: const EdgeInsets.all(16),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          widget.manuscript.title,
-                          style: theme.textTheme.titleSmall,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                        const SizedBox(height: 8),
-                        _buildProgressBar(theme, colorScheme),
-                        const Spacer(),
-                        _buildBottomRow(theme, colorScheme),
-                      ],
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 150),
+          decoration: BoxDecoration(
+            color: p.cardBackground,
+            borderRadius: AppRadius.rMedium,
+            boxShadow: _hovering
+                ? [
+                    BoxShadow(
+                      color: Colors.black.withValues(alpha: 0.10),
+                      blurRadius: 18,
+                      offset: const Offset(0, 6),
                     ),
-                  ),
+                  ]
+                : null,
+          ),
+          child: ClipRRect(
+            borderRadius: AppRadius.rMedium,
+            child: Material(
+              color: Colors.transparent,
+              child: InkWell(
+                onTap: widget.onTap,
+                // Desktop convention (SE-8): right-click opens the same
+                // actions as the hover "⋮" menu.
+                onSecondaryTapUp: hasMenu
+                    ? (details) => _showMenuAt(context, details.globalPosition)
+                    : null,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    _buildCoverArea(p, hasMenu),
+                    Expanded(
+                      child: Padding(
+                        padding: const EdgeInsets.all(16),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              widget.manuscript.title,
+                              style: theme.textTheme.titleMedium,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                            const SizedBox(height: 8),
+                            _buildProgressBar(theme, p),
+                            const Spacer(),
+                            _buildBottomRow(theme, p),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
-              ],
+              ),
             ),
           ),
         ),
@@ -104,7 +119,7 @@ class _ManuscriptCardState extends State<ManuscriptCard> {
     );
   }
 
-  Widget _buildCoverArea(ColorScheme colorScheme, bool hasMenu) {
+  Widget _buildCoverArea(AppPalette p, bool hasMenu) {
     final manuscript = widget.manuscript;
     final effectiveLetter = manuscript.coverLetter.isNotEmpty
         ? manuscript.coverLetter
@@ -120,9 +135,12 @@ class _ManuscriptCardState extends State<ManuscriptCard> {
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
               colors: [
-                genreColor,
                 Color.alphaBlend(
-                  colorScheme.surfaceContainerHighest.withValues(alpha: 0.45),
+                  Colors.white.withValues(alpha: 0.14),
+                  genreColor,
+                ),
+                Color.alphaBlend(
+                  Colors.black.withValues(alpha: 0.22),
                   genreColor,
                 ),
               ],
@@ -137,6 +155,7 @@ class _ManuscriptCardState extends State<ManuscriptCard> {
                 style: const TextStyle(
                   fontSize: 44,
                   fontWeight: FontWeight.w700,
+                  letterSpacing: -0.5,
                   color: Colors.white,
                 ),
               ),
@@ -169,7 +188,7 @@ class _ManuscriptCardState extends State<ManuscriptCard> {
     );
   }
 
-  Widget _buildProgressBar(ThemeData theme, ColorScheme colorScheme) {
+  Widget _buildProgressBar(ThemeData theme, AppPalette p) {
     final progress = widget.manuscript.targetWordCount > 0
         ? (widget.currentWordCount / widget.manuscript.targetWordCount).clamp(
             0.0,
@@ -195,24 +214,23 @@ class _ManuscriptCardState extends State<ManuscriptCard> {
           child: LinearProgressIndicator(
             value: progress,
             minHeight: 4,
-            backgroundColor: colorScheme.surfaceContainerLow,
-            valueColor: AlwaysStoppedAnimation(colorScheme.primary),
+            backgroundColor: p.gray5,
+            valueColor: AlwaysStoppedAnimation(p.accent),
+            borderRadius: AppRadius.pill,
           ),
         ),
       ],
     );
   }
 
-  Widget _buildBottomRow(ThemeData theme, ColorScheme colorScheme) {
+  Widget _buildBottomRow(ThemeData theme, AppPalette p) {
     return Row(
       children: [
         _StatusBadge(status: widget.manuscript.status),
         const Spacer(),
         Text(
           _relativeTime(widget.manuscript.updatedAt),
-          style: theme.textTheme.labelSmall?.copyWith(
-            color: colorScheme.onSurfaceVariant,
-          ),
+          style: theme.textTheme.labelSmall?.copyWith(color: p.secondaryLabel),
         ),
       ],
     );
@@ -263,14 +281,12 @@ class _ManuscriptCardState extends State<ManuscriptCard> {
 List<PopupMenuEntry<String>> buildManuscriptCardMenuItems(
   BuildContext context,
 ) {
+  final p = AppColors.of(context);
   return [
     const PopupMenuItem(value: 'edit', child: Text('编辑信息')),
     PopupMenuItem(
       value: 'delete',
-      child: Text(
-        '删除',
-        style: TextStyle(color: Theme.of(context).colorScheme.error),
-      ),
+      child: Text('删除', style: TextStyle(color: p.systemRed)),
     ),
   ];
 }
@@ -285,12 +301,12 @@ class _CardMenu extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
+    final p = AppColors.of(context);
     return PopupMenuButton<String>(
       icon: Icon(Icons.more_vert, size: 20, color: Colors.white),
       tooltip: '文稿操作',
-      color: colorScheme.surfaceContainerHigh,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      color: p.tertiaryGroupedBackground,
+      shape: RoundedRectangleBorder(borderRadius: AppRadius.rMedium),
       onSelected: (action) {
         if (action == 'edit') onEditInfo?.call();
         if (action == 'delete') onDelete?.call();
@@ -300,7 +316,8 @@ class _CardMenu extends StatelessWidget {
   }
 }
 
-/// A pill-shaped badge showing manuscript status with appropriate color.
+/// A tinted pill badge showing manuscript status, iOS style: a 14% tinted
+/// background with the full-strength tint as text color.
 class _StatusBadge extends StatelessWidget {
   const _StatusBadge({required this.status});
 
@@ -308,34 +325,34 @@ class _StatusBadge extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
-    final (bgColor, textColor) = _statusColors(colorScheme);
+    final p = AppColors.of(context);
+    final textTheme = Theme.of(context).textTheme;
+    final tint = _statusTint(p);
 
-    return DecoratedBox(
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
       decoration: BoxDecoration(
-        color: bgColor,
-        borderRadius: BorderRadius.circular(999),
+        color: tint.withValues(alpha: 0.14),
+        borderRadius: AppRadius.pill,
       ),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-        child: Text(
-          status,
-          style: TextStyle(
-            fontSize: 11,
-            fontWeight: FontWeight.w500,
-            color: textColor,
+      child: Text(
+        status,
+        style: textTheme.labelSmall?.copyWith(
+          fontWeight: FontWeight.w500,
+          color: Color.alphaBlend(
+            tint.withValues(alpha: 0.85),
+            p.cardBackground,
           ),
         ),
       ),
     );
   }
 
-  (Color, Color) _statusColors(ColorScheme colorScheme) {
+  Color _statusTint(AppPalette p) {
     return switch (status) {
-      '构思中' => (colorScheme.surfaceContainerLow, colorScheme.onSurfaceVariant),
-      '写作中' => (colorScheme.primaryContainer, colorScheme.onPrimaryContainer),
-      '已完成' => (colorScheme.tertiaryContainer, colorScheme.onTertiaryContainer),
-      _ => (colorScheme.surfaceContainerLow, colorScheme.onSurfaceVariant),
+      '写作中' => p.accent,
+      '已完成' => p.systemGreen,
+      _ => p.gray,
     };
   }
 }

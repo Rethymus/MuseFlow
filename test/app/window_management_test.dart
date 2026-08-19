@@ -3,6 +3,8 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:museflow/core/presentation/app_shell.dart';
+import 'package:museflow/shared/widgets/app_sidebar.dart';
+import 'package:museflow/shared/widgets/app_tab_bar.dart';
 import 'package:museflow/shared/constants/app_constants.dart';
 
 /// Simple placeholder pages for testing navigation without SuperEditor.
@@ -121,14 +123,12 @@ void main() {
       await tester.pumpAndSettle();
 
       // Should find NavigationRail
-      expect(find.byType(NavigationRail), findsOneWidget);
+      expect(find.byType(AppSidebar), findsOneWidget);
 
       // Should have 6 navigation destinations with Chinese labels
 
       // Use find.byType to locate NavigationRailDestination labels
-      final navRail = tester.widget<NavigationRail>(
-        find.byType(NavigationRail),
-      );
+      final navRail = tester.widget<AppSidebar>(find.byType(AppSidebar));
       expect(navRail.destinations.length, equals(6));
 
       // Verify labels exist in the widget tree
@@ -147,9 +147,7 @@ void main() {
       await tester.pumpAndSettle();
 
       // Initial route should show the editor page (branch index 1)
-      final navRail = tester.widget<NavigationRail>(
-        find.byType(NavigationRail),
-      );
+      final navRail = tester.widget<AppSidebar>(find.byType(AppSidebar));
       expect(navRail.selectedIndex, equals(1));
 
       // Editor page content should be visible
@@ -173,9 +171,7 @@ void main() {
       await tester.pumpAndSettle();
 
       // NavigationRail should now show index 0 selected
-      final navRail = tester.widget<NavigationRail>(
-        find.byType(NavigationRail),
-      );
+      final navRail = tester.widget<AppSidebar>(find.byType(AppSidebar));
       expect(navRail.selectedIndex, equals(0));
 
       // Capture page content should be visible
@@ -193,13 +189,13 @@ void main() {
       await tester.pumpAndSettle();
 
       // Should find NavigationBar (bottom) instead of NavigationRail
-      expect(find.byType(NavigationBar), findsOneWidget);
-      expect(find.byType(NavigationRail), findsNothing);
+      expect(find.byType(AppTabBar), findsOneWidget);
+      expect(find.byType(AppSidebar), findsNothing);
 
       // Should have the 5 primary destinations (settings lives behind the
       // library AppBar gear on narrow layouts, per the M3 5-destination cap)
 
-      final navBar = tester.widget<NavigationBar>(find.byType(NavigationBar));
+      final navBar = tester.widget<AppTabBar>(find.byType(AppTabBar));
       expect(navBar.destinations.length, equals(5));
 
       tester.view.resetPhysicalSize();

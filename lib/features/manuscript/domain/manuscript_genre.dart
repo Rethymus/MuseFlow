@@ -29,32 +29,32 @@ class ManuscriptGenre {
   /// Valid chapter status values.
   static const List<String> chapterStatusValues = ['草稿', '初稿', '精修', '定稿'];
 
-  /// Genre-to-color mapping.
+  /// Genre-to-color mapping, on Apple system hues.
   ///
-  /// Male-frequency genres (8): warm/bold tones.
-  /// Female-frequency genres (6): soft/elegant tones.
-  /// All colors have WCAG AA contrast (>= 4.5:1) with white text overlay.
+  /// Male-frequency genres (8): bold tones. Female-frequency genres (6):
+  /// soft/elegant tones. Covers pair these with white display text plus a
+  /// subtle dark scrim rendered by the card, keeping the hues legible.
   static const Map<String, int> _genreColors = {
-    // Male-frequency: warm/bold
-    '玄幻': 0xFF4F46E5, // Indigo 600
-    '仙侠': 0xFF0D9488, // Teal 600
-    '科幻': 0xFF2563EB, // Blue 600
-    '奇幻': 0xFF7C3AED, // Violet 600
-    '武侠': 0xFFB45309, // Amber 700
-    '历史': 0xFF92400E, // Amber 800
-    '军事': 0xFF991B1B, // Red 800
-    '悬疑': 0xFF374151, // Gray 700
+    // Male-frequency: bold
+    '玄幻': 0xFF5856D7, // systemIndigo
+    '仙侠': 0xFF30B0C7, // systemTeal
+    '科幻': 0xFF007AFF, // systemBlue
+    '奇幻': 0xFFAF52DE, // systemPurple
+    '武侠': 0xFFE07600, // systemOrange (slightly deepened for white text)
+    '历史': 0xFFA2845E, // systemBrown
+    '军事': 0xFFD70015, // systemRed (slightly deepened)
+    '悬疑': 0xFF3A3A3C, // dark gray
     // Female-frequency: soft/elegant
-    '都市': 0xFF0891B2, // Cyan 600
-    '恐怖': 0xFF581C87, // Purple 900
-    '言情': 0xFFBE185D, // Pink 700
-    '校园': 0xFF059669, // Emerald 600
-    '游戏': 0xFF0284C7, // Sky 600
-    '末世': 0xFFA21CAF, // Fuchsia 700
+    '都市': 0xFF32ADE6, // systemCyan
+    '恐怖': 0xFF5E3D99, // deep violet
+    '言情': 0xFFE0407B, // systemPink (slightly deepened)
+    '校园': 0xFF28A745, // systemGreen (slightly deepened)
+    '游戏': 0xFF00A9B8, // systemMint (slightly deepened)
+    '末世': 0xFF8E44AD, // deep fuchsia
   };
 
-  /// Default gray color for unknown/custom genres.
-  static const int _defaultColor = 0xFF49454F;
+  /// Default gray color for unknown/custom genres (systemGray, deepened).
+  static const int _defaultColor = 0xFF636366;
 
   /// Returns the color value for the given [genre].
   ///

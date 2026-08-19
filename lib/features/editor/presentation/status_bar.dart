@@ -10,6 +10,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:museflow/core/presentation/providers.dart';
 import 'package:museflow/features/ai/application/anti_ai_scent_processor.dart';
+import 'package:museflow/shared/theme/app_colors.dart';
+import 'package:museflow/shared/theme/app_dimens.dart';
 
 /// Status bar widget that shows manuscript word count progress and
 /// pending AI modification count.
@@ -43,21 +45,26 @@ class StatusBar extends ConsumerWidget {
       return const SizedBox.shrink();
     }
 
-    final colorScheme = Theme.of(context).colorScheme;
+    final p = AppColors.of(context);
+    final textTheme = Theme.of(context).textTheme;
 
     return Container(
       width: double.infinity,
-      color: colorScheme.surfaceContainerLow,
+      decoration: BoxDecoration(
+        color: p.tertiaryGroupedBackground,
+        border: Border(
+          top: BorderSide(color: p.separator, width: AppRadius.hairline),
+        ),
+      ),
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
       child: Row(
         children: [
           if (hasManuscriptContext) ...[
             Text(
               '总字数: ${_formatNumber(currentWordCount!)}/${_formatNumber(targetWordCount!)} 字',
-              style: TextStyle(
-                fontSize: 12,
+              style: textTheme.labelMedium?.copyWith(
                 fontWeight: FontWeight.w500,
-                color: colorScheme.onSurfaceVariant,
+                color: p.secondaryLabel,
               ),
             ),
             if (hasPendingDiffs)
@@ -65,9 +72,8 @@ class StatusBar extends ConsumerWidget {
                 padding: const EdgeInsets.only(left: 16),
                 child: Text(
                   '|',
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: colorScheme.onSurfaceVariant.withValues(alpha: 0.4),
+                  style: textTheme.labelMedium?.copyWith(
+                    color: p.tertiaryLabel,
                   ),
                 ),
               ),
@@ -76,20 +82,16 @@ class StatusBar extends ConsumerWidget {
                 padding: const EdgeInsets.only(left: 16),
                 child: Text(
                   '${diffResult.pendingCount} 处AI修改待确认',
-                  style: TextStyle(
-                    fontSize: 12,
+                  style: textTheme.labelMedium?.copyWith(
                     fontWeight: FontWeight.w500,
-                    color: colorScheme.onSurfaceVariant,
+                    color: p.secondaryLabel,
                   ),
                 ),
               ),
           ] else if (hasPendingDiffs) ...[
             Text(
               '当前文档有 ${diffResult.pendingCount} 处AI修改待确认',
-              style: TextStyle(
-                fontSize: 13,
-                color: colorScheme.onSurfaceVariant,
-              ),
+              style: textTheme.bodySmall?.copyWith(color: p.secondaryLabel),
             ),
           ],
           if ((hasManuscriptContext || hasPendingDiffs) &&
@@ -98,10 +100,7 @@ class StatusBar extends ConsumerWidget {
               padding: const EdgeInsets.only(left: 16),
               child: Text(
                 '|',
-                style: TextStyle(
-                  fontSize: 12,
-                  color: colorScheme.onSurfaceVariant.withValues(alpha: 0.4),
-                ),
+                style: textTheme.labelMedium?.copyWith(color: p.tertiaryLabel),
               ),
             ),
           ],
@@ -144,12 +143,12 @@ class _ReviewSignalSummary extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
+    final p = AppColors.of(context);
     final primarySignal = _highestSeveritySignal(signals);
     final color = switch (primarySignal.severity) {
-      ReviewSignalSeverity.high => colorScheme.error,
-      ReviewSignalSeverity.medium => colorScheme.tertiary,
-      ReviewSignalSeverity.low => colorScheme.onSurfaceVariant,
+      ReviewSignalSeverity.high => p.systemRed,
+      ReviewSignalSeverity.medium => p.systemOrange,
+      ReviewSignalSeverity.low => p.secondaryLabel,
     };
 
     return Tooltip(
@@ -158,8 +157,7 @@ class _ReviewSignalSummary extends StatelessWidget {
         '${signals.length} 条AI修改复查：${primarySignal.title}',
         overflow: TextOverflow.ellipsis,
         maxLines: 1,
-        style: TextStyle(
-          fontSize: 12,
+        style: Theme.of(context).textTheme.labelMedium?.copyWith(
           fontWeight: FontWeight.w600,
           color: color,
         ),

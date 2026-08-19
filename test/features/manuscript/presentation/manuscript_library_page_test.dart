@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart' show CupertinoIcons;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -24,7 +25,7 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    expect(find.byIcon(Icons.auto_stories), findsOneWidget);
+    expect(find.byIcon(CupertinoIcons.book), findsOneWidget);
     expect(find.text('创建你的第一部作品'), findsOneWidget);
     expect(find.text('从灵感开始，写下属于你的故事'), findsOneWidget);
     expect(find.widgetWithText(FilledButton, '创建文稿'), findsOneWidget);
@@ -66,7 +67,10 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    expect(find.byIcon(Icons.sort), findsOneWidget);
+    expect(
+      find.byIcon(CupertinoIcons.line_horizontal_3_decrease),
+      findsOneWidget,
+    );
   });
 
   testWidgets('create dialog prevents empty and over-length titles', (

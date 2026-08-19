@@ -44,7 +44,7 @@ void main() {
 
     test('genreColor returns default gray for unknown genres', () {
       final color = ManuscriptGenre.genreColor('unknown_genre');
-      expect(color, 0xFF49454F);
+      expect(color, 0xFF636366);
     });
 
     test('statusValues contains correct manuscript statuses', () {

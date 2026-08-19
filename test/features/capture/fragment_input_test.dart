@@ -4,6 +4,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:museflow/core/domain/fragment.dart';
 import 'package:museflow/core/domain/fragment_tag.dart';
 import 'package:museflow/features/capture/presentation/capture_page.dart';
+import 'package:museflow/features/capture/presentation/fragment_card.dart';
 import 'package:museflow/features/capture/presentation/capture_provider.dart';
 
 void main() {
@@ -127,7 +128,7 @@ void main() {
       await tester.pumpAndSettle();
 
       // Verify fragment cards are rendered
-      final cardFinder = find.byType(Card);
+      final cardFinder = find.byType(FragmentCard);
       expect(cardFinder, findsWidgets);
 
       // Verify each fragment text is present (exact matches, excludes hint)

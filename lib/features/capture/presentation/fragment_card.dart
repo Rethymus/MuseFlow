@@ -1,14 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:museflow/core/domain/fragment.dart';
+import 'package:museflow/shared/theme/app_colors.dart';
+import 'package:museflow/shared/theme/app_dimens.dart';
 
-/// A card displaying a single fragment with checkbox, text, tags, and timestamp.
+/// A card displaying a single fragment with checkbox, text, tags, and
+/// timestamp, on the iOS inset-group card.
 ///
-/// Per UI-SPEC:
-/// - Card with elevation 0, surfaceContainerHighest background
+/// - Flat white card on the grouped gray page, 12pt corners
 /// - Row: Checkbox | Text + Tags (Expanded) | Timestamp
-/// - Text: body style 14px, maxLines 3, ellipsis overflow
-/// - Tags: Wrap of Chip widgets, 12px label style
-/// - Timestamp: label style 12px, onSurfaceVariant color, yyyy-MM-dd HH:mm
+/// - Text: body style, maxLines 3, ellipsis overflow
+/// - Tags: tinted gray pills, caption2 label
+/// - Timestamp: tertiaryLabel caption2, yyyy-MM-dd HH:mm
 class FragmentCard extends StatelessWidget {
   final Fragment fragment;
   final bool isSelected;
@@ -36,16 +38,22 @@ class FragmentCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
+    final p = AppColors.of(context);
 
-    return Card(
-      elevation: 0,
-      color: colorScheme.surfaceContainerHighest,
-      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+    return Container(
+      margin: const EdgeInsets.symmetric(
+        horizontal: AppSpacing.pageMargin,
+        vertical: 4,
+      ),
+      decoration: BoxDecoration(
+        color: p.cardBackground,
+        borderRadius: AppRadius.rMedium,
+      ),
       child: InkWell(
         onTap: onTap,
+        customBorder: RoundedRectangleBorder(borderRadius: AppRadius.rMedium),
         child: Padding(
-          padding: const EdgeInsets.all(16),
+          padding: const EdgeInsets.fromLTRB(4, 8, 16, 8),
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -55,55 +63,65 @@ class FragmentCard extends StatelessWidget {
                 onChanged: (_) => onToggleSelect(),
                 materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
               ),
-              const SizedBox(width: 12),
+              const SizedBox(width: 8),
 
               // Fragment text + tags
               Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    // Fragment text
-                    Text(
-                      fragment.text,
-                      style: theme.textTheme.bodyMedium?.copyWith(
-                        color: colorScheme.onSurface,
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 8),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // Fragment text
+                      Text(
+                        fragment.text,
+                        style: theme.textTheme.bodyMedium?.copyWith(
+                          color: p.label,
+                        ),
+                        maxLines: 3,
+                        overflow: TextOverflow.ellipsis,
                       ),
-                      maxLines: 3,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                    if (fragment.tags.isNotEmpty) ...[
-                      const SizedBox(height: 8),
-                      // Tag chips
-                      Wrap(
-                        spacing: 4,
-                        runSpacing: 4,
-                        children: fragment.tags.map((tag) {
-                          return Chip(
-                            label: Text(
-                              tag,
-                              style: theme.textTheme.labelSmall?.copyWith(
-                                color: colorScheme.onSurfaceVariant,
+                      if (fragment.tags.isNotEmpty) ...[
+                        const SizedBox(height: 8),
+                        // Tag pills
+                        Wrap(
+                          spacing: 4,
+                          runSpacing: 4,
+                          children: fragment.tags.map((tag) {
+                            return Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 8,
+                                vertical: 3,
                               ),
-                            ),
-                            materialTapTargetSize:
-                                MaterialTapTargetSize.shrinkWrap,
-                            visualDensity: VisualDensity.compact,
-                            padding: const EdgeInsets.symmetric(horizontal: 4),
-                          );
-                        }).toList(),
-                      ),
+                              decoration: BoxDecoration(
+                                color: p.gray5,
+                                borderRadius: AppRadius.pill,
+                              ),
+                              child: Text(
+                                tag,
+                                style: theme.textTheme.labelSmall?.copyWith(
+                                  color: p.secondaryLabel,
+                                ),
+                              ),
+                            );
+                          }).toList(),
+                        ),
+                      ],
                     ],
-                  ],
+                  ),
                 ),
               ),
 
               const SizedBox(width: 12),
 
               // Timestamp
-              Text(
-                _formatTimestamp(fragment.createdAt),
-                style: theme.textTheme.labelSmall?.copyWith(
-                  color: colorScheme.onSurfaceVariant,
+              Padding(
+                padding: const EdgeInsets.only(top: 10),
+                child: Text(
+                  _formatTimestamp(fragment.createdAt),
+                  style: theme.textTheme.labelSmall?.copyWith(
+                    color: p.tertiaryLabel,
+                  ),
                 ),
               ),
             ],

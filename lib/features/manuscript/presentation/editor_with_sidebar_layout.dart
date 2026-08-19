@@ -44,7 +44,7 @@ extension _EditorWithSidebarStateLayout on _EditorWithSidebarState {
             );
           },
         ),
-        VerticalDivider(width: 1, thickness: 1, color: colorScheme.outline),
+        // The chapter sidebar draws its own hairline right border.
         Expanded(
           child: _buildEditorArea(
             colorScheme,
@@ -110,12 +110,16 @@ extension _EditorWithSidebarStateLayout on _EditorWithSidebarState {
     int targetWordCount,
   ) {
     if (_editor == null) {
-      return const Center(
+      return Center(
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(Icons.edit_note, size: 48, color: Colors.grey),
-            SizedBox(height: 8),
+            Icon(
+              Icons.edit_note,
+              size: 48,
+              color: Theme.of(context).colorScheme.outline,
+            ),
+            const SizedBox(height: 8),
             Text('选择或创建一个章节开始写作'),
           ],
         ),
@@ -129,7 +133,7 @@ extension _EditorWithSidebarStateLayout on _EditorWithSidebarState {
         const DeviationWarningWidget(),
         const StyleThermometerCard(),
         const ForeshadowingReminderWidget(),
-        Divider(height: 1, thickness: 1, color: colorScheme.outline),
+        const Divider(),
         // Editor content
         Expanded(
           child: Padding(

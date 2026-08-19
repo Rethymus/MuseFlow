@@ -1,13 +1,18 @@
+import 'package:flutter/cupertino.dart' show CupertinoIcons;
 import 'package:flutter/material.dart';
 import 'package:museflow/shared/constants/app_constants.dart';
+import 'package:museflow/shared/widgets/app_sidebar.dart';
+import 'package:museflow/shared/widgets/app_tab_bar.dart';
 
-/// Adaptive sidebar navigation widget.
+/// Adaptive navigation chrome, Apple style.
 ///
-/// Uses [NavigationRail] on desktop (extended or collapsed based on width),
-/// and [NavigationBar] at the bottom on narrow screens (< 600px).
+/// Desktop (>= [AppConstants.sidebarCollapsedBreakpoint]): the macOS-style
+/// [AppSidebar] — icon+label destinations on a tinted material column,
+/// icon-only between 600–1000px, extended above 1000px.
 ///
-/// Per D-01: extended sidebar shows icon + Chinese label (~256px Material 3 default).
-/// Per D-02: collapsed shows icon only (~72px Material 3 default).
+/// Narrow: the iOS-style frosted [AppTabBar] with the 5 primary
+/// destinations; Material's 5-destination cap moves 设置 to the library
+/// AppBar gear action on narrow layouts (HF-3).
 class AdaptiveSidebar extends StatelessWidget {
   final int currentIndex;
   final ValueChanged<int> onDestinationSelected;
@@ -18,129 +23,43 @@ class AdaptiveSidebar extends StatelessWidget {
     required this.onDestinationSelected,
   });
 
+  /// All six desktop destinations (capture, editor, knowledge, structure,
+  /// stats, settings).
+  static const List<AppSidebarDestination> destinations = [
+    AppSidebarDestination(icon: CupertinoIcons.bookmark, label: '捕捉器'),
+    AppSidebarDestination(icon: CupertinoIcons.pen, label: '编辑器'),
+    AppSidebarDestination(icon: CupertinoIcons.book, label: '知识库'),
+    AppSidebarDestination(icon: CupertinoIcons.graph_circle, label: '故事结构'),
+    AppSidebarDestination(icon: CupertinoIcons.chart_bar, label: '统计'),
+    AppSidebarDestination(icon: CupertinoIcons.gear, label: '设置'),
+  ];
+
+  /// The 5 primary destinations shown in the bottom tab bar.
+  static final List<AppSidebarDestination> primaryDestinations = destinations
+      .take(5)
+      .toList();
+
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
 
-    // Below collapsed breakpoint: bottom navigation bar (Android phone portrait)
+    // Below collapsed breakpoint: iOS bottom tab bar (phone portrait).
     if (screenWidth < AppConstants.sidebarCollapsedBreakpoint) {
-      return _BottomNavBar(
-        currentIndex: currentIndex,
+      return AppTabBar(
+        selectedIndex: currentIndex.clamp(0, primaryDestinations.length - 1),
+        destinations: primaryDestinations,
         onDestinationSelected: onDestinationSelected,
       );
     }
 
-    // Desktop sidebar: NavigationRail
+    // Desktop: macOS sidebar, icon-only until the extended breakpoint.
     final isExtended = screenWidth >= AppConstants.sidebarExtendedBreakpoint;
 
-    return NavigationRail(
+    return AppSidebar(
       selectedIndex: currentIndex,
+      destinations: destinations,
       onDestinationSelected: onDestinationSelected,
       extended: isExtended,
-      leading: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 16.0),
-        child: isExtended
-            ? Text(
-                '灵韵',
-                style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                  fontWeight: FontWeight.w700,
-                ),
-              )
-            : Text(
-                '灵',
-                style: Theme.of(
-                  context,
-                ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700),
-              ),
-      ),
-      destinations: const [
-        NavigationRailDestination(
-          icon: Icon(Icons.bookmark_outline),
-          selectedIcon: Icon(Icons.bookmark),
-          label: Text('捕捉器'),
-        ),
-        NavigationRailDestination(
-          icon: Icon(Icons.edit_note_outlined),
-          selectedIcon: Icon(Icons.edit_note),
-          label: Text('编辑器'),
-        ),
-        NavigationRailDestination(
-          icon: Icon(Icons.menu_book_outlined),
-          selectedIcon: Icon(Icons.menu_book),
-          label: Text('知识库'),
-        ),
-        NavigationRailDestination(
-          icon: Icon(Icons.account_tree_outlined),
-          selectedIcon: Icon(Icons.account_tree),
-          label: Text('故事结构'),
-        ),
-        NavigationRailDestination(
-          icon: Icon(Icons.insights_outlined),
-          selectedIcon: Icon(Icons.insights),
-          label: Text('统计'),
-        ),
-        NavigationRailDestination(
-          icon: Icon(Icons.settings_outlined),
-          selectedIcon: Icon(Icons.settings),
-          label: Text('设置'),
-        ),
-      ],
-    );
-  }
-}
-
-/// Bottom navigation bar for narrow screens (Android phone portrait).
-///
-/// Shows the 5 primary destinations only — Material 3 caps navigation bars
-/// at 3–5 destinations; a sixth squeezed every tap target below the 80dp
-/// minimum on a 390px screen (HF-3). Settings moves to the library AppBar's
-/// gear action on narrow layouts.
-class _BottomNavBar extends StatelessWidget {
-  final int currentIndex;
-  final ValueChanged<int> onDestinationSelected;
-
-  const _BottomNavBar({
-    required this.currentIndex,
-    required this.onDestinationSelected,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return NavigationBar(
-      selectedIndex: currentIndex.clamp(0, 4),
-      onDestinationSelected: onDestinationSelected,
-      // D-7: NavigationBar destinations in this Flutter version do not
-      // surface their labels to the semantics tree (verified by test —
-      // find.text works, find.bySemanticsLabel finds nothing), which made
-      // the mobile primary navigation invisible to screen readers. Wrap
-      // each label in an explicit Semantics node.
-      destinations: const [
-        NavigationDestination(
-          icon: Icon(Icons.bookmark_outline),
-          selectedIcon: Icon(Icons.bookmark),
-          label: '捕捉器',
-        ),
-        NavigationDestination(
-          icon: Icon(Icons.edit_note_outlined),
-          selectedIcon: Icon(Icons.edit_note),
-          label: '编辑器',
-        ),
-        NavigationDestination(
-          icon: Icon(Icons.menu_book_outlined),
-          selectedIcon: Icon(Icons.menu_book),
-          label: '知识库',
-        ),
-        NavigationDestination(
-          icon: Icon(Icons.account_tree_outlined),
-          selectedIcon: Icon(Icons.account_tree),
-          label: '故事结构',
-        ),
-        NavigationDestination(
-          icon: Icon(Icons.insights_outlined),
-          selectedIcon: Icon(Icons.insights),
-          label: '统计',
-        ),
-      ],
     );
   }
 }

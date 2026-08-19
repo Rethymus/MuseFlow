@@ -3,6 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:museflow/core/presentation/providers.dart';
 import 'package:museflow/features/manuscript/domain/chapter.dart';
 import 'package:museflow/features/manuscript/presentation/chapter_sidebar_row.dart';
+import 'package:museflow/shared/theme/app_colors.dart';
+import 'package:museflow/shared/theme/app_dimens.dart';
 
 /// Sidebar widget displaying a reorderable list of chapters for a manuscript.
 ///
@@ -47,11 +49,17 @@ class ChapterSidebar extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final chaptersAsync = ref.watch(chapterNotifierProvider);
-    final colorScheme = Theme.of(context).colorScheme;
+    final p = AppColors.of(context);
 
     return Container(
       width: 260,
-      color: colorScheme.surface,
+      decoration: BoxDecoration(
+        // Same sidebar material as the app shell's navigation column.
+        color: p.isDark ? const Color(0xFF101013) : const Color(0xFFECECF1),
+        border: Border(
+          right: BorderSide(color: p.separator, width: AppRadius.hairline),
+        ),
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
@@ -60,7 +68,7 @@ class ChapterSidebar extends ConsumerWidget {
             padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
             child: Text(
               manuscriptTitle,
-              style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
+              style: Theme.of(context).textTheme.headlineMedium,
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
             ),
@@ -79,7 +87,9 @@ class ChapterSidebar extends ConsumerWidget {
               error: (error, _) => Center(
                 child: Text(
                   '加载失败',
-                  style: TextStyle(fontSize: 13, color: colorScheme.error),
+                  style: Theme.of(
+                    context,
+                  ).textTheme.bodySmall?.copyWith(color: p.systemRed),
                 ),
               ),
               data: (chapters) {
@@ -87,10 +97,9 @@ class ChapterSidebar extends ConsumerWidget {
                   return Center(
                     child: Text(
                       '暂无章节',
-                      style: TextStyle(
-                        fontSize: 13,
-                        color: colorScheme.onSurfaceVariant,
-                      ),
+                      style: Theme.of(
+                        context,
+                      ).textTheme.bodySmall?.copyWith(color: p.secondaryLabel),
                     ),
                   );
                 }
@@ -173,9 +182,7 @@ class _ChapterRowWrapper extends StatelessWidget {
               child: Icon(
                 Icons.drag_handle,
                 size: 16,
-                color: Theme.of(
-                  context,
-                ).colorScheme.onSurfaceVariant.withValues(alpha: 0.5),
+                color: AppColors.of(context).tertiaryLabel,
               ),
             ),
           ),

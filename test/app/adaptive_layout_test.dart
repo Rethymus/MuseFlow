@@ -3,6 +3,8 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:museflow/core/presentation/app_shell.dart';
+import 'package:museflow/shared/widgets/app_sidebar.dart';
+import 'package:museflow/shared/widgets/app_tab_bar.dart';
 import 'package:museflow/shared/constants/app_constants.dart';
 
 /// Simple placeholder pages for testing layout without SuperEditor.
@@ -120,12 +122,10 @@ void main() {
       await tester.pumpAndSettle();
 
       // NavigationRail should be present
-      expect(find.byType(NavigationRail), findsOneWidget);
+      expect(find.byType(AppSidebar), findsOneWidget);
 
       // Should be extended (showing labels)
-      final navRail = tester.widget<NavigationRail>(
-        find.byType(NavigationRail),
-      );
+      final navRail = tester.widget<AppSidebar>(find.byType(AppSidebar));
       expect(navRail.extended, isTrue);
 
       // Labels should be visible for all 6 destinations
@@ -150,16 +150,14 @@ void main() {
       await tester.pumpAndSettle();
 
       // NavigationRail should be present
-      expect(find.byType(NavigationRail), findsOneWidget);
+      expect(find.byType(AppSidebar), findsOneWidget);
 
       // Should NOT be extended (icons only)
-      final navRail = tester.widget<NavigationRail>(
-        find.byType(NavigationRail),
-      );
+      final navRail = tester.widget<AppSidebar>(find.byType(AppSidebar));
       expect(navRail.extended, isFalse);
 
       // NavigationBar should NOT be present
-      expect(find.byType(NavigationBar), findsNothing);
+      expect(find.byType(AppTabBar), findsNothing);
 
       tester.view.resetPhysicalSize();
       tester.view.resetDevicePixelRatio();
@@ -175,16 +173,16 @@ void main() {
         await tester.pumpAndSettle();
 
         // NavigationBar should be present at bottom
-        expect(find.byType(NavigationBar), findsOneWidget);
+        expect(find.byType(AppTabBar), findsOneWidget);
 
         // NavigationRail should NOT be present
-        expect(find.byType(NavigationRail), findsNothing);
+        expect(find.byType(AppSidebar), findsNothing);
 
         // NavigationBar should have the 5 primary destinations with Chinese
         // labels (settings moves to the library AppBar below 600px — the
         // Material 3 navigation-bar cap is 5 destinations)
 
-        final navBar = tester.widget<NavigationBar>(find.byType(NavigationBar));
+        final navBar = tester.widget<AppTabBar>(find.byType(AppTabBar));
         expect(navBar.destinations.length, equals(5));
 
         // Labels should be visible in NavigationBar
@@ -208,9 +206,7 @@ void main() {
         await tester.pumpWidget(_createTestApp());
         await tester.pumpAndSettle();
 
-        final navRail = tester.widget<NavigationRail>(
-          find.byType(NavigationRail),
-        );
+        final navRail = tester.widget<AppSidebar>(find.byType(AppSidebar));
         expect(navRail.destinations.length, equals(6));
 
         tester.view.resetPhysicalSize();
@@ -223,7 +219,7 @@ void main() {
         await tester.pumpWidget(_createTestApp());
         await tester.pumpAndSettle();
 
-        final navBar = tester.widget<NavigationBar>(find.byType(NavigationBar));
+        final navBar = tester.widget<AppTabBar>(find.byType(AppTabBar));
         expect(navBar.destinations.length, equals(5));
 
         tester.view.resetPhysicalSize();

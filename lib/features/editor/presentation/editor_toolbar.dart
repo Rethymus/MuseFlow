@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:museflow/features/onboarding/presentation/opening_generator_sheet.dart';
+import 'package:museflow/shared/theme/app_colors.dart';
+import 'package:museflow/shared/theme/app_dimens.dart';
 import 'package:super_editor/super_editor.dart';
 
 /// Fixed formatting toolbar with 6 controls for the rich text editor.
@@ -19,11 +21,16 @@ class EditorToolbar extends StatefulWidget {
 class _EditorToolbarState extends State<EditorToolbar> {
   @override
   Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
+    final p = AppColors.of(context);
 
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-      color: colorScheme.surfaceContainerHighest,
+      decoration: BoxDecoration(
+        color: p.tertiaryGroupedBackground,
+        border: Border(
+          bottom: BorderSide(color: p.separator, width: AppRadius.hairline),
+        ),
+      ),
       child: ListenableBuilder(
         listenable: widget.editor.composer.selectionNotifier,
         builder: (context, _) {
@@ -46,7 +53,11 @@ class _EditorToolbarState extends State<EditorToolbar> {
               const SizedBox(width: 4),
               SizedBox(
                 height: 24,
-                child: VerticalDivider(color: colorScheme.outline),
+                child: VerticalDivider(
+                  width: 1,
+                  thickness: AppRadius.hairline,
+                  color: p.separator,
+                ),
               ),
               const SizedBox(width: 4),
               // Heading dropdown
@@ -55,8 +66,8 @@ class _EditorToolbarState extends State<EditorToolbar> {
                 icon: Icon(
                   Icons.title,
                   color: _activeHeadingAttribution() != null
-                      ? colorScheme.primary
-                      : colorScheme.onSurface,
+                      ? p.accent
+                      : p.label,
                 ),
                 onSelected: _setHeading,
                 itemBuilder: (context) => [
@@ -80,7 +91,11 @@ class _EditorToolbarState extends State<EditorToolbar> {
               const SizedBox(width: 4),
               SizedBox(
                 height: 24,
-                child: VerticalDivider(color: colorScheme.outline),
+                child: VerticalDivider(
+                  width: 1,
+                  thickness: AppRadius.hairline,
+                  color: p.separator,
+                ),
               ),
               const SizedBox(width: 4),
               // Unordered list button
@@ -100,7 +115,11 @@ class _EditorToolbarState extends State<EditorToolbar> {
               const SizedBox(width: 4),
               SizedBox(
                 height: 24,
-                child: VerticalDivider(color: colorScheme.outline),
+                child: VerticalDivider(
+                  width: 1,
+                  thickness: AppRadius.hairline,
+                  color: p.separator,
+                ),
               ),
               const SizedBox(width: 4),
               _FormatToggleButton(
@@ -310,13 +329,13 @@ class _FormatToggleButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
+    final p = AppColors.of(context);
 
     return IconButton(
       icon: Icon(icon),
       tooltip: tooltip,
-      iconSize: 24,
-      color: isActive ? colorScheme.primary : colorScheme.onSurface,
+      iconSize: 22,
+      color: isActive ? p.accent : p.label,
       onPressed: onPressed,
     );
   }
@@ -331,16 +350,17 @@ class _HeadingMenuItem extends PopupMenuItem<NamedAttribution> {
   }) : super(
          value: attribution,
          child: Builder(
-           builder: (context) {
-             final colorScheme = Theme.of(context).colorScheme;
-             return Row(
-               children: [
-                 Expanded(child: Text(label)),
-                 if (isActive)
-                   Icon(Icons.check, size: 16, color: colorScheme.primary),
-               ],
-             );
-           },
+           builder: (context) => Row(
+             children: [
+               Expanded(child: Text(label)),
+               if (isActive)
+                 Icon(
+                   Icons.check,
+                   size: 16,
+                   color: AppColors.of(context).accent,
+                 ),
+             ],
+           ),
          ),
        );
 }

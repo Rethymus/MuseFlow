@@ -3,6 +3,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:museflow/core/presentation/app_shell.dart';
+import 'package:museflow/shared/widgets/app_sidebar.dart';
 import 'package:museflow/shared/constants/app_constants.dart';
 
 /// Simple placeholder pages for testing navigation without SuperEditor.
@@ -178,9 +179,7 @@ void main() {
       await tester.pumpAndSettle();
 
       // NavigationRail should show editor (index 1) selected
-      final navRail = tester.widget<NavigationRail>(
-        find.byType(NavigationRail),
-      );
+      final navRail = tester.widget<AppSidebar>(find.byType(AppSidebar));
       expect(navRail.selectedIndex, equals(1));
 
       // Editor content should be visible
@@ -207,9 +206,7 @@ void main() {
       expect(find.text('TEST_CAPTURE'), findsOneWidget);
 
       // NavigationRail should show index 0 selected
-      final navRail = tester.widget<NavigationRail>(
-        find.byType(NavigationRail),
-      );
+      final navRail = tester.widget<AppSidebar>(find.byType(AppSidebar));
       expect(navRail.selectedIndex, equals(0));
 
       tester.view.resetPhysicalSize();
@@ -233,9 +230,7 @@ void main() {
       expect(find.text('TEST_SETTINGS'), findsOneWidget);
 
       // NavigationRail should show settings branch selected.
-      final navRail = tester.widget<NavigationRail>(
-        find.byType(NavigationRail),
-      );
+      final navRail = tester.widget<AppSidebar>(find.byType(AppSidebar));
       expect(navRail.selectedIndex, equals(5));
 
       tester.view.resetPhysicalSize();

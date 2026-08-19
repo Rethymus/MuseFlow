@@ -112,7 +112,7 @@ class _AppShellScaffoldState extends ConsumerState<AppShellScaffold> {
                 );
               },
             ),
-            const VerticalDivider(width: 1, thickness: 1),
+            // The sidebar draws its own hairline right border.
             Expanded(child: _withWebBackupReminder(widget.navigationShell)),
           ],
         ),
