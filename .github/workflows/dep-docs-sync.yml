@@ -1,0 +1,35 @@
+name: Dependency Docs Sync
+
+# keep CLAUDE.md's dependency table in sync with pubspec.yaml on dependency
+# PRs, so scripts/check_dependency_docs.sh (CI gate) stays green without
+# manual doc edits. Future-only: dependabot branches created after this
+# workflow lands on main carry it automatically.
+on:
+  pull_request:
+    paths:
+      - "pubspec.yaml"
+
+permissions:
+  contents: write
+
+jobs:
+  sync:
+    if: startsWith(github.head_ref, 'dependabot/')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: ${{ github.head_ref }}
+      - name: Sync CLAUDE.md dependency table
+        run: python3 scripts/sync_dependency_docs.py
+      - name: Commit synced docs
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add CLAUDE.md
+          if git diff --cached --quiet; then
+            echo "nothing to sync"
+            exit 0
+          fi
+          git commit -m "docs: sync CLAUDE.md dependency table with pubspec.yaml"
+          git push
