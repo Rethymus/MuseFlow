@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:museflow/features/manuscript/domain/manuscript.dart';
 import 'package:museflow/features/manuscript/domain/manuscript_genre.dart';
 import 'package:museflow/shared/theme/app_colors.dart';
+import 'package:museflow/shared/widgets/app_pressable.dart';
 import 'package:museflow/shared/theme/app_dimens.dart';
 
 /// A card widget displaying a manuscript summary in the library grid.
@@ -74,42 +75,45 @@ class _ManuscriptCardState extends State<ManuscriptCard> {
                   ]
                 : null,
           ),
-          child: ClipRRect(
-            borderRadius: AppRadius.rMedium,
-            child: Material(
-              color: Colors.transparent,
-              child: InkWell(
-                onTap: widget.onTap,
-                // Desktop convention (SE-8): right-click opens the same
-                // actions as the hover "⋮" menu.
-                onSecondaryTapUp: hasMenu
-                    ? (details) => _showMenuAt(context, details.globalPosition)
-                    : null,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    _buildCoverArea(p, hasMenu),
-                    Expanded(
-                      child: Padding(
-                        padding: const EdgeInsets.all(16),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              widget.manuscript.title,
-                              style: theme.textTheme.titleMedium,
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                            const SizedBox(height: 8),
-                            _buildProgressBar(theme, p),
-                            const Spacer(),
-                            _buildBottomRow(theme, p),
-                          ],
+          child: AppPressable(
+            child: ClipRRect(
+              borderRadius: AppRadius.rMedium,
+              child: Material(
+                color: Colors.transparent,
+                child: InkWell(
+                  onTap: widget.onTap,
+                  // Desktop convention (SE-8): right-click opens the same
+                  // actions as the hover "⋮" menu.
+                  onSecondaryTapUp: hasMenu
+                      ? (details) =>
+                            _showMenuAt(context, details.globalPosition)
+                      : null,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      _buildCoverArea(p, hasMenu),
+                      Expanded(
+                        child: Padding(
+                          padding: const EdgeInsets.all(16),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                widget.manuscript.title,
+                                style: theme.textTheme.titleMedium,
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                              const SizedBox(height: 8),
+                              _buildProgressBar(theme, p),
+                              const Spacer(),
+                              _buildBottomRow(theme, p),
+                            ],
+                          ),
                         ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
             ),

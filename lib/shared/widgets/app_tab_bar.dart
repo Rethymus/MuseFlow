@@ -9,6 +9,7 @@ import 'package:flutter/material.dart';
 
 import '../theme/app_colors.dart';
 import '../theme/app_materials.dart';
+import 'app_pressable.dart';
 import 'app_sidebar.dart';
 
 /// iOS-style bottom tab bar with a blurred translucent background.
@@ -80,9 +81,8 @@ class _TabItem extends StatelessWidget {
       button: true,
       selected: selected,
       label: destination.label,
-      child: GestureDetector(
+      child: AppPressable(
         onTap: onTap,
-        behavior: HitTestBehavior.opaque,
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [

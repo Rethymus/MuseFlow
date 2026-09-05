@@ -37,6 +37,7 @@ import 'package:museflow/features/templates/presentation/template_draft_page.dar
 import 'package:museflow/features/templates/presentation/template_gallery_page.dart';
 import 'package:museflow/features/templates/presentation/template_preview_page.dart';
 import 'package:museflow/shared/constants/app_constants.dart';
+import 'package:museflow/shared/theme/apple_scroll_behavior.dart';
 import 'package:museflow/shared/theme/app_theme.dart';
 
 part 'app_routes.dart';
@@ -55,6 +56,7 @@ class MuseFlowApp extends ConsumerWidget {
     return MaterialApp.router(
       title: 'MuseFlow 灵韵',
       debugShowCheckedModeBanner: false,
+      scrollBehavior: const AppleScrollBehavior(),
       theme: appTheme(Brightness.light),
       darkTheme: appTheme(Brightness.dark),
       themeMode: ref.watch(themeModeProvider),
