@@ -9,6 +9,7 @@ import 'package:flutter/material.dart';
 
 import '../theme/app_colors.dart';
 import '../theme/app_dimens.dart';
+import 'app_pressable.dart';
 
 /// A flat content card used across list and grid layouts.
 class AppCard extends StatelessWidget {
@@ -51,13 +52,18 @@ class AppCard extends StatelessWidget {
     );
 
     if (onTap == null && onLongPress == null) return card;
-    return InkWell(
-      onTap: onTap,
-      onLongPress: onLongPress,
-      customBorder: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(radius),
+    // Apple press feedback: the whole card scales down while pressed and
+    // springs back on release; the inner InkWell keeps owning the tap for
+    // semantics, ink and right-click affordances.
+    return AppPressable(
+      child: InkWell(
+        onTap: onTap,
+        onLongPress: onLongPress,
+        customBorder: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(radius),
+        ),
+        child: card,
       ),
-      child: card,
     );
   }
 }
