@@ -46,10 +46,13 @@ void main() {
     await tester.pumpAndSettle();
     // The destructive alert action carries the clear logic.
     await tester.tap(find.text('清除'));
-    await tester.pumpAndSettle();
+    await tester.pump();
 
     expect(clearCount, 1);
     expect(find.text('写作统计已清除'), findsOneWidget);
+    // Toast lifecycle completes without pending timers.
+    await tester.pumpAndSettle(const Duration(seconds: 4));
+    expect(find.text('写作统计已清除'), findsNothing);
   });
 
   testWidgets(

@@ -20,6 +20,7 @@ import 'package:museflow/features/ai/presentation/parameter_validation.dart';
 import 'package:museflow/features/ai/presentation/provider_card.dart';
 import 'package:museflow/features/ai/presentation/provider_management_notifier.dart';
 import 'package:museflow/shared/constants/app_constants.dart';
+import 'package:museflow/shared/widgets/app_toast.dart';
 
 part 'provider_management_page_layout.dart';
 
@@ -176,15 +177,11 @@ class _ProviderManagementPageState
 
   Future<void> _handleSave() async {
     if (kIsWeb && !_hasValidWebBaseUrl()) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Web 版服务地址必须是有效的 HTTPS URL')),
-      );
+      showAppToast(context, message: 'Web 版服务地址必须是有效的 HTTPS URL');
       return;
     }
     if (!_validateForm()) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text('请填写所有必填字段')));
+      showAppToast(context, message: '请填写所有必填字段');
       return;
     }
 

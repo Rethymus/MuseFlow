@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:museflow/core/presentation/providers.dart';
 import 'package:museflow/features/story_structure/domain/plot_node.dart';
+import 'package:museflow/shared/widgets/app_toast.dart';
 
 /// Form for creating and editing plot nodes.
 ///
@@ -144,9 +145,7 @@ class _PlotNodeFormState extends ConsumerState<PlotNodeForm> {
     final chapter = int.tryParse(chapterText) ?? 1;
 
     if (title.isEmpty) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text('请输入标题')));
+      showAppToast(context, message: '请输入标题');
       return;
     }
 
@@ -183,9 +182,7 @@ class _PlotNodeFormState extends ConsumerState<PlotNodeForm> {
       if (mounted) Navigator.of(context).pop();
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text('保存失败: $e')));
+        showAppToast(context, message: '保存失败: $e');
       }
     } finally {
       if (mounted) setState(() => _isSaving = false);

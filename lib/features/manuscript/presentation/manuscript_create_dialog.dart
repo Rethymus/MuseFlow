@@ -6,6 +6,7 @@ import 'package:museflow/features/manuscript/application/manuscript_notifier.dar
 import 'package:museflow/features/manuscript/domain/manuscript.dart';
 import 'package:museflow/features/manuscript/domain/manuscript_genre.dart';
 import 'package:museflow/shared/widgets/app_shake.dart';
+import 'package:museflow/shared/widgets/app_toast.dart';
 
 const _manuscriptTitleMaxLength = 100;
 const _customGenreMaxLength = 20;
@@ -207,9 +208,7 @@ class _ManuscriptCreateDialogState
     } catch (e) {
       if (mounted) {
         setState(() => _isCreating = false);
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text('创建失败: $e')));
+        showAppToast(context, message: '创建失败: $e');
       }
     }
   }

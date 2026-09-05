@@ -154,14 +154,20 @@ void main() {
 
       expect(find.text('已保存'), findsOneWidget);
 
-      await tester.pumpAndSettle();
-      // After settling, the toast sits fully entered (opacity 1).
+      // Advance a single 900ms frame: the entrance spring has settled but
+      // the hold (2.4s, frame-scheduled) has not — toast fully entered.
+      await tester.pump(const Duration(milliseconds: 900));
       final toast = find.ancestor(
         of: find.text('已保存'),
         matching: find.byType(Opacity),
       );
       final opacity = tester.widget<Opacity>(toast).opacity;
       expect(opacity, 1.0);
+
+      // The frame-scheduled hold then auto-dismisses: full lifecycle
+      // (entrance → hold → fade → removal) without pending timers.
+      await tester.pumpAndSettle(const Duration(seconds: 4));
+      expect(find.text('已保存'), findsNothing);
     });
   });
 

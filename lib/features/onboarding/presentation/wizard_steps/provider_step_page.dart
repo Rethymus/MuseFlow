@@ -11,6 +11,7 @@ import 'package:museflow/core/presentation/providers.dart';
 import 'package:museflow/features/ai/domain/ai_exception.dart';
 import 'package:museflow/features/ai/domain/ai_provider.dart';
 import 'package:museflow/features/ai/infrastructure/preset_providers.dart';
+import 'package:museflow/shared/widgets/app_toast.dart';
 
 /// Callback type for provider setup completion.
 typedef ProviderSetupCallback = void Function(bool configured);
@@ -129,9 +130,7 @@ class _ProviderStepPageState extends ConsumerState<ProviderStepPage> {
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text('保存失败: $e')));
+        showAppToast(context, message: '保存失败: $e');
       }
     } finally {
       if (mounted) setState(() => _isSaving = false);

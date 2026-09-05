@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:museflow/core/presentation/providers.dart';
+import 'package:museflow/shared/widgets/app_toast.dart';
 
 class SkillGenerationWizard extends ConsumerStatefulWidget {
   const SkillGenerationWizard({super.key});
@@ -102,9 +103,7 @@ class _SkillGenerationWizardState extends ConsumerState<SkillGenerationWizard> {
     if (_step == 0) {
       if (_nameController.text.trim().isEmpty ||
           _conceptController.text.trim().isEmpty) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(const SnackBar(content: Text('请填写名称和概念')));
+        showAppToast(context, message: '请填写名称和概念');
         return;
       }
       setState(() => _step = 1);

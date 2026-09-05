@@ -231,10 +231,13 @@ void main() {
 
       // Tap save
       await tester.tap(find.text('保存'));
-      await tester.pumpAndSettle();
+      await tester.pump();
 
-      // SnackBar should show success message
+      // Toast shows the success message…
       expect(find.text('灵感已保存'), findsOneWidget);
+      // …then the frame-scheduled hold auto-dismisses it.
+      await tester.pumpAndSettle(const Duration(seconds: 4));
+      expect(find.text('灵感已保存'), findsNothing);
     });
   });
 

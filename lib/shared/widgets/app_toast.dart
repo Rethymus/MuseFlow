@@ -8,8 +8,6 @@
 /// Only one toast at a time: a new call replaces the current one.
 library;
 
-import 'dart:async';
-
 import 'package:flutter/material.dart';
 
 import '../theme/app_colors.dart';
@@ -66,7 +64,11 @@ class _AppToastViewState extends State<_AppToastView>
     with TickerProviderStateMixin {
   late final AnimationController _entrance;
   late final AnimationController _exit;
-  Timer? _timer;
+
+  /// The hold delay is frame-scheduled (not a Timer) so tests can
+  /// fast-forward it with pumpAndSettle, and so it composes with the
+  /// exit animation without pending-timer teardown failures.
+  late final AnimationController _hold;
   bool _removing = false;
 
   @override
@@ -87,12 +89,15 @@ class _AppToastViewState extends State<_AppToastView>
         start: 0.0,
       ),
     );
-    _timer = Timer(widget.duration, _dismissAndRemove);
+    _hold = AnimationController(vsync: this, duration: widget.duration)
+      ..forward().whenComplete(_dismissAndRemove);
   }
 
   void _dismissAndRemove() {
-    _timer?.cancel();
-    _timer = null;
+    if (!mounted) {
+      _currentEntry = null;
+      return;
+    }
     if (_removing) return;
     _removing = true;
     _exit.forward().whenComplete(widget.onRemove);
@@ -100,8 +105,11 @@ class _AppToastViewState extends State<_AppToastView>
 
   @override
   void dispose() {
-    _timer?.cancel();
+    // Clear the process-wide handle if it still points here, so a toast
+    // left mounted across a tree teardown can't poison the next one.
+    if (_currentEntry == this) _currentEntry = null;
     _entrance.dispose();
+    _hold.dispose();
     _exit.dispose();
     super.dispose();
   }

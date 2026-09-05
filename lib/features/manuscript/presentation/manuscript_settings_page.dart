@@ -6,6 +6,7 @@ import 'package:museflow/core/presentation/providers.dart';
 import 'package:museflow/features/manuscript/application/manuscript_notifier.dart';
 import 'package:museflow/features/manuscript/domain/manuscript.dart';
 import 'package:museflow/features/manuscript/domain/manuscript_genre.dart';
+import 'package:museflow/shared/widgets/app_toast.dart';
 
 const _manuscriptTitleMaxLength = 100;
 const _customGenreMaxLength = 20;
@@ -244,16 +245,10 @@ class _ManuscriptSettingsPageState
     final title = _titleController.text.trim();
     if (title.isEmpty) {
       setState(() => _titleError = '标题不能为空');
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text('标题不能为空')));
       return;
     }
     if (title.length > _manuscriptTitleMaxLength) {
       setState(() => _titleError = '标题不能超过100个字符');
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text('标题不能超过100个字符')));
       return;
     }
 
@@ -262,16 +257,10 @@ class _ManuscriptSettingsPageState
         : _selectedGenre;
     if (genre.isEmpty) {
       setState(() => _genreError = '请输入自定义类型');
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text('请输入自定义类型')));
       return;
     }
     if (_isCustomGenre && genre.length > _customGenreMaxLength) {
       setState(() => _genreError = '类型不能超过20个字符');
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text('类型不能超过20个字符')));
       return;
     }
 
@@ -293,17 +282,13 @@ class _ManuscriptSettingsPageState
       await ref.read(manuscriptNotifierProvider.notifier).save(updated);
 
       if (mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(const SnackBar(content: Text('保存成功')));
+        showAppToast(context, message: '保存成功');
         setState(() => _isSaving = false);
       }
     } catch (e) {
       if (mounted) {
         setState(() => _isSaving = false);
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text('保存失败: $e')));
+        showAppToast(context, message: '保存失败: $e');
       }
     }
   }

@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:museflow/core/presentation/providers.dart';
 import 'package:museflow/features/knowledge/domain/world_setting.dart';
 import 'package:museflow/shared/widgets/app_card.dart';
+import 'package:museflow/shared/widgets/app_toast.dart';
 
 /// Form for creating or editing a [WorldSetting].
 ///
@@ -252,16 +253,12 @@ class _WorldSettingFormState extends ConsumerState<WorldSettingForm> {
       }
 
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(_isEditing ? '世界观已更新' : '世界观已创建')),
-        );
+        showAppToast(context, message: _isEditing ? '世界观已更新' : '世界观已创建');
         context.go('/knowledge');
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text('保存失败: $e')));
+        showAppToast(context, message: '保存失败: $e');
       }
     } finally {
       if (mounted) {

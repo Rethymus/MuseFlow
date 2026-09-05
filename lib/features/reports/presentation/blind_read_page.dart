@@ -4,6 +4,7 @@ import 'package:museflow/features/reports/application/report_export_service.dart
 import 'package:museflow/features/reports/domain/blind_read_result.dart';
 import 'package:museflow/features/reports/providers.dart';
 import 'package:museflow/features/story_structure/application/export_service.dart';
+import 'package:museflow/shared/widgets/app_toast.dart';
 
 class BlindReadPage extends ConsumerWidget {
   const BlindReadPage({super.key});
@@ -39,9 +40,7 @@ class BlindReadPage extends ConsumerWidget {
     const path = 'anti-ai-scent-report.md';
     await ExportService.dartFileWriter(path, markdown);
     if (!context.mounted) return;
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('报告已导出至: anti-ai-scent-report.md')),
-    );
+    showAppToast(context, message: '报告已导出至: anti-ai-scent-report.md');
   }
 }
 

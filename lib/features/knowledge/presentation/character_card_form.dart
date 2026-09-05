@@ -7,6 +7,7 @@ import 'package:museflow/features/knowledge/domain/character_card.dart';
 import 'package:museflow/features/knowledge/domain/character_relationship.dart';
 import 'package:museflow/shared/theme/app_colors.dart';
 import 'package:museflow/shared/widgets/app_card.dart';
+import 'package:museflow/shared/widgets/app_toast.dart';
 import 'package:uuid/uuid.dart';
 
 /// Form for creating or editing a [CharacterCard].
@@ -228,16 +229,12 @@ class _CharacterCardFormState extends ConsumerState<CharacterCardForm> {
       }
 
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(_isEditing ? '角色卡已更新' : '角色卡已创建')),
-        );
+        showAppToast(context, message: _isEditing ? '角色卡已更新' : '角色卡已创建');
         context.go('/knowledge');
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text('保存失败: $e')));
+        showAppToast(context, message: '保存失败: $e');
       }
     } finally {
       if (mounted) {
@@ -512,9 +509,7 @@ class _AddRelationshipDialogState
       if (mounted) Navigator.of(context).pop();
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text('添加失败: $e')));
+        showAppToast(context, message: '添加失败: $e');
       }
     } finally {
       if (mounted) setState(() => _isSaving = false);

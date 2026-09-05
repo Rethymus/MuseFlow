@@ -16,6 +16,7 @@ import 'package:museflow/features/onboarding/presentation/wizard_steps/opening_s
 import 'package:museflow/features/onboarding/presentation/wizard_steps/provider_step_page.dart';
 import 'package:museflow/features/onboarding/presentation/wizard_steps/world_step_page.dart';
 import 'package:museflow/shared/constants/app_constants.dart';
+import 'package:museflow/shared/widgets/app_toast.dart';
 
 /// Full-screen onboarding wizard with 4-step PageView navigation.
 ///
@@ -150,9 +151,7 @@ class _OnboardingWizardPageState extends ConsumerState<OnboardingWizardPage> {
       await repository.add(setting);
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text('世界观创建失败: $e')));
+        showAppToast(context, message: '世界观创建失败: $e');
       }
     }
   }
@@ -171,9 +170,7 @@ class _OnboardingWizardPageState extends ConsumerState<OnboardingWizardPage> {
       await repository.add(card);
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text('角色创建失败: $e')));
+        showAppToast(context, message: '角色创建失败: $e');
       }
     }
   }

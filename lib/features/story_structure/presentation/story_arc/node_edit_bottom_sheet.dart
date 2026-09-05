@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:museflow/core/presentation/providers.dart';
 import 'package:museflow/features/story_structure/domain/plot_node.dart';
+import 'package:museflow/shared/widgets/app_toast.dart';
 
 /// Bottom sheet form for creating or editing plot nodes from the graph.
 class NodeEditBottomSheet extends ConsumerStatefulWidget {
@@ -158,24 +159,18 @@ class _NodeEditBottomSheetState extends ConsumerState<NodeEditBottomSheet> {
   Future<void> _save() async {
     final title = _titleController.text.trim();
     if (title.isEmpty) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text('请输入标题')));
+      showAppToast(context, message: '请输入标题');
       return;
     }
 
     final chapterText = _chapterController.text.trim();
     final chapter = int.tryParse(chapterText);
     if (chapter == null) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text('请输入有效的章节号')));
+      showAppToast(context, message: '请输入有效的章节号');
       return;
     }
     if (chapter <= 0) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text('章节号必须大于0')));
+      showAppToast(context, message: '章节号必须大于0');
       return;
     }
 
@@ -214,9 +209,7 @@ class _NodeEditBottomSheetState extends ConsumerState<NodeEditBottomSheet> {
       if (mounted) Navigator.of(context).pop();
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text('保存失败: $e')));
+        showAppToast(context, message: '保存失败: $e');
       }
     } finally {
       if (mounted) setState(() => _isSaving = false);

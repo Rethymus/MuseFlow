@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:museflow/features/capture/presentation/capture_provider.dart';
+import 'package:museflow/shared/widgets/app_toast.dart';
 
 /// Quick-capture overlay dialog for capturing fleeting ideas.
 ///
@@ -44,9 +45,7 @@ class _QuickCaptureDialogState extends ConsumerState<QuickCaptureDialog> {
     Navigator.of(context).pop();
 
     // Show success snackbar on the scaffold messenger
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('灵感已保存'), duration: Duration(seconds: 2)),
-    );
+    showAppToast(context, message: '灵感已保存', duration: Duration(seconds: 2));
   }
 
   void _cancel() {

@@ -29,6 +29,7 @@ import 'package:museflow/features/manuscript/presentation/chapter_rename_dialog.
 import 'package:museflow/features/manuscript/presentation/chapter_sidebar.dart';
 import 'package:museflow/features/stats/application/writing_stats_collector.dart';
 import 'package:museflow/shared/constants/app_constants.dart';
+import 'package:museflow/shared/widgets/app_toast.dart';
 import 'package:super_editor/super_editor.dart';
 
 part 'editor_with_sidebar_intents.dart';
@@ -446,9 +447,7 @@ class _EditorWithSidebarState extends ConsumerState<EditorWithSidebar>
     final plainText = _getDocumentPlainText(_editor!.document);
     final offset = _getSelectionOffset(selection);
     if (offset == null) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text('只能在文本位置拆分章节')));
+      showAppToast(context, message: '只能在文本位置拆分章节');
       return;
     }
     final before = plainText.substring(0, offset);

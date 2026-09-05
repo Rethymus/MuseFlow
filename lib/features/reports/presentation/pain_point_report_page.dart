@@ -6,6 +6,7 @@ import 'package:museflow/features/reports/presentation/severity_indicator.dart';
 import 'package:museflow/features/reports/providers.dart';
 import 'package:museflow/features/stats/presentation/stats_summary_card.dart';
 import 'package:museflow/features/story_structure/application/export_service.dart';
+import 'package:museflow/shared/widgets/app_toast.dart';
 
 class PainPointReportPage extends ConsumerWidget {
   const PainPointReportPage({super.key});
@@ -42,9 +43,7 @@ class PainPointReportPage extends ConsumerWidget {
     const path = 'pain-point-report.md';
     await ExportService.dartFileWriter(path, markdown);
     if (!context.mounted) return;
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('报告已导出至: pain-point-report.md')),
-    );
+    showAppToast(context, message: '报告已导出至: pain-point-report.md');
   }
 }
 

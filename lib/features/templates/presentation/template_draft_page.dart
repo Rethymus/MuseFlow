@@ -6,6 +6,7 @@ import 'package:museflow/core/presentation/providers.dart';
 import 'package:museflow/features/templates/application/template_draft.dart';
 import 'package:museflow/features/templates/domain/world_template.dart';
 import 'package:museflow/shared/constants/app_constants.dart';
+import 'package:museflow/shared/widgets/app_toast.dart';
 
 class TemplateDraftPage extends ConsumerStatefulWidget {
   const TemplateDraftPage({
@@ -143,14 +144,13 @@ class _TemplateDraftPageState extends ConsumerState<TemplateDraftPage> {
       final result = await service.completeBlankFields(_draft!);
       if (!mounted) return;
       setState(() => _draft = result.draft);
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(result.succeeded ? 'AI补全完成' : 'AI补全失败，可继续手动保存')),
+      showAppToast(
+        context,
+        message: result.succeeded ? 'AI补全完成' : 'AI补全失败，可继续手动保存',
       );
     } catch (_) {
       if (!mounted) return;
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text('AI补全失败，可继续手动保存')));
+      showAppToast(context, message: 'AI补全失败，可继续手动保存');
     } finally {
       if (mounted) setState(() => _isCompleting = false);
     }

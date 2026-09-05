@@ -21,6 +21,7 @@ import 'package:museflow/features/editor/domain/context_anchor.dart';
 import 'package:museflow/features/editor/domain/editor_ai_state.dart';
 import 'package:museflow/shared/theme/app_colors.dart';
 import 'package:museflow/shared/theme/app_materials.dart';
+import 'package:museflow/shared/widgets/app_toast.dart';
 import 'package:uuid/uuid.dart';
 import 'package:super_editor/super_editor.dart';
 
@@ -203,22 +204,20 @@ class _FloatingToolbarState extends ConsumerState<FloatingToolbar> {
     final added = notifier.add(anchor);
 
     if (!added && mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('锚点数量已达上限（最多10个）'),
-          duration: Duration(seconds: 2),
-        ),
+      showAppToast(
+        context,
+        message: '锚点数量已达上限（最多10个）',
+        duration: Duration(seconds: 2),
       );
       return;
     }
 
     if (mounted) {
       final label = type == AnchorType.persistent ? '持久锚点' : '本次参考';
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('已设置为$label'),
-          duration: const Duration(seconds: 2),
-        ),
+      showAppToast(
+        context,
+        message: '已设置为$label',
+        duration: const Duration(seconds: 2),
       );
     }
   }

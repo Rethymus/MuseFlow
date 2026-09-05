@@ -8,6 +8,7 @@ import 'package:museflow/core/platform/export_file_writer.dart';
 import 'package:museflow/core/platform/web_workspace_mode.dart';
 import 'package:museflow/core/presentation/providers.dart';
 import 'package:museflow/features/manuscript/application/manuscript_backup_service.dart';
+import 'package:museflow/shared/widgets/app_toast.dart';
 
 class WebWorkspaceSettingsSection extends ConsumerWidget {
   const WebWorkspaceSettingsSection({super.key});
@@ -99,9 +100,7 @@ class WebWorkspaceSettingsSection extends ConsumerWidget {
     final message = status.isPersistent
         ? '浏览器已授予持久化存储保护'
         : '浏览器未授予持久化保护，请定期导出备份';
-    ScaffoldMessenger.of(
-      context,
-    ).showSnackBar(SnackBar(content: Text(message)));
+    showAppToast(context, message: message);
   }
 
   Future<void> _exportBackup(BuildContext context, WidgetRef ref) async {
@@ -126,14 +125,10 @@ class WebWorkspaceSettingsSection extends ConsumerWidget {
       await settings.saveLastBrowserBackupAt(now);
       ref.invalidate(settingsRepositoryProvider);
       if (!context.mounted) return;
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text('作品备份已下载')));
+      showAppToast(context, message: '作品备份已下载');
     } catch (error) {
       if (!context.mounted) return;
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('备份失败：$error')));
+      showAppToast(context, message: '备份失败：$error');
     }
   }
 
@@ -179,18 +174,13 @@ class WebWorkspaceSettingsSection extends ConsumerWidget {
       ref.invalidate(manuscriptNotifierProvider);
       ref.invalidate(chapterNotifierProvider);
       if (!context.mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            '已导入 ${result.manuscriptCount} 部作品、${result.chapterCount} 个章节',
-          ),
-        ),
+      showAppToast(
+        context,
+        message: '已导入 ${result.manuscriptCount} 部作品、${result.chapterCount} 个章节',
       );
     } catch (error) {
       if (!context.mounted) return;
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('导入失败：$error')));
+      showAppToast(context, message: '导入失败：$error');
     }
   }
 
