@@ -19,6 +19,7 @@ class AppTabBar extends StatelessWidget {
     required this.selectedIndex,
     required this.destinations,
     required this.onDestinationSelected,
+    this.scrollEdge,
   });
 
   /// Index of the selected tab (named after NavigationBar's contract).
@@ -26,6 +27,10 @@ class AppTabBar extends StatelessWidget {
 
   final List<AppSidebarDestination> destinations;
   final ValueChanged<int> onDestinationSelected;
+
+  /// Optional scroll-edge intensity; strengthens the frost while content
+  /// scrolls beneath (HIG scroll edge effect).
+  final AppScrollEdge? scrollEdge;
 
   static const double barHeight = 50;
 
@@ -35,6 +40,7 @@ class AppTabBar extends StatelessWidget {
       tier: AppMaterialTier.ultraThin,
       radius: BorderRadius.zero,
       borderEdges: const {LogicalEdge.top},
+      scrollEdge: scrollEdge,
       child: SafeArea(
         top: false,
         child: SizedBox(

@@ -22,10 +22,27 @@ library;
 
 import 'dart:ui';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 import 'app_colors.dart';
 import 'app_dimens.dart';
+
+/// Scroll-edge state shared between a scrolling content area and the
+/// chrome floating above it (HIG Materials "scroll edge effect": the
+/// floating surface gains opacity as content scrolls beneath it, keeping
+/// text legible while staying translucent at rest).
+///
+/// 0.0 = content at its top boundary (fully translucent chrome);
+/// ramps to 1.0 within the first ~100px of scroll.
+class AppScrollEdge extends ValueNotifier<double> {
+  AppScrollEdge() : super(0.0);
+
+  /// Maps a scroll offset to the 0..1 edge intensity.
+  void updateFromOffset(double pixels) {
+    value = (pixels / 100).clamp(0.0, 1.0);
+  }
+}
 
 /// Neutral elevation ramp for opaque surfaces (no blur needed).
 ///
@@ -115,6 +132,7 @@ class AppMaterial extends StatelessWidget {
     this.radius = AppRadius.cMedium,
     this.borderEdges = const {},
     this.shadow = false,
+    this.scrollEdge,
   });
 
   /// Which edges carry the separator hairline (e.g. right edge of a
@@ -125,6 +143,11 @@ class AppMaterial extends StatelessWidget {
   /// Adds the soft floating shadow (popovers/alerts only).
   final bool shadow;
 
+  /// When provided, the tint opacity strengthens by up to +25% as the
+  /// edge value goes 0→1 (content scrolled beneath the surface) — the
+  /// HIG scroll edge effect that keeps floating chrome legible.
+  final ValueListenable<double>? scrollEdge;
+
   final AppMaterialTier tier;
   final BorderRadiusGeometry radius;
   final Widget child;
@@ -132,7 +155,10 @@ class AppMaterial extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final p = AppColors.of(context);
-    final tint = tier.tintBaseOn(p).withValues(alpha: tier.tintOpacityOn(p));
+    final baseOpacity = tier.tintOpacityOn(p);
+    final tint = scrollEdge == null
+        ? tier.tintBaseOn(p).withValues(alpha: baseOpacity)
+        : null; // built per-frame in the ValueListenableBuilder below
 
     // Hairlines are painted as overlay layers (not a Border) because
     // BoxDecoration cannot combine a borderRadius with per-side colors —
@@ -215,11 +241,16 @@ class AppMaterial extends StatelessWidget {
         borderRadius: radius,
         child: BackdropFilter(
           filter: ImageFilter.blur(sigmaX: tier.sigma, sigmaY: tier.sigma),
-          child: DecoratedBox(
-            decoration: BoxDecoration(color: tint, borderRadius: radius),
-            // Transparent Material so ink-based children (InkWell,
-            // ListTile) work without relying on a Scaffold ancestor.
+          child: _TintLayer(
+            p: p,
+            tier: tier,
+            baseOpacity: baseOpacity,
+            tint: tint,
+            radius: radius,
+            scrollEdge: scrollEdge,
             child: Material(
+              // Transparent Material so ink-based children (InkWell,
+              // ListTile) work without relying on a Scaffold ancestor.
               type: MaterialType.transparency,
               child: Stack(
                 children: [
@@ -238,6 +269,55 @@ class AppMaterial extends StatelessWidget {
           ),
         ),
       ),
+    );
+  }
+}
+
+/// The translucent tint layer; rebuilds only when the scroll edge value
+/// changes (scroll-linked chrome opacity, HIG Materials).
+class _TintLayer extends StatelessWidget {
+  const _TintLayer({
+    required this.p,
+    required this.tier,
+    required this.baseOpacity,
+    required this.tint,
+    required this.radius,
+    required this.scrollEdge,
+    required this.child,
+  });
+
+  final AppPalette p;
+  final AppMaterialTier tier;
+  final double baseOpacity;
+
+  /// Prebuilt tint when no scroll edge is wired; null otherwise.
+  final Color? tint;
+  final BorderRadiusGeometry radius;
+  final ValueListenable<double>? scrollEdge;
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    if (scrollEdge == null) {
+      return DecoratedBox(
+        decoration: BoxDecoration(color: tint, borderRadius: radius),
+        child: child,
+      );
+    }
+    return ValueListenableBuilder<double>(
+      valueListenable: scrollEdge!,
+      builder: (context, edge, _) {
+        // Up to +25% opacity as content scrolls beneath: legibility while
+        // scrolling, full translucency at rest.
+        final opacity = (baseOpacity + 0.25 * edge).clamp(0.0, 1.0);
+        return DecoratedBox(
+          decoration: BoxDecoration(
+            color: tier.tintBaseOn(p).withValues(alpha: opacity),
+            borderRadius: radius,
+          ),
+          child: child,
+        );
+      },
     );
   }
 }

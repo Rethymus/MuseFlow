@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart' show CupertinoIcons;
 import 'package:flutter/material.dart';
 import 'package:museflow/shared/constants/app_constants.dart';
+import 'package:museflow/shared/theme/app_materials.dart';
 import 'package:museflow/shared/widgets/app_sidebar.dart';
 import 'package:museflow/shared/widgets/app_tab_bar.dart';
 
@@ -17,10 +18,15 @@ class AdaptiveSidebar extends StatelessWidget {
   final int currentIndex;
   final ValueChanged<int> onDestinationSelected;
 
+  /// Scroll-edge intensity of the content this chrome floats over;
+  /// strengthens the material tint while content scrolls beneath.
+  final AppScrollEdge? scrollEdge;
+
   const AdaptiveSidebar({
     super.key,
     required this.currentIndex,
     required this.onDestinationSelected,
+    this.scrollEdge,
   });
 
   /// All six desktop destinations (capture, editor, knowledge, structure,
@@ -49,6 +55,7 @@ class AdaptiveSidebar extends StatelessWidget {
         selectedIndex: currentIndex.clamp(0, primaryDestinations.length - 1),
         destinations: primaryDestinations,
         onDestinationSelected: onDestinationSelected,
+        scrollEdge: scrollEdge,
       );
     }
 
@@ -60,6 +67,7 @@ class AdaptiveSidebar extends StatelessWidget {
       destinations: destinations,
       onDestinationSelected: onDestinationSelected,
       extended: isExtended,
+      scrollEdge: scrollEdge,
     );
   }
 }

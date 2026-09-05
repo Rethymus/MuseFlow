@@ -35,6 +35,7 @@ class AppSidebar extends StatelessWidget {
     required this.onDestinationSelected,
     this.extended = true,
     this.title = '灵韵',
+    this.scrollEdge,
   });
 
   /// Index of the selected destination (named after NavigationRail's field
@@ -50,6 +51,10 @@ class AppSidebar extends StatelessWidget {
   /// App wordmark shown at the top; pass empty string to hide.
   final String title;
 
+  /// Optional scroll-edge intensity; strengthens the material tint while
+  /// content scrolls beneath (HIG scroll edge effect).
+  final AppScrollEdge? scrollEdge;
+
   static const double extendedWidth = 212;
   static const double collapsedWidth = 68;
 
@@ -64,6 +69,7 @@ class AppSidebar extends StatelessWidget {
         tier: AppMaterialTier.thin,
         radius: BorderRadius.zero,
         borderEdges: const {LogicalEdge.right},
+        scrollEdge: scrollEdge,
         child: SafeArea(
           right: false,
           child: Column(

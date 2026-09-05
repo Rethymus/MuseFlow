@@ -9,6 +9,7 @@ import 'package:museflow/core/presentation/providers.dart';
 import 'package:museflow/core/platform/window_controller.dart';
 import 'package:museflow/core/presentation/sidebar.dart';
 import 'package:museflow/shared/constants/app_constants.dart';
+import 'package:museflow/shared/theme/app_materials.dart';
 import 'package:museflow/shared/utils/keyboard_shortcuts.dart';
 
 /// Main app shell with sidebar + content area layout.
@@ -30,6 +31,7 @@ class AppShellScaffold extends ConsumerStatefulWidget {
 
 class _AppShellScaffoldState extends ConsumerState<AppShellScaffold> {
   Timer? _debounce;
+  final AppScrollEdge _scrollEdge = AppScrollEdge();
   late final PlatformWindowController _windowController;
 
   @override
@@ -86,8 +88,12 @@ class _AppShellScaffoldState extends ConsumerState<AppShellScaffold> {
       return QuickCaptureShortcut(
         child: Scaffold(
           extendBody: true,
-          body: _withWebBackupReminder(widget.navigationShell),
+          body: NotificationListener<ScrollNotification>(
+            onNotification: _updateScrollEdge,
+            child: _withWebBackupReminder(widget.navigationShell),
+          ),
           bottomNavigationBar: AdaptiveSidebar(
+            scrollEdge: _scrollEdge,
             currentIndex: widget.navigationShell.currentIndex,
             onDestinationSelected: (index) {
               widget.navigationShell.goBranch(
@@ -106,6 +112,7 @@ class _AppShellScaffoldState extends ConsumerState<AppShellScaffold> {
         body: Row(
           children: [
             AdaptiveSidebar(
+              scrollEdge: _scrollEdge,
               currentIndex: widget.navigationShell.currentIndex,
               onDestinationSelected: (index) {
                 widget.navigationShell.goBranch(
@@ -115,11 +122,21 @@ class _AppShellScaffoldState extends ConsumerState<AppShellScaffold> {
               },
             ),
             // The sidebar draws its own hairline right border.
-            Expanded(child: _withWebBackupReminder(widget.navigationShell)),
+            Expanded(
+              child: NotificationListener<ScrollNotification>(
+                onNotification: _updateScrollEdge,
+                child: _withWebBackupReminder(widget.navigationShell),
+              ),
+            ),
           ],
         ),
       ),
     );
+  }
+
+  bool _updateScrollEdge(ScrollNotification n) {
+    _scrollEdge.updateFromOffset(n.metrics.pixels);
+    return false;
   }
 
   Widget _withWebBackupReminder(Widget child) {

@@ -206,6 +206,60 @@ void main() {
     });
   });
 
+  group('AppScrollEdge (scroll edge effect)', () {
+    test('offset maps to 0..1 within 100px', () {
+      final edge = AppScrollEdge();
+      edge.updateFromOffset(0);
+      expect(edge.value, 0.0);
+      edge.updateFromOffset(50);
+      expect(edge.value, closeTo(0.5, 0.001));
+      edge.updateFromOffset(400);
+      expect(edge.value, 1.0);
+    });
+
+    testWidgets('tint strengthens while content scrolls beneath', (
+      tester,
+    ) async {
+      final edge = AppScrollEdge();
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: appTheme(Brightness.light),
+          home: Scaffold(
+            body: Center(
+              child: AppMaterial(
+                tier: AppMaterialTier.ultraThin,
+                scrollEdge: edge,
+                child: const SizedBox(width: 100, height: 100),
+              ),
+            ),
+          ),
+        ),
+      );
+
+      Color tintAt() => tester
+          .widgetList<DecoratedBox>(find.byType(DecoratedBox))
+          .map((d) => d.decoration)
+          .whereType<BoxDecoration>()
+          .where((d) => d.color != null && d.color!.a < 1.0)
+          .first
+          .color!;
+
+      edge.updateFromOffset(0);
+      await tester.pumpAndSettle();
+      final atRest = tintAt();
+
+      edge.updateFromOffset(100);
+      await tester.pumpAndSettle();
+      final scrolled = tintAt();
+
+      // The scrolled tint is strictly more opaque (the legibility ramp).
+      expect(scrolled.a, greaterThan(atRest.a));
+      final expected =
+          AppMaterialTier.ultraThin.tintOpacityOn(lightPalette) + 0.25;
+      expect(scrolled.a, closeTo(expected, 0.01));
+    });
+  });
+
   group('AppFocusRing', () {
     testWidgets('shows the accent ring when a descendant is focused', (
       tester,
