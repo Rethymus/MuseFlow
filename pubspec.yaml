@@ -31,7 +31,7 @@ dependencies:
   # AI integration
   openai_dart: ^6.0.0
   anthropic_sdk_dart: ^4.0.0
-  ollama_dart: ^2.4.0
+  ollama_dart: ^2.6.1
 
   # Local storage
   hive_ce: ^2.19.3
@@ -39,17 +39,17 @@ dependencies:
   flutter_secure_storage: ^10.3.1
 
   # Desktop window management
-  window_manager: ^0.5.1
+  window_manager: ^0.5.2
 
   # Supporting libraries
-  uuid: ^4.5.1
+  uuid: ^4.6.0
   logger: ^2.5.0
   markdown: ^7.3.1
   path_provider: ^2.1.6
   share_plus: ^12.0.0
   file_picker: ^10.0.0
   url_launcher: ^6.3.2
-  connectivity_plus: ^7.0.0
+  connectivity_plus: ^7.3.1
   json_annotation: ^4.12.0
   web: ^1.1.1
   follow_the_leader: ^0.5.3
@@ -57,21 +57,21 @@ dependencies:
   graphview: ^1.5.1
 
   path: ^1.9.1
-  archive: ^4.0.9
+  archive: ^4.2.0
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
   integration_test:
     sdk: flutter
-  flutter_secure_storage_platform_interface: ^2.0.1
+  flutter_secure_storage_platform_interface: ^2.0.3
   flutter_secure_storage_web: ^2.1.1
 
   flutter_lints: ^6.0.0
 
   # Code generation
-  build_runner: ^2.15.0
-  json_serializable: ^6.14.0
+  build_runner: ^2.15.1
+  json_serializable: ^6.14.1
   riverpod_generator: ^4.0.4
 
 dependency_overrides:
