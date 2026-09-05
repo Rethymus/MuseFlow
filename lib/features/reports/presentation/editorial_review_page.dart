@@ -3,6 +3,7 @@
 library;
 
 import 'package:flutter/material.dart';
+import 'package:museflow/shared/theme/app_colors.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:museflow/core/presentation/providers.dart';
 import 'package:museflow/features/manuscript/domain/chapter.dart';
@@ -216,9 +217,14 @@ class _DimensionCard extends StatelessWidget {
               Icons.check_circle_outline,
               '优点',
               review.strengths,
-              Colors.green,
+              AppColors.of(context).systemGreen,
             ),
-            _line(Icons.error_outline, '不足', review.weaknesses, Colors.orange),
+            _line(
+              Icons.error_outline,
+              '不足',
+              review.weaknesses,
+              AppColors.of(context).systemOrange,
+            ),
             _line(
               Icons.lightbulb_outline,
               '建议',
@@ -252,16 +258,16 @@ class _ScoreChip extends StatelessWidget {
   final int score;
   final bool large;
 
-  Color _color() {
-    if (score >= 80) return Colors.green;
-    if (score >= 60) return Colors.lightBlue;
-    if (score >= 40) return Colors.orange;
-    return Colors.red;
+  Color _colorOn(AppPalette p) {
+    if (score >= 80) return p.systemGreen;
+    if (score >= 60) return p.systemBlue;
+    if (score >= 40) return p.systemOrange;
+    return p.systemRed;
   }
 
   @override
   Widget build(BuildContext context) {
-    final color = _color();
+    final color = _colorOn(AppColors.of(context));
     return Container(
       padding: EdgeInsets.symmetric(
         horizontal: large ? 16 : 12,
