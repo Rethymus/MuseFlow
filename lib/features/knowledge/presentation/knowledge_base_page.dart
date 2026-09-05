@@ -1,6 +1,8 @@
 import 'package:flutter/cupertino.dart' show CupertinoIcons;
 import 'package:flutter/material.dart';
 import 'package:museflow/shared/theme/app_colors.dart';
+import 'package:museflow/shared/theme/app_dimens.dart';
+import 'package:museflow/shared/widgets/app_card.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:museflow/core/presentation/providers.dart';
@@ -190,61 +192,69 @@ class _CharacterCardTile extends ConsumerWidget {
       chapterCount,
     );
 
-    return ListTile(
-      title: Text(card.name),
-      subtitle: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Text(
-            card.personality.isNotEmpty ? card.personality : '无性格描述',
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-          ),
-          if (staleness.level != KbStalenessLevel.fresh) ...[
-            const SizedBox(height: 4),
-            _StalenessBadge(staleness: staleness),
+    return AppCard(
+      margin: const EdgeInsets.only(
+        left: AppSpacing.pageMargin,
+        right: AppSpacing.pageMargin,
+        bottom: AppSpacing.sm,
+      ),
+      padding: EdgeInsets.zero,
+      child: ListTile(
+        title: Text(card.name),
+        subtitle: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              card.personality.isNotEmpty ? card.personality : '无性格描述',
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ),
+            if (staleness.level != KbStalenessLevel.fresh) ...[
+              const SizedBox(height: 4),
+              _StalenessBadge(staleness: staleness),
+            ],
           ],
-        ],
-      ),
-      trailing: PopupMenuButton<String>(
-        icon: const Icon(Icons.more_vert),
-        tooltip: '操作',
-        onSelected: (value) {
-          if (value == 'verify') {
-            _confirmVerify(context, ref, chapterCount);
-          } else if (value == 'delete') {
-            _confirmDelete(context, ref);
-          }
-        },
-        itemBuilder: (context) => [
-          PopupMenuItem(
-            value: 'verify',
-            child: ListTile(
-              dense: true,
-              contentPadding: EdgeInsets.zero,
-              leading: const Icon(Icons.verified),
-              title: const Text('标记为已验证'),
-            ),
-          ),
-          PopupMenuItem(
-            value: 'delete',
-            child: ListTile(
-              dense: true,
-              contentPadding: EdgeInsets.zero,
-              leading: Icon(
-                Icons.delete_outline,
-                color: Theme.of(context).colorScheme.error,
-              ),
-              title: Text(
-                '删除',
-                style: TextStyle(color: Theme.of(context).colorScheme.error),
+        ),
+        trailing: PopupMenuButton<String>(
+          icon: const Icon(Icons.more_vert),
+          tooltip: '操作',
+          onSelected: (value) {
+            if (value == 'verify') {
+              _confirmVerify(context, ref, chapterCount);
+            } else if (value == 'delete') {
+              _confirmDelete(context, ref);
+            }
+          },
+          itemBuilder: (context) => [
+            PopupMenuItem(
+              value: 'verify',
+              child: ListTile(
+                dense: true,
+                contentPadding: EdgeInsets.zero,
+                leading: const Icon(Icons.verified),
+                title: const Text('标记为已验证'),
               ),
             ),
-          ),
-        ],
+            PopupMenuItem(
+              value: 'delete',
+              child: ListTile(
+                dense: true,
+                contentPadding: EdgeInsets.zero,
+                leading: Icon(
+                  Icons.delete_outline,
+                  color: Theme.of(context).colorScheme.error,
+                ),
+                title: Text(
+                  '删除',
+                  style: TextStyle(color: Theme.of(context).colorScheme.error),
+                ),
+              ),
+            ),
+          ],
+        ),
+        onTap: () => context.go('/knowledge/character/${card.id}'),
       ),
-      onTap: () => context.go('/knowledge/character/${card.id}'),
     );
   }
 
@@ -374,61 +384,69 @@ class _WorldSettingTile extends ConsumerWidget {
       chapterCount,
     );
 
-    return ListTile(
-      title: Text(setting.name),
-      subtitle: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Text(
-            setting.description.isNotEmpty ? setting.description : '无描述',
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-          ),
-          if (staleness.level != KbStalenessLevel.fresh) ...[
-            const SizedBox(height: 4),
-            _StalenessBadge(staleness: staleness),
+    return AppCard(
+      margin: const EdgeInsets.only(
+        left: AppSpacing.pageMargin,
+        right: AppSpacing.pageMargin,
+        bottom: AppSpacing.sm,
+      ),
+      padding: EdgeInsets.zero,
+      child: ListTile(
+        title: Text(setting.name),
+        subtitle: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              setting.description.isNotEmpty ? setting.description : '无描述',
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ),
+            if (staleness.level != KbStalenessLevel.fresh) ...[
+              const SizedBox(height: 4),
+              _StalenessBadge(staleness: staleness),
+            ],
           ],
-        ],
-      ),
-      trailing: PopupMenuButton<String>(
-        icon: const Icon(Icons.more_vert),
-        tooltip: '操作',
-        onSelected: (value) {
-          if (value == 'verify') {
-            _confirmVerify(context, ref, chapterCount);
-          } else if (value == 'delete') {
-            _confirmDelete(context, ref);
-          }
-        },
-        itemBuilder: (context) => [
-          PopupMenuItem(
-            value: 'verify',
-            child: ListTile(
-              dense: true,
-              contentPadding: EdgeInsets.zero,
-              leading: const Icon(Icons.verified),
-              title: const Text('标记为已验证'),
-            ),
-          ),
-          PopupMenuItem(
-            value: 'delete',
-            child: ListTile(
-              dense: true,
-              contentPadding: EdgeInsets.zero,
-              leading: Icon(
-                Icons.delete_outline,
-                color: Theme.of(context).colorScheme.error,
-              ),
-              title: Text(
-                '删除',
-                style: TextStyle(color: Theme.of(context).colorScheme.error),
+        ),
+        trailing: PopupMenuButton<String>(
+          icon: const Icon(Icons.more_vert),
+          tooltip: '操作',
+          onSelected: (value) {
+            if (value == 'verify') {
+              _confirmVerify(context, ref, chapterCount);
+            } else if (value == 'delete') {
+              _confirmDelete(context, ref);
+            }
+          },
+          itemBuilder: (context) => [
+            PopupMenuItem(
+              value: 'verify',
+              child: ListTile(
+                dense: true,
+                contentPadding: EdgeInsets.zero,
+                leading: const Icon(Icons.verified),
+                title: const Text('标记为已验证'),
               ),
             ),
-          ),
-        ],
+            PopupMenuItem(
+              value: 'delete',
+              child: ListTile(
+                dense: true,
+                contentPadding: EdgeInsets.zero,
+                leading: Icon(
+                  Icons.delete_outline,
+                  color: Theme.of(context).colorScheme.error,
+                ),
+                title: Text(
+                  '删除',
+                  style: TextStyle(color: Theme.of(context).colorScheme.error),
+                ),
+              ),
+            ),
+          ],
+        ),
+        onTap: () => context.go('/knowledge/setting/${setting.id}'),
       ),
-      onTap: () => context.go('/knowledge/setting/${setting.id}'),
     );
   }
 

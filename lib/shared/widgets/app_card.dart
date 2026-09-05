@@ -34,13 +34,20 @@ class AppCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final p = AppColors.of(context);
+    // The transparent Material sits INSIDE the decorated Container so
+    // ListTile children (and the optional InkWell) find a Material
+    // ancestor without a colored DecoratedBox between them — otherwise
+    // the framework asserts the background hides their splashes.
     final card = Container(
       margin: margin,
       decoration: BoxDecoration(
         color: color ?? p.cardBackground,
         borderRadius: BorderRadius.circular(radius),
       ),
-      child: Padding(padding: padding, child: child),
+      child: Material(
+        type: MaterialType.transparency,
+        child: Padding(padding: padding, child: child),
+      ),
     );
 
     if (onTap == null && onLongPress == null) return card;
