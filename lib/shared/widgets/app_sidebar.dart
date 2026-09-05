@@ -140,42 +140,45 @@ class _SidebarItem extends StatelessWidget {
       selected: selected,
       label: destination.label,
       child: AppPressable(
-        child: InkWell(
-          onTap: onTap,
-          customBorder: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(AppRadius.small),
-          ),
-          child: Container(
-            height: height,
-            padding: EdgeInsets.symmetric(horizontal: extended ? 10 : 0),
-            decoration: BoxDecoration(
-              color: selected ? p.accentFill : null,
+        child: AppFocusRing(
+          radius: BorderRadius.circular(AppRadius.small),
+          child: InkWell(
+            onTap: onTap,
+            customBorder: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(AppRadius.small),
             ),
-            child: Row(
-              mainAxisAlignment: extended
-                  ? MainAxisAlignment.start
-                  : MainAxisAlignment.center,
-              children: [
-                Icon(icon, size: 21, color: tint),
-                if (extended) ...[
-                  const SizedBox(width: 10),
-                  Expanded(
-                    child: Text(
-                      destination.label,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: textTheme.bodyLarge?.copyWith(
-                        fontSize: 13,
-                        fontWeight: selected
-                            ? FontWeight.w600
-                            : FontWeight.w500,
-                        color: selected ? p.label : p.secondaryLabel,
+            child: Container(
+              height: height,
+              padding: EdgeInsets.symmetric(horizontal: extended ? 10 : 0),
+              decoration: BoxDecoration(
+                color: selected ? p.accentFill : null,
+                borderRadius: BorderRadius.circular(AppRadius.small),
+              ),
+              child: Row(
+                mainAxisAlignment: extended
+                    ? MainAxisAlignment.start
+                    : MainAxisAlignment.center,
+                children: [
+                  Icon(icon, size: 21, color: tint),
+                  if (extended) ...[
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: Text(
+                        destination.label,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: textTheme.bodyLarge?.copyWith(
+                          fontSize: 13,
+                          fontWeight: selected
+                              ? FontWeight.w600
+                              : FontWeight.w500,
+                          color: selected ? p.label : p.secondaryLabel,
+                        ),
                       ),
                     ),
-                  ),
+                  ],
                 ],
-              ],
+              ),
             ),
           ),
         ),

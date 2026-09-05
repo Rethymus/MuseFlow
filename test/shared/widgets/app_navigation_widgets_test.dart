@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart' show CupertinoIcons;
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:museflow/shared/theme/app_theme.dart';
+import 'package:museflow/shared/theme/app_materials.dart';
 import 'package:museflow/shared/widgets/app_sidebar.dart';
 import 'package:museflow/shared/widgets/app_tab_bar.dart';
 
@@ -72,6 +73,28 @@ void main() {
 
       await tester.tap(find.text('统计'));
       expect(tapped, equals(4));
+    });
+
+    testWidgets('items carry the focus-ring infrastructure', (tester) async {
+      await tester.pumpWidget(
+        _wrap(
+          AppSidebar(
+            selectedIndex: 1,
+            destinations: destinations,
+            onDestinationSelected: (_) {},
+            extended: true,
+          ),
+        ),
+      );
+
+      // Each item is wrapped in AppFocusRing for keyboard focus.
+      expect(
+        find.descendant(
+          of: find.byType(AppSidebar),
+          matching: find.byType(AppFocusRing),
+        ),
+        findsNWidgets(6),
+      );
     });
 
     testWidgets('selected destination is exposed for state assertions', (
