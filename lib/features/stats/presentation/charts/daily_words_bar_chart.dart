@@ -1,6 +1,7 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:museflow/features/stats/domain/daily_writing_stats.dart';
+import 'chart_axes.dart';
 
 class DailyWordsBarChart extends StatelessWidget {
   const DailyWordsBarChart({super.key, required this.dailyStats});
@@ -26,9 +27,15 @@ class DailyWordsBarChart extends StatelessWidget {
           maxY: maxY <= 0 ? 1 : maxY * 1.2,
           gridData: const FlGridData(show: false),
           borderData: FlBorderData(show: false),
-          titlesData: const FlTitlesData(
-            topTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
-            rightTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
+          titlesData: FlTitlesData(
+            topTitles: const AxisTitles(
+              sideTitles: SideTitles(showTitles: false),
+            ),
+            rightTitles: const AxisTitles(
+              sideTitles: SideTitles(showTitles: false),
+            ),
+            leftTitles: leftCompactTitles(),
+            bottomTitles: bottomDayTitles(dailyStats.length),
           ),
           barGroups: [
             for (var i = 0; i < dailyStats.length; i++)
@@ -39,7 +46,7 @@ class DailyWordsBarChart extends StatelessWidget {
                     toY: dailyStats[i].totalUnits.toDouble(),
                     color: colorScheme.primary,
                     borderRadius: BorderRadius.circular(4),
-                    width: 12,
+                    width: 18,
                   ),
                 ],
               ),
