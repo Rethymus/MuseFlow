@@ -1,21 +1,28 @@
 import 'package:flutter/material.dart';
 import 'package:museflow/features/story_structure/domain/plot_node.dart';
 
-/// Semantic node background colors for story arc structural roles.
+/// Semantic node background colors for story arc structural roles, on the
+/// Apple system palette (dark-mode variants are the brighter iOS tones so
+/// nodes stay legible on the pure-black graph background).
 ///
 /// Names intentionally match [PlotNodeStructuralRole] values so UI code reads
 /// in domain language instead of raw palette names.
 class GraphColor {
-  static const setup = Color(0xFF6B7280);
-  static const setupLight = Color(0xFF4B5563);
-  static const development = Color(0xFF10B981);
-  static const developmentLight = Color(0xFF059669);
-  static const turn = Color(0xFFF59E0B);
-  static const turnLight = Color(0xFFD97706);
-  static const climax = Color(0xFFEF4444);
-  static const climaxLight = Color(0xFFDC2626);
-  static const resolution = Color(0xFF1E40AF);
-  static const resolutionLight = Color(0xFF1E3A8A);
+  // systemIndigo
+  static const setup = Color(0xFF5E5CE6);
+  static const setupLight = Color(0xFF5856D7);
+  // systemBlue
+  static const development = Color(0xFF0A84FF);
+  static const developmentLight = Color(0xFF007AFF);
+  // systemOrange
+  static const turn = Color(0xFFFF9F0A);
+  static const turnLight = Color(0xFFFF9500);
+  // systemRed
+  static const climax = Color(0xFFFF453A);
+  static const climaxLight = Color(0xFFFF3B30);
+  // systemGreen
+  static const resolution = Color(0xFF30D158);
+  static const resolutionLight = Color(0xFF34C759);
 
   const GraphColor._();
 
@@ -35,10 +42,11 @@ class GraphColor {
 
 /// Semantic border and icon styling for plot node writing status.
 class GraphStatus {
-  static const notStarted = Color(0xFF6B7280);
-  static const drafting = Color(0xFF3B82F6);
-  static const complete = Color(0xFF10B981);
-  static const needsRevision = Color(0xFFF59E0B);
+  // systemGray / systemBlue / systemGreen / systemOrange
+  static const notStarted = Color(0xFF8E8E93);
+  static const drafting = Color(0xFF007AFF);
+  static const complete = Color(0xFF34C759);
+  static const needsRevision = Color(0xFFFF9500);
 
   const GraphStatus._();
 

@@ -9,53 +9,53 @@ void main() {
     test('should return dark setup color by default', () {
       expect(
         GraphColor.forRole(PlotNodeStructuralRole.setup),
-        const Color(0xFF6B7280),
+        const Color(0xFF5E5CE6),
       );
     });
 
     test('should return correct dark colors for all structural roles', () {
       expect(
         GraphColor.forRole(PlotNodeStructuralRole.setup),
-        const Color(0xFF6B7280),
+        const Color(0xFF5E5CE6),
       );
       expect(
         GraphColor.forRole(PlotNodeStructuralRole.development),
-        const Color(0xFF10B981),
+        const Color(0xFF0A84FF),
       );
       expect(
         GraphColor.forRole(PlotNodeStructuralRole.turn),
-        const Color(0xFFF59E0B),
+        const Color(0xFFFF9F0A),
       );
       expect(
         GraphColor.forRole(PlotNodeStructuralRole.climax),
-        const Color(0xFFEF4444),
+        const Color(0xFFFF453A),
       );
       expect(
         GraphColor.forRole(PlotNodeStructuralRole.resolution),
-        const Color(0xFF1E40AF),
+        const Color(0xFF30D158),
       );
     });
 
     test('should return correct light colors for all structural roles', () {
       expect(
         GraphColor.forRole(PlotNodeStructuralRole.setup, isDark: false),
-        const Color(0xFF4B5563),
+        const Color(0xFF5856D7),
       );
       expect(
         GraphColor.forRole(PlotNodeStructuralRole.development, isDark: false),
-        const Color(0xFF059669),
+        const Color(0xFF007AFF),
       );
       expect(
         GraphColor.forRole(PlotNodeStructuralRole.turn, isDark: false),
-        const Color(0xFFD97706),
+        const Color(0xFFFF9500),
       );
       expect(
         GraphColor.forRole(PlotNodeStructuralRole.climax, isDark: false),
-        const Color(0xFFDC2626),
+        const Color(0xFFFF3B30),
       );
       expect(
         GraphColor.forRole(PlotNodeStructuralRole.resolution, isDark: false),
-        const Color(0xFF1E3A8A),
+        const Color(0xFF34C759),
       );
     });
   });
@@ -64,19 +64,19 @@ void main() {
     test('should return correct border colors for all writing statuses', () {
       expect(
         GraphStatus.borderColor(PlotNodeWritingStatus.notStarted),
-        const Color(0xFF6B7280),
+        const Color(0xFF8E8E93),
       );
       expect(
         GraphStatus.borderColor(PlotNodeWritingStatus.drafting),
-        const Color(0xFF3B82F6),
+        const Color(0xFF007AFF),
       );
       expect(
         GraphStatus.borderColor(PlotNodeWritingStatus.complete),
-        const Color(0xFF10B981),
+        const Color(0xFF34C759),
       );
       expect(
         GraphStatus.borderColor(PlotNodeWritingStatus.needsRevision),
-        const Color(0xFFF59E0B),
+        const Color(0xFFFF9500),
       );
     });
 
@@ -126,11 +126,11 @@ void main() {
 
       expect(
         darkTheme.roleColor(PlotNodeStructuralRole.development),
-        const Color(0xFF10B981),
+        const Color(0xFF0A84FF),
       );
       expect(
         lightTheme.roleColor(PlotNodeStructuralRole.development),
-        const Color(0xFF059669),
+        const Color(0xFF007AFF),
       );
       expect(
         darkTheme.roleColor(PlotNodeStructuralRole.development),
@@ -142,10 +142,10 @@ void main() {
       const darkTheme = GraphTheme(brightness: Brightness.dark);
       const lightTheme = GraphTheme(brightness: Brightness.light);
 
-      expect(darkTheme.edgeColor('causal'), Colors.blue.shade700);
-      expect(darkTheme.edgeColor('association'), Colors.grey.shade600);
-      expect(lightTheme.edgeColor('association'), Colors.grey.shade400);
-      expect(darkTheme.edgeColor('foreshadowing'), Colors.amber.shade500);
+      expect(darkTheme.edgeColor('causal'), const Color(0xFF0A84FF));
+      expect(darkTheme.edgeColor('association'), const Color(0xFF8E8E93));
+      expect(lightTheme.edgeColor('association'), const Color(0xFFAEAEB2));
+      expect(darkTheme.edgeColor('foreshadowing'), const Color(0xFFFF9F0A));
     });
   });
 }
