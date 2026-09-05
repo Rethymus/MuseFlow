@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:museflow/shared/theme/app_colors.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:museflow/core/presentation/providers.dart';
 import 'package:museflow/features/story_structure/application/guardian_notifier.dart';
@@ -68,7 +69,8 @@ class _GuardianAnnotationOverlayState
           child: Icon(
             Icons.shield_outlined,
             color: count > 0
-                ? const Color(0xFFF59E0B) // Amber for active findings
+                ? AppColors.of(context)
+                      .systemOrange // active findings
                 : colorScheme.outline,
           ),
         ),
@@ -154,7 +156,7 @@ class _CompactFindingTile extends StatelessWidget {
       leading: Icon(
         _severityIcon(annotation.severity),
         size: 16,
-        color: _severityColor(annotation.severity),
+        color: _severityColor(annotation.severity, context),
       ),
       title: Text(
         annotation.message,
@@ -186,11 +188,12 @@ class _CompactFindingTile extends StatelessWidget {
     };
   }
 
-  Color _severityColor(GuardianSeverity s) {
+  Color _severityColor(GuardianSeverity s, BuildContext context) {
+    final p = AppColors.of(context);
     return switch (s) {
-      GuardianSeverity.low => const Color(0xFF9CA3AF),
-      GuardianSeverity.medium => const Color(0xFFF59E0B),
-      GuardianSeverity.high => const Color(0xFF8B5CF6),
+      GuardianSeverity.low => p.gray,
+      GuardianSeverity.medium => p.systemOrange,
+      GuardianSeverity.high => p.systemRed,
     };
   }
 }

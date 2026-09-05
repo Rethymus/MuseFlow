@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:museflow/shared/theme/app_colors.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:museflow/core/presentation/providers.dart';
@@ -512,12 +513,11 @@ class _SeverityChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
-
+    final p = AppColors.of(context);
     final (label, color) = switch (severity) {
-      GuardianSeverity.low => ('低', colorScheme.outline),
-      GuardianSeverity.medium => ('中', const Color(0xFFF59E0B)), // Amber
-      GuardianSeverity.high => ('高', const Color(0xFF8B5CF6)), // Violet
+      GuardianSeverity.low => ('低', p.gray),
+      GuardianSeverity.medium => ('中', p.systemOrange),
+      GuardianSeverity.high => ('高', p.systemRed),
     };
 
     return Chip(
