@@ -20,12 +20,11 @@
 
 ## PR 规范
 
-- dependabot 已配置分组：pub 依赖的 minor/patch 合并为一个 PR，GitHub Actions
-  全部版本合并为一个 PR；pub 的 **major 升级单独开 PR**，专门评估迁移成本。
-- 跨大版本的依赖升级（如 openai_dart 6→8）必须单独开迁移分支，analyze/test/build
-  全绿后再合入，不与例行维护混在一起。
-- 过期（超 1 个月无进展）且 CI 失败的 PR 直接关闭并留说明；dependabot 会在新基线上
-  重新提出。
+- **dependabot 已移除**（2026-09-06，删除 `.github/dependabot.yml`），依赖升级全部手动：
+  改 `pubspec.yaml` → `flutter pub get` → 运行 `python scripts/sync_dependency_docs.py`
+  同步 CLAUDE.md 依赖表（CI 的 `check_dependency_docs.sh` 强制校验一致）→ CI 全绿后合入。
+- 跨大版本的依赖升级必须单独开迁移分支，analyze/test/build 全绿后再合入，不与例行维护混在一起。
+- 过期（超 1 个月无进展）且 CI 失败的 PR 直接关闭并留说明。
 
 ## 清理日志（2026-09-06）
 
@@ -47,7 +46,18 @@
 | 保留 PR | #28（anthropic_sdk_dart 4→8，跨 4 个大版本且 analyze 失败，按规范开放待人工评估） |
 | 病根修复 | 所有 pub 依赖 PR 反复挂在 `check_dependency_docs.sh` 的根因：dependabot 只改 pubspec，不更新 CLAUDE.md 依赖表。新增 `scripts/sync_dependency_docs.py` + `dep-docs-sync.yml` 工作流，在 dependabot PR 分支上自动提交文档同步（对落地后新建的 dependabot 分支自动生效） |
 
-被删除 tag 的恢复方式：`git tag <name> <hash>`（哈希为 tag 所指提交）：
+### 第三轮：彻底移除 dependabot（2026-09-06，业主要求）
+
+| 动作 | 明细 |
+| --- | --- |
+| 删除配置 | `.github/dependabot.yml` —— dependabot 版本更新全面停止（GitHub 侧安全警报本就处于关闭状态，无需处理） |
+| 删除工作流 | `.github/workflows/dep-docs-sync.yml`（只为 dependabot 分支服务，随之退役；`scripts/sync_dependency_docs.py` 保留，作为手动升级时同步 CLAUDE.md 依赖表的工具） |
+| 关闭 PR | #28（anthropic_sdk_dart 4→8 大版本评估 PR，随 dependabot 一并关闭），分支已删除 |
+| 文档同步 | BASELINE.md / RELEASE_CHECKLIST.md / 本文件的 dependabot 引用已更新 |
+
+### 被删除 tag 的恢复方式
+
+`git tag <name> <hash>`（哈希为 tag 所指提交）：
 
 | Tag | 指向提交 |
 | --- | --- |

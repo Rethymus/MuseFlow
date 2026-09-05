@@ -13,7 +13,7 @@ Captured: 2026-06-09, Asia/Shanghai.
 | Tags | `v0.1.4`, `v0.1.3`, `v0.1.2`, `v0.1.1`, `v0.1.0`, `v1.3-phase16-complete`, `v1.2`, `v1.0` |
 | Flutter project version | `0.1.4+5` |
 | Platform directories | Present: `android/`, `linux/`, `windows/`, `web/`; absent: `ios/`, `macos/` |
-| GitHub metadata | Present: issue templates, PR template, Dependabot config, CI workflow, and release workflow |
+| GitHub metadata | Present: issue templates, PR template, CI workflow, and release workflow (Dependabot config removed 2026-09-06) |
 | README screenshots at startup | 21 PNG files under `docs/readme/screenshots/`; both READMEs reference the same 21 files |
 | Untracked files at startup | None |
 

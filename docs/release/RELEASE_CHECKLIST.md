@@ -103,8 +103,8 @@ scripts/validate_platform_support.sh
   ```
 
   Result: app process started but no window became discoverable through `xdotool`; stderr showed `libsecret_error: KeyringLocked`. This is expected secure behavior under a locked Secret Service and confirms the app does not fall back to plaintext secret files. README screenshots were refreshed through the reproducible offline UI evidence flow instead of weakening production secure-storage behavior.
-- Dependabot PRs for newer GitHub Actions major versions are open. Some PR checks fail because those proposed major versions currently change CI behavior; keep them under review instead of merging unverified automation upgrades.
-- Dependabot PR `#11` for `file_picker 11.0.2` fails Android build smoke because the generated registrant references `com.mr.flutter.plugin.filepicker.FilePickerPlugin`, which is no longer provided by that upgrade. Keep `file_picker` pinned until the migration path is verified.
+- Dependabot was removed on 2026-09-06 (`.github/dependabot.yml` deleted); dependency upgrades are manual now — see `docs/release/REPO_HYGIENE.md`.
+- Manual `file_picker` upgrades past `10.3.10` break the Android build smoke: version 11 no longer provides `com.mr.flutter.plugin.filepicker.FilePickerPlugin`, which the generated registrant references (original finding via the removed Dependabot PR `#11`). Keep `file_picker` pinned until the migration path is verified.
 - GitHub Actions noted `windows-latest` redirection to `windows-2025-vs2026` by June 15, 2026; Windows release artifact still built and uploaded successfully.
 
 ## Final Audit
