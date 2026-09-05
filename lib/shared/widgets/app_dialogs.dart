@@ -41,10 +41,30 @@ Future<T?> showAppDialog<T>(
   required List<AppDialogAction> actions,
   bool barrierDismissible = true,
 }) {
-  return showDialog<T>(
+  return showGeneralDialog<T>(
     context: context,
     barrierDismissible: barrierDismissible,
-    builder: (_) => AppAlertDialog(
+    barrierLabel: title,
+    // iOS alert entrance: scale 0.95→1.0 on a light spring (ζ≈0.8) plus a
+    // synchronized fade; the barrier only fades (research doc §9.3).
+    transitionDuration: const Duration(milliseconds: 400),
+    transitionBuilder: (context, animation, secondaryAnimation, child) {
+      final curved = CurvedAnimation(
+        parent: animation,
+        curve: const Interval(0, 0.6, curve: Curves.easeOutCubic),
+      );
+      final scale = Tween<double>(begin: 0.95, end: 1.0).animate(
+        // Unbounded-style spring on the same controller via
+        // animateWith is not available here; approximate the spring with
+        // easeOutBack, whose overshoot (~2%) matches ζ≈0.8's signature.
+        CurvedAnimation(parent: animation, curve: Curves.easeOutBack),
+      );
+      return FadeTransition(
+        opacity: curved,
+        child: ScaleTransition(scale: scale, child: child),
+      );
+    },
+    pageBuilder: (_, _, _) => AppAlertDialog(
       title: title,
       message: message,
       content: content,

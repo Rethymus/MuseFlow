@@ -75,11 +75,11 @@ class _TemplateGalleryPageState extends ConsumerState<TemplateGalleryPage> {
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
                     AppSegmentedControl<TemplateChannel?>(
-                      segments: const {
+                      segments: const [
                         null,
                         TemplateChannel.male,
                         TemplateChannel.female,
-                      },
+                      ],
                       selected: _selectedChannel,
                       onSelectionChanged: (selected) =>
                           setState(() => _selectedChannel = selected),

@@ -5,6 +5,7 @@ import 'package:museflow/core/presentation/providers.dart';
 import 'package:museflow/features/manuscript/application/manuscript_notifier.dart';
 import 'package:museflow/features/manuscript/domain/manuscript.dart';
 import 'package:museflow/features/manuscript/domain/manuscript_genre.dart';
+import 'package:museflow/shared/widgets/app_shake.dart';
 
 const _manuscriptTitleMaxLength = 100;
 const _customGenreMaxLength = 20;
@@ -26,6 +27,7 @@ class ManuscriptCreateDialog extends ConsumerStatefulWidget {
 
 class _ManuscriptCreateDialogState
     extends ConsumerState<ManuscriptCreateDialog> {
+  final _shakeKey = GlobalKey<AppShakeState>();
   final _titleController = TextEditingController();
   final _customGenreController = TextEditingController();
   String _selectedGenre = ManuscriptGenre.presets.first;
@@ -60,20 +62,23 @@ class _ManuscriptCreateDialogState
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            TextField(
-              key: const Key('manuscript_title'),
-              controller: _titleController,
-              decoration: InputDecoration(
-                labelText: '标题',
-                hintText: '输入文稿标题',
-                errorText: _titleError,
-                counterText: '',
+            AppShake(
+              key: _shakeKey,
+              child: TextField(
+                key: const Key('manuscript_title'),
+                controller: _titleController,
+                decoration: InputDecoration(
+                  labelText: '标题',
+                  hintText: '输入文稿标题',
+                  errorText: _titleError,
+                  counterText: '',
+                ),
+                maxLength: _manuscriptTitleMaxLength,
+                maxLengthEnforcement: MaxLengthEnforcement.none,
+                autofocus: true,
+                onChanged: (_) => _clearTitleError(),
+                onSubmitted: (_) => _handleCreate(),
               ),
-              maxLength: _manuscriptTitleMaxLength,
-              maxLengthEnforcement: MaxLengthEnforcement.none,
-              autofocus: true,
-              onChanged: (_) => _clearTitleError(),
-              onSubmitted: (_) => _handleCreate(),
             ),
             const SizedBox(height: 16),
             DropdownButtonFormField<String>(
@@ -155,10 +160,12 @@ class _ManuscriptCreateDialogState
 
     if (title.isEmpty) {
       setState(() => _titleError = '请输入标题');
+      _shakeKey.currentState?.shake();
       return;
     }
     if (title.length > _manuscriptTitleMaxLength) {
       setState(() => _titleError = '标题不能超过100个字符');
+      _shakeKey.currentState?.shake();
       return;
     }
 

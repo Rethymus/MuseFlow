@@ -231,19 +231,15 @@ extension _ProviderManagementPageStateLayout on _ProviderManagementPageState {
           // Provider type selector
           Text('模型类型', style: theme.textTheme.titleSmall),
           const SizedBox(height: 8),
-          SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
-            child: AppSegmentedControl<_ProviderTypeSegment>(
-              segments: {
-                for (final segment in _providerTypeSegments)
-                  if (kIsWeb || segment.value != AiProviderType.ollama) segment,
-              },
-              selected: _providerTypeSegments.firstWhere(
-                (segment) => segment.value == _selectedType,
-              ),
-              onSelectionChanged: (segment) =>
-                  _selectProviderType(segment.value),
+          AppSegmentedControl<_ProviderTypeSegment>(
+            segments: [
+              for (final segment in _providerTypeSegments)
+                if (kIsWeb || segment.value != AiProviderType.ollama) segment,
+            ],
+            selected: _providerTypeSegments.firstWhere(
+              (segment) => segment.value == _selectedType,
             ),
+            onSelectionChanged: (segment) => _selectProviderType(segment.value),
           ),
           const SizedBox(height: 20),
 

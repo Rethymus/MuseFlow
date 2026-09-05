@@ -11,6 +11,7 @@ import 'package:museflow/features/settings/presentation/web_workspace_settings_s
 import 'package:museflow/shared/widgets/app_controls.dart';
 import 'package:museflow/shared/widgets/app_dialogs.dart';
 import 'package:museflow/shared/widgets/app_list_section.dart';
+import 'package:museflow/shared/widgets/app_toast.dart';
 
 /// Settings page — the iOS Settings showcase.
 ///
@@ -55,7 +56,7 @@ class SettingsPage extends ConsumerWidget {
                 child: Align(
                   alignment: Alignment.centerLeft,
                   child: AppSegmentedControl<int>(
-                    segments: const {0, 1, 2},
+                    segments: const [0, 1, 2],
                     selected: _themeModes.indexOf(themeMode),
                     onSelectionChanged: (index) => ref
                         .read(themeModeProvider.notifier)
@@ -113,7 +114,7 @@ class SettingsPage extends ConsumerWidget {
                 child: Align(
                   alignment: Alignment.centerLeft,
                   child: AppSegmentedControl<int>(
-                    segments: const {0, 1, 2},
+                    segments: const [0, 1, 2],
                     selected: CreativityLevel.values.indexOf(
                       ref.watch(creativityLevelProvider),
                     ),
@@ -193,8 +194,6 @@ class SettingsPage extends ConsumerWidget {
       ref.invalidate(achievementNotifierProvider);
     }
     if (!context.mounted) return;
-    ScaffoldMessenger.of(
-      context,
-    ).showSnackBar(const SnackBar(content: Text('写作统计已清除')));
+    showAppToast(context, message: '写作统计已清除');
   }
 }

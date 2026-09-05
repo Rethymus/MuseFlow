@@ -187,7 +187,7 @@ void main() {
         _wrap(
           StatefulBuilder(
             builder: (context, setState) => AppSegmentedControl<String>(
-              segments: const {'浅色', '深色', '跟随系统'},
+              segments: const ['浅色', '深色', '跟随系统'],
               selected: selected,
               onSelectionChanged: (v) => setState(() => selected = v),
             ),

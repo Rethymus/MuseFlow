@@ -20,6 +20,8 @@
 ///   directly (velocity-preserving retargeting is what "silky" means).
 library;
 
+import 'dart:math' as math;
+
 import 'package:flutter/animation.dart';
 import 'package:flutter/physics.dart';
 
@@ -51,8 +53,14 @@ abstract final class AppleMotion {
 
   /// `interactiveSpring` — very stiff (0.15s), near-critically damped:
   /// retargeting during gestures without lag.
-  static const double interactiveResponse = 0.15;
   static const double interactiveDampingFraction = 0.86;
+  static const double interactiveResponse = 0.15;
+
+  /// Slot snap (research doc §7): a thumb/row snapping between discrete
+  /// slots (segmented control, reorder drop). 0.3s with ζ 0.85 — the
+  /// overshoot (~1.7%) reads as a "click into place", never a wobble.
+  static const double slotSnapResponse = 0.3;
+  static const double slotSnapDampingFraction = 0.85;
 }
 
 /// Builds [SpringSimulation]s from Apple's (response, dampingFraction)
@@ -113,6 +121,72 @@ abstract final class AppleSprings {
         dampingFraction: AppleMotion.snappyDampingFraction,
         velocity: velocity,
       );
+
+  /// Slot snap: a thumb snapping between discrete slots.
+  static SpringSimulation slotSnap(double end, {double velocity = 0.0}) =>
+      simulation(
+        end,
+        response: AppleMotion.slotSnapResponse,
+        dampingFraction: AppleMotion.slotSnapDampingFraction,
+        velocity: velocity,
+      );
+}
+
+/// The damped-oscillation used for error shakes ("pushing a boulder" —
+/// research doc §9.1). NOT a spring: starts at full amplitude with zero
+/// velocity (the moment of refusal) and decays fast enough to feel like
+/// enormous friction.
+///
+///     x(t) = A · e^(−λ·t) · sin(2π·f·t)
+class AppShakeSimulation extends Simulation {
+  AppShakeSimulation({
+    this.amplitude = 9.0,
+    this.frequency = 10.0,
+    this.decay = 9.0,
+    this.duration = const Duration(milliseconds: 400),
+  }) : _omega = 2 * 3.141592653589793 * frequency;
+
+  /// Peak horizontal offset in logical pixels.
+  final double amplitude;
+
+  /// Oscillation frequency in Hz — fast, never nauseating.
+  final double frequency;
+
+  /// Exponential decay rate (1/s); 9 ≈ three visible swings.
+  final double decay;
+
+  /// Total shake duration.
+  final Duration duration;
+
+  final double _omega;
+
+  @override
+  double x(double timeInSeconds) {
+    return amplitude *
+        _exp(-decay * timeInSeconds) *
+        _sin(_omega * timeInSeconds);
+  }
+
+  @override
+  double dx(double timeInSeconds) {
+    final e = _exp(-decay * timeInSeconds);
+    return amplitude * e * (_omega * _cos(_omega * timeInSeconds)) -
+        amplitude * decay * e * _sin(_omega * timeInSeconds);
+  }
+
+  @override
+  bool isDone(double timeInSeconds) =>
+      timeInSeconds >= duration.inMicroseconds / 1e6;
+
+  // Thin wrappers so this file stays import-light next to theme code.
+  static double _exp(double x) {
+    // e^x via dart:math would be direct; keep the math explicit here for
+    // readability and testability.
+    return math.exp(x);
+  }
+
+  static double _sin(double x) => math.sin(x);
+  static double _cos(double x) => math.cos(x);
 }
 
 /// Standard iOS animation durations for non-spring transitions

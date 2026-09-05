@@ -130,3 +130,76 @@ Windows/Android：触摸指针统一 Bouncing（Apple 手感），鼠标滚轮�
 - SwiftUI `.smooth/.snappy/.bouncy`（WWDC23 引证默认：0.5/0、0.3/0.15、0.3/0.3）
 - WWDC25 Session 219 "Meet Liquid Glass"、356
 - UIScrollView decelerationRate=0.998 / rubber-band c≈0.55（UIKit 常识值）
+
+---
+
+## 7. SwiftUI 弹簧参数·场景实例表（增补）
+
+来源等级：(*) = SwiftUI 文档默认；(†) = 系统组件行为实测/WWDC 演示惯例。
+
+| 场景 | response/duration | ζ / bounce | 手感目标 | MuseFlow 落点 |
+|---|---|---|---|---|
+| 通用状态变化 (*) | 0.5 | 0.825 | 默认"有生命" | `AppleSprings.simulation()` |
+| Sheet detent 吸附 (†) | 0.5 | ~1.0 | 大位移无过冲 | — |
+| 浮层/弹窗入场 (†) | 0.35–0.45 | 0.85–0.9 | 快速、几乎无过冲 | `AppToast` / dialog 转场 |
+| Segmented 滑块槽位 (†) | 0.3–0.35 | 0.8–0.9 | 槽位吸附、利落 | `AppSegmentedControl` thumb |
+| Toggle / 小开关 (†) | 0.3 | bounce 0.1–0.15 | 脆而微弹 | `AppPressable` release |
+| ContextMenu 弹出 (†) | 0.35 | bounce 0.2 | 有弹性强调 | — |
+| 按压回弹 (*) | 0.3 | ≈0.65 | 可见过冲(≈7%) | `AppPressSpec` |
+| 导航 push 视差 (†) | 0.42–0.5 | ~0.9 | 稳、带一点尾劲 | Cupertino route（系统） |
+
+**竹简槽弹簧（slot snap）**：本仓命名——指滑块/条目在离散槽位间移动的吸附
+动画（segmented thumb、章节排序落位、时间槽拖放）。参数共识：response
+0.3–0.35、ζ 0.8–0.9（过冲 1–2%，肉眼读到"咔哒吸入"而非"晃"）。
+对应实现 `AppleSprings.slotSnap`。
+
+## 8. MDN 滚动溢出行为对照（Web 侧视角）
+
+`overscroll-behavior`（MDN）与 iOS/Flutter 概念映射：
+
+| CSS 值 | 行为 | iOS 对应 | Flutter 对应 |
+|---|---|---|---|
+| `auto`（默认） | 边界效果 + **滚动链**（scroll chaining：子到底后父滚动） | 系统默认链式 | 默认 physics 链 |
+| `contain` | 元素内保留 bounce，但**不链到父级**；禁下拉刷新 | sheet 内滚动不带动底层 | 子 Bouncing + 阻断（嵌套滚动需配 `scrollChaining` 控制） |
+| `none` | 无链且**无 bounce** | "Reduce bouncing"偏好 | `ClampingScrollPhysics` |
+
+关键洞察（MDN 原文）：**overflow:hidden 的元素视为永远在边界**，因此模态
+遮罩层用 `contain` 可阻止背景滚动——Flutter 中对应：modal barrier 吸收
+拖拽（showModalBottomSheet 已如此）；自定义浮层需自行阻断。rubber-band
+是"边界效果"，滚动链是"边界传递"，两者正交——Apple 触感 = bounce 保留
++ 链按层级控制，这与我们 Bouncing(触摸) / Clamping(macOS) 的分平台
+策略一致。
+
+## 9. 三个专项动效模式（本仓落地规格）
+
+### 9.1 推石 shake（错误反馈·指数衰减振荡）
+
+"推不动的石头"：校验失败时元素横摇。**非弹簧**，是阻尼振荡：
+
+```
+x(t) = A · e^(−λ·t) · sin(2π·f·t)
+A = 9px（横向位移峰值）  f = 10Hz（快而不晕）
+λ = 9（≈0.11s 时间常数，3 个来回内衰减到 <2%）  时长 ≈ 400ms
+```
+
+推石感的关键：**起手即满幅**（速度为零、位移最大——石头被推的瞬间），
+衰减要快到"阻力极大"。落地：`AppShake.of(context)` / `AppShakeController`，
+驱动 `TranslationWrapper`。禁止用于高频重复错误（HIG：反馈要短而准）。
+
+### 9.2 Toast 弹簧入场
+
+iOS 16+ 的 floating toast：从触发点**轻弹进入**。规格：
+
+- 入场：y +14px 偏移 + scale 0.96 → 1.0，`spring(response 0.4, ζ 0.85)`
+  （比 snappy 慢半档：信息类不需要按钮的脆）
+- 出场：120ms 纯 fade（离场永远比入场快、无弹性——"离开不该有戏"）
+- 停留 2.4s（含 0.4s 动画）；底部安全区上方 16px，避开 tab bar
+
+落地：`AppToast.show()`（Overlay 实现，不依赖 ScaffoldMessenger）。
+
+### 9.3 浮层入场（dialog / sheet）
+
+- **Alert**：scale 1.05→1.0 反向？不——iOS 13+ alert 是 **0.95→1.0 spring**
+  （dampingFraction ~0.8, duration 0.4）+ 同步 fade；barrier 只 fade（120ms）
+- **Action sheet**：y 全高滑入 + `smooth`(0.5, ζ1.0)——大位移禁过冲
+- 共同原则：入场弹性、**出场快速无弹性**（~150ms ease-out + fade）

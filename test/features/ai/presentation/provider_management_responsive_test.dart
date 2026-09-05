@@ -49,7 +49,9 @@ void main() {
       await tester.pumpWidget(buildSubject());
       await tester.pumpAndSettle();
 
-      expect(find.byType(LayoutBuilder), findsOneWidget);
+      // The page-level responsive skeleton exists (the segmented control
+      // internally also uses a LayoutBuilder, so don't require exactly one).
+      expect(find.byType(LayoutBuilder), findsWidgets);
       expect(find.byType(VerticalDivider), findsOneWidget);
       expect(find.text('返回列表'), findsNothing);
       expect(find.text('预设模型'), findsOneWidget);

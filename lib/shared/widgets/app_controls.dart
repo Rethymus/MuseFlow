@@ -6,11 +6,19 @@ import 'package:flutter/material.dart';
 import '../theme/app_colors.dart';
 import '../theme/app_dimens.dart';
 import '../theme/app_materials.dart';
+import '../theme/app_motion.dart';
 
-/// iOS segmented control built on Material's [SegmentedButton] (keeps
-/// semantics and testing) with the Apple treatment: gray5 track, raised
-/// selected segment, hairline borders, no ripple.
-class AppSegmentedControl<T> extends StatelessWidget {
+/// iOS segmented control with the "bamboo-groove slot snap" (research doc
+/// §7): a raised thumb glides between discrete slots on the slotSnap
+/// spring (0.3s, ζ0.85 — a ~1.7% overshoot that reads as "click into
+/// place"). Built directly (not on SegmentedButton) so the thumb can move
+/// independently of the labels, iOS-style.
+/// iOS segmented control with the "bamboo-groove slot snap" (research doc
+/// §7): a raised thumb glides between discrete slots on the slotSnap
+/// spring (0.3s, ζ0.85 — a ~1.7% overshoot that reads as "click into
+/// place"). Built directly (not on SegmentedButton) so the thumb moves
+/// independently of the labels, iOS-style.
+class AppSegmentedControl<T> extends StatefulWidget {
   const AppSegmentedControl({
     super.key,
     required this.segments,
@@ -19,12 +27,62 @@ class AppSegmentedControl<T> extends StatelessWidget {
     this.labelOf,
   });
 
-  final Set<T> segments;
+  final List<T> segments;
   final T selected;
   final ValueChanged<T> onSelectionChanged;
 
   /// Optional display-label resolver for non-String segment values.
   final String Function(T value)? labelOf;
+
+  @override
+  State<AppSegmentedControl<T>> createState() => _AppSegmentedControlState<T>();
+}
+
+class _AppSegmentedControlState<T> extends State<AppSegmentedControl<T>>
+    with SingleTickerProviderStateMixin {
+  /// Drives progress 0→1 from the previous slot toward the new slot on the
+  /// slotSnap spring (unbounded so the small overshoot survives).
+  late final AnimationController _progress;
+
+  int _fromIndex = 0;
+  int _toIndex = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    _progress = AnimationController.unbounded(vsync: this, value: 1.0);
+    _toIndex = widget.segments
+        .indexOf(widget.selected)
+        .clamp(0, widget.segments.length - 1);
+    _fromIndex = _toIndex;
+  }
+
+  @override
+  void didUpdateWidget(covariant AppSegmentedControl<T> oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    final newIndex = widget.segments
+        .indexOf(widget.selected)
+        .clamp(0, widget.segments.length - 1);
+    if (newIndex != _toIndex) {
+      _fromIndex = _toIndex;
+      _toIndex = newIndex;
+      _progress
+        ..value = 0.0
+        ..animateWith(
+          AppleSprings.simulation(
+            1.0,
+            response: AppleMotion.slotSnapResponse,
+            dampingFraction: AppleMotion.slotSnapDampingFraction,
+          ),
+        );
+    }
+  }
+
+  @override
+  void dispose() {
+    _progress.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -39,52 +97,96 @@ class AppSegmentedControl<T> extends StatelessWidget {
           color: p.gray5,
           borderRadius: BorderRadius.circular(AppRadius.small),
         ),
-        child: SegmentedButton<T>(
-          segments: [
-            for (final s in segments)
-              ButtonSegment(
-                value: s,
-                label: Text(
-                  labelOf != null
-                      ? labelOf!(s)
-                      : (s is String ? s as String : s.toString()),
-                  style: textTheme.bodySmall?.copyWith(
-                    fontWeight: FontWeight.w500,
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(AppRadius.small - 2),
+          child: LayoutBuilder(
+            builder: (context, constraints) {
+              final slotWidth = constraints.maxWidth / widget.segments.length;
+              return Stack(
+                children: [
+                  // The spring-driven thumb gliding between slots.
+                  AnimatedBuilder(
+                    animation: _progress,
+                    builder: (context, _) {
+                      final t = _progress.value;
+                      final left =
+                          (_fromIndex + (_toIndex - _fromIndex) * t) *
+                          slotWidth;
+                      return Positioned(
+                        left: left,
+                        width: slotWidth,
+                        top: 0,
+                        bottom: 0,
+                        child: Container(
+                          decoration: BoxDecoration(
+                            color: p.tertiarySystemBackground,
+                            borderRadius: BorderRadius.circular(
+                              AppRadius.small - 2,
+                            ),
+                          ),
+                        ),
+                      );
+                    },
                   ),
-                ),
-              ),
-          ],
-          selected: {selected},
-          showSelectedIcon: false,
-          style: ButtonStyle(
-            visualDensity: VisualDensity.compact,
-            backgroundColor: WidgetStateProperty.resolveWith(
-              (states) => states.contains(WidgetState.selected)
-                  ? p.tertiarySystemBackground
-                  : Colors.transparent,
-            ),
-            foregroundColor: WidgetStateProperty.resolveWith(
-              (states) => states.contains(WidgetState.selected)
-                  ? p.label
-                  : p.secondaryLabel,
-            ),
-            side: const WidgetStatePropertyAll(
-              BorderSide(style: BorderStyle.none),
-            ),
-            shape: WidgetStatePropertyAll(
-              RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(AppRadius.small - 2),
-              ),
-            ),
-            padding: const WidgetStatePropertyAll(
-              EdgeInsets.symmetric(horizontal: 14, vertical: 7),
-            ),
-            overlayColor: const WidgetStatePropertyAll(Colors.transparent),
-            tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                  Row(
+                    children: [
+                      for (var i = 0; i < widget.segments.length; i++)
+                        Expanded(
+                          child: _SlotLabel(
+                            label: widget.labelOf != null
+                                ? widget.labelOf!(widget.segments[i])
+                                : (widget.segments[i] is String
+                                      ? widget.segments[i] as String
+                                      : widget.segments[i].toString()),
+                            selected: i == _toIndex,
+                            textTheme: textTheme,
+                            onTap: () =>
+                                widget.onSelectionChanged(widget.segments[i]),
+                          ),
+                        ),
+                    ],
+                  ),
+                ],
+              );
+            },
           ),
-          onSelectionChanged: (sel) {
-            if (sel.isNotEmpty) onSelectionChanged(sel.first);
-          },
+        ),
+      ),
+    );
+  }
+}
+
+/// One segment label; taps route through the parent.
+class _SlotLabel extends StatelessWidget {
+  const _SlotLabel({
+    required this.label,
+    required this.selected,
+    required this.textTheme,
+    required this.onTap,
+  });
+
+  final String label;
+  final bool selected;
+  final TextTheme textTheme;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final p = AppColors.of(context);
+    return InkWell(
+      onTap: onTap,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 7),
+        child: Center(
+          child: Text(
+            label,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: textTheme.bodySmall?.copyWith(
+              fontWeight: FontWeight.w500,
+              color: selected ? p.label : p.secondaryLabel,
+            ),
+          ),
         ),
       ),
     );
