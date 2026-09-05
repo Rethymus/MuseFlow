@@ -165,6 +165,127 @@ void main() {
     });
   });
 
+  group('SpringSheet (action sheet host)', () {
+    Future<void> pumpHost(WidgetTester tester) async {
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: appTheme(Brightness.light),
+          home: Scaffold(
+            body: Builder(
+              builder: (context) => Center(
+                child: FilledButton(
+                  onPressed: () => showAppActionSheet(
+                    context,
+                    title: '选择操作',
+                    actions: [
+                      AppSheetAction('重命名'),
+                      AppSheetAction('删除', isDestructive: true),
+                    ],
+                  ),
+                  child: const Text('打开'),
+                ),
+              ),
+            ),
+          ),
+        ),
+      );
+    }
+
+    Finder sheetTranslation() => find.ancestor(
+      of: find.text('取消'),
+      matching: find.byType(FractionalTranslation),
+    );
+
+    testWidgets('slides in from below and seats (no overshoot beyond ~2%)', (
+      tester,
+    ) async {
+      await pumpHost(tester);
+      await tester.tap(find.text('打开'));
+      await tester.pump();
+
+      // Mid-flight: still translated down.
+      var translation = tester
+          .widget<FractionalTranslation>(sheetTranslation())
+          .translation;
+      expect(translation.dy, greaterThan(0.0));
+
+      await tester.pumpAndSettle();
+      translation = tester
+          .widget<FractionalTranslation>(sheetTranslation())
+          .translation;
+      // Smooth spring is critically damped: seats at 0 without overshoot.
+      expect(translation.dy, closeTo(0.0, 0.02));
+    });
+
+    testWidgets('drag down past threshold dismisses and removes the overlay', (
+      tester,
+    ) async {
+      await pumpHost(tester);
+      await tester.tap(find.text('打开'));
+      await tester.pumpAndSettle();
+      expect(find.text('重命名'), findsOneWidget);
+
+      await tester.drag(find.text('选择操作'), const Offset(0, 600));
+      await tester.pumpAndSettle();
+
+      expect(find.text('重命名'), findsNothing);
+      expect(find.text('选择操作'), findsNothing);
+    });
+
+    testWidgets('small drag springs back to seated', (tester) async {
+      await pumpHost(tester);
+      await tester.tap(find.text('打开'));
+      await tester.pumpAndSettle();
+
+      await tester.drag(find.text('选择操作'), const Offset(0, 80));
+      await tester.pump();
+      var translation = tester
+          .widget<FractionalTranslation>(sheetTranslation())
+          .translation;
+      expect(translation.dy, greaterThan(0.0));
+
+      await tester.pumpAndSettle();
+      translation = tester
+          .widget<FractionalTranslation>(sheetTranslation())
+          .translation;
+      expect(translation.dy, closeTo(0.0, 0.02));
+      expect(find.text('重命名'), findsOneWidget);
+    });
+
+    testWidgets('action tap dismisses the sheet and keeps the callback order', (
+      tester,
+    ) async {
+      var picked = '';
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: appTheme(Brightness.light),
+          home: Scaffold(
+            body: Builder(
+              builder: (context) => Center(
+                child: FilledButton(
+                  onPressed: () => showAppActionSheet(
+                    context,
+                    actions: [
+                      AppSheetAction('重命名', onPressed: () => picked = 'rename'),
+                    ],
+                  ),
+                  child: const Text('打开'),
+                ),
+              ),
+            ),
+          ),
+        ),
+      );
+      await tester.tap(find.text('打开'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('重命名'));
+      await tester.pumpAndSettle();
+
+      expect(picked, 'rename');
+      expect(find.text('重命名'), findsNothing);
+    });
+  });
+
   group('showAppDialog entrance', () {
     testWidgets('dialog scales in and settles', (tester) async {
       await tester.pumpWidget(

@@ -12,6 +12,7 @@ import 'package:flutter/material.dart';
 import '../theme/app_colors.dart';
 import '../theme/app_dimens.dart';
 import '../theme/app_materials.dart';
+import '../theme/app_motion.dart';
 
 /// One alert button. [isDefault] renders in the accent tint and bold;
 /// [isDestructive] renders in system red.
@@ -235,101 +236,273 @@ Future<void> showAppActionSheet(
   required List<AppSheetAction> actions,
   String cancelLabel = '取消',
 }) {
-  final p = AppColors.of(context);
-  final textTheme = Theme.of(context).textTheme;
-
-  return showModalBottomSheet<void>(
-    context: context,
-    backgroundColor: Colors.transparent,
-    builder: (sheetContext) {
-      Widget actionButton(AppSheetAction a) => GestureDetector(
-        onTap: () {
+  final overlay = Overlay.maybeOf(context, rootOverlay: true);
+  if (overlay == null) {
+    // No overlay (bare tests): keep the framework sheet as a fallback.
+    return showModalBottomSheet<void>(
+      context: context,
+      backgroundColor: Colors.transparent,
+      builder: (sheetContext) => _ActionSheetContent(
+        title: title,
+        actions: actions,
+        cancelLabel: cancelLabel,
+        onDismiss: () => Navigator.of(sheetContext).pop(),
+        dismissThenRun: (callback) {
           Navigator.of(sheetContext).pop();
-          a.onPressed?.call();
+          callback?.call();
         },
-        behavior: HitTestBehavior.opaque,
-        child: Container(
-          width: double.infinity,
-          padding: const EdgeInsets.symmetric(vertical: 15),
-          child: Text(
-            a.label,
-            textAlign: TextAlign.center,
-            style: textTheme.bodyLarge?.copyWith(
-              fontSize: 17,
-              color: a.isDestructive ? p.systemRed : p.accent,
-            ),
+      ),
+    );
+  }
+
+  late final OverlayEntry entry;
+  final hostKey = GlobalKey<_SpringSheetHostState>();
+  entry = OverlayEntry(
+    builder: (_) => _SpringSheetHost(
+      key: hostKey,
+      onDismissed: () => entry.remove(),
+      child: _ActionSheetContent(
+        title: title,
+        actions: actions,
+        cancelLabel: cancelLabel,
+        onDismiss: () => hostKey.currentState?.dismiss(),
+        dismissThenRun: (callback) {
+          hostKey.currentState?.dismiss();
+          callback?.call();
+        },
+      ),
+    ),
+  );
+  overlay.insert(entry);
+  return Future<void>.value();
+}
+
+/// The grouped iOS action-sheet card + cancel group.
+class _ActionSheetContent extends StatelessWidget {
+  const _ActionSheetContent({
+    required this.title,
+    required this.actions,
+    required this.cancelLabel,
+    required this.onDismiss,
+    required this.dismissThenRun,
+  });
+
+  final String? title;
+  final List<AppSheetAction> actions;
+  final String cancelLabel;
+  final VoidCallback onDismiss;
+  final void Function(VoidCallback?) dismissThenRun;
+
+  @override
+  Widget build(BuildContext context) {
+    final p = AppColors.of(context);
+    final textTheme = Theme.of(context).textTheme;
+
+    Widget actionButton(AppSheetAction a) => GestureDetector(
+      onTap: () => dismissThenRun(a.onPressed),
+      behavior: HitTestBehavior.opaque,
+      child: Container(
+        width: double.infinity,
+        padding: const EdgeInsets.symmetric(vertical: 15),
+        child: Text(
+          a.label,
+          textAlign: TextAlign.center,
+          style: textTheme.bodyLarge?.copyWith(
+            fontSize: 17,
+            color: a.isDestructive ? p.systemRed : p.accent,
           ),
         ),
-      );
+      ),
+    );
 
-      return SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.fromLTRB(10, 0, 10, 10),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              AppMaterial(
-                tier: AppMaterialTier.regular,
-                radius: AppRadius.rMedium,
-                shadow: true,
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    if (title != null) ...[
-                      Padding(
-                        padding: const EdgeInsets.fromLTRB(16, 14, 16, 14),
-                        child: Text(
-                          title,
-                          textAlign: TextAlign.center,
-                          style: textTheme.bodySmall?.copyWith(
-                            color: p.secondaryLabel,
-                          ),
+    return SafeArea(
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(10, 0, 10, 10),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            AppMaterial(
+              tier: AppMaterialTier.regular,
+              radius: AppRadius.rMedium,
+              shadow: true,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  if (title != null) ...[
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(16, 14, 16, 14),
+                      child: Text(
+                        title!,
+                        textAlign: TextAlign.center,
+                        style: textTheme.bodySmall?.copyWith(
+                          color: p.secondaryLabel,
                         ),
                       ),
-                      Divider(height: 0.5, thickness: 0.5, color: p.separator),
-                    ],
-                    for (var i = 0; i < actions.length; i++) ...[
-                      if (i > 0)
-                        Divider(
-                          height: 0.5,
-                          thickness: 0.5,
-                          color: p.separator,
-                          indent: 12,
-                          endIndent: 12,
-                        ),
-                      actionButton(actions[i]),
-                    ],
+                    ),
+                    Divider(height: 0.5, thickness: 0.5, color: p.separator),
                   ],
-                ),
-              ),
-              const SizedBox(height: 8),
-              AppMaterial(
-                tier: AppMaterialTier.regular,
-                radius: AppRadius.rMedium,
-                child: GestureDetector(
-                  onTap: () => Navigator.of(sheetContext).pop(),
-                  behavior: HitTestBehavior.opaque,
-                  child: Container(
-                    width: double.infinity,
-                    padding: const EdgeInsets.symmetric(vertical: 15),
-                    child: Text(
-                      cancelLabel,
-                      textAlign: TextAlign.center,
-                      style: textTheme.bodyLarge?.copyWith(
-                        fontSize: 17,
-                        fontWeight: FontWeight.w600,
-                        color: p.accent,
+                  for (var i = 0; i < actions.length; i++) ...[
+                    if (i > 0)
+                      Divider(
+                        height: 0.5,
+                        thickness: 0.5,
+                        color: p.separator,
+                        indent: 12,
+                        endIndent: 12,
                       ),
+                    actionButton(actions[i]),
+                  ],
+                ],
+              ),
+            ),
+            const SizedBox(height: 8),
+            AppMaterial(
+              tier: AppMaterialTier.regular,
+              radius: AppRadius.rMedium,
+              child: GestureDetector(
+                onTap: onDismiss,
+                behavior: HitTestBehavior.opaque,
+                child: Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.symmetric(vertical: 15),
+                  child: Text(
+                    cancelLabel,
+                    textAlign: TextAlign.center,
+                    style: textTheme.bodyLarge?.copyWith(
+                      fontSize: 17,
+                      fontWeight: FontWeight.w600,
+                      color: p.accent,
                     ),
                   ),
                 ),
               ),
-            ],
-          ),
+            ),
+          ],
         ),
-      );
-    },
-  );
+      ),
+    );
+  }
+}
+
+/// Spring-driven full-height sheet entrance (research doc §9.3):
+/// slides in on the smooth spring (0.5s, ζ1.0 — large displacement, no
+/// overshoot), supports velocity-preserving drag-to-dismiss, and exits
+/// fast with no elasticity (160ms ease-out).
+class _SpringSheetHost extends StatefulWidget {
+  const _SpringSheetHost({
+    super.key,
+    required this.child,
+    required this.onDismissed,
+  });
+
+  final Widget child;
+  final VoidCallback onDismissed;
+
+  @override
+  State<_SpringSheetHost> createState() => _SpringSheetHostState();
+}
+
+class _SpringSheetHostState extends State<_SpringSheetHost>
+    with TickerProviderStateMixin {
+  /// 0 = fully below screen, 1 = seated; springs may overshoot slightly.
+  late final AnimationController _t;
+
+  bool _dismissing = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _t = AnimationController.unbounded(vsync: this, value: 0.0);
+    _t.animateWith(
+      AppleSprings.simulation(
+        1.0,
+        response: AppleMotion.smoothResponse,
+        dampingFraction: AppleMotion.smoothDampingFraction,
+      ),
+    );
+  }
+
+  @override
+  void dispose() {
+    _t.dispose();
+    super.dispose();
+  }
+
+  void dismiss() {
+    if (_dismissing) return;
+    _dismissing = true;
+    // Exit: fast, non-elastic ("leaving shouldn't be theatrical").
+    _t
+        .animateTo(0.0, duration: const Duration(milliseconds: 160))
+        .whenComplete(widget.onDismissed);
+  }
+
+  void _onDragUpdate(DragUpdateDetails details) {
+    if (_dismissing) return;
+    final height = context.size?.height;
+    if (height == null || height <= 0) return;
+    // Finger tracking: the sheet follows the finger 1:1; the release
+    // spring inherits the position (which encodes the drag velocity).
+    _t.stop();
+    _t.value = (_t.value - details.primaryDelta! / height).clamp(0.0, 1.0);
+  }
+
+  void _onDragEnd(DragEndDetails details) {
+    if (_dismissing) return;
+    final height = context.size?.height;
+    if (height == null || height <= 0) return;
+    final velocity = (details.primaryVelocity ?? 0) / height; // units/s
+    final flungDown =
+        details.primaryVelocity != null && details.primaryVelocity! > 600;
+    if (flungDown || _t.value < 0.72) {
+      _dismissing = true;
+      _t
+          .animateTo(
+            0.0,
+            duration: const Duration(milliseconds: 200),
+            curve: Curves.easeOutCubic,
+          )
+          .whenComplete(widget.onDismissed);
+      return;
+    }
+    // Released near seated: spring back carrying the finger's velocity.
+    _t.animateWith(
+      AppleSprings.simulation(
+        1.0,
+        response: AppleMotion.smoothResponse,
+        dampingFraction: AppleMotion.smoothDampingFraction,
+        velocity: velocity,
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: dismiss,
+      onVerticalDragUpdate: _onDragUpdate,
+      onVerticalDragEnd: _onDragEnd,
+      behavior: HitTestBehavior.opaque,
+      child: AnimatedBuilder(
+        animation: _t,
+        builder: (context, child) {
+          final t = _t.value;
+          final barrierOpacity = t.clamp(0.0, 1.0) * 0.4;
+          return ColoredBox(
+            color: Colors.black.withValues(alpha: barrierOpacity),
+            child: Align(
+              alignment: Alignment.bottomCenter,
+              child: FractionalTranslation(
+                translation: Offset(0, 1 - t),
+                child: child,
+              ),
+            ),
+          );
+        },
+        child: widget.child,
+      ),
+    );
+  }
 }
 
 /// Convenience icon-only close affordance used in sheets and panels.
