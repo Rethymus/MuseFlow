@@ -169,7 +169,7 @@ MuseFlow 灵韵是一个人机协作的小说创作辅助工具，面向"有故�
 |------------|---------|---------|-----|
 | **openai_dart** | ^6.0.0 | OpenAI API client + OpenAI-compatible providers | Type-safe Dart client. Supports custom `baseUrl` -- covers DeepSeek and Ollama (both expose OpenAI-compatible endpoints). Streaming via `createChatCompletionStream()`. |
 | **anthropic_sdk_dart** | ^4.0.0 | Claude API client | Dedicated Dart SDK for Anthropic's Messages API with streaming and tool use. Claude has a non-OpenAI-compatible API, so a separate client is necessary. |
-| **ollama_dart** | ^2.4.0 | Ollama local LLM client | Dedicated client for Ollama's REST API. Provides model listing, chat, generation. Use alongside openai_dart for Ollama (Ollama supports both its native API and OpenAI-compatible endpoints; ollama_dart gives richer model management). |
+| **ollama_dart** | ^2.6.1 | Ollama local LLM client | Dedicated client for Ollama's REST API. Provides model listing, chat, generation. Use alongside openai_dart for Ollama (Ollama supports both its native API and OpenAI-compatible endpoints; ollama_dart gives richer model management). |
 ### Multi-Model Adapter Architecture
 ## Local Storage
 | Technology | Version | Purpose | Why |
