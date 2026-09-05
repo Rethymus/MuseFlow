@@ -217,16 +217,22 @@ class AppMaterial extends StatelessWidget {
           filter: ImageFilter.blur(sigmaX: tier.sigma, sigmaY: tier.sigma),
           child: DecoratedBox(
             decoration: BoxDecoration(color: tint, borderRadius: radius),
-            child: Stack(
-              children: [
-                child,
-                if (borderEdges.contains(LogicalEdge.top))
-                  edge(LogicalEdge.top)
-                else
-                  rim,
-                for (final e in borderEdges.where((e) => e != LogicalEdge.top))
-                  edge(e),
-              ],
+            // Transparent Material so ink-based children (InkWell,
+            // ListTile) work without relying on a Scaffold ancestor.
+            child: Material(
+              type: MaterialType.transparency,
+              child: Stack(
+                children: [
+                  child,
+                  if (borderEdges.contains(LogicalEdge.top))
+                    edge(LogicalEdge.top)
+                  else
+                    rim,
+                  for (final e
+                      in borderEdges.where((e) => e != LogicalEdge.top))
+                    edge(e),
+                ],
+              ),
             ),
           ),
         ),
