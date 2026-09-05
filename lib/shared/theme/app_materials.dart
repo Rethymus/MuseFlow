@@ -228,8 +228,9 @@ class AppMaterial extends StatelessWidget {
                     edge(LogicalEdge.top)
                   else
                     rim,
-                  for (final e
-                      in borderEdges.where((e) => e != LogicalEdge.top))
+                  for (final e in borderEdges.where(
+                    (e) => e != LogicalEdge.top,
+                  ))
                     edge(e),
                 ],
               ),
