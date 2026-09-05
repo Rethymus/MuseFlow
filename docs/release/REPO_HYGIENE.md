@@ -29,6 +29,8 @@
 
 ## 清理日志（2026-09-06）
 
+### 第一轮：分支 / tag / PR / 仓库设置
+
 | 动作 | 明细 |
 | --- | --- |
 | 合并 PR | #20（actions/deploy-pages 4→5）、#21（actions/configure-pages 5→6），CI 全绿，squash 合并 |
@@ -36,6 +38,14 @@
 | 删除本地残留 tag | 见下表（远端从未推送过这些 tag，无关联 Release） |
 | 仓库设置 | 开启 `delete_branch_on_merge`；main 分支保护禁 force-push/删除 |
 | dependabot | `.github/dependabot.yml` 增加更新分组 |
+
+### 第二轮：dependabot 分组生效 + 依赖文档病根根治
+
+| 动作 | 明细 |
+| --- | --- |
+| 合并 PR | #26（actions-all 分组，5 个 Actions 更新合一）、#27（pub-minor-and-patch 分组，8 个依赖更新合一，补齐 CLAUDE.md 同步后 CI 全绿） |
+| 保留 PR | #28（anthropic_sdk_dart 4→8，跨 4 个大版本且 analyze 失败，按规范开放待人工评估） |
+| 病根修复 | 所有 pub 依赖 PR 反复挂在 `check_dependency_docs.sh` 的根因：dependabot 只改 pubspec，不更新 CLAUDE.md 依赖表。新增 `scripts/sync_dependency_docs.py` + `dep-docs-sync.yml` 工作流，在 dependabot PR 分支上自动提交文档同步（对落地后新建的 dependabot 分支自动生效） |
 
 被删除 tag 的恢复方式：`git tag <name> <hash>`（哈希为 tag 所指提交）：
 
