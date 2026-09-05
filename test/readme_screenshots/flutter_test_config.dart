@@ -14,8 +14,10 @@
 library;
 
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
+import 'package:flutter/services.dart' show FontLoader, rootBundle;
 import 'package:flutter_test/flutter_test.dart';
 
 /// Maximum fraction of differing pixels tolerated for README goldens.
@@ -57,11 +59,31 @@ class _TolerantGoldenComparator extends LocalFileComparator {
 }
 
 Future<void> testExecutable(FutureOr<void> Function() testMain) async {
+  TestWidgetsFlutterBinding.ensureInitialized();
   final existing = goldenFileComparator as LocalFileComparator;
   // LocalFileComparator derives its golden-path base from the test file's
   // directory; rebuild the same basedir from the current comparator.
   goldenFileComparator = _TolerantGoldenComparator(
     existing.basedir.resolve('flutter_test_config.dart'),
   );
+  await _loadAllBundledFonts();
   await testMain();
+}
+
+/// Loads every font declared in the build's FontManifest.json — the icon
+/// fonts (MaterialIcons, CupertinoIcons) included. Without this, golden
+/// renders show tofu boxes wherever `Icon(...)` appears, because `flutter
+/// test` does not auto-register package icon fonts.
+Future<void> _loadAllBundledFonts() async {
+  final manifestContent = await rootBundle.loadString('FontManifest.json');
+  final List<dynamic> manifest = jsonDecode(manifestContent) as List<dynamic>;
+  for (final font in manifest) {
+    final String family = font['family'] as String;
+    final loader = FontLoader(family);
+    for (final Map<String, dynamic> fontAsset
+        in (font['fonts'] as List<dynamic>).cast<Map<String, dynamic>>()) {
+      loader.addFont(rootBundle.load(fontAsset['asset'] as String));
+    }
+    await loader.load();
+  }
 }
