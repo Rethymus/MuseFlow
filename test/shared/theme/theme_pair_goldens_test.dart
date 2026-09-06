@@ -22,6 +22,7 @@ import 'package:museflow/core/presentation/providers.dart';
 import 'package:museflow/features/ai/domain/creativity_level.dart';
 import 'package:museflow/features/settings/presentation/settings_page.dart';
 import 'package:museflow/shared/theme/app_colors.dart';
+import 'package:museflow/shared/theme/app_materials.dart';
 import 'package:museflow/shared/theme/app_theme.dart';
 import 'package:museflow/shared/widgets/app_sidebar.dart';
 import 'package:museflow/shared/widgets/app_tab_bar.dart';
@@ -82,66 +83,7 @@ void main() {
       addTearDown(tester.view.resetPhysicalSize);
       addTearDown(tester.view.resetDevicePixelRatio);
 
-      await tester.pumpWidget(
-        MaterialApp(
-          debugShowCheckedModeBanner: false,
-          theme: appTheme(brightness),
-          home: Scaffold(
-            backgroundColor: Colors.transparent,
-            body: Stack(
-              children: [
-                // High-frequency backdrop: alternating saturated stripes.
-                // If the sidebar's BackdropFilter ever stops sampling, the
-                // golden diff collapses to a flat tint and the pair test
-                // fails on the next regeneration.
-                const _StripedBackdrop(),
-                Align(
-                  alignment: Alignment.centerLeft,
-                  child: AppSidebar(
-                    selectedIndex: 1,
-                    destinations: const [
-                      AppSidebarDestination(
-                        icon: Icons.bolt_outlined,
-                        label: '灵感捕捉',
-                      ),
-                      AppSidebarDestination(
-                        icon: Icons.book_outlined,
-                        label: '文稿库',
-                      ),
-                      AppSidebarDestination(
-                        icon: Icons.folder_outlined,
-                        label: '知识库',
-                      ),
-                    ],
-                    onDestinationSelected: (_) {},
-                  ),
-                ),
-                Align(
-                  alignment: Alignment.bottomCenter,
-                  child: AppTabBar(
-                    selectedIndex: 0,
-                    destinations: const [
-                      AppSidebarDestination(
-                        icon: Icons.bolt_outlined,
-                        label: '捕捉',
-                      ),
-                      AppSidebarDestination(
-                        icon: Icons.book_outlined,
-                        label: '文稿',
-                      ),
-                      AppSidebarDestination(
-                        icon: Icons.folder_outlined,
-                        label: '知识',
-                      ),
-                    ],
-                    onDestinationSelected: (_) {},
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
-      );
+      await tester.pumpWidget(_chromeHarness(brightness, reduce: false));
       await tester.pumpAndSettle();
 
       await expectLater(
@@ -149,7 +91,86 @@ void main() {
         matchesGoldenFile('goldens/chrome-glass-$name.png'),
       );
     });
+
+    testWidgets('reduced transparency keeps backdrop sharp [$name]', (
+      tester,
+    ) async {
+      tester.view.physicalSize = const Size(900, 700);
+      tester.view.devicePixelRatio = 1.0;
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
+
+      // Same chrome over the same stripes, reduce-transparency ON: the
+      // panels degrade to opaque elevation color, so the stripes must NOT
+      // bleed through them — the golden locks exactly where they show.
+      await tester.pumpWidget(_chromeHarness(brightness, reduce: true));
+      await tester.pumpAndSettle();
+
+      await expectLater(
+        find.byType(Scaffold),
+        matchesGoldenFile('goldens/chrome-reduced-$name.png'),
+      );
+    });
   }
+}
+
+/// The chrome-over-stripes harness shared by the glass and reduced pairs.
+Widget _chromeHarness(Brightness brightness, {required bool reduce}) {
+  return AppVisualSettings(
+    reduceTransparency: reduce,
+    child: MaterialApp(
+      debugShowCheckedModeBanner: false,
+      theme: appTheme(brightness),
+      home: Scaffold(
+        backgroundColor: Colors.transparent,
+        body: Stack(
+          children: [
+            // High-frequency backdrop: alternating saturated stripes.
+            // If the sidebar's BackdropFilter ever stops sampling, the
+            // golden diff collapses to a flat tint and the pair test
+            // fails on the next regeneration.
+            const _StripedBackdrop(),
+            Align(
+              alignment: Alignment.centerLeft,
+              child: AppSidebar(
+                selectedIndex: 1,
+                destinations: const [
+                  AppSidebarDestination(
+                    icon: Icons.bolt_outlined,
+                    label: '灵感捕捉',
+                  ),
+                  AppSidebarDestination(
+                    icon: Icons.book_outlined,
+                    label: '文稿库',
+                  ),
+                  AppSidebarDestination(
+                    icon: Icons.folder_outlined,
+                    label: '知识库',
+                  ),
+                ],
+                onDestinationSelected: (_) {},
+              ),
+            ),
+            Align(
+              alignment: Alignment.bottomCenter,
+              child: AppTabBar(
+                selectedIndex: 0,
+                destinations: const [
+                  AppSidebarDestination(icon: Icons.bolt_outlined, label: '捕捉'),
+                  AppSidebarDestination(icon: Icons.book_outlined, label: '文稿'),
+                  AppSidebarDestination(
+                    icon: Icons.folder_outlined,
+                    label: '知识',
+                  ),
+                ],
+                onDestinationSelected: (_) {},
+              ),
+            ),
+          ],
+        ),
+      ),
+    ),
+  );
 }
 
 /// Alternating saturated stripes + white gaps: maximal spatial frequency

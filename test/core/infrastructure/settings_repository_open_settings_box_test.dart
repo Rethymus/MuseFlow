@@ -93,4 +93,37 @@ void main() {
           'not open a second instance with a different cipher',
     );
   });
+
+  test(
+    'reduce-transparency preference round-trips the encrypted box',
+    () async {
+      final storage = _InMemorySecureStorage();
+      final box = await openSettingsBox(storage);
+      final repository = SettingsRepository(box);
+
+      // Shipped default: glass ON.
+      expect(repository.getReduceTransparency(), isFalse);
+
+      await repository.saveReduceTransparency(true);
+      expect(
+        repository.getReduceTransparency(),
+        isTrue,
+        reason: 'the accessibility switch must survive an app restart',
+      );
+
+      // A fresh repository instance over the same (closed-and-reopened)
+      // box simulates the next launch reading persisted state.
+      await box.close();
+      final reopened = await openSettingsBox(storage);
+      final relaunched = SettingsRepository(reopened);
+      expect(
+        relaunched.getReduceTransparency(),
+        isTrue,
+        reason: 'value must be read back from encrypted storage, not memory',
+      );
+
+      await relaunched.saveReduceTransparency(false);
+      expect(relaunched.getReduceTransparency(), isFalse);
+    },
+  );
 }
