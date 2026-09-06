@@ -58,9 +58,14 @@ class AppPalette {
   Color get gray6 => isDark ? const Color(0xFF1C1C1E) : const Color(0xFFF2F2F7);
 
   // --- Labels ------------------------------------------------------------
+  // Light secondaryLabel is deliberately 75% alpha (0xBF), not Apple's
+  // stock 60%: at 60% it lands at 3.29:1 on the grouped background —
+  // below WCAG AA for the auxiliary body text it carries here. 75%
+  // clears AA at 4.77:1 while reading unmistakably "secondary" next to
+  // the 21:1 primary label. Pinned by test/shared/theme/app_contrast_test.dart.
   Color get label => isDark ? const Color(0xFFFFFFFF) : const Color(0xFF000000);
   Color get secondaryLabel =>
-      isDark ? const Color(0x99EBEBF5) : const Color(0x993C3C43);
+      isDark ? const Color(0x99EBEBF5) : const Color(0xBF3C3C43);
   Color get tertiaryLabel =>
       isDark ? const Color(0x4DEBEBF5) : const Color(0x4D3C3C43);
   Color get quaternaryLabel =>
