@@ -6,8 +6,10 @@
 library;
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import '../theme/app_colors.dart';
+import '../theme/app_dimens.dart';
 import '../theme/app_materials.dart';
 import 'app_pressable.dart';
 import 'app_sidebar.dart';
@@ -52,7 +54,14 @@ class AppTabBar extends StatelessWidget {
                   child: _TabItem(
                     destination: destinations[i],
                     selected: i == selectedIndex,
-                    onTap: () => onDestinationSelected(i),
+                    onTap: () {
+                      // Selection haptic only on an actual change —
+                      // re-tapping the current tab stays silent.
+                      if (i != selectedIndex) {
+                        HapticFeedback.selectionClick();
+                      }
+                      onDestinationSelected(i);
+                    },
                   ),
                 ),
             ],
@@ -89,22 +98,25 @@ class _TabItem extends StatelessWidget {
       label: destination.label,
       child: AppPressable(
         onTap: onTap,
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(icon, size: 23, color: tint),
-            const SizedBox(height: 2),
-            Text(
-              destination.label,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style: textTheme.labelSmall?.copyWith(
-                fontSize: 10,
-                height: 1.0,
-                color: tint,
+        child: AppFocusRing(
+          radius: BorderRadius.circular(AppRadius.small),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(icon, size: 23, color: tint),
+              const SizedBox(height: 2),
+              Text(
+                destination.label,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: textTheme.labelSmall?.copyWith(
+                  fontSize: 10,
+                  height: 1.0,
+                  color: tint,
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

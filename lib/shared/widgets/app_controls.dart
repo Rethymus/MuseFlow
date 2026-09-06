@@ -2,6 +2,7 @@
 library;
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import '../theme/app_colors.dart';
 import '../theme/app_dimens.dart';
@@ -12,11 +13,6 @@ import '../theme/app_motion.dart';
 /// §7): a raised thumb glides between discrete slots on the slotSnap
 /// spring (0.3s, ζ0.85 — a ~1.7% overshoot that reads as "click into
 /// place"). Built directly (not on SegmentedButton) so the thumb can move
-/// independently of the labels, iOS-style.
-/// iOS segmented control with the "bamboo-groove slot snap" (research doc
-/// §7): a raised thumb glides between discrete slots on the slotSnap
-/// spring (0.3s, ζ0.85 — a ~1.7% overshoot that reads as "click into
-/// place"). Built directly (not on SegmentedButton) so the thumb moves
 /// independently of the labels, iOS-style.
 class AppSegmentedControl<T> extends StatefulWidget {
   const AppSegmentedControl({
@@ -66,6 +62,10 @@ class _AppSegmentedControlState<T> extends State<AppSegmentedControl<T>>
     if (newIndex != _toIndex) {
       _fromIndex = _toIndex;
       _toIndex = newIndex;
+      // The tactile half of the slot snap: a selection haptic exactly as
+      // the thumb starts gliding (HIG: reinforce selection changes; no-op
+      // on platforms without haptics).
+      HapticFeedback.selectionClick();
       _progress
         ..value = 0.0
         ..animateWith(

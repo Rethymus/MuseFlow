@@ -7,6 +7,7 @@
 library;
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import '../theme/app_colors.dart';
 import '../theme/app_dimens.dart';
@@ -98,7 +99,14 @@ class AppSidebar extends StatelessWidget {
                         destination: destinations[i],
                         selected: i == selectedIndex,
                         extended: extended,
-                        onTap: () => onDestinationSelected(i),
+                        onTap: () {
+                          // Selection haptic only on an actual change —
+                          // re-tapping the current page stays silent.
+                          if (i != selectedIndex) {
+                            HapticFeedback.selectionClick();
+                          }
+                          onDestinationSelected(i);
+                        },
                       ),
                   ],
                 ),

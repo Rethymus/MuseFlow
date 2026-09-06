@@ -7,6 +7,7 @@
 library;
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import '../theme/app_motion.dart';
 
@@ -37,6 +38,10 @@ class AppShakeState extends State<AppShake>
 
   /// Runs one shake cycle. Safe to call repeatedly (restarts).
   void shake() {
+    // HIG: motion must not be the only feedback channel — pair the visual
+    // refusal with a heavy impact on platforms that support haptics
+    // (no-op on desktop).
+    HapticFeedback.heavyImpact();
     _controller.animateWith(AppShakeSimulation());
   }
 
