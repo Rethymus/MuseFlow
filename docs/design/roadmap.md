@@ -24,47 +24,51 @@
 
 目标：让已验证的系统**覆盖全部交互面**，消灭"漏网之股"。
 
-- **B1 按压反馈全覆盖**：AppPressable 接入剩余可点卡片/行
-  （report_card、knowledge tile、template card、chart 卡）。验收：
-  交互面清单核对 + 现有测试全绿。
-- **B2 Toast 全面替代 SnackBar**：grep 全仓 SnackBar 残留，逐个换
-  showAppToast（捕获器/编辑器/知识库等）。验收：`grep SnackBar lib/`
-  仅剩框架 fallback。
-- **B3 滚动边缘效果（HIG Materials 规格）**：内容滚动经过浮层下方时，
-  浮层边缘额外模糊+降不透明度。实现：AppMaterial 增加 `scrollEdge`
-  参数，由 Scrollable 联动（NotificationListener 驱动强度 0→1）。
-  验收：新增滚动联动测试 + 目视 golden。
-- **B4 焦点环接入主导航**：AppSidebar/AppTabBar 项获得键盘焦点环
-  （当前仅分段控件有）。桌面可访问性关键。验收：focus traversal 测试。
+- **B1 按压反馈全覆盖** ✅（b88032e）：AppPressable 接入全部可点卡片。
+- **B2 Toast 全面替代 SnackBar** ✅（784f5b3）：39 处 SnackBar 全部迁移。
+- **B3 滚动边缘效果（HIG Materials 规格）** ✅（3b7833e + 本批次）：
+  AppScrollEdge 联动 chrome tint（+25% 上限）。
+- **B4 焦点环接入主导航** ✅：侧栏（6ca4ce9）+ tab 栏（本批次补齐）。
 
-## Phase C — 可访问性与对比度（中期）
+## Phase C — 可访问性与对比度（中期）✅ 本批次完成
 
-- **C1 WCAG 对比度 linter**：对 `AppPalette` 的全部前景/背景组合
-  （label/secondaryLabel/tertiaryLabel × cardBackground/groupedBackground
-  等，深浅两套）跑 4.5:1（正文）/3:1（大字）断言，钉死层级边界。
-  tertiaryLabel 仅限装饰性文字的规则写进测试理由。
-- **C2 Reduce Transparency 响应**：`MediaQuery.disableAnimations`/
-  系统降透明度时，AppMaterial 退化为不透明 elevation 色（Apple 规范
-  行为）。验收：双模式渲染测试。
-- **C3 深浅双主题 golden 成对**：关键 6 页生成 light/dark 成对 golden，
-  防止单边回归。
+- **C1 WCAG 对比度 linter** ✅：`test/shared/theme/app_contrast_test.dart`
+  ——深浅两套全部 label×surface 组合 + 玻璃合成面 + accent UI 面，
+  AA 4.5:1 / UI 3:1 断言。**真实发现**：Apple 原版浅色 secondaryLabel
+  60% = 3.29:1 不达 AA → 提到 75%（4.77:1），深色 60% 本就 6.9:1。
+  tertiary/quaternary 钉"装饰性存在下限"（WCAG 1.4.3 豁免）。
+- **C2 Reduce Transparency 响应** ✅：设置页"减少透明度"开关 →
+  `AppVisualSettings` InheritedWidget → AppMaterial 退化为不透明
+  elevation 色（tier→elevation 映射），环境底图退化为纯色基底；
+  持久化于加密 settings box。
+- **C3 深浅双主题 golden 成对** ✅：
+  `test/shared/theme/theme_pair_goldens_test.dart` —— settings 深浅对 +
+  **chrome-glass 玻璃采样验证对**（条纹背景穿过玻璃模糊的像素锁定）。
+
+## Phase F — 环境底图与材质纵深（本批次新增，替代原 D1 位置）
+
+- **F1 环境底图层** ✅：`AppAmbientCanvas`（中性基底 + 三个 accent
+  色斑，深浅各一套参数，静态 RepaintBoundary），外壳 scaffold 透明化，
+  桌面侧栏/移动 tab 栏/浮层全部获得真实采样源。色斑强度受测试约束
+  （对比度增量 < 0.35，"是深度不是装饰"）。
+- **F2 视觉核查纪律** ✅：九轮截图核查结论入 research §10；
+  golden 像素采样验证玻璃透出（chrome-glass）。
 
 ## Phase D — 液态玻璃深度（长期）
 
-- **D1 滚动联动材质强度**：滚动速度映射到浮层 tint 不透明度微调
-  （快滚更实、静止更透）——HIG "dynamism and depth" 的 Flutter 落地。
-  需性能预算测试（掉帧检测）。
-- **D2 指针自适应动效全局化**：AppPressable 的触摸/鼠标分档推广到
-  sheet/scale 类动效（Liquid Glass：直接触摸 tactile、间接输入 subdued）。
-- **D3 触觉反馈钩子**：按压/槽位吸附/shake 接 `HapticFeedback`，
-  HIG"动效不作为唯一信息通道"。
-- **D4 拖拽跟手推广**：spring sheet 的 1:1 跟手 + 速度感知落定推广到
-  synthesis panel 与 quick capture 面板。
+- **D3 触觉反馈钩子** ✅（本批次）：槽位吸附/导航切换 selectionClick、
+  shake heavyImpact；按压不震（噪音）。
+- **D1 滚动联动材质强度**：滚动速度映射 tint 微调（保留）。
+- **D2 指针自适应动效全局化**：sheet/scale 类推广（保留）。
+- **D4 拖拽跟手推广**：spring sheet 1:1 跟手推广到 synthesis panel
+  与 quick capture（保留）。
 
 ## Phase E — 视觉回归基建（贯穿）
 
-- 每新增一个交互模式：参数测试 + 行为测试 + golden 三件套（既定纪律）。
+- 每新增一个交互模式：参数测试 + 行为测试 + golden 三件套（既定纪律）。✅
 - 季度性全 golden 重生成 + 目视审查（本路线图的验收手段）。
+- **新增**：settings golden 已随 secondaryLabel 75% + 减少透明度开关
+  重生成；theme-pair goldens 为增量新基线。
 
 ## 执行纪律
 

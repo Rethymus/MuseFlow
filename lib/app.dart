@@ -38,7 +38,9 @@ import 'package:museflow/features/templates/presentation/template_gallery_page.d
 import 'package:museflow/features/templates/presentation/template_preview_page.dart';
 import 'package:museflow/shared/constants/app_constants.dart';
 import 'package:museflow/shared/theme/apple_scroll_behavior.dart';
+import 'package:museflow/shared/theme/app_materials.dart';
 import 'package:museflow/shared/theme/app_theme.dart';
+import 'package:museflow/shared/widgets/app_ambient.dart';
 
 part 'app_routes.dart';
 
@@ -72,8 +74,9 @@ class MuseFlowApp extends ConsumerWidget {
         GlobalCupertinoLocalizations.delegate,
       ],
       routerConfig: router,
-      builder: (context, child) =>
-          WebWorkspaceGate(child: child ?? const SizedBox.shrink()),
+      builder: (context, child) => _AppBackdrop(
+        child: WebWorkspaceGate(child: child ?? const SizedBox.shrink()),
+      ),
     );
   }
 
@@ -108,9 +111,37 @@ class MuseFlowApp extends ConsumerWidget {
       // No redirect needed
       return null;
     } catch (_) {
-      // If settings box is not yet open, allow normal navigation.
+      // If settings box is not yet open, allow normal routing.
       // The onboarding check will run again once the box is available.
       return null;
     }
+  }
+}
+
+/// The root [Stack]: the ambient canvas underneath, app chrome above.
+///
+/// The shell scaffold is transparent, so wherever a page does not paint
+/// (behind the glass sidebar, under the floating toolbar) the canvas shows
+/// through and the [BackdropFilter]s in [AppMaterial] finally sample real
+/// luminance variation instead of a flat void — the depth layer the design
+/// roadmap calls "毛玻璃随背后的界面内容产生层次".
+class _AppBackdrop extends ConsumerWidget {
+  const _AppBackdrop({required this.child});
+
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final reduceTransparency = ref.watch(reduceTransparencyProvider);
+    return AppVisualSettings(
+      reduceTransparency: reduceTransparency,
+      child: Stack(
+        textDirection: TextDirection.ltr,
+        children: [
+          AppAmbientCanvas(enabled: !reduceTransparency),
+          child,
+        ],
+      ),
+    );
   }
 }

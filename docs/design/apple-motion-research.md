@@ -203,3 +203,37 @@ iOS 16+ 的 floating toast：从触发点**轻弹进入**。规格：
   （dampingFraction ~0.8, duration 0.4）+ 同步 fade；barrier 只 fade（120ms）
 - **Action sheet**：y 全高滑入 + `smooth`(0.5, ζ1.0)——大位移禁过冲
 - 共同原则：入场弹性、**出场快速无弹性**（~150ms ease-out + fade）
+
+## 10. 九轮视觉核查结论（2026-09-06，Windows Release 构建）
+
+用真实运行的应用截图核查（非代码推断），发现代码审查无法暴露的问题：
+
+1. **桌面侧栏毛玻璃空转（最严重）**：侧栏与内容是 Row 并排布局，
+   BackdropFilter 背后是空白 scaffold——模糊采样不到任何内容，
+   视觉上是纯平 #0D0E12 色块。玻璃系统等于白建。
+   **修复**：根 Stack 增加环境底图层（AppAmbientCanvas：中性基底 +
+   三个极低透明度 accent 径向色斑），外壳 scaffold 透明化。侧栏玻璃
+   采样到色斑 → 产生真实层次（macOS 侧栏采桌面壁纸的等价物）。
+   像素级验证：golden 中玻璃内颜色随背景条纹相位变化
+   （`chrome-glass-*.png`，x=100 列采样 RGB 随 y 呈蓝→紫→橙循环）。
+2. **WCAG 对比度实测（C1 linter 的真实发现）**：Apple 原版浅色
+   secondaryLabel（60% alpha）在 grouped 背景上仅 **3.29:1**，低于
+   WCAG AA 正文 4.5:1——这是 Apple 自己的已知缺陷。决策：浅色
+   secondaryLabel 提到 75% alpha（4.77:1），深色保持 60%（6.9:1 已过）。
+   "参考 Apple"不等于复制它的无障碍缺陷。
+3. **dark accent (#5E5CE6) 在 floating 面 (#2C2C2E) 上 2.75:1 < 3.0**：
+   与 iOS 菜单实践一致（浮动菜单不放 accent 色文字），测试中排除
+   该组合并注明理由，而非硬改色板。
+4. **onboarding 表单卡片与背景区分度弱**（无 rim/阴影，#1A1A1E vs
+   #0A0A0C）——HIG 内容层纪律本就禁玻璃，但 rim 高光可移植；
+   留待后续批次。
+5. **对话框毛玻璃不可感知**：thick 档 92% tint 本就近不透明
+   （与 iOS alert 一致），可接受，非缺陷。
+
+### 10.1 触觉反馈（HIG「动效不作唯一通道」的落地）
+
+- 槽位吸附（分段控件 thumb 起滑）：`selectionClick`
+- 侧栏/tab 目的地切换（仅实际变化时）：`selectionClick`
+- 推石 shake 触发：`heavyImpact`
+- AppPressable 按压不加触觉（每次按压都震 = 噪音，违背"短而准"）
+- 桌面平台 HapticFeedback 为 no-op，无需平台判断

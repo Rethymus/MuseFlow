@@ -84,9 +84,12 @@ class _AppShellScaffoldState extends ConsumerState<AppShellScaffold> {
 
     if (isNarrow) {
       // Mobile layout: bottom nav bar + content. extendBody lets content
-      // scroll under the frosted tab bar so the blur samples real pixels.
+      // scroll under the frosted tab bar so the blur samples real pixels;
+      // the transparent scaffold lets the ambient canvas show through
+      // wherever the page does not paint.
       return QuickCaptureShortcut(
         child: Scaffold(
+          backgroundColor: Colors.transparent,
           extendBody: true,
           body: NotificationListener<ScrollNotification>(
             onNotification: _updateScrollEdge,
@@ -106,9 +109,13 @@ class _AppShellScaffoldState extends ConsumerState<AppShellScaffold> {
       );
     }
 
-    // Desktop layout: sidebar + content in Row
+    // Desktop layout: sidebar + content in Row. The scaffold stays
+    // transparent so the sidebar's glass samples the ambient canvas
+    // (macOS sidebar behavior: depth comes from what is behind the
+    // window, not from the content column).
     return QuickCaptureShortcut(
       child: Scaffold(
+        backgroundColor: Colors.transparent,
         body: Row(
           children: [
             AdaptiveSidebar(
