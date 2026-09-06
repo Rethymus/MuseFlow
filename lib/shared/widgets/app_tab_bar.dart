@@ -100,22 +100,29 @@ class _TabItem extends StatelessWidget {
         onTap: onTap,
         child: AppFocusRing(
           radius: BorderRadius.circular(AppRadius.small),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(icon, size: 23, color: tint),
-              const SizedBox(height: 2),
-              Text(
-                destination.label,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: textTheme.labelSmall?.copyWith(
-                  fontSize: 10,
-                  height: 1.0,
-                  color: tint,
+          // GestureDetector (not just Semantics) so the tap action is
+          // registered by the same battle-tested semantics path InkWell
+          // uses — assistive tech can then activate the tab.
+          child: GestureDetector(
+            onTap: onTap,
+            behavior: HitTestBehavior.opaque,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(icon, size: 23, color: tint),
+                const SizedBox(height: 2),
+                Text(
+                  destination.label,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: textTheme.labelSmall?.copyWith(
+                    fontSize: 10,
+                    height: 1.0,
+                    color: tint,
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),
