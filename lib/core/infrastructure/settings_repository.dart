@@ -52,6 +52,7 @@ class SettingsRepository {
   static const String _lastBrowserBackupAtKey = 'last_browser_backup_at';
   static const String _themeModeKey = 'theme_mode';
   static const String _backupBannerSnoozedAtKey = 'backup_banner_snoozed_at';
+  static const String _reduceTransparencyKey = 'reduce_transparency';
 
   SettingsRepository(this._box);
 
@@ -110,6 +111,18 @@ class SettingsRepository {
   /// Persists the auto deviation-check preference.
   Future<void> saveAutoDeviationCheck(bool enabled) async {
     await _box.put(_autoDeviationCheckKey, enabled);
+  }
+
+  /// Whether the user asked for reduced translucency (Apple's "reduce
+  /// transparency" accessibility setting): glass surfaces fall back to
+  /// opaque elevation colors and the ambient canvas is disabled.
+  bool getReduceTransparency() {
+    return _box.get(_reduceTransparencyKey, defaultValue: false) as bool;
+  }
+
+  /// Persists the reduce-transparency preference.
+  Future<void> saveReduceTransparency(bool enabled) async {
+    await _box.put(_reduceTransparencyKey, enabled);
   }
 
   /// Gets the user's creativity level (AA-03) for generation temperature.

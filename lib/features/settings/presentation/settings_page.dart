@@ -65,6 +65,21 @@ class SettingsPage extends ConsumerWidget {
                   ),
                 ),
               ),
+              // Apple's "Reduce Transparency" analog: glass surfaces fall
+              // back to opaque elevation colors and the ambient backdrop
+              // is disabled — legibility for users who can't read text
+              // over blurred content.
+              AppListTile(
+                icon: CupertinoIcons.circle_lefthalf_fill,
+                iconColor: AppColors.of(context).systemGreen,
+                title: '减少透明度',
+                subtitle: '关闭毛玻璃与背景渲染，改用纯色表面',
+                trailing: AppSwitch(
+                  value: ref.watch(reduceTransparencyProvider),
+                  onChanged: (value) =>
+                      ref.read(reduceTransparencyProvider.notifier).set(value),
+                ),
+              ),
             ],
           ),
           if (kIsWeb) const WebWorkspaceSettingsSection(),

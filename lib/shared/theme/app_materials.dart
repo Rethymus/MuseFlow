@@ -117,6 +117,16 @@ enum AppMaterialTier {
 
   /// Top-edge inner highlight alpha (bright rim).
   double highlightAlphaOn(AppPalette p) => p.isDark ? 0.16 : 0.45;
+
+  /// The opaque surface used when translucency is reduced (HIG fallback):
+  /// each tier maps onto the neutral elevation ramp at the height Apple
+  /// would use for that role.
+  AppElevation elevationWhenReduced() => switch (this) {
+    AppMaterialTier.ultraThin => AppElevation.raised,
+    AppMaterialTier.thin => AppElevation.raised,
+    AppMaterialTier.regular => AppElevation.floating,
+    AppMaterialTier.thick => AppElevation.modal,
+  };
 }
 
 /// A frosted-glass surface: blur + tint + inner highlight + hairline edge.
@@ -224,6 +234,48 @@ class AppMaterial extends StatelessWidget {
       };
     }
 
+    // Child + hairline overlays, shared by both the glass and the
+    // reduced-transparency fallback so edge treatment never diverges.
+    Widget contentOverlays() => Material(
+      // Transparent Material so ink-based children (InkWell, ListTile)
+      // work without relying on a Scaffold ancestor.
+      type: MaterialType.transparency,
+      child: Stack(
+        children: [
+          child,
+          if (borderEdges.contains(LogicalEdge.top))
+            edge(LogicalEdge.top)
+          else
+            rim,
+          for (final e in borderEdges.where((e) => e != LogicalEdge.top))
+            edge(e),
+        ],
+      ),
+    );
+
+    // Reduce-transparency fallback (HIG): the opaque elevation color for
+    // this tier, no blur and no tint wash. Hairlines and the rim stay.
+    if (AppVisualSettings.isReduced(context)) {
+      return DecoratedBox(
+        decoration: BoxDecoration(
+          color: tier.elevationWhenReduced().on(p),
+          borderRadius: radius,
+          boxShadow: shadow
+              ? [
+                  BoxShadow(
+                    color: Colors.black.withValues(
+                      alpha: p.isDark ? 0.35 : 0.18,
+                    ),
+                    blurRadius: 24,
+                    offset: const Offset(0, 8),
+                  ),
+                ]
+              : null,
+        ),
+        child: ClipRRect(borderRadius: radius, child: contentOverlays()),
+      );
+    }
+
     return DecoratedBox(
       decoration: BoxDecoration(
         borderRadius: radius,
@@ -248,24 +300,7 @@ class AppMaterial extends StatelessWidget {
             tint: tint,
             radius: radius,
             scrollEdge: scrollEdge,
-            child: Material(
-              // Transparent Material so ink-based children (InkWell,
-              // ListTile) work without relying on a Scaffold ancestor.
-              type: MaterialType.transparency,
-              child: Stack(
-                children: [
-                  child,
-                  if (borderEdges.contains(LogicalEdge.top))
-                    edge(LogicalEdge.top)
-                  else
-                    rim,
-                  for (final e in borderEdges.where(
-                    (e) => e != LogicalEdge.top,
-                  ))
-                    edge(e),
-                ],
-              ),
-            ),
+            child: contentOverlays(),
           ),
         ),
       ),
@@ -324,6 +359,34 @@ class _TintLayer extends StatelessWidget {
 
 /// Logical edges for [AppMaterial.borderEdges].
 enum LogicalEdge { top, left, right, bottom }
+
+/// Inherited accessibility switch: reduce translucency app-wide.
+///
+/// The Flutter analog of Apple's "Reduce Transparency" setting. When on,
+/// [AppMaterial] paints the opaque elevation color for its tier (no blur,
+/// no tint wash) and the ambient canvas collapses to the plain base —
+/// the documented HIG fallback that keeps text on solid surfaces.
+class AppVisualSettings extends InheritedWidget {
+  const AppVisualSettings({
+    super.key,
+    required this.reduceTransparency,
+    required super.child,
+  });
+
+  final bool reduceTransparency;
+
+  /// Whether translucency is reduced in [context] (false when no
+  /// [AppVisualSettings] ancestor exists — e.g. widget tests).
+  static bool isReduced(BuildContext context) =>
+      context
+          .dependOnInheritedWidgetOfExactType<AppVisualSettings>()
+          ?.reduceTransparency ??
+      false;
+
+  @override
+  bool updateShouldNotify(AppVisualSettings oldWidget) =>
+      oldWidget.reduceTransparency != reduceTransparency;
+}
 
 /// Focus ring: the accent-tinted ring shown around the focused control,
 /// Apple-style — 3pt soft outer glow plus a crisp 1.5pt accent outline.

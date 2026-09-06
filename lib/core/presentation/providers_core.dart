@@ -97,3 +97,31 @@ final activeApiKeyProvider = Provider<String?>((ref) {
   final apiKeyAsync = ref.watch(apiKeyFutureProvider);
   return apiKeyAsync.asData?.value;
 });
+
+/// Whether translucency is reduced system-wide-in-app (accessibility).
+///
+/// Mirrors Apple's "reduce transparency" switch: when on, glass surfaces
+/// ([AppMaterial]) fall back to opaque elevation colors and the ambient
+/// canvas is replaced by the plain base wash, so text sits on solid
+/// surfaces instead of blurred content. Applied by `MuseFlowApp`'s
+/// builder; persisted in the encrypted settings box.
+final reduceTransparencyProvider =
+    NotifierProvider<ReduceTransparencyNotifier, bool>(
+      ReduceTransparencyNotifier.new,
+    );
+
+class ReduceTransparencyNotifier extends Notifier<bool> {
+  @override
+  bool build() {
+    final settings = ref.watch(settingsRepositoryProvider).value;
+    return settings?.getReduceTransparency() ?? false;
+  }
+
+  Future<void> set(bool value) async {
+    state = value;
+    final settings = ref.read(settingsRepositoryProvider).value;
+    if (settings != null) {
+      await settings.saveReduceTransparency(value);
+    }
+  }
+}

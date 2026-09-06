@@ -325,6 +325,98 @@ void main() {
       expect(_ringDecorations(tester), isEmpty);
     });
   });
+
+  group('AppVisualSettings (reduce transparency)', () {
+    Widget wrapReduced(Widget child, {bool reduce = false}) => MaterialApp(
+      theme: appTheme(Brightness.dark),
+      home: Scaffold(
+        body: AppVisualSettings(
+          reduceTransparency: reduce,
+          child: Center(child: child),
+        ),
+      ),
+    );
+
+    testWidgets('reduced material drops blur and tint for opaque elevation', (
+      tester,
+    ) async {
+      await tester.pumpWidget(
+        wrapReduced(
+          const AppMaterial(
+            tier: AppMaterialTier.regular,
+            child: SizedBox(width: 100, height: 100),
+          ),
+          reduce: true,
+        ),
+      );
+
+      expect(
+        find.byType(BackdropFilter),
+        findsNothing,
+        reason: 'reduced mode must not blur',
+      );
+
+      // The surface is the opaque floating elevation color.
+      expect(
+        find.byWidgetPredicate(
+          (w) =>
+              w is DecoratedBox &&
+              w.decoration is BoxDecoration &&
+              (w.decoration as BoxDecoration).color ==
+                  AppMaterialTier.regular.elevationWhenReduced().on(
+                    darkPalette,
+                  ),
+        ),
+        findsOneWidget,
+      );
+    });
+
+    testWidgets('reduced mode keeps hairline separators', (tester) async {
+      await tester.pumpWidget(
+        wrapReduced(
+          const AppMaterial(
+            tier: AppMaterialTier.thin,
+            borderEdges: {LogicalEdge.right},
+            child: SizedBox(width: 100, height: 100),
+          ),
+          reduce: true,
+        ),
+      );
+      // The right-edge hairline survives the fallback (Container folds a
+      // plain color into a ColoredBox).
+      expect(
+        find.byWidgetPredicate(
+          (w) => w is ColoredBox && w.color == darkPalette.separator,
+        ),
+        findsOneWidget,
+      );
+    });
+
+    testWidgets('glass renders normally when the flag is absent/false', (
+      tester,
+    ) async {
+      await tester.pumpWidget(
+        wrapReduced(
+          const AppMaterial(
+            tier: AppMaterialTier.thin,
+            child: SizedBox(width: 100, height: 100),
+          ),
+        ),
+      );
+      expect(find.byType(BackdropFilter), findsOneWidget);
+    });
+
+    test('tier→elevation mapping rises with tier weight', () {
+      expect(
+        AppMaterialTier.regular.elevationWhenReduced().index,
+        greaterThan(AppMaterialTier.thin.elevationWhenReduced().index),
+      );
+      expect(
+        AppMaterialTier.thick.elevationWhenReduced().index,
+        greaterThan(AppMaterialTier.regular.elevationWhenReduced().index),
+      );
+    });
+  });
 }
 
 double _luminance(Color c) => c.computeLuminance();
